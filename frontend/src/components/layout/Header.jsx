@@ -71,7 +71,7 @@ export default function Header() {
           ))}
         </nav>
       </div>
-      <button className={styles.signInBtn}>
+      <button className={styles.signInBtn} onClick={() => navigate('/login')}>
         <span className={styles.signInText}>SIGN IN</span>
       </button>
     </header>
