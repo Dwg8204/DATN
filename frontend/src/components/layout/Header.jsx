@@ -24,8 +24,12 @@ const navItems = [
   },
   {
     label: 'GRAMMAR & VOCAB',
-    to: '/grammar',
+    to: '/grammar-vocab/overview',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/gg3z1wbc_expires_30_days.png',
+    dropdown: [
+      { label: 'Grammar & Vocab Overview', to: '/grammar-vocab/overview' },
+      { label: 'Grammar & Vocab Test', to: '/grammar-vocab/tests' },
+    ],
   },
   {
     label: 'DICTATION',
@@ -54,20 +58,34 @@ export default function Header() {
         </Link>
         <nav className={styles.nav}>
           {navItems.map((item) => (
-            <button
-              key={item.label}
-              className={styles.navItem}
-              onClick={() => navigate(item.to)}
-            >
-              <span className={styles.navLabel}>{item.label}</span>
-              {item.icon && (
-                <img
-                  src={item.icon}
-                  alt=""
-                  className={styles.navIcon}
-                />
+            <div key={item.label} className={styles.navItemContainer}>
+              <button
+                className={styles.navItem}
+                onClick={() => navigate(item.to)}
+              >
+                <span className={styles.navLabel}>{item.label}</span>
+                {item.icon && (
+                  <img
+                    src={item.icon}
+                    alt=""
+                    className={styles.navIcon}
+                  />
+                )}
+              </button>
+              {item.dropdown && (
+                <div className={styles.dropdownMenu}>
+                  {item.dropdown.map((subItem) => (
+                    <button
+                      key={subItem.label}
+                      className={styles.dropdownItem}
+                      onClick={() => navigate(subItem.to)}
+                    >
+                      {subItem.label}
+                    </button>
+                  ))}
+                </div>
               )}
-            </button>
+            </div>
           ))}
         </nav>
       </div>

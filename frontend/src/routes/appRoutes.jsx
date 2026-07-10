@@ -8,6 +8,8 @@ import SignupPage from '../features/auth/pages/SignupPage';
 import ForgotPasswordEmailPage from '../features/auth/pages/ForgotPasswordEmailPage';
 import ForgotPasswordOTPPage from '../features/auth/pages/ForgotPasswordOTPPage';
 import ForgotPasswordResetPage from '../features/auth/pages/ForgotPasswordResetPage';
+import GrammarVocabOverviewPage from '../features/grammar_vocab/pages/GrammarVocabOverviewPage';
+import TestListPage from '../pages/TestListPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingRoutes } from '../features/writing-test/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
@@ -40,6 +42,14 @@ export const appRoutes = [
       {
         path: 'forgot-password/reset',
         element: <ForgotPasswordResetPage />,
+      },
+      {
+        path: 'grammar-vocab/overview',
+        element: <GrammarVocabOverviewPage />,
+      },
+      {
+        path: ':skill/tests',
+        element: <TestListPage />,
       },
       ...practiceRoutes,
       ...writingRoutes,
