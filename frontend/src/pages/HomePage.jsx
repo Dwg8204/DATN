@@ -1,70 +1,111 @@
-import { Link } from 'react-router-dom';
-import Button from '../components/common/Button';
-import CommentSection from '../components/shared/CommentSection/CommentSection';
+import { useNavigate } from 'react-router-dom';
+import HeroBanner from '../components/shared/HeroBanner/HeroBanner';
+import AnnouncementBar from '../components/common/AnnouncementBar';
+import SkillCard from '../components/shared/SkillCard/SkillCard';
+import FeatureShowcase from '../components/shared/FeatureShowcase/FeatureShowcase';
+import ReviewCard from '../components/shared/ReviewCard/ReviewCard';
+import PaginationDots from '../components/common/PaginationDots';
+import styles from './HomePage.module.css';
 
-const highlights = [
-  'Kiến trúc module rõ ràng',
-  'Router, context, services tách biệt',
-  'Sẵn sàng mở rộng theo từng thành viên',
+const skillCards = [
+  {
+    image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/ab4jseam_expires_30_days.png',
+    alt: 'Listening',
+    path: '/listening',
+  },
+  {
+    image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/joqfqb3e_expires_30_days.png',
+    alt: 'Reading',
+    path: '/reading',
+  },
+  {
+    image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/3c94qbfj_expires_30_days.png',
+    alt: 'Writing',
+    path: '/writing',
+  },
+  {
+    image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/emndtqro_expires_30_days.png',
+    alt: 'Speaking',
+    path: '/speaking',
+  },
+  {
+    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651651/Gemini_Generated_Image_vq8zivq8zivq8ziv_qyypvu.png',
+    alt: 'Grammar & Vocab',
+    path: '/grammar',
+  },
+];
+
+const reviews = [
+  {
+    avatar: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/r33cn91v_expires_30_days.png',
+    name: 'Henry',
+    date: '26 March 2025',
+    ratingImage: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/amnslara_expires_30_days.png',
+    ratingValue: '5.0',
+    comment:
+      'Thank you very much for creating this website; it is amazing. I have been using it since January and took the real test at the end of February, achieving scores of 8 and 8.5 for listening and reading. It has helped me a lot, particularly in preparing for the computer-based test.',
+  },
+  {
+    avatar: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/24p67znc_expires_30_days.png',
+    name: 'Henry',
+    date: '26 March 2025',
+    ratingImage: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/385j6ham_expires_30_days.png',
+    ratingValue: '5.0',
+    comment:
+      'Thank you very much for creating this website; it is amazing. I have been using it since January and took the real test at the end of February, achieving scores of 8 and 8.5 for listening and reading. It has helped me a lot, particularly in preparing for the computer-based test.',
+  },
+  {
+    avatar: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/nf8qn4r4_expires_30_days.png',
+    name: 'Henry',
+    date: '26 March 2025',
+    ratingImage: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/4gpo4cco_expires_30_days.png',
+    ratingValue: '5.0',
+    comment:
+      'Thank you very much for creating this website; it is amazing. I have been using it since January and took the real test at the end of February, achieving scores of 8 and 8.5 for listening and reading. It has helped me a lot, particularly in preparing for the computer-based test.',
+  },
 ];
 
 export default function HomePage() {
+  const navigate = useNavigate();
+
   return (
-    <>
-      <section className="page-section">
-        <div className="container">
-          <div className="hero surface">
-            <div className="hero__content">
-              <span className="hero__eyebrow">AptiMate</span>
-              <h1>Nền tảng React core cho hệ thống luyện thi tiếng Anh</h1>
-              <p>
-                Bộ khung frontend được tổ chức theo đúng mô hình shared components, features, pages, routes và services để
-                dễ mở rộng theo từng module nghiệp vụ.
-              </p>
-              <div className="hero__actions">
-                <Button as={Link} to="/practice-exam">Khám phá module</Button>
-                <Button as={Link} to="/introduction" variant="secondary">Xem giới thiệu</Button>
-              </div>
-            </div>
+    <div className={styles.page}>
+      {/* Hero Banner */}
+      <HeroBanner onButtonClick={() => navigate('/reading/introduction')} />
 
-            <div className="hero__panel">
-              <div className="hero__stat surface">
-                <strong>3</strong>
-                <span>module chính</span>
-              </div>
-              <div className="hero__stat surface">
-                <strong>1</strong>
-                <span>router tổng</span>
-              </div>
-              <div className="hero__stat surface">
-                <strong>100%</strong>
-                <span>phân tách rõ ràng</span>
-              </div>
-            </div>
-          </div>
+      {/* Announcement Bar */}
+      <AnnouncementBar />
 
-          <div className="feature-grid feature-grid--highlights">
-            {highlights.map((item) => (
-              <article className="feature-card surface" key={item}>
-                <h3>{item}</h3>
-                <p>Thiết kế sẵn cho việc gắn thêm API, kiểm thử và các màn hình nghiệp vụ khác.</p>
-              </article>
+      {/* Choose a Skill to Practice */}
+      <div className={styles.skillsSection}>
+        <span className={styles.skillsTitle}>Choose a Skill to Practice</span>
+        <div className={styles.skillsGrid}>
+          {skillCards.map((card) => (
+            <SkillCard
+              key={card.alt}
+              image={card.image}
+              alt={card.alt}
+              onClick={() => navigate(card.path)}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Key Features */}
+      <FeatureShowcase />
+
+      {/* Review Section */}
+      <div className={styles.reviewSection}>
+        <div className={styles.reviewContent}>
+          <span className={styles.reviewTitle}>Review</span>
+          <div className={styles.reviewList}>
+            {reviews.map((review, index) => (
+              <ReviewCard key={index} {...review} />
             ))}
           </div>
         </div>
-      </section>
-
-      <section className="page-section page-section--alt">
-        <div className="container">
-          <CommentSection
-            title="Khu vực thảo luận mẫu"
-            initialComments={[
-              { author: 'Admin', content: 'Shared component này có thể tái sử dụng cho mọi trang cần bình luận.', time: '2 giờ trước' },
-              { author: 'Tutor', content: 'State và UI đã được tách riêng để dễ thay thế bằng API thật.', time: 'Hôm nay' },
-            ]}
-          />
-        </div>
-      </section>
-    </>
+        <PaginationDots total={3} active={0} />
+      </div>
+    </div>
   );
 }

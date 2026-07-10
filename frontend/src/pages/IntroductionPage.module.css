@@ -1,0 +1,124 @@
+.wrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 120px;
+  padding-bottom: 120px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #FFFFFF;
+  border-radius: 10px;
+  border: 1px solid #000000;
+  padding: 32px 40px;
+  gap: 40px;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.titleWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 268px;
+  padding-right: 268px;
+}
+
+.title {
+  color: #000000;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.time {
+  color: #000000;
+  font-size: 16px;
+  margin-right: 685px;
+}
+
+.infoBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 359px;
+  gap: 16px;
+}
+
+.infoBlockWide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 189px;
+  gap: 16px;
+}
+
+.infoTitle {
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.infoText {
+  color: #000000;
+  font-size: 16px;
+  width: 417px;
+}
+
+.infoTextWide {
+  color: #000000;
+  font-size: 16px;
+  width: 587px;
+}
+
+.actionBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 213px;
+  padding-right: 213px;
+  gap: 24px;
+}
+
+.warning {
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.startBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #DA1E21;
+  border-radius: 8px;
+  border: none;
+  padding: 8px 28px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.startBtn:hover {
+  opacity: 0.9;
+}
+
+.startBtnText {
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: bold;
+}
