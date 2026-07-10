@@ -1,0 +1,299 @@
+.wrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #FFFFFF;
+  padding-top: 80px; /* Adjusted to account for MainLayout's 40px gap */
+  padding-bottom: 120px;
+}
+
+.signupWrapper {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80px;
+  padding-bottom: 120px;
+  margin-bottom: 23px;
+}
+
+.verifyWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 93px; /* 133 - 40 */
+  margin-bottom: 69px;
+  gap: 39px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.title {
+  color: #A11D33;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+}
+
+.signupForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 44px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.verifyFormGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 43px;
+}
+
+.verifyFormInner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.signupFormGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+}
+
+.inputCol {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.inputColMargin {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-right: 75px;
+  gap: 8px;
+}
+
+.verifyInputCol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  gap: 7px;
+}
+
+.label {
+  color: #000000;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.input {
+  box-sizing: border-box;
+  height: 48px;
+  background: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #00000080;
+  padding: 0 16px;
+  font-size: 16px;
+  color: #000000;
+  outline: none;
+}
+
+.inputHalf {
+  width: 280px;
+}
+
+.inputFull {
+  width: 635px;
+}
+
+.emailButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #00000080;
+  padding: 10px 248px;
+  text-align: left;
+  cursor: text;
+}
+
+.verifyEmailButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #00000080;
+  padding: 9px 248px;
+  text-align: left;
+  cursor: text;
+}
+
+.emailText {
+  color: #000000;
+  font-size: 16px;
+}
+
+.optionsRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.rememberMe {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-right: 370px;
+  gap: 8px;
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border-radius: 5px;
+  border: 2px solid #000000;
+  cursor: pointer;
+}
+
+.optionText {
+  color: #000000;
+  font-size: 16px;
+}
+
+.forgotPassword {
+  color: #000000;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.submitBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #DA1E21;
+  border-radius: 8px;
+  border: none;
+  padding: 10px 289px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.submitBtnSignup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #DA1E21;
+  border-radius: 8px;
+  border: none;
+  padding: 10px 283px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.submitBtn:hover, .submitBtnSignup:hover {
+  opacity: 0.9;
+}
+
+.submitBtnText {
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.orText {
+  color: #000000;
+  font-size: 16px;
+}
+
+.socialRow {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.socialIcon {
+  width: 32px;
+  height: 32px;
+  object-fit: fill;
+  cursor: pointer;
+}
+
+.bottomLink {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.signupBottomLink {
+  display: flex;
+  align-items: center;
+  padding-left: 190px;
+  padding-right: 190px;
+  gap: 12px;
+}
+
+.verifyBottomLink {
+  display: flex;
+  align-items: center;
+  padding-left: 201px;
+  padding-right: 201px;
+  gap: 13px;
+}
+
+.bottomText {
+  color: #000000;
+  font-size: 18px;
+}
+
+.bottomAction {
+  color: #A11D33;
+  font-size: 18px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.warningText {
+  color: #E01E37;
+  font-size: 16px;
+  margin-bottom: 19px;
+  margin-right: 171px;
+  width: 463px;
+}
