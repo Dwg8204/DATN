@@ -1,0 +1,65 @@
+.page {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Skills Section */
+.skillsSection {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.skillsTitle {
+  color: #A11D33;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.skillsGrid {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  margin-left: 72px;
+  margin-right: 72px;
+  gap: 24px;
+}
+
+/* Review Section */
+.reviewSection {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.reviewContent {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 72px;
+  gap: 32px;
+}
+
+.reviewTitle {
+  color: #A11D33;
+  font-size: 40px;
+  font-weight: bold;
+  margin-left: 72px;
+}
+
+.reviewList {
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  margin-left: 72px;
+  gap: 24px;
+}

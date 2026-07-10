@@ -1,54 +1,79 @@
-import { NavLink } from 'react-router-dom';
-import Button from '../common/Button';
-import { useAuth } from '../../context/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
+import styles from './Header.module.css';
 
 const navItems = [
-  { label: 'Trang chủ', to: '/' },
-  { label: 'Giới thiệu', to: '/introduction' },
-  { label: 'Practice', to: '/practice-exam' },
-  { label: 'Writing', to: '/writing-test' },
-  { label: 'AI Chatbot', to: '/ai-chatbot' },
+  {
+    label: 'LISTENING',
+    to: '/listening',
+    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/p9xrd9hn_expires_30_days.png',
+  },
+  {
+    label: 'READING',
+    to: '/reading',
+    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/4d89xmet_expires_30_days.png',
+  },
+  {
+    label: 'WRITING',
+    to: '/writing',
+    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/fc21zx6v_expires_30_days.png',
+  },
+  {
+    label: 'SPEAKING',
+    to: '/speaking',
+    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/gg3z1wbc_expires_30_days.png',
+  },
+  {
+    label: 'GRAMMAR & VOCAB',
+    to: '/grammar',
+    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/gg3z1wbc_expires_30_days.png',
+  },
+  {
+    label: 'DICTATION',
+    to: '/dictation',
+    icon: null,
+  },
+  // {
+  //   label: 'BLOG',
+  //   to: '/blog',
+  //   icon: null,
+  // },
 ];
 
 export default function Header() {
-  const { isAuthenticated, user, logout } = useAuth();
+  const navigate = useNavigate();
 
   return (
-    <header className="site-header surface">
-      <div className="container site-header__inner">
-        <NavLink to="/" className="brand" end>
-          <span className="brand__mark">A</span>
-          <span className="brand__text">
-            <strong>AptiMate</strong>
-            <small>React core frontend</small>
-          </span>
-        </NavLink>
-
-        <nav className="site-nav" aria-label="Điều hướng chính">
+    <header className={styles.header}>
+      <div className={styles.logoWrap}>
+        <Link to="/">
+          <img
+            src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png"
+            alt="AptiMate Logo"
+            className={styles.logo}
+          />
+        </Link>
+        <nav className={styles.nav}>
           {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) => `site-nav__link ${isActive ? 'site-nav__link--active' : ''}`.trim()}
+            <button
+              key={item.label}
+              className={styles.navItem}
+              onClick={() => navigate(item.to)}
             >
-              {item.label}
-            </NavLink>
+              <span className={styles.navLabel}>{item.label}</span>
+              {item.icon && (
+                <img
+                  src={item.icon}
+                  alt=""
+                  className={styles.navIcon}
+                />
+              )}
+            </button>
           ))}
         </nav>
-
-        <div className="site-header__actions">
-          {isAuthenticated ? (
-            <>
-              <span className="user-chip">{user?.name ?? 'Học sinh'}</span>
-              <Button variant="secondary" size="sm" onClick={logout}>
-                Đăng xuất
-              </Button>
-            </>
-          ) : (
-            <Button variant="primary" size="sm">Đăng nhập</Button>
-          )}
-        </div>
       </div>
+      <button className={styles.signInBtn}>
+        <span className={styles.signInText}>SIGN IN</span>
+      </button>
     </header>
   );
 }

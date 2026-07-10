@@ -1,0 +1,57 @@
+.heroBanner {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #FFFFFF;
+  padding-top: 52px;
+  padding-bottom: 52px;
+  padding-left: 77px;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #FFFFFF17;
+  border-radius: 16px;
+  padding: 51px 33px;
+  gap: 21px;
+}
+
+.title {
+  color: #6E1423;
+  font-size: 28px;
+  font-weight: bold;
+  margin-left: 41px;
+}
+
+.description {
+  color: #000000;
+  font-size: 16px;
+  margin-right: 26px;
+  width: 415px;
+}
+
+.ctaBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #FFFFFF;
+  border-radius: 5px;
+  border: none;
+  padding: 10px 30px;
+  margin-left: 137px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ctaBtn:hover {
+  opacity: 0.85;
+}
+
+.ctaBtnText {
+  color: #232020;
+  font-size: 20px;
+  font-weight: bold;
+}

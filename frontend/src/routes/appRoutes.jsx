@@ -1,6 +1,7 @@
 import MainLayout from '../components/layout/MainLayout';
+import TestLayout from '../components/layout/TestLayout';
 import HomePage from '../pages/HomePage';
-import Introduction from '../pages/Introduction';
+import IntroductionPage from '../pages/IntroductionPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingRoutes } from '../features/writing-test/writingRoutes';
@@ -15,16 +16,22 @@ export const appRoutes = [
         index: true,
         element: <HomePage />,
       },
-      {
-        path: 'introduction',
-        element: <Introduction />,
-      },
       ...practiceRoutes,
       ...writingRoutes,
       ...chatbotRoutes,
       {
         path: '*',
         element: <NotFoundPage />,
+      },
+    ],
+  },
+  {
+    path: '/:skill/introduction',
+    element: <TestLayout />,
+    children: [
+      {
+        index: true,
+        element: <IntroductionPage />,
       },
     ],
   },

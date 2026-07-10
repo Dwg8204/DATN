@@ -1,0 +1,20 @@
+.dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dot {
+  height: 6px;
+  border-radius: 8px;
+}
+
+.dotActive {
+  width: 61px;
+  background: #A71E34;
+}
+
+.dotInactive {
+  width: 15px;
+  background: #00000066;
+}
