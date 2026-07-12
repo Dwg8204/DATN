@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import CommentSection from '../components/shared/CommentSection/CommentSection';
 import styles from './TestListPage.module.css';
 
 // Fake data for tabs - can be made dynamic per skill later
@@ -178,6 +179,10 @@ export default function TestListPage() {
                 </div>
               ))}
             </div>
+          </div>
+          
+          <div className={styles.commentSectionWrapper}>
+            <CommentSection />
           </div>
         </div>
       </div>
