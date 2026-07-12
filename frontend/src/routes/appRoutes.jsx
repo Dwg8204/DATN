@@ -13,6 +13,7 @@ import TestListPage from '../pages/TestListPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingRoutes } from '../features/writing-test/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
+import Part1GrammarPage from '../pages/Part1GrammarPage';
 
 export const appRoutes = [
   {
@@ -67,6 +68,16 @@ export const appRoutes = [
       {
         index: true,
         element: <IntroductionPage />,
+      },
+    ],
+  },
+  {
+    path: '/:skill/test/:part',
+    element: <TestLayout />,
+    children: [
+      {
+        index: true,
+        element: <Part1GrammarPage />,
       },
     ],
   },
