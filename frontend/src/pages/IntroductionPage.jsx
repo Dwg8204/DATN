@@ -14,7 +14,7 @@ const skillConfigs = {
     time: 'Time: 40 min',
     instructions: 'Answer all the questions.\nYou can change your answers at any time during the test.',
     information:
-      'This test consists of 4 parts.\nThe tasks become more difficult as the test progresses.\nThe test clock will show you when there are 10 minutes and 5 minutes remaining.',
+      'There are 17 tasks and a total of 20 different recordings in this test.\nThere are four parts to the test.\nTo listen, just click on the Play button.\nYou can hear each recording twice.\nEach question carries one mark.',
   },
   writing: {
     title: 'APTIS GENERAL WRITING',

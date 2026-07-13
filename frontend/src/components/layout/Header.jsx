@@ -4,8 +4,13 @@ import styles from './Header.module.css';
 const navItems = [
   {
     label: 'LISTENING',
-    to: '/listening',
+    to: '/listening/overview',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/p9xrd9hn_expires_30_days.png',
+    dropdown: [
+      { label: 'Overview', to: '/listening/overview' },
+      { label: 'Feed', to: '/listening/feed' },
+      { label: 'Test', to: '/listening/tests' },
+    ],
   },
   {
     label: 'READING',
