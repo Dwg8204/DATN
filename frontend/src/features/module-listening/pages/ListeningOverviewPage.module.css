@@ -1,0 +1,61 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  min-height: 100vh;
+}
+
+.contentContainer {
+  max-width: 966px;
+  margin: 0 auto;
+  padding: 0 24px 60px;
+  width: 100%;
+}
+
+.section {
+  margin-bottom: 40px;
+}
+
+.mainTitle {
+  color: #A11D33;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+.textContent {
+  color: #000000;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.textContent p {
+  margin-bottom: 16px;
+}
+
+.docLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.docLink {
+  color: #000000;
+  font-size: 16px;
+  text-decoration: underline;
+}
+
+.docLink:hover {
+  color: #A11D33;
+}
+
+.popularSection {
+  margin-top: 60px;
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
