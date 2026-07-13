@@ -14,6 +14,7 @@ import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingRoutes } from '../features/writing-test/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
 import Part1GrammarPage from '../pages/Part1GrammarPage';
+import ListeningTestTakingPage from '../features/module-listening/pages/ListeningTestTakingPage';
 import { listeningRoutes } from '../features/module-listening/listeningRoutes';
 
 export const appRoutes = [
@@ -70,6 +71,16 @@ export const appRoutes = [
       {
         index: true,
         element: <IntroductionPage />,
+      },
+    ],
+  },
+  {
+    path: '/listening/test',
+    element: <TestLayout />,
+    children: [
+      {
+        index: true,
+        element: <ListeningTestTakingPage />,
       },
     ],
   },
