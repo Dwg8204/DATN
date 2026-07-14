@@ -1,0 +1,257 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px);
+  background: #FFFFFF;
+}
+
+.contentWrap {
+  display: flex;
+  flex-direction: column;
+  max-width: 1076px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 0 100px;
+  gap: 24px;
+}
+
+.topSection {
+  display: flex;
+  gap: 24px;
+}
+
+.cefrBox {
+  flex: 1;
+  background: #FFFFFF;
+  border: 1px solid #868686;
+  border-radius: 10px;
+  padding: 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cefrLabel {
+  color: #A11D33;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.cefrValue {
+  color: #A11D33;
+  font-size: 40px;
+  font-weight: bold;
+}
+
+.scoreText {
+  color: #000;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.resultBox {
+  flex: 2;
+  background: #FFFFFF;
+  border: 1px solid #868686;
+  border-radius: 10px;
+  padding: 20px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resultLabel {
+  color: #A11D33;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.resultContent {
+  display: flex;
+  align-items: center;
+  gap: 120px;
+}
+
+.percentageCircle {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.percentageText {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.statsGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.statRow {
+  display: flex;
+  gap: 100px;
+  font-size: 18px;
+}
+
+.statLabel { color: #000; font-weight: bold; width: 120px;}
+.statValueBold { color: #000; font-weight: bold; }
+.statLabelCorrect { color: #43B75D; font-weight: bold; width: 120px; }
+.statLabelWrong { color: #DA1E21; font-weight: bold; width: 120px;}
+.statLabelSkip { color: #686868; font-weight: bold; width: 120px;}
+.statValue { color: #000; }
+
+.detailBox {
+  background: #FFFFFF;
+  border: 1px solid #868686;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.columnsWrapper {
+  display: flex;
+  gap: 46px;
+}
+
+.mainColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.partColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.partTitle {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.answerRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.qId {
+  font-size: 16px;
+  font-weight: bold;
+  width: 30px;
+}
+
+.userAns {
+  font-size: 16px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.iconWrap {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feedbackBox {
+  background: #FFFFFF;
+  border: 1px solid #868686;
+  border-radius: 10px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feedbackLabel {
+  color: #A11D33;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.feedbackText {
+  font-size: 16px;
+}
+
+.statsBox {
+  background: #FFFFFF;
+  border: 1px solid #868686;
+  border-radius: 10px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.statsLabel {
+  color: #A11D33;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.circlesWrapper {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.circleItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.statCircleSmall {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: conic-gradient(#43B75D 0% 70%, #F0F0F0 70% 100%);
+}
+
+.statName {
+  font-size: 16px;
+}
+
+.actionRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+}
+
+.tryAgainBtn {
+  background: #DA1E21;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.backBtn {
+  background: white;
+  color: #B21E35;
+  border: 2px solid #B21E35;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}

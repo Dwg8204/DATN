@@ -17,6 +17,7 @@ const MOCK_TESTS = [
     title: 'Booking a Flight',
     desc: 'Information recognition\nAptis Practice Tests',
     part: 'Part 1',
+    tabId: 'part1',
     status: 'Completed',
     submitted: '20:15 - Jan 06, 2026',
     duration: '00:05:30',
@@ -27,6 +28,7 @@ const MOCK_TESTS = [
     title: 'People talking about their holidays',
     desc: 'Information matching\nActual Tests',
     part: 'Part 2',
+    tabId: 'part2',
     status: 'Completed',
     submitted: '21:00 - Jan 29, 2026',
     duration: '00:08:45',
@@ -37,6 +39,7 @@ const MOCK_TESTS = [
     title: 'A couple planning a weekend trip',
     desc: 'Inference/discussion\nTrainer & Practice Tests+',
     part: 'Part 3',
+    tabId: 'part3',
     status: 'Completed',
     submitted: '10:20 - Feb 24, 2026',
     duration: '00:12:00',
@@ -47,6 +50,15 @@ const MOCK_TESTS = [
     title: 'A lecture on climate change',
     desc: 'Identifying opinions\nForecast Quarter 1/2026',
     part: 'Part 4',
+    tabId: 'part4',
+    status: 'Not Started',
+  },
+  {
+    id: 5,
+    title: 'Full Listening Test - Practice Set 1',
+    desc: 'Complete Listening Test\nAll 4 Parts (17 questions)',
+    part: 'Full Listening Test',
+    tabId: 'full',
     status: 'Not Started',
   }
 ];
@@ -55,10 +67,19 @@ export default function ListeningTestListPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('part1');
 
-  const handleDoTest = (testId) => {
-    // Navigate to the generic introduction page
-    navigate(`/listening/introduction`);
+  // Handles clicking "Do the test" for a single part
+  const handleDoTestPart = (testId, partNum) => {
+    // Navigate to /listening/test/part{partNum}?testId={testId}&isFull=false
+    navigate(`/listening/test/part${partNum}?testId=${testId}&isFull=false`);
   };
+
+  // Handles clicking "Do the test" for a full test
+  const handleDoFullTest = (testId) => {
+    // Navigate to /listening/test/part1?testId={testId}&isFull=true
+    navigate(`/listening/test/part1?testId=${testId}&isFull=true`);
+  };
+
+  const filteredTests = MOCK_TESTS.filter(test => test.tabId === activeTab);
 
   return (
     <div className={styles.page}>
@@ -71,7 +92,7 @@ export default function ListeningTestListPage() {
           Choose part
           <div className={styles.tabsIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7 10L12 15L17 10" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M7 10L12 15L17 10" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
         </div>
@@ -94,8 +115,8 @@ export default function ListeningTestListPage() {
             <div className={styles.searchInputContainer}>
               <div className={styles.searchInputWrapper}>
                 <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <input type="text" className={styles.searchInput} placeholder="Search by test name." />
               </div>
@@ -107,68 +128,81 @@ export default function ListeningTestListPage() {
 
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
-              {MOCK_TESTS.map((test) => (
-                <div key={test.id} className={styles.testCard}>
-                  <div className={styles.cardTop}>
-                    <div className={styles.cardTitle}>{test.title}</div>
-                    <div className={styles.cardInfoRow}>
-                      <div className={styles.cardImageWrapper}>
-                        <img className={styles.cardImage} src="https://placehold.co/157x79" alt="Thumbnail" />
-                      </div>
-                      {test.status === 'Completed' ? (
-                        <div className={styles.cardDetails}>
-                          <div className={styles.cardDesc} style={{ whiteSpace: 'pre-line' }}>{test.desc}</div>
-                          <div className={styles.statsList}>
-                            <div className={styles.statItem}>
-                              <span className={styles.statLabel}>Submitted:</span>
-                              <span className={styles.statValue}>{test.submitted}</span>
-                            </div>
-                            <div className={styles.statItem}>
-                              <span className={styles.statLabel}>Duration:</span>
-                              <span className={styles.statValue}>{test.duration}</span>
-                            </div>
-                            <div className={styles.statItem}>
-                              <span className={styles.statLabel}>Accuracy:</span>
-                              <span className={`${styles.statValue} ${test.accuracy >= 80 ? styles.statValueSuccess : styles.statValueDanger}`}>
-                                {test.accuracy}%
-                              </span>
+              {filteredTests.length === 0 ? (
+                <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>
+                  No tests available for this part yet.
+                </div>
+              ) : (
+                filteredTests.map((test) => (
+                  <div key={test.id} className={styles.testCard}>
+                    <div className={styles.cardTop}>
+                      <div className={styles.cardTitle}>{test.title}</div>
+                      <div className={styles.cardInfoRow}>
+                        <div className={styles.cardImageWrapper}>
+                          <img className={styles.cardImage} src="https://placehold.co/157x79" alt="Thumbnail" />
+                        </div>
+                        {test.status === 'Completed' ? (
+                          <div className={styles.cardDetails}>
+                            <div className={styles.cardDesc} style={{ whiteSpace: 'pre-line' }}>{test.desc}</div>
+                            <div className={styles.statsList}>
+                              <div className={styles.statItem}>
+                                <span className={styles.statLabel}>Submitted:</span>
+                                <span className={styles.statValue}>{test.submitted}</span>
+                              </div>
+                              <div className={styles.statItem}>
+                                <span className={styles.statLabel}>Duration:</span>
+                                <span className={styles.statValue}>{test.duration}</span>
+                              </div>
+                              <div className={styles.statItem}>
+                                <span className={styles.statLabel}>Accuracy:</span>
+                                <span className={`${styles.statValue} ${test.accuracy >= 80 ? styles.statValueSuccess : styles.statValueDanger}`}>
+                                  {test.accuracy}%
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className={styles.cardDetails}>
-                          <div className={styles.cardDesc} style={{ whiteSpace: 'pre-line' }}>{test.desc}</div>
-                        </div>
+                        ) : (
+                          <div className={styles.cardDetails}>
+                            <div className={styles.cardDesc} style={{ whiteSpace: 'pre-line' }}>{test.desc}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className={styles.cardActions}>
+                      {test.status === 'Completed' && (
+                        <button className={styles.reviewBtn}>
+                          <span className={styles.reviewBtnText}>Review</span>
+                        </button>
                       )}
-                    </div>
-                  </div>
-
-                  <div className={styles.cardActions}>
-                    {test.status === 'Completed' && (
-                      <button className={styles.reviewBtn}>
-                        <span className={styles.reviewBtnText}>Review</span>
+                      <button className={styles.doTestBtn} onClick={() => {
+                        if (activeTab === 'full') {
+                          handleDoFullTest(test.id);
+                        } else {
+                          const partNum = test.part ? test.part.replace('Part ', '') : '1';
+                          handleDoTestPart(test.id, partNum);
+                        }
+                      }}>
+                        <span className={styles.doTestBtnText}>{test.status === 'Completed' ? 'Try again' : 'Do the test'}</span>
                       </button>
+                    </div>
+
+                    <div className={styles.partBadge}>
+                      <span className={styles.partBadgeText}>{test.part}</span>
+                    </div>
+
+                    {test.status === 'Completed' ? (
+                      <div className={styles.statusBadgeCompleted}>
+                        <span className={styles.statusBadgeCompletedText}>Completed</span>
+                      </div>
+                    ) : (
+                      <div className={styles.statusBadgeNotStarted}>
+                        <span className={styles.statusBadgeNotStartedText}>Not Started</span>
+                      </div>
                     )}
-                    <button className={styles.doTestBtn} onClick={() => handleDoTest(test.id)}>
-                      <span className={styles.doTestBtnText}>{test.status === 'Completed' ? 'Try again' : 'Do the test'}</span>
-                    </button>
                   </div>
-
-                  <div className={styles.partBadge}>
-                    <span className={styles.partBadgeText}>{test.part}</span>
-                  </div>
-
-                  {test.status === 'Completed' ? (
-                    <div className={styles.statusBadgeCompleted}>
-                      <span className={styles.statusBadgeCompletedText}>Completed</span>
-                    </div>
-                  ) : (
-                    <div className={styles.statusBadgeNotStarted}>
-                      <span className={styles.statusBadgeNotStartedText}>Not Started</span>
-                    </div>
-                  )}
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </div>
 
