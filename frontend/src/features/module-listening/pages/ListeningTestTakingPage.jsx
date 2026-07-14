@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import styles from './ListeningTestTakingPage.module.css';
 
 export default function ListeningTestTakingPage() {
   const navigate = useNavigate();
-  const [currentQuestion, setCurrentQuestion] = useState(1);
+  const { part } = useParams();
+  
+  // Initialize currentQuestion based on the requested part
+  const initialQuestion = () => {
+    if (part === 'part2') return 14;
+    if (part === 'part3') return 15;
+    if (part === 'part4') return 16;
+    return 1; // part1 or full
+  };
+
+  const [currentQuestion, setCurrentQuestion] = useState(initialQuestion());
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const totalQuestions = 17;
 
@@ -55,7 +65,7 @@ export default function ListeningTestTakingPage() {
 
   const handleConfirmSubmit = () => {
     setShowSubmitModal(false);
-    navigate('/listening/overview');
+    navigate('/listening/tests');
   };
 
   return (
