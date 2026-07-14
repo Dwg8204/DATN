@@ -13,9 +13,9 @@ import TestListPage from '../pages/TestListPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingRoutes } from '../features/writing-test/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
-import Part1GrammarPage from '../pages/Part1GrammarPage';
-import ListeningTestTakingPage from '../features/module-listening/pages/ListeningTestTakingPage';
 import { listeningRoutes } from '../features/module-listening/listeningRoutes';
+import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
+import ListeningTestTakingPage from '../features/module-listening/pages/ListeningTestTakingPage';
 
 export const appRoutes = [
   {
@@ -84,14 +84,5 @@ export const appRoutes = [
       },
     ],
   },
-  {
-    path: '/:skill/test/:part',
-    element: <TestLayout />,
-    children: [
-      {
-        index: true,
-        element: <Part1GrammarPage />,
-      },
-    ],
-  },
+  ...grammarVocabRoutes,
 ];

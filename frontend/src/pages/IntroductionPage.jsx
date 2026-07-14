@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
 
 const skillConfigs = {
@@ -30,6 +30,13 @@ const skillConfigs = {
     information:
       'This test consists of 4 parts.\nThe tasks become more difficult as the test progresses.\nThe test clock will show you when there are 10 minutes and 5 minutes remaining.',
   },
+  'grammar-vocab': {
+    title: 'APTIS GENERAL GRAMMAR & VOCABULARY',
+    time: 'Time: 25 min',
+    instructions: 'Answer all the questions.\nYou can change your answers at any time during the test.',
+    information:
+      'This test consists of 2 parts.\nPart 1 focuses on grammar and Part 2 focuses on vocabulary.\nThe test clock will show you when there are 10 minutes and 5 minutes remaining.',
+  }
 };
 
 export default function IntroductionPage({
@@ -43,6 +50,7 @@ export default function IntroductionPage({
 }) {
   const navigate = useNavigate();
   const { skill } = useParams();
+  const [searchParams] = useSearchParams();
 
   // Use props first, then fall back to skill config from URL params
   const config = skillConfigs[skill] || skillConfigs.reading;
@@ -55,7 +63,14 @@ export default function IntroductionPage({
     if (onStartTest) {
       onStartTest();
     } else if (skill) {
-      navigate(`/${skill}/test`);
+      const mode = searchParams.get('mode') || 'part1';
+      const testId = searchParams.get('testId');
+      
+      if (mode === 'full') {
+        navigate(`/${skill}/test/part1${testId ? `?testId=${testId}&isFull=true` : '?isFull=true'}`);
+      } else {
+        navigate(`/${skill}/test/${mode}${testId ? `?testId=${testId}` : ''}`);
+      }
     }
   };
 

@@ -1,56 +1,34 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import TestFooter from '../components/layout/TestFooter';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import TestFooter from '../../../components/layout/TestFooter';
+import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
+import { PART1_QUESTIONS as MOCK_QUESTIONS } from '../data/part1MockData';
 import styles from './Part1GrammarPage.module.css';
 
-const MOCK_QUESTIONS = [
-  {
-    id: 1,
-    text: 'Participants in the Learner Persistence study were all drawn from the same',
-    options: ['age group.', 'geographical area.', 'socio-economic level.'],
-  },
-  {
-    id: 2,
-    text: 'The study showed that when starting their course, older students were most concerned about',
-    options: ['effects on their home life.', 'implications for their future career.', 'financial constraints.'],
-  },
-  {
-    id: 3,
-    text: 'What was the main reason given for students dropping out?',
-    options: ['lack of time.', 'difficulty of the course.', 'personal health issues.'],
-  },
-  {
-    id: 4,
-    text: 'Most students found the support from tutors to be',
-    options: ['very helpful.', 'somewhat helpful.', 'not helpful at all.'],
-  },
-  {
-    id: 5,
-    text: 'The university plans to introduce',
-    options: ['more online courses.', 'higher tuition fees.', 'stricter attendance rules.'],
-  },
-  {
-    id: 6,
-    text: 'Which group of students showed the highest persistence?',
-    options: ['part-time students.', 'full-time students.', 'international students.'],
-  }
-];
+
 
 export default function Part1GrammarPage() {
-  const { skill, part } = useParams(); // e.g., skill = 'grammar-vocab', part = 'part1'
-  
+  const { skill = 'grammar-vocab' } = useParams(); 
+  const part = 'part1';
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const testId = searchParams.get('testId');
+  const isFullTest = searchParams.get('isFull') === 'true';
+
   // Format dynamic titles
   const formattedPart = part ? part.replace(/([a-zA-Z]+)(\d+)/, (m, p1, p2) => `${p1.charAt(0).toUpperCase() + p1.slice(1)} ${p2}`) : 'Part 1';
   const formattedSkill = skill ? skill.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Grammar';
 
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState({});
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   const itemsPerPage = 3;
   const totalPages = Math.ceil(MOCK_QUESTIONS.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentQuestions = MOCK_QUESTIONS.slice(startIndex, startIndex + itemsPerPage);
+  const currentPageQuestionIds = currentQuestions.map(q => q.id);
 
   const handleOptionSelect = (questionId, optionIndex) => {
     setAnswers(prev => ({
@@ -66,6 +44,35 @@ export default function Part1GrammarPage() {
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage(p => p - 1);
   };
+
+  const handleSubmit = () => {
+    setShowSubmitModal(true);
+  };
+
+  const handleConfirmSubmit = () => {
+    setShowSubmitModal(false);
+    if (isFullTest) {
+      // Logic for GrammarVocab: Part 1 -> Part 2
+      if (part === 'part1') {
+        navigate(`/${skill}/test/part2?testId=${testId}&isFull=true`);
+      } else {
+        navigate(`/${skill}/test-result?testId=${testId}`); // Final submit
+      }
+    } else {
+      navigate(`/${skill}/test-result?testId=${testId}`);
+    }
+  };
+
+  const handleCloseSubmit = () => {
+    setShowSubmitModal(false);
+  };
+
+  const getPageOfQuestion = (questionId) => {
+    const index = MOCK_QUESTIONS.findIndex(q => q.id === questionId);
+    return Math.floor(index / itemsPerPage) + 1;
+  };
+
+  const submitLabel = (isFullTest && part === 'part1') ? 'Next Part' : 'Submit';
 
   return (
     <div className={styles.page}>
@@ -115,12 +122,22 @@ export default function Part1GrammarPage() {
 
       <TestFooter 
         partLabel={formattedPart} 
-        questionCount={totalPages} 
-        activeQuestion={currentPage}
-        onQuestionClick={(page) => setCurrentPage(page)}
+        questions={MOCK_QUESTIONS}
+        answeredIds={Object.keys(answers)}
+        currentPageQuestionIds={currentPageQuestionIds}
+        onQuestionClick={(questionId) => {
+          const page = getPageOfQuestion(questionId);
+          setCurrentPage(page);
+        }}
         onPrevClick={handlePrev}
         onNextClick={handleNext}
-        onSubmitClick={() => alert('Submit clicked!')}
+        onSubmitClick={handleSubmit}
+        submitLabel={submitLabel}
+      />
+      <SubmitModal 
+        isOpen={showSubmitModal} 
+        onBack={handleCloseSubmit} 
+        onNext={handleConfirmSubmit} 
       />
     </div>
   );
