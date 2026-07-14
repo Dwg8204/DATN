@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
+import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import styles from './ListeningTestTakingPage.module.css';
 
 export default function ListeningTestTakingPage() {
@@ -237,23 +238,11 @@ export default function ListeningTestTakingPage() {
         onNextClick={handleNext}
         onSubmitClick={handleSubmitClick}
       />
-
-      {showSubmitModal && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.submitModal}>
-            <p className={styles.modalText}>
-              Are you sure you want to submit your test?<br/><br/>
-              If yes, press "Next" to continue.<br/>
-              If not, press "Back" to review your test.<br/><br/>
-              You will not be able to edit your test after submitting.
-            </p>
-            <div className={styles.modalActions}>
-              <button className={styles.backBtn} onClick={handleCloseSubmit}>Back</button>
-              <button className={styles.nextBtn} onClick={handleConfirmSubmit}>Next</button>
-            </div>
-          </div>
-        </div>
-      )}
+      <SubmitModal 
+        isOpen={showSubmitModal} 
+        onBack={handleCloseSubmit} 
+        onNext={handleConfirmSubmit} 
+      />
     </div>
   );
 }
