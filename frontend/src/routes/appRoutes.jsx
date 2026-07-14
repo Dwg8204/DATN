@@ -82,6 +82,10 @@ export const appRoutes = [
         index: true,
         element: <ListeningTestTakingPage />,
       },
+      {
+        path: ':part',
+        element: <ListeningTestTakingPage />,
+      },
     ],
   },
   ...grammarVocabRoutes,
