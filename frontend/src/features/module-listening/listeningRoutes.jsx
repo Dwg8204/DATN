@@ -9,7 +9,7 @@ import Part3ListeningPage from './pages/Part3ListeningPage';
 import Part4ListeningPage from './pages/Part4ListeningPage';
 import ListeningResultPage from './pages/ListeningResultPage';
 
-export const listeningRoutes = [
+export const listeningMainRoutes = [
   {
     path: 'listening/overview',
     element: <ListeningOverviewPage />,
@@ -25,7 +25,10 @@ export const listeningRoutes = [
   {
     path: 'listening/result',
     element: <ListeningResultPage />,
-  },
+  }
+];
+
+export const listeningTestRoutes = [
   {
     path: 'listening/test',
     element: <TestLayout />,

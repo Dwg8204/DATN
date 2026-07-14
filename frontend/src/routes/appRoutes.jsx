@@ -13,7 +13,7 @@ import TestListPage from '../pages/TestListPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingRoutes } from '../features/writing-test/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
-import { listeningRoutes } from '../features/module-listening/listeningRoutes';
+import { listeningMainRoutes, listeningTestRoutes } from '../features/module-listening/listeningRoutes';
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
 
 export const appRoutes = [
@@ -53,7 +53,7 @@ export const appRoutes = [
         path: ':skill/tests',
         element: <TestListPage />,
       },
-      ...listeningRoutes,
+      ...listeningMainRoutes,
       ...practiceRoutes,
       ...writingRoutes,
       ...chatbotRoutes,
@@ -73,5 +73,6 @@ export const appRoutes = [
       },
     ],
   },
+  ...listeningTestRoutes,
   ...grammarVocabRoutes,
 ];
