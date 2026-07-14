@@ -1,0 +1,15 @@
+export const PART1_QUESTIONS = [
+  { id: 1, text: "A doctor's secretary calls about a change to an appointment. What is changing?", options: ['The date', 'The time', 'The place'], answer: 1 },
+  { id: 2, text: "Two friends are discussing weekend plans. Where will they meet?", options: ['The park', 'The cinema', 'The café'], answer: 2 },
+  { id: 3, text: "A woman is calling a shop. What does she want to do?", options: ['Make a complaint', 'Place an order', 'Ask for directions'], answer: 1 },
+  { id: 4, text: "Two colleagues are talking. What is the problem?", options: ['The printer is broken', 'The meeting is cancelled', 'The report is missing'], answer: 0 },
+  { id: 5, text: "A man calls a hotel. What does he want to change?", options: ['His room type', 'His check-in date', 'His booking name'], answer: 1 },
+  { id: 6, text: "A teacher is speaking to students. What is the homework?", options: ['Write an essay', 'Read a chapter', 'Complete exercises'], answer: 2 },
+  { id: 7, text: "Two people discuss a film. How does the woman feel about it?", options: ['Disappointed', 'Excited', 'Indifferent'], answer: 0 },
+  { id: 8, text: "A news report mentions a traffic update. What is advised?", options: ['Take the bus', 'Use the bypass road', 'Leave early'], answer: 1 },
+  { id: 9, text: "A customer and shopkeeper are talking. What item is out of stock?", options: ['Blue jacket', 'Black shoes', 'Red bag'], answer: 2 },
+  { id: 10, text: "Two friends discuss travelling. What transport will they use?", options: ['Train', 'Car', 'Plane'], answer: 0 },
+  { id: 11, text: "A manager gives instructions. What should employees do first?", options: ['Send an email', 'Attend the briefing', 'Update the spreadsheet'], answer: 1 },
+  { id: 12, text: "A woman leaves a voicemail. What is her message about?", options: ['Rescheduling a meeting', 'Confirming a delivery', 'Asking for help'], answer: 0 },
+  { id: 13, text: "Two students discuss their project. What is still missing?", options: ['The conclusion', 'The introduction', 'The references'], answer: 2 },
+];

@@ -1,7 +1,7 @@
 .page {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 80px); /* Adjust based on header height */
+  min-height: calc(100vh - 80px);
   background: #FFFFFF;
 }
 
@@ -84,77 +84,17 @@
   gap: 24px;
 }
 
-.questionHeader {
-  display: flex;
-  gap: 16px;
-}
-
-.questionNumberBox {
-  background: #8ACEFF;
-  border: 1px solid #000;
-  border-radius: 5px;
-  padding: 4px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
-}
-
-.questionNumber {
-  font-weight: bold;
-  font-size: 14px;
-}
-
 .questionText {
   font-size: 18px;
   font-weight: bold;
-  color: #A11D33;
-}
-
-.optionsList {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-left: 48px;
-}
-
-.optionItem {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.optionBtn {
-  background: #FFF;
-  border: 1px solid #000;
-  border-radius: 5px;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.optionBtn:hover {
-  background: #E0E0E0;
-}
-
-.optionText {
-  font-size: 20px;
-  padding: 12px 24px;
-  background: #F3D5B5;
-  border-radius: 10px;
-  min-width: 200px;
+  color: #000;
 }
 
 .matchingList {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .matchItem {
@@ -163,64 +103,71 @@
   gap: 20px;
 }
 
-.speakerText {
-  font-size: 16px;
-  min-width: 100px;
-}
-
 .statementText {
   font-size: 16px;
   flex: 1;
 }
 
-.matchSelect {
+.dropdownContainer {
+  position: relative;
+  width: 250px;
+}
+
+.dropdownTrigger {
   padding: 12px 24px;
   border: 1px solid #418FC6;
   border-radius: 4px;
   font-size: 16px;
-  min-width: 250px;
-}
-
-.multipleChoiceGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.questionSubText {
-  font-size: 18px;
-  font-weight: bold;
-  color: #000;
-}
-
-.radioOptionsList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.radioOptionItem {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  background: #FFF;
   cursor: pointer;
-}
-
-.radioCircle {
-  width: 20px;
-  height: 20px;
-  border: 1px solid #BDBDBD;
-  border-radius: 50%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 }
 
-.radioOptionText {
-  font-size: 16px;
-  color: #000;
+.hasValue {
+  background: #F3D5B5;
+  border-color: #A11D33;
 }
 
+.dropdownPlaceholder {
+  color: #666;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #FFF;
+  border: 1px solid #E0E0E0;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  z-index: 10;
+  margin-top: 4px;
+}
+
+.dropdownItem {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover {
+  background: #F9F9F9;
+}
+
+.dropdownItemSelected {
+  background: #F3D5B5;
+  font-weight: bold;
+}
+
+/* Audio Player CSS (reused) */
 .audioMock {
   width: 100%;
   max-width: 600px;
@@ -274,7 +221,7 @@
 .volumeFill {
   width: 60%;
   height: 100%;
-  background: #E7BC91; /* orange slider */
+  background: #E7BC91;
 }
 
 .playbackControls {
@@ -286,7 +233,7 @@
 .playBtn {
   width: 50px;
   height: 50px;
-  background: #E01E37; /* red circle */
+  background: #E01E37;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -310,54 +257,4 @@
   border: 1px solid #000;
   border-radius: 4px;
   padding: 8px 12px;
-}
-
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.submitModal {
-  width: 464px;
-  max-width: 90%;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  text-align: center;
-}
-
-.modalText {
-  color: #000000;
-  font-size: 16px;
-  line-height: 1.5;
-  text-align: left;
-}
-
-.modalActions {
-  display: flex;
-  justify-content: space-between;
-  padding: 0 40px;
-  margin-top: 16px;
-}
-
-.backBtn, .nextBtn {
-  padding: 12px 40px;
-  background: #000000;
-  color: #ffffff;
-  border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
 }
