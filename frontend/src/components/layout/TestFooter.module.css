@@ -34,6 +34,18 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  max-width: 60vw;
+}
+
+.questionList::-webkit-scrollbar {
+  height: 6px;
+}
+
+.questionList::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
 }
 
 .questionNode {
@@ -47,10 +59,17 @@
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
-.questionNodeActive {
+.nodeCurrentPage {
   background: #0095FF;
+  color: white;
+  outline: 2px solid black;
+}
+
+.nodeAnswered {
+  background: #F5A623;
   color: white;
 }
 

@@ -2,13 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CommentSection from '../components/shared/CommentSection/CommentSection';
 import styles from './TestListPage.module.css';
-
-// Fake data for tabs - can be made dynamic per skill later
-const TABS = [
-  { id: 'part1', label: 'Part 1' },
-  { id: 'part2', label: 'Part 2' },
-  { id: 'full', label: 'Full test' },
-];
+import { GRAMMAR_VOCAB_CONFIG } from '../features/grammar_vocab/config/grammarVocabConfig';
 
 // Fake data for tests
 const MOCK_TESTS = [
@@ -56,6 +50,15 @@ export default function TestListPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('part1');
 
+  // Helper to get config based on skill
+  const getConfig = () => {
+    if (skill === 'grammar-vocab') return GRAMMAR_VOCAB_CONFIG;
+    // fallback config
+    return { tabs: [{ id: 'part1', label: 'Part 1' }] };
+  };
+
+  const currentConfig = getConfig();
+
   // Helper to format skill name nicely
   const formatSkillName = (skillStr) => {
     if (!skillStr) return 'TEST';
@@ -65,8 +68,8 @@ export default function TestListPage() {
   const title = formatSkillName(skill);
 
   const handleDoTest = (testId) => {
-    // Navigate to the generic introduction page
-    navigate(`/${skill}/introduction`);
+    // Navigate to the generic introduction page with testId and mode in query params
+    navigate(`/${skill}/introduction?testId=${testId}&mode=${activeTab}`);
   };
 
   return (
@@ -85,7 +88,7 @@ export default function TestListPage() {
           </div>
         </div>
         <div className={styles.tabsContainer}>
-          {TABS.map((tab) => (
+          {currentConfig.tabs.map((tab) => (
             <div
               key={tab.id}
               className={`${styles.tabItem} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}

@@ -3,29 +3,37 @@ import styles from './TestFooter.module.css';
 
 export default function TestFooter({ 
   partLabel = 'Part 1', 
-  questionCount = 10,
-  activeQuestion = 1,
+  questions = [],
+  answeredIds = [],
+  currentPageQuestionIds = [],
   onQuestionClick,
   onPrevClick,
   onNextClick,
-  onSubmitClick
+  onSubmitClick,
+  submitLabel = 'Submit'
 }) {
-  const questions = Array.from({ length: questionCount }, (_, i) => i + 1);
-
   return (
     <div className={styles.testFooter}>
       <div className={styles.leftSection}>
         <div className={styles.partLabel}>{partLabel}</div>
         <div className={styles.questionList}>
-          {questions.map((qNum) => (
-            <div 
-              key={qNum} 
-              className={`${styles.questionNode} ${activeQuestion === qNum ? styles.questionNodeActive : ''}`}
-              onClick={() => onQuestionClick && onQuestionClick(qNum)}
-            >
-              <span className={styles.questionNodeText}>{qNum}</span>
-            </div>
-          ))}
+          {questions.map((q) => {
+            const isAnswered = answeredIds.includes(String(q.id));
+            const isOnCurrentPage = currentPageQuestionIds.includes(q.id);
+            return (
+              <div 
+                key={q.id} 
+                className={`
+                  ${styles.questionNode} 
+                  ${isOnCurrentPage ? styles.nodeCurrentPage : ''}
+                  ${isAnswered && !isOnCurrentPage ? styles.nodeAnswered : ''}
+                `}
+                onClick={() => onQuestionClick && onQuestionClick(q.id)}
+              >
+                <span className={styles.questionNodeText}>{q.id}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
       
@@ -47,7 +55,7 @@ export default function TestFooter({
           </button>
         </div>
         <button className={styles.submitBtn} onClick={onSubmitClick}>
-          <span className={styles.submitBtnText}>Submit</span>
+          <span className={styles.submitBtnText}>{submitLabel}</span>
         </button>
       </div>
     </div>

@@ -1,0 +1,1 @@
+export const PART1_QUESTIONS = Array.from({ length: 25 }).map((_, i) => ({ id: i + 1, text: `Mock Question ${i + 1} for Part 1`, options: [`Option A for ${i + 1}`, `Option B for ${i + 1}`, `Option C for ${i + 1}`], correctAnswer: 0 }));
