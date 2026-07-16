@@ -13,6 +13,7 @@
   width: 100%;
   margin: 0 auto;
   padding: 40px 72px 120px;
+  box-sizing: border-box;
 }
 
 .headerBlock {
@@ -64,13 +65,16 @@
 .matchingArea {
   display: flex;
   gap: 40px;
+  flex-wrap: wrap;
 }
 
 .targetWordsColumn {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  width: 500px;
+  width: 100%;
+  max-width: 500px;
+  min-width: 0;
 }
 
 .matchingRow {

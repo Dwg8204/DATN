@@ -3,10 +3,12 @@
   padding-right: 72px;
   padding-top: 50px;
   padding-bottom: 50px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 50px;
   background: #FFFEFC;
+  overflow-x: hidden;
 }
 
 .section {
@@ -14,7 +16,8 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 32px;
-  padding-right: 72px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .titleContainer {

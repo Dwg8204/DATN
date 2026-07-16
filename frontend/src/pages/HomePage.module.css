@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  overflow-x: hidden;
 }
 
 /* Skills Section */
@@ -24,9 +25,19 @@
   align-self: stretch;
   display: flex;
   align-items: center;
-  margin-left: 72px;
-  margin-right: 72px;
+  padding-left: 72px;
+  padding-right: 72px;
+  box-sizing: border-box;
   gap: 24px;
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 768px) {
+  .skillsGrid {
+    flex-wrap: wrap;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
 }
 
 /* Review Section */
@@ -43,7 +54,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-right: 72px;
+  padding: 0 72px;
+  box-sizing: border-box;
   gap: 32px;
 }
 
@@ -51,7 +63,6 @@
   color: #A11D33;
   font-size: 40px;
   font-weight: bold;
-  margin-left: 72px;
 }
 
 .reviewList {
@@ -60,6 +71,7 @@
   align-items: center;
   padding-top: 20px;
   padding-bottom: 20px;
-  margin-left: 72px;
   gap: 24px;
+  flex-wrap: wrap;
+  box-sizing: border-box;
 }

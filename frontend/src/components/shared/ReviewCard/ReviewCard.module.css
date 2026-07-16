@@ -14,8 +14,8 @@
 .userInfo {
   display: flex;
   align-items: center;
-  margin-right: 241px;
   gap: 13px;
+  width: 100%;
 }
 
 .avatar {
@@ -34,7 +34,6 @@
 .userName {
   color: #000000;
   font-size: 16px;
-  margin-right: 54px;
 }
 
 .userDate {
@@ -45,7 +44,6 @@
 .ratingRow {
   display: flex;
   align-items: center;
-  margin-right: 239px;
   gap: 8px;
 }
 
@@ -63,5 +61,6 @@
 .comment {
   color: #000000;
   font-size: 14px;
-  width: 387px;
+  width: 100%;
+  max-width: 387px;
 }

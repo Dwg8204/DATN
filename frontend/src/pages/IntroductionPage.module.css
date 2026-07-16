@@ -5,6 +5,9 @@
   align-items: center;
   padding-top: 120px;
   padding-bottom: 120px;
+  padding-left: 24px;
+  padding-right: 24px;
+  box-sizing: border-box;
 }
 
 .card {
@@ -16,6 +19,9 @@
   border: 1px solid #000000;
   padding: 32px 40px;
   gap: 40px;
+  width: 100%;
+  max-width: 780px;
+  box-sizing: border-box;
 }
 
 .cardContent {
@@ -36,8 +42,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-left: 268px;
-  padding-right: 268px;
+  width: 100%;
 }
 
 .title {
@@ -49,14 +54,13 @@
 .time {
   color: #000000;
   font-size: 16px;
-  margin-right: 685px;
 }
 
 .infoBlock {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-right: 359px;
+  width: 100%;
   gap: 16px;
 }
 
@@ -64,7 +68,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-right: 189px;
+  width: 100%;
   gap: 16px;
 }
 
@@ -77,21 +81,22 @@
 .infoText {
   color: #000000;
   font-size: 16px;
-  width: 417px;
+  width: 100%;
+  max-width: 417px;
 }
 
 .infoTextWide {
   color: #000000;
   font-size: 16px;
-  width: 587px;
+  width: 100%;
+  max-width: 587px;
 }
 
 .actionBlock {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-left: 213px;
-  padding-right: 213px;
+  width: 100%;
   gap: 24px;
 }
 
