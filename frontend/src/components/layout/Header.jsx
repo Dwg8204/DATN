@@ -7,9 +7,9 @@ const navItems = [
     to: '/listening/overview',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/p9xrd9hn_expires_30_days.png',
     dropdown: [
-      { label: 'Overview', to: '/listening/overview' },
-      { label: 'Feed', to: '/listening/feed' },
-      { label: 'Test', to: '/listening/tests' },
+      { label: 'Listening Overview', to: '/listening/overview' },
+      { label: 'Listening Feed', to: '/listening/feed' },
+      { label: 'Listening Test', to: '/listening/tests' },
     ],
   },
   {

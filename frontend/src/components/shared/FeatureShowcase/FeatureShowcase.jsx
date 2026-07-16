@@ -14,16 +14,18 @@ export default function FeatureShowcase({
       <div className={styles.content}>
         <span className={styles.sectionTitle}>{sectionTitle}</span>
         <div className={styles.showcase}>
-          <span className={styles.featureTitle}>{featureTitle}</span>
+          <div className={styles.textWrap}>
+            <span className={styles.featureTitle}>{featureTitle}</span>
+            <span className={styles.featureDescription}>
+              {featureDescription}
+            </span>
+          </div>
           <div className={styles.imageWrap}>
             <img
               src={featureImage}
               alt={featureTitle}
               className={styles.featureImage}
             />
-            <span className={styles.featureDescription}>
-              {featureDescription}
-            </span>
           </div>
         </div>
       </div>

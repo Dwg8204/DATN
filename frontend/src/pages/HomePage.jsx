@@ -29,7 +29,7 @@ const skillCards = [
     path: '/speaking',
   },
   {
-    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651651/Gemini_Generated_Image_vq8zivq8zivq8ziv_qyypvu.png',
+    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1784102681/Gemini_Generated_Image_mc1u72mc1u72mc1u_1111_rys0cc.png',
     alt: 'Grammar & Vocab',
     path: '/grammar',
   },

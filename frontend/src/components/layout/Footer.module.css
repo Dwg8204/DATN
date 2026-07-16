@@ -5,6 +5,8 @@
   align-items: center;
   background: #FFF9F1;
   padding: 52px 72px;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .footerLeft {
@@ -100,8 +102,7 @@
   border-radius: 50px;
   border: none;
   padding: 8px 38px;
-  margin-bottom: 93px;
-  margin-left: 127px;
+  margin-bottom: 24px;
   text-align: left;
   cursor: pointer;
 }
