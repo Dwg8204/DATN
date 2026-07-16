@@ -1,0 +1,34 @@
+{
+  "words": [
+    {
+      "id": "v-001",
+      "word": "innovation",
+      "pronunciation": "/ˌɪnəˈveɪʃən/",
+      "meaning": "sự đổi mới, sự cách tân",
+      "type": "noun",
+      "sourceTest": "APTIS-R-001",
+      "dateAdded": "2026-07-15",
+      "memoryLevel": 2
+    },
+    {
+      "id": "v-002",
+      "word": "commute",
+      "pronunciation": "/kəˈmjuːt/",
+      "meaning": "đi làm (quãng đường dài)",
+      "type": "verb",
+      "sourceTest": "APTIS-R-001",
+      "dateAdded": "2026-07-14",
+      "memoryLevel": 1
+    },
+    {
+      "id": "v-003",
+      "word": "cumbersome",
+      "pronunciation": "/ˈkʌmbərsəm/",
+      "meaning": "cồng kềnh, vướng víu",
+      "type": "adjective",
+      "sourceTest": "APTIS-R-001",
+      "dateAdded": "2026-07-13",
+      "memoryLevel": 3
+    }
+  ]
+}

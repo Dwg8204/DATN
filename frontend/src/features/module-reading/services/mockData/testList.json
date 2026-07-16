@@ -1,0 +1,37 @@
+{
+  "tests": [
+    {
+      "id": "apt-r-001",
+      "title": "APTIS Reading - General Practice 1",
+      "type": "full",
+      "level": "B2",
+      "duration": 35,
+      "totalQuestions": 25,
+      "thumbnail": "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=300&h=200",
+      "attempts": 1250,
+      "rating": 4.8
+    },
+    {
+      "id": "apt-r-002",
+      "title": "APTIS Reading - Environment & Nature",
+      "type": "dễ lẻ",
+      "level": "B1",
+      "duration": 35,
+      "totalQuestions": 25,
+      "thumbnail": "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&q=80&w=300&h=200",
+      "attempts": 840,
+      "rating": 4.5
+    },
+    {
+      "id": "apt-r-003",
+      "title": "APTIS Reading - Technology in Future",
+      "type": "full",
+      "level": "C1",
+      "duration": 35,
+      "totalQuestions": 25,
+      "thumbnail": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=300&h=200",
+      "attempts": 3200,
+      "rating": 4.9
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "apt-r-001",
+  "title": "APTIS Reading - General Practice 1",
+  "part1": {
+    "passage": "Dear John, \n\nI am writing to tell you about my new job. I started working at the local library last week and I am really [1] it so far. The staff are all very [2] and have been helping me learn the ropes. \n\nMy main responsibility is to [3] the books on the shelves, but I also help people find what they are looking for. Yesterday, a lady came in looking for a book on gardening, and I was able to find exactly what she needed. She was very [4] and even thanked me with a smile. \n\nI hope everything is going well with you. Let's catch up soon!\n\nBest,\nSarah",
+    "questions": [
+      { "id": "p1-q1", "position": 1, "options": ["enjoying", "hating", "ignoring"], "answer": "enjoying" },
+      { "id": "p1-q2", "position": 2, "options": ["mean", "friendly", "lazy"], "answer": "friendly" },
+      { "id": "p1-q3", "position": 3, "options": ["throw", "organize", "read"], "answer": "organize" },
+      { "id": "p1-q4", "position": 4, "options": ["angry", "sad", "grateful"], "answer": "grateful" }
+    ]
+  },
+  "part2": {
+    "passageWithGaps": "Making a cup of tea is a simple process. First, you need to boil some water. [1] . Next, place a teabag in your favorite mug. [2] . Then, carefully pour the hot water into the mug. [3] . Finally, add milk or sugar if you like, and enjoy your tea!",
+    "sentences": [
+      { "id": "s1", "content": "You can use a kettle or a pot on the stove.", "correctPosition": 1 },
+      { "id": "s2", "content": "Let the tea steep for a few minutes to develop its flavor.", "correctPosition": 3 },
+      { "id": "s3", "content": "Choose a flavor that you enjoy, like chamomile or earl grey.", "correctPosition": 2 },
+      { "id": "s4", "content": "Coffee is also a popular hot beverage." }
+    ]
+  },
+  "part3": {
+    "passage": "Four people discuss their views on remote work:\n\nAlice: I love working from home. I save so much time on my commute, and I find it easier to concentrate without the distractions of the office.\n\nBob: I miss the social interaction of the office. It's hard to build relationships with colleagues when you only see them on video calls.\n\nCharlie: I find it difficult to separate my work life from my personal life when I work from home. I often end up working longer hours.\n\nDavid: Remote work has been great for my productivity. I can set my own schedule and work when I feel most energetic.",
+    "speakers": ["Alice", "Bob", "Charlie", "David"],
+    "questions": [
+      { "id": "p3-q1", "statement": "Who struggles to maintain a work-life balance?", "answer": "Charlie" },
+      { "id": "p3-q2", "statement": "Who values the time saved by not traveling to an office?", "answer": "Alice" },
+      { "id": "p3-q3", "statement": "Who feels that remote work negatively impacts teamwork and connection?", "answer": "Bob" },
+      { "id": "p3-q4", "statement": "Who appreciates the flexibility to work during their most productive times?", "answer": "David" }
+    ]
+  },
+  "part4": {
+    "paragraphs": [
+      { "id": "para1", "label": "Paragraph A", "content": "The history of the bicycle is a fascinating journey of innovation and adaptation. Early precursors to the modern bicycle, such as the 'dandy horse', lacked pedals and required the rider to push along the ground with their feet. These early designs were cumbersome and impractical for everyday use." },
+      { "id": "para2", "label": "Paragraph B", "content": "The invention of pedals and the chain drive revolutionized bicycle design. These advancements allowed riders to propel themselves forward more efficiently and achieve greater speeds. The 'penny-farthing', with its large front wheel, became a popular albeit dangerous iteration." },
+      { "id": "para3", "label": "Paragraph C", "content": "The development of the 'safety bicycle' in the late 19th century marked a turning point. Featuring equal-sized wheels and a chain drive, it offered a much safer and more comfortable ride. This design remains the foundation of modern bicycles." }
+    ],
+    "headings": [
+      { "id": "h1", "text": "The Evolution of Bicycle Safety", "correctParagraph": "para3" },
+      { "id": "h2", "text": "Early Attempts at Human-Powered Transport", "correctParagraph": "para1" },
+      { "id": "h3", "text": "The Impact of Pedals and Chains", "correctParagraph": "para2" },
+      { "id": "h4", "text": "Bicycles in the Modern Era" }
+    ]
+  }
+}
