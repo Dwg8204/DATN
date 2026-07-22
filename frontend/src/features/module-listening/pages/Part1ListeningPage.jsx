@@ -147,7 +147,7 @@ export default function Part1ListeningPage() {
                   </button>
                 </div>
                 <div className={styles.speedControl}>
-                  Tốc độ phát: 1x
+                  Playback speed: 1x
                 </div>
               </div>
             </div>

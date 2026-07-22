@@ -11,7 +11,7 @@ function AIChatbotPage() {
   const [history, setHistory] = useState([
     { role: 'assistant', text: 'Xin chào, tôi là trợ lý ảo AptiMate.' },
     { role: 'user', text: 'Tôi muốn ôn thi writing.' },
-    { role: 'assistant', text: 'Hãy bắt đầu bằng việc luyện cấu trúc câu và từ vựng theo chủ đề.' },
+    { role: 'assistant', text: 'Start by practising sentence structures and topic-based vocabulary.' },
   ]);
 
   const handleSend = (event) => {
@@ -30,7 +30,7 @@ function AIChatbotPage() {
       <div className="container">
         <div className="page-hero surface">
           <h1 className="section-title">AI Chatbot</h1>
-          <p className="section-description">Module hội thoại độc lập để tích hợp trợ lý học tập.</p>
+          <p className="section-description">A dedicated conversation module for the learning assistant.</p>
         </div>
 
         <div className="surface chatbot-panel">
@@ -42,10 +42,10 @@ function AIChatbotPage() {
 
           <form className="chat-form" onSubmit={handleSend}>
             <CustomInput
-              label="Nhập câu hỏi"
+              label="Your question"
               value={message}
               onChange={(event) => setMessage(event.target.value)}
-              placeholder="Hỏi về ngữ pháp, từ vựng, chiến lược làm bài..."
+              placeholder="Ask about grammar, vocabulary, or test strategies..."
             />
             <Button type="submit">Gửi</Button>
           </form>

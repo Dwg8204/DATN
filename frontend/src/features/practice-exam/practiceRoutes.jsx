@@ -9,7 +9,7 @@ function PracticeExamPage() {
       <div className="container">
         <div className="page-hero surface">
           <h1 className="section-title">Practice Exam</h1>
-          <p className="section-description">Danh sách đề luyện đọc/nghe được tách riêng theo module.</p>
+          <p className="section-description">Reading and listening practice tests are organised by module.</p>
         </div>
 
         <div className="feature-grid">

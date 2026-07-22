@@ -58,6 +58,8 @@ export default function TestListPage() {
   };
 
   const currentConfig = getConfig();
+  const tests = currentConfig.tests || MOCK_TESTS;
+  const filteredTests = tests.filter((test) => !test.tabId || test.tabId === activeTab);
 
   // Helper to format skill name nicely
   const formatSkillName = (skillStr) => {
@@ -119,7 +121,7 @@ export default function TestListPage() {
 
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
-              {MOCK_TESTS.map((test) => (
+              {filteredTests.map((test) => (
                 <div key={test.id} className={styles.testCard}>
                   <div className={styles.cardTop}>
                     <div className={styles.cardTitle}>{test.title}</div>

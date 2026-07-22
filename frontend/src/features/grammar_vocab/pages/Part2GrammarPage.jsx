@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { PART2_WORD_SETS } from '../data/part2MockData';
+import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
 import styles from './Part2GrammarPage.module.css';
 
 export default function Part2GrammarPage() {
@@ -10,18 +11,23 @@ export default function Part2GrammarPage() {
   const part = 'part2';
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const testId = searchParams.get('testId');
+  const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  startGrammarVocabSession(testId, isFullTest ? 'full' : 'part2');
 
   const formattedPart = part ? part.replace(/([a-zA-Z]+)(\d+)/, (m, p1, p2) => `${p1.charAt(0).toUpperCase() + p1.slice(1)} ${p2}`) : 'Part 2';
   const formattedSkill = skill ? skill.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Vocabulary';
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState(() => getGrammarVocabAnswers('part2'));
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
 
   const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    saveGrammarVocabAnswers('part2', answers);
+  }, [answers]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -72,11 +78,7 @@ export default function Part2GrammarPage() {
 
   const handleConfirmSubmit = () => {
     setShowSubmitModal(false);
-    if (isFullTest) {
-      navigate(`/${skill}/test-result?testId=${testId}`); 
-    } else {
-      navigate(`/${skill}/test-result?testId=${testId}`);
-    }
+    navigate(`/${skill}/result?testId=${testId}&isFull=${isFullTest}&part=2`);
   };
 
   const handleCloseSubmit = () => {

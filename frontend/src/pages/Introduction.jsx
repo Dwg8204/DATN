@@ -3,10 +3,9 @@ export default function Introduction() {
     <section className="page-section">
       <div className="container">
         <div className="surface intro-card">
-          <h1 className="section-title">Giới thiệu cấu trúc Aptis</h1>
+          <h1 className="section-title">Introduction to the Aptis test</h1>
           <p className="section-description">
-            Trang này là nơi trình bày quy trình làm bài, cấu trúc đề thi và luồng học tập trước khi người dùng đi vào các
-            module practice, writing và chatbot.
+            Learn about the test process, exam structure, and study flow before starting each skill module.
           </p>
         </div>
       </div>

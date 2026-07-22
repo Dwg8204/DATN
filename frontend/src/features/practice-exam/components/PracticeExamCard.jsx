@@ -5,8 +5,8 @@ export default function PracticeExamCard({ title, duration, level }) {
     <article className="feature-card surface">
       <span className="feature-card__badge">{level}</span>
       <h3>{title}</h3>
-      <p>Thời lượng: {duration}</p>
-      <Button size="sm">Bắt đầu</Button>
+      <p>Duration: {duration}</p>
+      <Button size="sm">Start</Button>
     </article>
   );
 }

@@ -7,7 +7,7 @@ export default function NotFoundPage() {
       <div className="container">
         <div className="surface not-found-card">
           <h1 className="section-title">404</h1>
-          <p className="section-description">Trang bạn tìm không tồn tại.</p>
+          <p className="section-description">The page you are looking for does not exist.</p>
           <Button as={Link} to="/">Về trang chủ</Button>
         </div>
       </div>
