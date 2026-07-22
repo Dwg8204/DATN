@@ -9,6 +9,7 @@ import ForgotPasswordEmailPage from '../features/auth/pages/ForgotPasswordEmailP
 import ForgotPasswordOTPPage from '../features/auth/pages/ForgotPasswordOTPPage';
 import ForgotPasswordResetPage from '../features/auth/pages/ForgotPasswordResetPage';
 import GrammarVocabOverviewPage from '../features/grammar_vocab/pages/GrammarVocabOverviewPage';
+import GrammarVocabResultPage from '../features/grammar_vocab/pages/GrammarVocabResultPage';
 import TestListPage from '../pages/TestListPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingRoutes } from '../features/writing-test/writingRoutes';
@@ -48,6 +49,10 @@ export const appRoutes = [
       {
         path: 'grammar-vocab/overview',
         element: <GrammarVocabOverviewPage />,
+      },
+      {
+        path: 'grammar-vocab/result',
+        element: <GrammarVocabResultPage />,
       },
       {
         path: ':skill/tests',

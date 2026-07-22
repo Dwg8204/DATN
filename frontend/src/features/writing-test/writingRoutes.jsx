@@ -12,11 +12,11 @@ function WritingTestPage() {
       <div className="container">
         <div className="page-hero surface">
           <h1 className="section-title">Writing Test</h1>
-          <p className="section-description">Khung nhập bài viết và đếm từ được đóng gói riêng cho module Writing.</p>
+          <p className="section-description">The writing editor and word counter are provided by the Writing module.</p>
         </div>
 
         <div className="surface writing-panel">
-          <CustomInput label="Tiêu đề bài viết" value={title} onChange={(event) => setTitle(event.target.value)} />
+          <CustomInput label="Essay title" value={title} onChange={(event) => setTitle(event.target.value)} />
           <label className="form-field">
             <span className="form-field__label">Bài làm</span>
             <textarea
@@ -24,11 +24,11 @@ function WritingTestPage() {
               rows="10"
               value={answer}
               onChange={(event) => setAnswer(event.target.value)}
-              placeholder="Nhập bài làm của bạn..."
+              placeholder="Enter your answer..."
             />
           </label>
           <div className="writing-panel__meta">
-            <span>Số từ: {countWords(answer)}</span>
+            <span>Word count: {countWords(answer)}</span>
             <Button type="button">Nộp bài</Button>
           </div>
         </div>

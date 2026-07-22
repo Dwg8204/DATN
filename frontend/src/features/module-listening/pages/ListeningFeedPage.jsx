@@ -82,19 +82,19 @@ export default function ListeningFeedPage() {
           <div className={styles.popularGrid}>
             <PopularDocumentCard 
               skillName="WRITING" 
-              description="Tổng hợp bài mẫu APTIS Writing mới nhất. Cập nhật liên tục" 
+              description="Explore the latest Aptis Writing samples, updated regularly."
             />
             <PopularDocumentCard 
               skillName="READING" 
-              description="Tổng hợp bài mẫu APTIS Reading mới nhất. Cập nhật liên tục" 
+              description="Explore the latest Aptis Reading samples, updated regularly."
             />
             <PopularDocumentCard 
               skillName="LISTENING" 
-              description="Tổng hợp bài mẫu APTIS Listening mới nhất. Cập nhật liên tục" 
+              description="Explore the latest Aptis Listening samples, updated regularly."
             />
             <PopularDocumentCard 
               skillName="SPEAKING" 
-              description="Tổng hợp bài mẫu APTIS Speaking mới nhất. Cập nhật liên tục" 
+              description="Explore the latest Aptis Speaking samples, updated regularly."
             />
           </div>
         </div>

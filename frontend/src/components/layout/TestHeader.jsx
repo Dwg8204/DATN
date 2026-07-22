@@ -1,10 +1,46 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './TestHeader.module.css';
+import { getGrammarVocabRemainingSeconds } from '../../features/grammar_vocab/utils/grammarVocabSessionStorage';
 
-export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining = '23:30' }) {
+function formatRemainingTime(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
+  const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+  return `${minutes}:${seconds}`;
+}
+
+export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [showExitModal, setShowExitModal] = useState(false);
+  const isGrammarVocabTest = location.pathname.startsWith('/grammar-vocab/test/');
+  const [remainingSeconds, setRemainingSeconds] = useState(() => (
+    isGrammarVocabTest ? getGrammarVocabRemainingSeconds() : null
+  ));
+
+  useEffect(() => {
+    if (!isGrammarVocabTest) return undefined;
+
+    const updateTimer = () => {
+      const remaining = getGrammarVocabRemainingSeconds();
+      setRemainingSeconds(remaining);
+
+      if (remaining === 0) {
+        const testId = searchParams.get('testId') || '1';
+        const isFull = searchParams.get('isFull') === 'true';
+        const part = location.pathname.endsWith('/part2') ? '2' : '1';
+        navigate(`/grammar-vocab/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
+      }
+    };
+
+    updateTimer();
+    const intervalId = window.setInterval(updateTimer, 1000);
+    return () => window.clearInterval(intervalId);
+  }, [isGrammarVocabTest, location.pathname, navigate, searchParams]);
+
+  const displayedTime = timeRemaining
+    || (remainingSeconds === null ? '23:30' : formatRemainingTime(remainingSeconds));
 
   const handleExitClick = () => {
     setShowExitModal(true);
@@ -44,7 +80,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
                   <path d="M12 6V12L16 14" stroke="#131927" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <div className={styles.timeValue}>{timeRemaining}</div>
+            <div className={styles.timeValue}>{displayedTime}</div>
             </div>
           </div>
           <button className={styles.exitBtn} onClick={handleExitClick}>

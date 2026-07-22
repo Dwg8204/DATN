@@ -1,5 +1,6 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
+import { startGrammarVocabSession } from '../features/grammar_vocab/utils/grammarVocabSessionStorage';
 
 const skillConfigs = {
   reading: {
@@ -64,7 +65,11 @@ export default function IntroductionPage({
       onStartTest();
     } else if (skill) {
       const mode = searchParams.get('mode') || 'part1';
-      const testId = searchParams.get('testId');
+      const testId = searchParams.get('testId') || '1';
+
+      if (skill === 'grammar-vocab') {
+        startGrammarVocabSession(testId, mode, { force: true });
+      }
       
       if (mode === 'full') {
         navigate(`/${skill}/test/part1${testId ? `?testId=${testId}&isFull=true` : '?isFull=true'}`);

@@ -19,7 +19,7 @@ export default function ForgotPasswordOTPPage() {
           <div className={styles.formGroup}>
             <div className={styles.signupFormGroup}>
               <span className={styles.label} style={{ textAlign: 'center', marginBottom: '10px' }}>
-                Vui lòng nhập mã OTP đã được gửi về email của bạn
+                Enter the OTP code sent to your email address
               </span>
               <div className={styles.inputCol}>
                 <span className={styles.label} style={{ alignSelf: 'flex-start' }}>OTP Code</span>

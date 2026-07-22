@@ -6,7 +6,7 @@ export default function PopularDocumentCard({ skillName, subTitle, badgeText, de
     <div className={styles.cardContainer}>
       <div className={styles.cardHeader}>
         <div className={styles.titleSection}>
-          <span className={styles.mainTitle}>Tổng hợp đề thi APTIS {skillName.toUpperCase()}</span>
+          <span className={styles.mainTitle}>APTIS {skillName.toUpperCase()} PRACTICE TESTS</span>
           <span className={styles.subTitle}>{subTitle || 'chính xác kèm bài giải chi tiết'}</span>
         </div>
         <div className={styles.badge}>

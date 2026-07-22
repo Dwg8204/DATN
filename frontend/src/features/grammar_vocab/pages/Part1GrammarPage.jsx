@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { PART1_QUESTIONS as MOCK_QUESTIONS } from '../data/part1MockData';
+import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
 import styles from './Part1GrammarPage.module.css';
 
 
@@ -12,16 +13,21 @@ export default function Part1GrammarPage() {
   const part = 'part1';
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const testId = searchParams.get('testId');
+  const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  startGrammarVocabSession(testId, isFullTest ? 'full' : 'part1');
 
   // Format dynamic titles
   const formattedPart = part ? part.replace(/([a-zA-Z]+)(\d+)/, (m, p1, p2) => `${p1.charAt(0).toUpperCase() + p1.slice(1)} ${p2}`) : 'Part 1';
   const formattedSkill = skill ? skill.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Grammar';
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState(() => getGrammarVocabAnswers('part1'));
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+
+  useEffect(() => {
+    saveGrammarVocabAnswers('part1', answers);
+  }, [answers]);
 
   const itemsPerPage = 3;
   const totalPages = Math.ceil(MOCK_QUESTIONS.length / itemsPerPage);
@@ -56,10 +62,10 @@ export default function Part1GrammarPage() {
       if (part === 'part1') {
         navigate(`/${skill}/test/part2?testId=${testId}&isFull=true`);
       } else {
-        navigate(`/${skill}/test-result?testId=${testId}`); // Final submit
+        navigate(`/${skill}/result?testId=${testId}&isFull=true&part=2`);
       }
     } else {
-      navigate(`/${skill}/test-result?testId=${testId}`);
+      navigate(`/${skill}/result?testId=${testId}&isFull=false&part=1`);
     }
   };
 

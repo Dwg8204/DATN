@@ -1,13 +1,13 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './GrammarVocabOverviewPage.module.css';
 
-const popularDocs = Array(5).fill({
-  title: 'Tổng hợp đề thi IELTS WRITING',
-  subTitle: 'chính xác kèm bài giải chi tiết',
-  badge: 'MỚI NHẤT 2025',
-  desc: 'Tổng hợp bài mẫu IELTS Writing mới nhất. Cập nhật liên tục',
-});
+const popularDocs = Array.from({ length: 5 }, (_, index) => ({
+  id: index + 1,
+  title: 'APTIS GRAMMAR & VOCABULARY PRACTICE',
+  subTitle: 'Practice questions with detailed explanations',
+  badge: 'LATEST 2026',
+  desc: 'Improve your grammar and vocabulary with regularly updated Aptis practice materials.',
+}));
 
 export default function GrammarVocabOverviewPage() {
   const navigate = useNavigate();
@@ -28,35 +28,35 @@ export default function GrammarVocabOverviewPage() {
             <span className={styles.headingBold}> Test</span>
           </div>
           <div className={styles.text}>
-            Complete all 5 components to receive your estimated CEFR band score. You can take the components in any order, but we recommend following the standard sequence.
+            Complete all five components to receive your estimated CEFR band score. You can take the components in any order, but we recommend following the standard sequence.
           </div>
         </div>
       </div>
 
       <div className={styles.section}>
         <div className={styles.contentBlock}>
-          <div className={styles.subHeading}>Overview of APTIS Grammar Part 1 and Part 2</div>
+          <div className={styles.subHeading}>Overview of Aptis Grammar Part 1 and Part 2</div>
           <div className={styles.textBlock}>
-            The Grammar and Vocabulary component is the core element of the Aptis test. It has two parts and you will have 25 minutes to complete it.<br />
-            The first part tests your knowledge of English grammar and the second part focuses on your knowledge of English vocabulary.<br />
-            The Grammar and vocabulary test is marked on a scale from 0 to 50. No CEFR level is awarded for this component but the score is used to assign you to the correct CEFR level for the other skill components.<br />
+            The Grammar and Vocabulary component is the core element of the Aptis test. It has two parts, and you will have 25 minutes to complete it.<br />
+            The first part tests your knowledge of English grammar, and the second part focuses on your knowledge of English vocabulary.<br />
+            The Grammar and Vocabulary test is marked on a scale from 0 to 50. No CEFR level is awarded for this component, but the score is used to assign you to the correct CEFR level for the other skill components.<br />
             Part 1: Grammar<br />
-            In the Grammar section, you will be presented with 25 multiple choice questions where you should complete a sentence by choosing the correct option. Read the whole sentence before choosing the answer.<br />
-            You can flag up questions you find difficult and go back to complete them later in the test.<br />
+            In the Grammar section, you will be presented with 25 multiple-choice questions. Complete each sentence by choosing the correct option. Read the whole sentence before choosing your answer.<br />
+            You can flag questions you find difficult and return to them later in the test.<br />
             Part 2: Vocabulary<br />
-            The vocabulary part also has 25 questions. There are several question types:<br />
-            Word definition – match a word to its definition.<br />
-            Word pairs – match a word to another word of very similar meaning.<br />
-            Word usage – choose a word to be used in the context of a sentence.<br />
-            Word combinations – combine words that are frequently used together.
+            The Vocabulary part also has 25 questions. There are several question types:<br />
+            Word definition — match a word to its definition.<br />
+            Word pairs — match a word to another word with a very similar meaning.<br />
+            Word usage — choose a word that fits the context of a sentence.<br />
+            Word combinations — combine words that are frequently used together.
           </div>
         </div>
         <div className={styles.contentBlock}>
-          <div className={styles.subHeading}>Top tips for the Grammar and vocabulary test</div>
+          <div className={styles.subHeading}>Top tips for the Grammar and Vocabulary test</div>
           <div className={styles.text}>
             Read all the options before choosing your answer.<br />
-            After you have chosen an option, read the sentence again to check your answer before you move on.<br />
-            Do not spend too long on any of the questions. Remember you have to answer 50 questions in 25 minutes. If you can’t think of the answer immediately, it’s better to continue with the test and then come back to it later.<br />
+            After choosing an option, read the sentence again to check your answer before moving on.<br />
+            Do not spend too long on any question. You have to answer 50 questions in 25 minutes. If you cannot think of the answer immediately, continue with the test and return to it later.<br />
             Improve your vocabulary through practice games and activities on the LearnEnglish website.
           </div>
         </div>
@@ -68,17 +68,17 @@ export default function GrammarVocabOverviewPage() {
           <div className={styles.divider}></div>
         </div>
         <div className={styles.contentBlock}>
-          <div className={styles.documentLink}>Some tips for taking the APTIS Grammar&Vocab test</div>
-          <div className={styles.documentLink}>APTIS Grammar&Vocab practice test</div>
-          <div className={styles.documentLink}>APTIS Grammar&Vocab band scores</div>
+          <div className={styles.documentLink}>Tips for taking the Aptis Grammar & Vocabulary test</div>
+          <div className={styles.documentLink}>Aptis Grammar & Vocabulary practice test</div>
+          <div className={styles.documentLink}>Aptis Grammar & Vocabulary scores</div>
         </div>
       </div>
 
       <div className={styles.section}>
         <div className={styles.popularTitle}>MOST POPULAR</div>
         <div className={styles.popularGrid}>
-          {popularDocs.map((doc, idx) => (
-            <div key={idx} className={styles.popularCard}>
+          {popularDocs.map((doc) => (
+            <div key={doc.id} className={styles.popularCard}>
               <div className={styles.cardHeader}>
                 <div className={styles.cardHeaderTop}>
                   <div className={styles.cardTitle}>{doc.title}</div>
