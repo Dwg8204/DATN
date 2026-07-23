@@ -69,14 +69,14 @@ export default function ListeningTestListPage() {
 
   // Handles clicking "Do the test" for a single part
   const handleDoTestPart = (testId, partNum) => {
-    // Navigate to /listening/test/part{partNum}?testId={testId}&isFull=false
-    navigate(`/listening/test/part${partNum}?testId=${testId}&isFull=false`);
+    // Navigate to introduction page first
+    navigate(`/listening/introduction?testId=${testId}&mode=part${partNum}`);
   };
 
   // Handles clicking "Do the test" for a full test
   const handleDoFullTest = (testId) => {
-    // Navigate to /listening/test/part1?testId={testId}&isFull=true
-    navigate(`/listening/test/part1?testId=${testId}&isFull=true`);
+    // Navigate to introduction page first
+    navigate(`/listening/introduction?testId=${testId}&mode=full`);
   };
 
   const filteredTests = MOCK_TESTS.filter(test => test.tabId === activeTab);

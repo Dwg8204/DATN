@@ -58,13 +58,13 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
     <header className={styles.testHeader}>
       <div className={styles.inner}>
         <div className={styles.leftSide}>
-          <Link to="/">
+          <button className={styles.logoBtn} onClick={handleExitClick} title="Exit test">
             <img
               src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png"
               alt="AptiMate Logo"
               className={styles.logo}
             />
-          </Link>
+          </button>
           <div className={styles.testTakerInfo}>
             <span className={styles.testTakerLabel}>{testTakerId}</span>
           </div>
@@ -80,7 +80,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
                   <path d="M12 6V12L16 14" stroke="#131927" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-            <div className={styles.timeValue}>{displayedTime}</div>
+              <div className={styles.timeValue}>{displayedTime}</div>
             </div>
           </div>}
           {showExit && <button className={styles.exitBtn} onClick={handleExitClick}>

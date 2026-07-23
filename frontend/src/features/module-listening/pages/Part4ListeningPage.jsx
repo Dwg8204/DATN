@@ -14,6 +14,7 @@ export default function Part4ListeningPage() {
 
   const [answers, setAnswers] = useState({});
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const [currentMainIdx, setCurrentMainIdx] = useState(0);
 
   const handleOptionSelect = (questionId, optionIndex) => {
     setAnswers(prev => ({
@@ -36,9 +37,30 @@ export default function Part4ListeningPage() {
     setShowSubmitModal(false);
   };
 
-  const submitLabel = 'Submit';
+  const currentMainQ = PART4_QUESTIONS[currentMainIdx];
+  const allQuestionIds = PART4_QUESTIONS.flatMap(q => q.subQuestions.map(sq => sq.id));
+  const currentPageIds = currentMainQ.subQuestions.map(sq => sq.id);
 
-  const questionIds = PART4_QUESTIONS.map(q => q.id);
+  const handleNext = () => {
+    if (currentMainIdx < PART4_QUESTIONS.length - 1) {
+      setCurrentMainIdx(prev => prev + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentMainIdx > 0) {
+      setCurrentMainIdx(prev => prev - 1);
+    } else {
+      navigate(`/listening/test/part3?testId=${testId}&isFull=${isFullTest}`);
+    }
+  };
+
+  const handleQuestionClick = (qId) => {
+    const mainIdx = PART4_QUESTIONS.findIndex(mainQ => mainQ.subQuestions.some(sq => sq.id === qId));
+    if (mainIdx !== -1) {
+      setCurrentMainIdx(mainIdx);
+    }
+  };
 
   return (
     <div className={styles.page}>
@@ -50,7 +72,7 @@ export default function Part4ListeningPage() {
 
         <div className={styles.instructionBlock}>
           <span className={styles.instructionTitle}>
-            Questions {questionIds.join('-')}<br />
+            Questions {allQuestionIds.join(', ')}<br />
           </span>
           <span className={styles.instructionText}>
             Listen and choose the correct answer to the question.
@@ -60,36 +82,38 @@ export default function Part4ListeningPage() {
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
             <div className={styles.questionItem}>
-              <div className={styles.questionContext}>{PART4_QUESTIONS[0].context}</div>
-              
-              {PART4_QUESTIONS.map((q) => (
-                <div key={q.id} className={styles.multipleChoiceGroup}>
-                  <div className={styles.questionHeader}>
-                    <div className={styles.questionNumberBox}>
-                      <span className={styles.questionNumber}>{q.id}</span>
-                    </div>
-                    <div className={styles.questionSubText}>{q.text}</div>
-                  </div>
+                <div className={styles.multipleChoiceGroup} style={{ marginBottom: '40px' }}>
+                  <div className={styles.questionContext} style={{ marginBottom: '16px', fontWeight: 'bold' }}>{currentMainQ.context}</div>
                   
-                  <div className={styles.radioOptionsList}>
-                    {q.options.map((opt, idx) => {
-                      const isSelected = answers[q.id] === idx;
-                      return (
-                        <div 
-                          key={idx} 
-                          className={styles.radioOptionItem}
-                          onClick={() => handleOptionSelect(q.id, idx)}
-                        >
-                          <div className={`${styles.radioCircle} ${isSelected ? styles.radioCircleSelected : ''}`}>
-                            {isSelected && <div className={styles.radioCircleInner}></div>}
-                          </div>
-                          <div className={styles.radioOptionText}>{opt}</div>
+                  {currentMainQ.subQuestions.map((q) => (
+                    <div key={q.id} style={{ marginBottom: '24px' }}>
+                      <div className={styles.questionHeader}>
+                        <div className={styles.questionNumberBox}>
+                          <span className={styles.questionNumber}>{q.id}</span>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className={styles.questionSubText}>{q.text}</div>
+                      </div>
+                      
+                      <div className={styles.radioOptionsList}>
+                        {q.options.map((opt, idx) => {
+                          const isSelected = answers[q.id] === idx;
+                          return (
+                            <div 
+                              key={idx} 
+                              className={styles.radioOptionItem}
+                              onClick={() => handleOptionSelect(q.id, idx)}
+                            >
+                              <div className={`${styles.radioCircle} ${isSelected ? styles.radioCircleSelected : ''}`}>
+                                {isSelected && <div className={styles.radioCircleInner}></div>}
+                              </div>
+                              <div className={styles.radioOptionText}>{opt}</div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
             </div>
           </div>
 
@@ -141,14 +165,15 @@ export default function Part4ListeningPage() {
 
       <TestFooter 
         partLabel="Part 4" 
-        questions={PART4_QUESTIONS}
+        questions={PART4_QUESTIONS.flatMap(q => q.subQuestions)}
         answeredIds={Object.keys(answers)}
-        currentPageQuestionIds={questionIds}
-        onQuestionClick={() => {}}
-        onPrevClick={() => navigate(`/listening/test/part3?testId=${testId}&isFull=${isFullTest}`)}
-        onNextClick={() => {}}
+        currentPageQuestionIds={currentPageIds}
+        onQuestionClick={handleQuestionClick}
+        onPrevClick={handlePrev}
+        onNextClick={handleNext}
         onSubmitClick={handleSubmit}
-        submitLabel={submitLabel}
+        submitLabel="Submit"
+        hideNext={currentMainIdx === PART4_QUESTIONS.length - 1}
       />
 
       <SubmitModal 

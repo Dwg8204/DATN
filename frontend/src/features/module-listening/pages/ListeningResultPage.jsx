@@ -71,13 +71,15 @@ export default function ListeningResultPage() {
     // Process Part 4 (2 questions)
     // answers saved as { "16": 0, "17": 1, ... }
     const p4Raw = allAnswers.part4;
-    const part4Results = PART4_QUESTIONS.map(q => {
-      const userAnswerIdx = p4Raw[String(q.id)];
-      const isSkipped = userAnswerIdx === undefined || userAnswerIdx === null;
-      const userAnswerStr = !isSkipped ? String.fromCharCode(65 + Number(userAnswerIdx)) : null;
-      const isCorrect = !isSkipped && Number(userAnswerIdx) === q.answer;
-      return { id: q.id, userAnswer: userAnswerStr, isCorrect, isSkipped };
-    });
+    const part4Results = PART4_QUESTIONS.flatMap(mainQ => 
+      mainQ.subQuestions.map(sq => {
+        const userAnswerIdx = p4Raw[String(sq.id)];
+        const isSkipped = userAnswerIdx === undefined || userAnswerIdx === null;
+        const userAnswerStr = !isSkipped ? String.fromCharCode(65 + Number(userAnswerIdx)) : null;
+        const isCorrect = !isSkipped && Number(userAnswerIdx) === sq.answer;
+        return { id: sq.id, userAnswer: userAnswerStr, isCorrect, isSkipped };
+      })
+    );
 
     let allResults = [];
     if (isFullTest) {
@@ -230,7 +232,13 @@ export default function ListeningResultPage() {
         )}
 
         <div className={styles.actionRow}>
-          <button className={styles.tryAgainBtn} onClick={() => navigate('/listening/tests')}>Try again</button>
+          <button 
+            className={`${styles.tryAgainBtn} ${styles.detailBtn || ''}`} 
+            style={{ backgroundColor: '#43B75D', borderColor: '#43B75D' }} 
+            onClick={() => navigate(`/listening/detail-result?testId=${searchParams.get('testId') || '1'}&isFull=${isFullTest}${!isFullTest ? `&part=${partParam}` : ''}`)}
+          >
+            View detail result
+          </button>
           <button className={styles.backBtn} onClick={() => navigate('/listening/tests')}>Back to tests</button>
         </div>
       </div>
