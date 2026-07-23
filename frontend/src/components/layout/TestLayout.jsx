@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import TestHeader from './TestHeader';
 
-export default function TestLayout() {
+export default function TestLayout({ headerProps }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', background: '#FFFFFF', minHeight: '100vh' }}>
       <div style={{ alignSelf: 'stretch', background: '#FFFEFC', flex: 1 }}>
-        <TestHeader />
+        <TestHeader {...headerProps} />
         <main>
           <Outlet />
         </main>

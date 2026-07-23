@@ -9,7 +9,7 @@ function formatRemainingTime(totalSeconds) {
   return `${minutes}:${seconds}`;
 }
 
-export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining }) {
+export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, showTimer = true, showExit = true }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -71,7 +71,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
         </div>
 
         <div className={styles.rightSide}>
-          <div className={styles.timeWrap}>
+          {showTimer && <div className={styles.timeWrap}>
             <div className={styles.timeLabel}>Time remaining</div>
             <div className={styles.timeRow}>
               <div className={styles.timeIconWrap}>
@@ -82,10 +82,10 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
               </div>
             <div className={styles.timeValue}>{displayedTime}</div>
             </div>
-          </div>
-          <button className={styles.exitBtn} onClick={handleExitClick}>
+          </div>}
+          {showExit && <button className={styles.exitBtn} onClick={handleExitClick}>
             <span className={styles.exitBtnText}>Exit test</span>
-          </button>
+          </button>}
         </div>
       </div>
 
