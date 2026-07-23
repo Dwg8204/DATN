@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PART1_QUESTIONS } from '../data/part1MockData';
 import { PART2_WORD_SETS } from '../data/part2MockData';
@@ -47,10 +47,10 @@ function ScoreRing({ percentage, size = 'large', children }) {
 export default function GrammarVocabResultPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const detailsRef = useRef(null);
   const isFullTest = searchParams.get('isFull') === 'true';
   const selectedPart = searchParams.get('part') || '1';
   const timedOut = searchParams.get('timedOut') === 'true';
+  const testId = searchParams.get('testId') || '1';
 
   const result = useMemo(() => {
     const answers = getAllGrammarVocabAnswers();
@@ -140,7 +140,7 @@ export default function GrammarVocabResultPage() {
           </div>
         </section>
 
-        <section className={styles.panel} ref={detailsRef}>
+        <section className={styles.panel}>
           <h2>Result</h2>
           <div className={styles.answerGrid}>
             {result.questions.map((item) => (
@@ -173,7 +173,10 @@ export default function GrammarVocabResultPage() {
         </section>
 
         <div className={styles.actions}>
-          <button className={styles.primaryButton} onClick={() => detailsRef.current?.scrollIntoView({ behavior: 'smooth' })}>
+          <button
+            className={styles.primaryButton}
+            onClick={() => navigate(`/grammar-vocab/result-detail?testId=${testId}&isFull=${isFullTest}&part=${selectedPart}`)}
+          >
             View detail result
           </button>
           <button className={styles.secondaryButton} onClick={() => navigate('/grammar-vocab/tests')}>
