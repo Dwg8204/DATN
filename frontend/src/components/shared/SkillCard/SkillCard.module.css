@@ -1,0 +1,13 @@
+.card {
+  width: 100%;
+  height: auto;
+  flex: 1;
+  min-width: 0;
+  object-fit: contain;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.card:hover {
+  opacity: 0.9;
+}

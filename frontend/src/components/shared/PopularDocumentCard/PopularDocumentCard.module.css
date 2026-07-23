@@ -1,0 +1,71 @@
+.cardContainer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #FFFEFC;
+  border-radius: 10px;
+  border: 2px solid #A71E34;
+  overflow: hidden;
+  width: 100%;
+}
+
+.cardHeader {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #000000;
+  padding: 16px 20px;
+  gap: 24px;
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.mainTitle {
+  color: #FFCB8B;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.subTitle {
+  color: #FFFFFF;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.badge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #DA1E21;
+  border-radius: 20px;
+  padding: 4px 12px;
+  align-self: flex-end;
+}
+
+.badgeText {
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.cardBody {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 20px;
+}
+
+.descriptionText {
+  color: #000000;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}

@@ -1,0 +1,186 @@
+.testHeader {
+  align-self: stretch;
+  height: 72px;
+  padding-left: 72px;
+  padding-right: 72px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background: #FFF9F1;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.30);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.leftSide {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.logoBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.logo {
+  width: 146px;
+  height: 72px;
+  object-fit: fill;
+}
+
+.testTakerInfo {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 16px;
+  gap: 10px;
+}
+
+.testTakerLabel {
+  color: black;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 36px;
+}
+
+.rightSide {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.timeWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.timeLabel {
+  color: black;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 28px;
+}
+
+.timeRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.timeIconWrap {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.timeValue {
+  color: black;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 36px;
+}
+
+.exitBtn {
+  padding: 8px 28px;
+  background: black;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.exitBtn:hover {
+  opacity: 0.8;
+}
+
+.exitBtnText {
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.exitModal {
+  width: 550px;
+  max-width: 90%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  text-align: center;
+}
+
+.closeIcon {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.modalText {
+  color: #000000;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.stayBtn {
+  padding: 8px 28px;
+  background: #da1e21;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.confirmExitBtn {
+  padding: 8px 28px;
+  background: #000000;
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}

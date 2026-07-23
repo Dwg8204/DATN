@@ -1,0 +1,66 @@
+.card {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #FFF9F1;
+  border-radius: 20px;
+  border: 1px solid #E1E1E1;
+  padding: 23px 14px;
+  gap: 8px;
+  box-shadow: 0px 4px 10px #00000040;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  object-fit: fill;
+}
+
+.userMeta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.userName {
+  color: #000000;
+  font-size: 16px;
+}
+
+.userDate {
+  color: #000000;
+  font-size: 14px;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ratingImage {
+  width: 120px;
+  height: 24px;
+  object-fit: fill;
+}
+
+.ratingValue {
+  color: #6C6C6C;
+  font-size: 14px;
+}
+
+.comment {
+  color: #000000;
+  font-size: 14px;
+  width: 100%;
+  max-width: 387px;
+}

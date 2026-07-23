@@ -1,0 +1,73 @@
+.heroBanner {
+  align-self: stretch;
+  width: 100%;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background-color: #FFFFFF;
+  background-image: url('https://res.cloudinary.com/dkrisyrlh/image/upload/v1784771005/pexels-andy-barbour-6684265_dvbyxl.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  image-rendering: auto;
+  padding-top: 52px;
+  padding-bottom: 52px;
+  padding-left: 77px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .heroBanner {
+    min-height: 440px;
+    padding: 32px 24px;
+  }
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #FFFFFF17;
+  border-radius: 16px;
+  padding: 51px 33px;
+  gap: 21px;
+}
+
+.title {
+  color: #6E1423;
+  font-size: 28px;
+  font-weight: bold;
+  margin-left: 41px;
+}
+
+.description {
+  color: #000000;
+  font-size: 16px;
+  width: 100%;
+  max-width: 415px;
+}
+
+.ctaBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: #FFFFFF;
+  border-radius: 5px;
+  border: none;
+  padding: 10px 30px;
+  align-self: center;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ctaBtn:hover {
+  opacity: 0.85;
+}
+
+.ctaBtnText {
+  color: #232020;
+  font-size: 20px;
+  font-weight: bold;
+}

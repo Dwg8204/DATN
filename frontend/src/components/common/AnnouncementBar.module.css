@@ -1,0 +1,35 @@
+.bar {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #FFFFFF;
+  padding-left: 72px;
+  padding-right: 72px;
+}
+
+.item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 11px;
+  object-fit: fill;
+}
+
+.text {
+  color: #000000;
+  font-size: 16px;
+  font-weight: bold;
+  margin-right: 12px;
+}
+
+.arrow {
+  width: 24px;
+  height: 24px;
+  object-fit: fill;
+}

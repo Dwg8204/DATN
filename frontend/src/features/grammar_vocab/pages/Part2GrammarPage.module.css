@@ -1,0 +1,162 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px);
+  background: #FFFFFF;
+}
+
+.contentWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 72px 120px;
+  box-sizing: border-box;
+}
+
+.headerBlock {
+  background: #F1F2EC;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.partTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+}
+
+.skillTitle {
+  font-size: 16px;
+  color: #000;
+}
+
+.wordSetBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+.instructionBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.instructionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+}
+
+.instructionText {
+  font-size: 16px;
+  color: #000;
+}
+
+.matchingArea {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.targetWordsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 500px;
+  min-width: 0;
+}
+
+.matchingRow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.targetWordText {
+  font-size: 16px;
+  color: #000;
+  width: 100px;
+}
+
+.dropdownContainer {
+  position: relative;
+  flex: 1;
+}
+
+.dropdownTrigger {
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  cursor: pointer;
+  background: #fff;
+  user-select: none;
+  font-size: 16px;
+}
+
+.dropdownTrigger:hover {
+  background: #f9f9f9;
+}
+
+.dropdownPlaceholder {
+  font-weight: bold;
+  color: #000;
+  margin: 0 auto;
+}
+
+.hasValue {
+  background: #F3D5B5; /* Matching selected color from Part 1 style */
+  border-color: #000;
+  justify-content: flex-start;
+}
+
+.dropdownOptionLabel {
+  font-weight: bold;
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #000;
+  border-radius: 4px;
+  margin-top: 4px;
+  max-height: 250px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dropdownItem {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 16px;
+  border-bottom: 1px solid #eee;
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover {
+  background: #f1f2ec;
+}
+
+.dropdownItemSelected {
+  background: #F3D5B5;
+}
