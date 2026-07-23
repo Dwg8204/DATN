@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './TestHeader.module.css';
 import { getGrammarVocabRemainingSeconds } from '../../features/grammar_vocab/utils/grammarVocabSessionStorage';
+import { getListeningRemainingSeconds } from '../../features/module-listening/utils/listeningSessionStorage';
 
 function formatRemainingTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -15,32 +16,45 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
   const [searchParams] = useSearchParams();
   const [showExitModal, setShowExitModal] = useState(false);
   const isGrammarVocabTest = location.pathname.startsWith('/grammar-vocab/test/');
-  const [remainingSeconds, setRemainingSeconds] = useState(() => (
-    isGrammarVocabTest ? getGrammarVocabRemainingSeconds() : null
-  ));
+  const isListeningTest = location.pathname.startsWith('/listening/test/');
+  const [remainingSeconds, setRemainingSeconds] = useState(() => {
+    if (isGrammarVocabTest) return getGrammarVocabRemainingSeconds();
+    if (isListeningTest) return getListeningRemainingSeconds();
+    return null;
+  });
 
   useEffect(() => {
-    if (!isGrammarVocabTest) return undefined;
+    if (!isGrammarVocabTest && !isListeningTest) return undefined;
 
     const updateTimer = () => {
-      const remaining = getGrammarVocabRemainingSeconds();
+      let remaining = null;
+      if (isGrammarVocabTest) {
+        remaining = getGrammarVocabRemainingSeconds();
+      } else if (isListeningTest) {
+        remaining = getListeningRemainingSeconds();
+      }
       setRemainingSeconds(remaining);
 
       if (remaining === 0) {
         const testId = searchParams.get('testId') || '1';
         const isFull = searchParams.get('isFull') === 'true';
-        const part = location.pathname.endsWith('/part2') ? '2' : '1';
-        navigate(`/grammar-vocab/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
+        if (isGrammarVocabTest) {
+          const part = location.pathname.endsWith('/part2') ? '2' : '1';
+          navigate(`/grammar-vocab/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
+        } else if (isListeningTest) {
+          // For listening test, when timeout always redirect to full test results because we want to see the total score
+          navigate(`/listening/result?testId=${testId}&isFull=true&timedOut=true`, { replace: true });
+        }
       }
     };
 
     updateTimer();
     const intervalId = window.setInterval(updateTimer, 1000);
     return () => window.clearInterval(intervalId);
-  }, [isGrammarVocabTest, location.pathname, navigate, searchParams]);
+  }, [isGrammarVocabTest, isListeningTest, location.pathname, navigate, searchParams]);
 
   const displayedTime = timeRemaining
-    || (remainingSeconds === null ? '23:30' : formatRemainingTime(remainingSeconds));
+    || (remainingSeconds === null ? '' : formatRemainingTime(remainingSeconds));
 
   const handleExitClick = () => {
     setShowExitModal(true);
