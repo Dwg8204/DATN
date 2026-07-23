@@ -1,0 +1,60 @@
+{
+  "id": "apt-r-001",
+  "title": "APTIS Reading - General Practice 1",
+  "part1": {
+    "passage": "Dear Jane, \n\nI am writing to tell you about my new apartment. I moved in last week and I am really [1] it so far. The rooms are all very [2] and there is a lot of natural light. \n\nMy favorite spot is the balcony, where I can [3] my coffee in the morning. The neighborhood is also very [4] with many shops and parks nearby. I am so [5] to have found this place.\n\nI hope you can visit me soon!\n\nBest,\nTom",
+    "questions": [
+      { "id": "p1-q1", "position": 1, "options": ["enjoying", "disliking", "ignoring"], "answer": "enjoying" },
+      { "id": "p1-q2", "position": 2, "options": ["small", "spacious", "dirty"], "answer": "spacious" },
+      { "id": "p1-q3", "position": 3, "options": ["drink", "spill", "sell"], "answer": "drink" },
+      { "id": "p1-q4", "position": 4, "options": ["noisy", "convenient", "crowded"], "answer": "convenient" },
+      { "id": "p1-q5", "position": 5, "options": ["sad", "lucky", "angry"], "answer": "lucky" }
+    ]
+  },
+  "part2": {
+    "title": "A History of the Potato",
+    "sentences": [
+      { "id": "s1", "content": "The potato was first cultivated by humans in the Andes region of South America.", "correctPosition": 1 },
+      { "id": "s2", "content": "It was grown by indigenous farmers for thousands of years before the arrival of Europeans.", "correctPosition": 2 },
+      { "id": "s3", "content": "In the late 16th century, Spanish explorers introduced the vegetable to Europe.", "correctPosition": 3 },
+      { "id": "s4", "content": "Initially, many Europeans were suspicious of the strange underground tuber.", "correctPosition": 4 },
+      { "id": "s5", "content": "However, it soon became a staple food crop across the continent due to its high nutritional value.", "correctPosition": 5 },
+      { "id": "s6", "content": "Today, it is the world's fourth-largest food crop after maize, wheat, and rice.", "correctPosition": 6 }
+    ]
+  },
+  "part3": {
+    "passage": "Four people share their opinions on social media use:\n\nAlice: I use social media mainly to keep in touch with my childhood friends. It's a great tool for maintaining long-distance relationships, though I try to limit my screen time to an hour a day.\n\nBob: I find social media very distracting. I had to delete my accounts because I was spending hours scrolling instead of studying or sleeping. I feel much healthier now.\n\nCharlie: I use social media to promote my freelance photography business. It has helped me reach a global audience and find new clients that I wouldn't have met otherwise.\n\nDavid: I don't post much, but I use social media as a news source. It allows me to follow journalists and experts to get real-time updates on global events.",
+    "speakers": ["Alice", "Bob", "Charlie", "David"],
+    "questions": [
+      { "id": "p3-q1", "statement": "Who deleted their accounts to stay focused?", "answer": "Bob" },
+      { "id": "p3-q2", "statement": "Who uses social media primarily to connect with old friends?", "answer": "Alice" },
+      { "id": "p3-q3", "statement": "Who leverages social media for professional marketing?", "answer": "Charlie" },
+      { "id": "p3-q4", "statement": "Who treats social media as a platform for current affairs?", "answer": "David" },
+      { "id": "p3-q5", "statement": "Who consciously restricts their daily usage time?", "answer": "Alice" },
+      { "id": "p3-q6", "statement": "Who experienced a positive impact on their well-being after quitting?", "answer": "Bob" },
+      { "id": "p3-q7", "statement": "Who values the global reach the platform provides for their work?", "answer": "Charlie" }
+    ]
+  },
+  "part4": {
+    "title": "Transitioning to Renewable Energy",
+    "paragraphs": [
+      { "id": "para1", "label": "Paragraph A", "content": "The rise of renewable energy sources, such as wind and solar power, is transforming the global energy landscape. Governments worldwide are investing heavily in green infrastructure to reduce carbon emissions and combat climate change. This transition is not only environmental but also economic, creating millions of new jobs." },
+      { "id": "para2", "label": "Paragraph B", "content": "Despite the growth of clean energy, fossil fuels still dominate the energy mix in many regions. Transitioning away from coal and oil requires massive grid updates and financial investments. Critics argue that the intermittent nature of wind and solar makes them unreliable as a primary power source." },
+      { "id": "para3", "label": "Paragraph C", "content": "Battery storage technologies are key to overcoming the intermittency problem. By storing excess energy generated during sunny or windy periods, batteries can release power when the sun isn't shining or the wind isn't blowing. Research is focused on making these systems cheaper and more efficient." },
+      { "id": "para4", "label": "Paragraph D", "content": "Nuclear power remains a controversial topic in discussions of clean energy. While it produces virtually no greenhouse gases, concerns persist regarding radioactive waste disposal and the risk of catastrophic accidents. Some nations are phasing out reactors, while others see them as essential for baseline power." },
+      { "id": "para5", "label": "Paragraph E", "content": "Individual action, such as energy conservation, plays a vital role alongside large-scale energy projects. Simple habits like switching off unused lights, installing insulation, and using energy-efficient appliances can collectively lower energy demand. Smart meters also help households monitor and optimize their consumption." },
+      { "id": "para6", "label": "Paragraph F", "content": "Electric vehicles (EVs) are another critical component of the energy transition. As battery ranges improve and charging stations become more widespread, consumer adoption is accelerating. This shift from combustion engines to electric motors will significantly cut transportation emissions." },
+      { "id": "para7", "label": "Paragraph G", "content": "The future of energy may also lie in emerging technologies like green hydrogen and nuclear fusion. Although these technologies are currently in the experimental or early adoption phase, they offer the promise of limitless, zero-emission energy. Scientists are working to solve the immense engineering challenges involved." }
+    ],
+    "headings": [
+      { "id": "h1", "text": "The Role of Battery Storage", "correctParagraph": "para3" },
+      { "id": "h2", "text": "Environmental and Economic Benefits", "correctParagraph": "para1" },
+      { "id": "h3", "text": "Challenges of Moving Away from Fossil Fuels", "correctParagraph": "para2" },
+      { "id": "h4", "text": "The Ongoing Nuclear Debate", "correctParagraph": "para4" },
+      { "id": "h5", "text": "How Households Can Save Energy", "correctParagraph": "para5" },
+      { "id": "h6", "text": "The Rise of Electric Transport", "correctParagraph": "para6" },
+      { "id": "h7", "text": "Experimental Tech of the Future", "correctParagraph": "para7" },
+      { "id": "h8", "text": "The History of Steam Power" }
+    ]
+  }
+}

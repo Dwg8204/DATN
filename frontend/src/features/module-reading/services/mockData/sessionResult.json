@@ -1,0 +1,31 @@
+{
+  "sessionId": "sess-001",
+  "testId": "apt-r-001",
+  "duration": "00:21:13",
+  "level": "B2",
+  "totalScore": 42,
+  "maxScore": 50,
+  "parts": [
+    { "part": 1, "skill": "Grammar", "correct": 8, "wrong": 2, "blank": 0, "score": 8 },
+    { "part": 2, "skill": "Text Cohesion", "correct": 7, "wrong": 3, "blank": 0, "score": 7 },
+    { "part": 3, "skill": "Opinion Matching", "correct": 9, "wrong": 1, "blank": 0, "score": 9 },
+    { "part": 4, "skill": "Matching Headings", "correct": 6, "wrong": 4, "blank": 0, "score": 6 }
+  ],
+  "aiFeedback": "Bạn thể hiện tốt ở kỹ năng Opinion Matching, nhưng cần cải thiện thêm về Text Cohesion. Hãy luyện tập thêm các bài tập về liên kết câu để nắm rõ cấu trúc mạch lạc của đoạn văn.",
+  "answers": [
+    { "questionId": "p1-q1", "userAnswer": "enjoying", "correctAnswer": "enjoying", "isCorrect": true },
+    { "questionId": "p1-q2", "userAnswer": "mean", "correctAnswer": "friendly", "isCorrect": false },
+    { "questionId": "p1-q3", "userAnswer": "organize", "correctAnswer": "organize", "isCorrect": true },
+    { "questionId": "p1-q4", "userAnswer": "grateful", "correctAnswer": "grateful", "isCorrect": true },
+    { "questionId": "s1", "userAnswer": 2, "correctAnswer": 1, "isCorrect": false },
+    { "questionId": "s2", "userAnswer": 3, "correctAnswer": 3, "isCorrect": true },
+    { "questionId": "s3", "userAnswer": 1, "correctAnswer": 2, "isCorrect": false },
+    { "questionId": "p3-q1", "userAnswer": "Charlie", "correctAnswer": "Charlie", "isCorrect": true },
+    { "questionId": "p3-q2", "userAnswer": "Alice", "correctAnswer": "Alice", "isCorrect": true },
+    { "questionId": "p3-q3", "userAnswer": "Bob", "correctAnswer": "Bob", "isCorrect": true },
+    { "questionId": "p3-q4", "userAnswer": "David", "correctAnswer": "David", "isCorrect": true },
+    { "questionId": "h1", "userAnswer": "para3", "correctAnswer": "para3", "isCorrect": true },
+    { "questionId": "h2", "userAnswer": "para1", "correctAnswer": "para1", "isCorrect": true },
+    { "questionId": "h3", "userAnswer": "para4", "correctAnswer": "para2", "isCorrect": false }
+  ]
+}

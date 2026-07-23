@@ -16,6 +16,11 @@ const navItems = [
     label: 'READING',
     to: '/reading',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/4d89xmet_expires_30_days.png',
+    dropdown: [
+      { label: 'Reading Overview', to: '/reading' },
+      { label: 'Practice Tests', to: '/reading/choose' },
+      { label: 'My Vocabulary', to: '/reading/vocab' },
+    ],
   },
   {
     label: 'WRITING',
@@ -41,11 +46,6 @@ const navItems = [
     to: '/dictation',
     icon: null,
   },
-  // {
-  //   label: 'BLOG',
-  //   to: '/blog',
-  //   icon: null,
-  // },
 ];
 
 export default function Header() {

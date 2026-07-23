@@ -16,6 +16,7 @@ import { writingRoutes } from '../features/writing-test/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
 import { listeningMainRoutes, listeningTestRoutes } from '../features/module-listening/listeningRoutes';
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
+import { readingMainRoutes, readingTestRoutes } from '../features/module-reading/readingRoutes';
 
 export const appRoutes = [
   {
@@ -59,6 +60,7 @@ export const appRoutes = [
         element: <TestListPage />,
       },
       ...listeningMainRoutes,
+      ...readingMainRoutes,
       ...practiceRoutes,
       ...writingRoutes,
       ...chatbotRoutes,
@@ -79,5 +81,6 @@ export const appRoutes = [
     ],
   },
   ...listeningTestRoutes,
+  ...readingTestRoutes,
   ...grammarVocabRoutes,
 ];
