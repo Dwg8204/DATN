@@ -10,6 +10,7 @@ const ReviewFeedbackPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentPart, setCurrentPart] = useState(1);
   const [selectedExplanation, setSelectedExplanation] = useState(null);
+  const [mode, setMode] = useState('full');
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -25,7 +26,16 @@ const ReviewFeedbackPage = () => {
         const testData = testDataModule.default || testDataModule;
 
         setTestData(testData);
-        const gradedResults = calculateScore(sessionData.answers, testData);
+        setMode(sessionData.mode || 'full');
+        
+        let initialPart = 1;
+        if (sessionData.mode === 'part1') initialPart = 1;
+        else if (sessionData.mode === 'part2') initialPart = 2;
+        else if (sessionData.mode === 'part3') initialPart = 3;
+        else if (sessionData.mode === 'part4') initialPart = 4;
+        setCurrentPart(initialPart);
+
+        const gradedResults = calculateScore(sessionData.answers, testData, sessionData.mode || 'full');
         setResults(gradedResults);
       } catch (error) {
         console.error("Error loading review", error);
@@ -451,45 +461,53 @@ const ReviewFeedbackPage = () => {
         <div className="bg-white border border-[#E5E2D9] rounded-xl px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
           
           {/* Part switch tabs */}
-          <div className="flex items-center gap-4">
-            <span className="font-black text-xs text-gray-800 uppercase tracking-wider">Part {currentPart}</span>
-            <div className="flex items-center gap-1.5">
-              {[1, 2, 3, 4].map(partNum => (
-                <button
-                  key={partNum}
-                  onClick={() => handlePartChange(partNum)}
-                  className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-black transition-all cursor-pointer ${
-                    currentPart === partNum 
-                      ? 'bg-[#C82323] text-white shadow-sm' 
-                      : 'text-[#C82323] bg-red-50/40 hover:bg-red-50 border border-red-100'
-                  }`}
-                >
-                  {partNum}
-                </button>
-              ))}
+          {mode === 'full' ? (
+            <div className="flex items-center gap-4">
+              <span className="font-black text-xs text-gray-800 uppercase tracking-wider">Part {currentPart}</span>
+              <div className="flex items-center gap-1.5">
+                {[1, 2, 3, 4].map(partNum => (
+                  <button
+                    key={partNum}
+                    onClick={() => handlePartChange(partNum)}
+                    className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs font-black transition-all cursor-pointer ${
+                      currentPart === partNum 
+                        ? 'bg-[#C82323] text-white shadow-sm' 
+                        : 'text-[#C82323] bg-red-50/40 hover:bg-red-50 border border-red-100'
+                    }`}
+                  >
+                    {partNum}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex items-center gap-4">
+              <span className="font-black text-xs text-gray-800 uppercase tracking-wider">Part {currentPart} (Single Part Test)</span>
+            </div>
+          )}
 
           {/* Navigation Arrows & Action Button */}
           <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end">
             
             {/* Arrows */}
-            <div className="flex items-center gap-2">
-              <button 
-                disabled={currentPart === 1}
-                onClick={() => handlePartChange(currentPart - 1)}
-                className="w-8 h-8 rounded-full border border-[#E5E2D9] flex items-center justify-center bg-white hover:bg-gray-50 transition-colors disabled:opacity-40 cursor-pointer text-gray-600 font-bold"
-              >
-                &larr;
-              </button>
-              <button 
-                disabled={currentPart === 4}
-                onClick={() => handlePartChange(currentPart + 1)}
-                className="w-8 h-8 rounded-full border border-[#E5E2D9] flex items-center justify-center bg-white hover:bg-gray-50 transition-colors disabled:opacity-40 cursor-pointer text-gray-600 font-bold"
-              >
-                &rarr;
-              </button>
-            </div>
+            {mode === 'full' && (
+              <div className="flex items-center gap-2">
+                <button 
+                  disabled={currentPart === 1}
+                  onClick={() => handlePartChange(currentPart - 1)}
+                  className="w-8 h-8 rounded-full border border-[#E5E2D9] flex items-center justify-center bg-white hover:bg-gray-50 transition-colors disabled:opacity-40 cursor-pointer text-gray-600 font-bold"
+                >
+                  &larr;
+                </button>
+                <button 
+                  disabled={currentPart === 4}
+                  onClick={() => handlePartChange(currentPart + 1)}
+                  className="w-8 h-8 rounded-full border border-[#E5E2D9] flex items-center justify-center bg-white hover:bg-gray-50 transition-colors disabled:opacity-40 cursor-pointer text-gray-600 font-bold"
+                >
+                  &rarr;
+                </button>
+              </div>
+            )}
 
             {/* Take another test */}
             <button 

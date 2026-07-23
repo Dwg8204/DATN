@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Clock, Book, Folder } from 'lucide-react';
 
-const TestCard = ({ test, layoutMode, index }) => {
+const TestCard = ({ test, layoutMode, mode = 'full', index }) => {
   const navigate = useNavigate();
 
   // If layoutMode is 'full', show the British Council Logo layout
@@ -29,7 +29,7 @@ const TestCard = ({ test, layoutMode, index }) => {
         
         <div className="px-4 py-4 border-t border-gray-100 flex justify-center">
           <button 
-            onClick={() => navigate(`/reading/intro/${test.id}`)}
+            onClick={() => navigate(`/reading/intro/${test.id}?mode=${mode}`)}
             className="text-red-600 border border-red-600 hover:bg-red-50 text-xs font-bold py-1.5 px-6 rounded transition-colors"
           >
             Do the test
@@ -86,13 +86,13 @@ const TestCard = ({ test, layoutMode, index }) => {
 
       <div className="flex gap-2 mt-auto">
         <button 
-          onClick={() => navigate(`/reading/intro/${test.id}`)}
+          onClick={() => navigate(`/reading/intro/${test.id}?mode=${mode}`)}
           className="flex-1 text-red-600 border border-red-600 hover:bg-red-50 text-xs font-bold py-1.5 rounded transition-colors text-center"
         >
           Details
         </button>
         <button 
-          onClick={() => navigate(`/reading/intro/${test.id}`)}
+          onClick={() => navigate(`/reading/intro/${test.id}?mode=${mode}`)}
           className="flex-1 bg-red-600 hover:bg-red-700 text-white border border-red-600 text-xs font-bold py-1.5 rounded transition-colors text-center"
         >
           Try it out

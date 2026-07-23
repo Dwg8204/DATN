@@ -22,7 +22,7 @@ const ReadingResultPage = () => {
         const testDataModule = await import('../services/mockData/testData.json');
         const testData = testDataModule.default || testDataModule;
 
-        const gradedResults = calculateScore(sessionData.answers, testData);
+        const gradedResults = calculateScore(sessionData.answers, testData, sessionData.mode || 'full');
         // Add timeSpent and original answers for display/referencing
         setResults({ 
           ...gradedResults, 

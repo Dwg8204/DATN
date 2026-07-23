@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ReadingTestContext } from '../context/ReadingTestContext';
 import TestHeader from '../components/test-engine/TestHeader';
 import ExitModal from '../components/test-engine/ExitModal';
@@ -15,6 +15,9 @@ import { TestEngineSkeleton } from '../../../components/common/SkeletonLoaders';
 const ReadingTestPage = () => {
   const { testId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const mode = searchParams.get('mode') || 'full';
+
   const { 
     testData, setTestData, 
     currentPart, setCurrentPart,
@@ -33,7 +36,16 @@ const ReadingTestPage = () => {
         setTimeout(() => {
           setTestData(data.default || data);
           setIsStarted(true);
-          setTimeLeft(35 * 60);
+          
+          let initialPart = 1;
+          let timeLimit = 35 * 60;
+          if (mode === 'part1') { initialPart = 1; timeLimit = 5 * 60; }
+          else if (mode === 'part2') { initialPart = 2; timeLimit = 6 * 60; }
+          else if (mode === 'part3') { initialPart = 3; timeLimit = 10 * 60; }
+          else if (mode === 'part4') { initialPart = 4; timeLimit = 14 * 60; }
+          
+          setCurrentPart(initialPart);
+          setTimeLeft(timeLimit);
           setLoading(false);
         }, 500);
       } catch (error) {
@@ -53,7 +65,7 @@ const ReadingTestPage = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       setIsStarted(false);
     };
-  }, [testId, setTestData, setIsStarted, setTimeLeft]);
+  }, [testId, setTestData, setIsStarted, setTimeLeft, mode]);
 
   const handleExit = () => setShowExitModal(true);
   const confirmExit = () => {
@@ -63,10 +75,18 @@ const ReadingTestPage = () => {
   const handleSubmit = () => setShowSubmitModal(true);
   const confirmSubmit = () => {
     const fakeSessionId = 'sess-' + Math.random().toString(36).substr(2, 9);
+    
+    let timeLimit = 35 * 60;
+    if (mode === 'part1') timeLimit = 5 * 60;
+    else if (mode === 'part2') timeLimit = 6 * 60;
+    else if (mode === 'part3') timeLimit = 10 * 60;
+    else if (mode === 'part4') timeLimit = 14 * 60;
+
     const sessionData = {
       testId: testId || 'apt-r-001',
       answers: answers,
-      timeSpent: 35 * 60 - timeLeft,
+      timeSpent: timeLimit - timeLeft,
+      mode: mode,
       timestamp: new Date().toISOString()
     };
     localStorage.setItem(fakeSessionId, JSON.stringify(sessionData));
@@ -103,38 +123,43 @@ const ReadingTestPage = () => {
   };
 
   // Navigator bar matching the mockup
-  const NavigationBar = () => (
-    <div className="flex justify-between items-center px-6 py-3 border-b border-gray-200 bg-white">
-      <div className="flex items-center gap-6">
-        <span className="font-bold text-sm text-gray-800">Part {currentPart}</span>
-        <div className="flex items-center gap-1.5">
-          <button onClick={handlePrevPart} disabled={currentPart === 1} className="w-6 h-6 flex items-center justify-center text-blue-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:hover:bg-transparent font-bold">{'<'}</button>
-          {[1, 2, 3, 4].map(partNum => (
-            <button
-              key={partNum}
-              onClick={() => setCurrentPart(partNum)}
-              className={`w-6 h-6 flex items-center justify-center rounded text-sm font-bold ${
-                currentPart === partNum ? 'bg-blue-600 text-white' : 'text-blue-600 hover:bg-blue-50'
-              }`}
-            >
-              {partNum}
+  const NavigationBar = () => {
+    const isFull = mode === 'full';
+    return (
+      <div className="flex justify-between items-center px-6 py-3 border-b border-gray-200 bg-white">
+        <div className="flex items-center gap-6">
+          <span className="font-bold text-sm text-gray-800">Part {currentPart}</span>
+          {isFull && (
+            <div className="flex items-center gap-1.5">
+              <button onClick={handlePrevPart} disabled={currentPart === 1} className="w-6 h-6 flex items-center justify-center text-blue-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:hover:bg-transparent font-bold">{'<'}</button>
+              {[1, 2, 3, 4].map(partNum => (
+                <button
+                  key={partNum}
+                  onClick={() => setCurrentPart(partNum)}
+                  className={`w-6 h-6 flex items-center justify-center rounded text-sm font-bold ${
+                    currentPart === partNum ? 'bg-blue-600 text-white' : 'text-blue-600 hover:bg-blue-50'
+                  }`}
+                >
+                  {partNum}
+                </button>
+              ))}
+              <button onClick={handleNextPart} disabled={currentPart === 4} className="w-6 h-6 flex items-center justify-center text-blue-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:hover:bg-transparent font-bold">{'>'}</button>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-4">
+          {isFull && currentPart < 4 && (
+            <button onClick={handleNextPart} className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors">
+              {'>'}
             </button>
-          ))}
-          <button onClick={handleNextPart} disabled={currentPart === 4} className="w-6 h-6 flex items-center justify-center text-blue-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:hover:bg-transparent font-bold">{'>'}</button>
+          )}
+          <button onClick={handleSubmit} className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1.5 px-6 rounded-full transition-colors">
+            Submit
+          </button>
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        {currentPart < 4 && (
-          <button onClick={handleNextPart} className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors">
-            {'>'}
-          </button>
-        )}
-        <button onClick={handleSubmit} className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1.5 px-6 rounded-full transition-colors">
-          Submit
-        </button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#d9d9d9] flex flex-col">

@@ -203,7 +203,7 @@ const ReadingChooseTestPage = () => {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
             {tests.map((test, idx) => (
-              <TestCard key={test.id} test={test} layoutMode={currentTab === 'full' ? 'full' : 'part'} index={idx} />
+              <TestCard key={test.id} test={test} layoutMode={currentTab === 'full' ? 'full' : 'part'} mode={currentTab} index={idx} />
             ))}
           </div>
 

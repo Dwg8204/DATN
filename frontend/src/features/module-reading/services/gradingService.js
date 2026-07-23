@@ -1,4 +1,4 @@
-export const calculateScore = (answers, testData) => {
+export const calculateScore = (answers, testData, mode = 'full') => {
   let totalScore = 0;
   let totalQuestions = 0;
   
@@ -10,8 +10,13 @@ export const calculateScore = (answers, testData) => {
     overall: { score: 0, total: 0, cefr: 'A1' }
   };
 
+  const showPart1 = mode === 'full' || mode === 'part1';
+  const showPart2 = mode === 'full' || mode === 'part2';
+  const showPart3 = mode === 'full' || mode === 'part3';
+  const showPart4 = mode === 'full' || mode === 'part4';
+
   // Part 1
-  if (testData.part1 && testData.part1.questions) {
+  if (showPart1 && testData.part1 && testData.part1.questions) {
     testData.part1.questions.forEach(q => {
       const userAnswer = answers[q.id];
       const isCorrect = userAnswer === q.answer;
@@ -30,9 +35,9 @@ export const calculateScore = (answers, testData) => {
   }
 
   // Part 2
-  if (testData.part2 && testData.part2.sentences) {
+  if (showPart2 && testData.part2 && testData.part2.sentences) {
     // Only sentences with correctPosition are actually gaps
-    const gapSentences = testData.part2.sentences.filter(s => s.correctPosition);
+    const gapSentences = testData.part2.sentences.filter(s => s.correctPosition && s.correctPosition > 1);
     gapSentences.forEach(s => {
       const userPosition = answers[s.id];
       const isCorrect = userPosition === s.correctPosition;
@@ -51,7 +56,7 @@ export const calculateScore = (answers, testData) => {
   }
 
   // Part 3
-  if (testData.part3 && testData.part3.questions) {
+  if (showPart3 && testData.part3 && testData.part3.questions) {
     testData.part3.questions.forEach(q => {
       const userAnswer = answers[q.id];
       const isCorrect = userAnswer === q.answer;
@@ -70,7 +75,7 @@ export const calculateScore = (answers, testData) => {
   }
 
   // Part 4
-  if (testData.part4 && testData.part4.headings && testData.part4.paragraphs) {
+  if (showPart4 && testData.part4 && testData.part4.headings && testData.part4.paragraphs) {
     testData.part4.paragraphs.forEach(p => {
       // Find the heading that has correctParagraph === p.id
       const correctHeading = testData.part4.headings.find(h => h.correctParagraph === p.id);
