@@ -151,9 +151,16 @@ export default function ListeningResultPage() {
     );
   };
 
+  const isTimedOut = searchParams.get('timedOut') === 'true';
+
   return (
     <div className={styles.page}>
       <div className={styles.contentWrap}>
+        {isTimedOut && (
+          <div style={{ backgroundColor: '#ffebe9', border: '1px solid #ff8182', color: '#d1242f', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontWeight: '500' }}>
+            Time's up! Your answers have been automatically submitted.
+          </div>
+        )}
         <div className={styles.topSection}>
           <div className={styles.cefrBox}>
             <div className={styles.cefrLabel}>CEFR Level</div>

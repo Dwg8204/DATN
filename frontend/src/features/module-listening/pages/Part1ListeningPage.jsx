@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
-import { savePartAnswers, saveTestMeta } from '../utils/listeningSessionStorage';
+import { savePartAnswers } from '../utils/listeningSessionStorage';
 import { PART1_QUESTIONS } from '../data/part1MockData';
 import styles from './Part1ListeningPage.module.css';
 
@@ -13,12 +13,11 @@ export default function Part1ListeningPage() {
   const isFullTest = searchParams.get('isFull') === 'true';
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState(() => {
+    const allAnswers = JSON.parse(sessionStorage.getItem('listening_p1_answers') || '{}');
+    return allAnswers;
+  });
   const [showSubmitModal, setShowSubmitModal] = useState(false);
-
-  useEffect(() => {
-    saveTestMeta(testId);
-  }, [testId]);
 
   // Part 1 displays one question per page to match the original design.
   const itemsPerPage = 1;
@@ -29,10 +28,14 @@ export default function Part1ListeningPage() {
   const currentPageQuestionIds = currentQuestions.map(q => q.id);
 
   const handleOptionSelect = (questionId, optionIndex) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: optionIndex
-    }));
+    setAnswers(prev => {
+      const newAnswers = {
+        ...prev,
+        [questionId]: optionIndex
+      };
+      savePartAnswers('part1', newAnswers);
+      return newAnswers;
+    });
   };
 
   const handleNext = () => {

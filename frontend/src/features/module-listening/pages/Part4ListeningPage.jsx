@@ -12,15 +12,22 @@ export default function Part4ListeningPage() {
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
 
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState(() => {
+    const allAnswers = JSON.parse(sessionStorage.getItem('listening_p4_answers') || '{}');
+    return allAnswers;
+  });
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [currentMainIdx, setCurrentMainIdx] = useState(0);
 
   const handleOptionSelect = (questionId, optionIndex) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: optionIndex
-    }));
+    setAnswers(prev => {
+      const newAnswers = {
+        ...prev,
+        [questionId]: optionIndex
+      };
+      savePartAnswers('part4', newAnswers);
+      return newAnswers;
+    });
   };
 
   const handleSubmit = () => {

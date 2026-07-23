@@ -12,7 +12,10 @@ export default function Part3ListeningPage() {
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
 
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState(() => {
+    const allAnswers = JSON.parse(sessionStorage.getItem('listening_p3_answers') || '{}');
+    return allAnswers;
+  });
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
 
@@ -29,10 +32,14 @@ export default function Part3ListeningPage() {
   }, []);
 
   const handleOptionSelect = (statementId, option) => {
-    setAnswers(prev => ({
-      ...prev,
-      [statementId]: option
-    }));
+    setAnswers(prev => {
+      const newAnswers = {
+        ...prev,
+        [statementId]: option
+      };
+      savePartAnswers('part3', newAnswers);
+      return newAnswers;
+    });
     setOpenDropdown(null);
   };
 

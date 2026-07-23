@@ -1,6 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
 import { startGrammarVocabSession } from '../features/grammar_vocab/utils/grammarVocabSessionStorage';
+import { startListeningSession } from '../features/module-listening/utils/listeningSessionStorage';
 
 const skillConfigs = {
   reading: {
@@ -69,6 +70,8 @@ export default function IntroductionPage({
 
       if (skill === 'grammar-vocab') {
         startGrammarVocabSession(testId, mode, { force: true });
+      } else if (skill === 'listening') {
+        startListeningSession(testId, mode, { force: true });
       }
       
       if (mode === 'full') {
