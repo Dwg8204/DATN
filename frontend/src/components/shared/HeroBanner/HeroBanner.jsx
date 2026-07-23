@@ -11,9 +11,11 @@ export default function HeroBanner({
       <div className={styles.inner}>
         <span className={styles.title}>{title}</span>
         <span className={styles.description}>{description}</span>
-        <button className={styles.ctaBtn} onClick={onButtonClick}>
-          <span className={styles.ctaBtnText}>{buttonText}</span>
-        </button>
+        {buttonText && (
+          <button className={styles.ctaBtn} onClick={onButtonClick}>
+            <span className={styles.ctaBtnText}>{buttonText}</span>
+          </button>
+        )}
       </div>
     </div>
   );

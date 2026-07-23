@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import HeroBanner from '../components/shared/HeroBanner/HeroBanner';
-import AnnouncementBar from '../components/common/AnnouncementBar';
 import SkillCard from '../components/shared/SkillCard/SkillCard';
 import FeatureShowcase from '../components/shared/FeatureShowcase/FeatureShowcase';
 import ReviewCard from '../components/shared/ReviewCard/ReviewCard';
@@ -71,10 +70,7 @@ export default function HomePage() {
   return (
     <div className={styles.page}>
       {/* Hero Banner */}
-      <HeroBanner onButtonClick={() => navigate('/reading/introduction')} />
-
-      {/* Announcement Bar */}
-      <AnnouncementBar />
+      <HeroBanner buttonText={null} />
 
       {/* Choose a Skill to Practice */}
       <div className={styles.skillsSection}>
