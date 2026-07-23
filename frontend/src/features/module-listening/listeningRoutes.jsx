@@ -8,6 +8,7 @@ import Part2ListeningPage from './pages/Part2ListeningPage';
 import Part3ListeningPage from './pages/Part3ListeningPage';
 import Part4ListeningPage from './pages/Part4ListeningPage';
 import ListeningResultPage from './pages/ListeningResultPage';
+import ListeningDetailResultPage from './pages/ListeningDetailResultPage';
 
 export const listeningMainRoutes = [
   {
@@ -38,5 +39,12 @@ export const listeningTestRoutes = [
       { path: 'part3', element: <Part3ListeningPage /> },
       { path: 'part4', element: <Part4ListeningPage /> },
     ]
+  },
+  {
+    path: 'listening/detail-result',
+    element: <TestLayout headerProps={{ showTimer: false, showExit: true }} />,
+    children: [
+      { index: true, element: <ListeningDetailResultPage /> },
+    ],
   }
 ];

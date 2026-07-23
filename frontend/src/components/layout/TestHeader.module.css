@@ -26,6 +26,13 @@
   gap: 48px;
 }
 
+.logoBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
 .logo {
   width: 146px;
   height: 72px;
