@@ -1,5 +1,8 @@
+import testAudio from './audio/jonasblakewood-energy-rock-action-567332.mp3';
+
 export const PART2_DATA = {
   id: 14,
+  audioUrl: testAudio,
   instruction: "Four people are talking about science. Match each speaker with the correct statement.",
   speakers: ['Speaker A', 'Speaker B', 'Speaker C', 'Speaker D'],
   options: [

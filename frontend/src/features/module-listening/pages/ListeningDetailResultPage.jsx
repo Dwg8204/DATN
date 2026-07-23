@@ -6,6 +6,7 @@ import { PART1_QUESTIONS } from '../data/part1MockData';
 import { PART2_DATA } from '../data/part2MockData';
 import { PART3_DATA } from '../data/part3MockData';
 import { PART4_QUESTIONS } from '../data/part4MockData';
+import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import styles from './ListeningDetailResultPage.module.css';
 
 function getStatus(answer, correctAnswer) {
@@ -289,23 +290,28 @@ export default function ListeningDetailResultPage() {
   let footerQuestions = [];
   let currentQuestionIds = [];
   let answeredIds = [];
+  let audioUrl = null;
 
   if (activePart === 1) {
-    footerQuestions = PART1_QUESTIONS;
-    currentQuestionIds = [PART1_QUESTIONS[currentPage - 1].id];
+    footerQuestions = PART1_QUESTIONS.map(q => ({ id: q.id }));
+    currentQuestionIds = [footerQuestions[currentPage - 1].id];
     answeredIds = Object.keys(allAnswers.part1 || {});
+    audioUrl = PART1_QUESTIONS[currentPage - 1].audioUrl;
   } else if (activePart === 2) {
-    footerQuestions = PART2_DATA.speakers.map((_, i) => ({ id: `14.${i + 1}` }));
+    footerQuestions = Array.from({ length: 4 }, (_, i) => ({ id: `14.${i + 1}` }));
     currentQuestionIds = footerQuestions.map(q => q.id);
     answeredIds = Object.keys(allAnswers.part2 || {}).map(idx => `14.${parseInt(idx) + 1}`);
+    audioUrl = PART2_DATA.audioUrl;
   } else if (activePart === 3) {
     footerQuestions = PART3_DATA.statements.map(s => ({ id: s.id }));
     currentQuestionIds = footerQuestions.map(q => q.id);
     answeredIds = Object.keys(allAnswers.part3 || {});
+    audioUrl = PART3_DATA.audioUrl;
   } else if (activePart === 4) {
     footerQuestions = PART4_QUESTIONS.flatMap(q => q.subQuestions.map(sq => ({ id: sq.id })));
     currentQuestionIds = PART4_QUESTIONS[currentPage - 1].subQuestions.map(sq => sq.id);
     answeredIds = Object.keys(allAnswers.part4 || {});
+    audioUrl = PART4_QUESTIONS[currentPage - 1].audioUrl;
   }
 
   const renderContent = () => {
@@ -360,18 +366,9 @@ export default function ListeningDetailResultPage() {
         {renderContent()}
 
         <div className={styles.audioBar}>
-          <div className={styles.audioMock}>
-            {/* Audio Mock Placeholder */}
-          </div>
-          <div className={styles.audioControls}>
-            <span className={styles.timeText}>00:30 / 08:30</span>
-            <div style={{ display: 'flex', gap: '8px' }}>
-              <button style={{ padding: '4px' }}>⏪</button>
-              <button style={{ padding: '4px' }}>▶️</button>
-              <button style={{ padding: '4px' }}>⏩</button>
-            </div>
-            <span className={styles.speedText}>Playback speed: 1x</span>
-          </div>
+          {audioUrl && (
+            <AudioPlayer src={audioUrl} compact={true} maxPlays={Infinity} />
+          )}
         </div>
       </main>
 
