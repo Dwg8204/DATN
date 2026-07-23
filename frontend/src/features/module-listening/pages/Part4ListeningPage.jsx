@@ -4,6 +4,7 @@ import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { savePartAnswers } from '../utils/listeningSessionStorage';
 import { PART4_QUESTIONS } from '../data/part4MockData';
+import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import styles from './Part4ListeningPage.module.css';
 
 export default function Part4ListeningPage() {
@@ -125,47 +126,7 @@ export default function Part4ListeningPage() {
           </div>
 
           <div className={styles.audioSection}>
-            <div className={styles.audioMock}>
-              <div className={styles.audioPlaceholder}>
-                <img src="https://placehold.co/600x250?text=Audio+Visualizer" alt="Audio Visualizer" className={styles.audioImage} />
-              </div>
-              <div className={styles.audioControlsRow}>
-                <div className={styles.audioTime}>00:30 / 08:30</div>
-                <div className={styles.volumeGroup}>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                    <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                    <path d="M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 11.995C17.004 13.3208 16.4774 14.5924 15.54 15.53" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                  </svg>
-                  <div className={styles.volumeTrack}>
-                    <div className={styles.volumeFill}></div>
-                  </div>
-                </div>
-                <div className={styles.playbackControls}>
-                  <button className={styles.rewindBtn}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-                      <polyline points="7 23 3 19 7 15" />
-                      <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-                    </svg>
-                  </button>
-                  <button className={styles.playBtn}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="white">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </button>
-                  <button className={styles.forwardBtn}>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 11V9a4 4 0 0 0-4-4H3" />
-                      <polyline points="17 23 21 19 17 15" />
-                      <path d="M3 13v2a4 4 0 0 0 4 4h14" />
-                    </svg>
-                  </button>
-                </div>
-                <div className={styles.speedControl}>
-                  Playback speed: 1x
-                </div>
-              </div>
-            </div>
+            <AudioPlayer key={currentMainQ.id} src={currentMainQ.audioUrl} maxPlays={2} />
           </div>
         </div>
       </div>

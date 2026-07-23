@@ -1,4 +1,7 @@
+import testAudio from './audio/jonasblakewood-energy-rock-action-567332.mp3';
+
 export const PART3_DATA = {
+  audioUrl: testAudio,
   id: 15,
   context: "Listen to two parents discussing the issue of children's health. Decide whose opinion matches each statement: Man, Woman, or Both.",
   subTitle: "Who expresses which opinion?",
