@@ -70,23 +70,25 @@ export const calculateScore = (answers, testData) => {
   }
 
   // Part 4
-  if (testData.part4 && testData.part4.headings) {
-    // Headings that have a correctParagraph are the actual answers
-    const correctHeadings = testData.part4.headings.filter(h => h.correctParagraph);
-    correctHeadings.forEach(h => {
-      const userParagraph = answers[h.id];
-      const isCorrect = userParagraph === h.correctParagraph;
-      if (isCorrect) results.part4.score++;
-      results.part4.total++;
+  if (testData.part4 && testData.part4.headings && testData.part4.paragraphs) {
+    testData.part4.paragraphs.forEach(p => {
+      // Find the heading that has correctParagraph === p.id
+      const correctHeading = testData.part4.headings.find(h => h.correctParagraph === p.id);
+      if (correctHeading) {
+        const userHeadingId = answers[p.id];
+        const isCorrect = userHeadingId === correctHeading.id;
+        if (isCorrect) results.part4.score++;
+        results.part4.total++;
 
-      results.part4.details.push({
-        id: h.id,
-        question: `Heading for ${h.correctParagraph}`,
-        userAnswer: userParagraph || '(No answer)',
-        correctAnswer: h.correctParagraph,
-        isCorrect,
-        explanation: `The heading "${h.text}" summarizes the main point of ${h.correctParagraph}.`
-      });
+        results.part4.details.push({
+          id: p.id,
+          question: `Heading for ${p.label || p.id}`,
+          userAnswer: userHeadingId ? (testData.part4.headings.find(h => h.id === userHeadingId)?.text || userHeadingId) : '(No answer)',
+          correctAnswer: correctHeading.text,
+          isCorrect,
+          explanation: `The paragraph ${p.label || p.id} fits best with the heading "${correctHeading.text}".`
+        });
+      }
     });
   }
 

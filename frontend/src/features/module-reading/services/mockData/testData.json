@@ -2,44 +2,59 @@
   "id": "apt-r-001",
   "title": "APTIS Reading - General Practice 1",
   "part1": {
-    "passage": "Dear John, \n\nI am writing to tell you about my new job. I started working at the local library last week and I am really [1] it so far. The staff are all very [2] and have been helping me learn the ropes. \n\nMy main responsibility is to [3] the books on the shelves, but I also help people find what they are looking for. Yesterday, a lady came in looking for a book on gardening, and I was able to find exactly what she needed. She was very [4] and even thanked me with a smile. \n\nI hope everything is going well with you. Let's catch up soon!\n\nBest,\nSarah",
+    "passage": "Dear Jane, \n\nI am writing to tell you about my new apartment. I moved in last week and I am really [1] it so far. The rooms are all very [2] and there is a lot of natural light. \n\nMy favorite spot is the balcony, where I can [3] my coffee in the morning. The neighborhood is also very [4] with many shops and parks nearby. I am so [5] to have found this place.\n\nI hope you can visit me soon!\n\nBest,\nTom",
     "questions": [
-      { "id": "p1-q1", "position": 1, "options": ["enjoying", "hating", "ignoring"], "answer": "enjoying" },
-      { "id": "p1-q2", "position": 2, "options": ["mean", "friendly", "lazy"], "answer": "friendly" },
-      { "id": "p1-q3", "position": 3, "options": ["throw", "organize", "read"], "answer": "organize" },
-      { "id": "p1-q4", "position": 4, "options": ["angry", "sad", "grateful"], "answer": "grateful" }
+      { "id": "p1-q1", "position": 1, "options": ["enjoying", "disliking", "ignoring"], "answer": "enjoying" },
+      { "id": "p1-q2", "position": 2, "options": ["small", "spacious", "dirty"], "answer": "spacious" },
+      { "id": "p1-q3", "position": 3, "options": ["drink", "spill", "sell"], "answer": "drink" },
+      { "id": "p1-q4", "position": 4, "options": ["noisy", "convenient", "crowded"], "answer": "convenient" },
+      { "id": "p1-q5", "position": 5, "options": ["sad", "lucky", "angry"], "answer": "lucky" }
     ]
   },
   "part2": {
-    "passageWithGaps": "Making a cup of tea is a simple process. First, you need to boil some water. [1] . Next, place a teabag in your favorite mug. [2] . Then, carefully pour the hot water into the mug. [3] . Finally, add milk or sugar if you like, and enjoy your tea!",
+    "title": "A History of the Potato",
     "sentences": [
-      { "id": "s1", "content": "You can use a kettle or a pot on the stove.", "correctPosition": 1 },
-      { "id": "s2", "content": "Let the tea steep for a few minutes to develop its flavor.", "correctPosition": 3 },
-      { "id": "s3", "content": "Choose a flavor that you enjoy, like chamomile or earl grey.", "correctPosition": 2 },
-      { "id": "s4", "content": "Coffee is also a popular hot beverage." }
+      { "id": "s1", "content": "The potato was first cultivated by humans in the Andes region of South America.", "correctPosition": 1 },
+      { "id": "s2", "content": "It was grown by indigenous farmers for thousands of years before the arrival of Europeans.", "correctPosition": 2 },
+      { "id": "s3", "content": "In the late 16th century, Spanish explorers introduced the vegetable to Europe.", "correctPosition": 3 },
+      { "id": "s4", "content": "Initially, many Europeans were suspicious of the strange underground tuber.", "correctPosition": 4 },
+      { "id": "s5", "content": "However, it soon became a staple food crop across the continent due to its high nutritional value.", "correctPosition": 5 },
+      { "id": "s6", "content": "Today, it is the world's fourth-largest food crop after maize, wheat, and rice.", "correctPosition": 6 }
     ]
   },
   "part3": {
-    "passage": "Four people discuss their views on remote work:\n\nAlice: I love working from home. I save so much time on my commute, and I find it easier to concentrate without the distractions of the office.\n\nBob: I miss the social interaction of the office. It's hard to build relationships with colleagues when you only see them on video calls.\n\nCharlie: I find it difficult to separate my work life from my personal life when I work from home. I often end up working longer hours.\n\nDavid: Remote work has been great for my productivity. I can set my own schedule and work when I feel most energetic.",
+    "passage": "Four people share their opinions on social media use:\n\nAlice: I use social media mainly to keep in touch with my childhood friends. It's a great tool for maintaining long-distance relationships, though I try to limit my screen time to an hour a day.\n\nBob: I find social media very distracting. I had to delete my accounts because I was spending hours scrolling instead of studying or sleeping. I feel much healthier now.\n\nCharlie: I use social media to promote my freelance photography business. It has helped me reach a global audience and find new clients that I wouldn't have met otherwise.\n\nDavid: I don't post much, but I use social media as a news source. It allows me to follow journalists and experts to get real-time updates on global events.",
     "speakers": ["Alice", "Bob", "Charlie", "David"],
     "questions": [
-      { "id": "p3-q1", "statement": "Who struggles to maintain a work-life balance?", "answer": "Charlie" },
-      { "id": "p3-q2", "statement": "Who values the time saved by not traveling to an office?", "answer": "Alice" },
-      { "id": "p3-q3", "statement": "Who feels that remote work negatively impacts teamwork and connection?", "answer": "Bob" },
-      { "id": "p3-q4", "statement": "Who appreciates the flexibility to work during their most productive times?", "answer": "David" }
+      { "id": "p3-q1", "statement": "Who deleted their accounts to stay focused?", "answer": "Bob" },
+      { "id": "p3-q2", "statement": "Who uses social media primarily to connect with old friends?", "answer": "Alice" },
+      { "id": "p3-q3", "statement": "Who leverages social media for professional marketing?", "answer": "Charlie" },
+      { "id": "p3-q4", "statement": "Who treats social media as a platform for current affairs?", "answer": "David" },
+      { "id": "p3-q5", "statement": "Who consciously restricts their daily usage time?", "answer": "Alice" },
+      { "id": "p3-q6", "statement": "Who experienced a positive impact on their well-being after quitting?", "answer": "Bob" },
+      { "id": "p3-q7", "statement": "Who values the global reach the platform provides for their work?", "answer": "Charlie" }
     ]
   },
   "part4": {
+    "title": "Transitioning to Renewable Energy",
     "paragraphs": [
-      { "id": "para1", "label": "Paragraph A", "content": "The history of the bicycle is a fascinating journey of innovation and adaptation. Early precursors to the modern bicycle, such as the 'dandy horse', lacked pedals and required the rider to push along the ground with their feet. These early designs were cumbersome and impractical for everyday use." },
-      { "id": "para2", "label": "Paragraph B", "content": "The invention of pedals and the chain drive revolutionized bicycle design. These advancements allowed riders to propel themselves forward more efficiently and achieve greater speeds. The 'penny-farthing', with its large front wheel, became a popular albeit dangerous iteration." },
-      { "id": "para3", "label": "Paragraph C", "content": "The development of the 'safety bicycle' in the late 19th century marked a turning point. Featuring equal-sized wheels and a chain drive, it offered a much safer and more comfortable ride. This design remains the foundation of modern bicycles." }
+      { "id": "para1", "label": "Paragraph A", "content": "The rise of renewable energy sources, such as wind and solar power, is transforming the global energy landscape. Governments worldwide are investing heavily in green infrastructure to reduce carbon emissions and combat climate change. This transition is not only environmental but also economic, creating millions of new jobs." },
+      { "id": "para2", "label": "Paragraph B", "content": "Despite the growth of clean energy, fossil fuels still dominate the energy mix in many regions. Transitioning away from coal and oil requires massive grid updates and financial investments. Critics argue that the intermittent nature of wind and solar makes them unreliable as a primary power source." },
+      { "id": "para3", "label": "Paragraph C", "content": "Battery storage technologies are key to overcoming the intermittency problem. By storing excess energy generated during sunny or windy periods, batteries can release power when the sun isn't shining or the wind isn't blowing. Research is focused on making these systems cheaper and more efficient." },
+      { "id": "para4", "label": "Paragraph D", "content": "Nuclear power remains a controversial topic in discussions of clean energy. While it produces virtually no greenhouse gases, concerns persist regarding radioactive waste disposal and the risk of catastrophic accidents. Some nations are phasing out reactors, while others see them as essential for baseline power." },
+      { "id": "para5", "label": "Paragraph E", "content": "Individual action, such as energy conservation, plays a vital role alongside large-scale energy projects. Simple habits like switching off unused lights, installing insulation, and using energy-efficient appliances can collectively lower energy demand. Smart meters also help households monitor and optimize their consumption." },
+      { "id": "para6", "label": "Paragraph F", "content": "Electric vehicles (EVs) are another critical component of the energy transition. As battery ranges improve and charging stations become more widespread, consumer adoption is accelerating. This shift from combustion engines to electric motors will significantly cut transportation emissions." },
+      { "id": "para7", "label": "Paragraph G", "content": "The future of energy may also lie in emerging technologies like green hydrogen and nuclear fusion. Although these technologies are currently in the experimental or early adoption phase, they offer the promise of limitless, zero-emission energy. Scientists are working to solve the immense engineering challenges involved." }
     ],
     "headings": [
-      { "id": "h1", "text": "The Evolution of Bicycle Safety", "correctParagraph": "para3" },
-      { "id": "h2", "text": "Early Attempts at Human-Powered Transport", "correctParagraph": "para1" },
-      { "id": "h3", "text": "The Impact of Pedals and Chains", "correctParagraph": "para2" },
-      { "id": "h4", "text": "Bicycles in the Modern Era" }
+      { "id": "h1", "text": "The Role of Battery Storage", "correctParagraph": "para3" },
+      { "id": "h2", "text": "Environmental and Economic Benefits", "correctParagraph": "para1" },
+      { "id": "h3", "text": "Challenges of Moving Away from Fossil Fuels", "correctParagraph": "para2" },
+      { "id": "h4", "text": "The Ongoing Nuclear Debate", "correctParagraph": "para4" },
+      { "id": "h5", "text": "How Households Can Save Energy", "correctParagraph": "para5" },
+      { "id": "h6", "text": "The Rise of Electric Transport", "correctParagraph": "para6" },
+      { "id": "h7", "text": "Experimental Tech of the Future", "correctParagraph": "para7" },
+      { "id": "h8", "text": "The History of Steam Power" }
     ]
   }
 }
