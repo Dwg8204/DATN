@@ -1,0 +1,67 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px);
+  background: #FFFFFF;
+}
+
+.contentWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+}
+
+.headerBlock {
+  background: #F1F2EC;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  padding: 16px 24px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.partTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+}
+
+.skillTitle {
+  font-size: 16px;
+  color: #000;
+}
+
+.instructionBlock {
+  background: #FFF9F1;
+  border-radius: 10px;
+  border: 1px solid #191C1D;
+  padding: 24px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.instructionTitle {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+}
+
+.instructionText {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+}
+
+.mainArea {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
