@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-do
 import styles from './TestHeader.module.css';
 import { getGrammarVocabRemainingSeconds } from '../../features/grammar_vocab/utils/grammarVocabSessionStorage';
 import { getListeningRemainingSeconds } from '../../features/module-listening/utils/listeningSessionStorage';
+import { getReadingRemainingSeconds } from '../../features/module-reading/utils/readingSessionStorage';
 
 function formatRemainingTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -17,14 +18,16 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
   const [showExitModal, setShowExitModal] = useState(false);
   const isGrammarVocabTest = location.pathname.startsWith('/grammar-vocab/test/');
   const isListeningTest = location.pathname.startsWith('/listening/test/');
+  const isReadingTest = location.pathname.startsWith('/reading/test/');
   const [remainingSeconds, setRemainingSeconds] = useState(() => {
     if (isGrammarVocabTest) return getGrammarVocabRemainingSeconds();
     if (isListeningTest) return getListeningRemainingSeconds();
+    if (isReadingTest) return getReadingRemainingSeconds();
     return null;
   });
 
   useEffect(() => {
-    if (!isGrammarVocabTest && !isListeningTest) return undefined;
+    if (!isGrammarVocabTest && !isListeningTest && !isReadingTest) return undefined;
 
     const updateTimer = () => {
       let remaining = null;
@@ -32,6 +35,8 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
         remaining = getGrammarVocabRemainingSeconds();
       } else if (isListeningTest) {
         remaining = getListeningRemainingSeconds();
+      } else if (isReadingTest) {
+        remaining = getReadingRemainingSeconds();
       }
       setRemainingSeconds(remaining);
 

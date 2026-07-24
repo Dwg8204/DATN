@@ -17,6 +17,7 @@ import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
 import { listeningMainRoutes, listeningTestRoutes } from '../features/module-listening/listeningRoutes';
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
 import { readingMainRoutes, readingTestRoutes } from '../features/module-reading/readingRoutes';
+import FlashcardPage from '../features/module-reading/pages/FlashcardPage';
 
 export const appRoutes = [
   {
@@ -54,6 +55,14 @@ export const appRoutes = [
       {
         path: 'grammar-vocab/result',
         element: <GrammarVocabResultPage />,
+      },
+      {
+        path: 'vocab',
+        element: <FlashcardPage />,
+      },
+      {
+        path: 'dictation',
+        element: <FlashcardPage />,
       },
       {
         path: ':skill/tests',

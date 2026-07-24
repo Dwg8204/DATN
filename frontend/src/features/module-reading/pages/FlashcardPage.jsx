@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, BrainCircuit, LayoutGrid, List, BookOpen } from 'lucide-react';
 import { FlashcardSkeleton } from '../../../components/common/SkeletonLoaders';
 
 const FlashcardPage = () => {
+  const location = useLocation();
+  const isDictation = location.pathname.startsWith('/dictation');
+  
   const [vocabData, setVocabData] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  // State for view and filters
-  // cardMode: 'flashcard' = English front / 'nghia' = Vietnamese front
-  const [viewMode, setViewMode] = useState('flashcard'); // 'flashcard' or 'list'
+  const [viewMode, setViewMode] = useState(isDictation ? 'list' : 'flashcard'); // 'flashcard' or 'list'
   const [cardMode, setCardMode] = useState('flashcard'); // 'flashcard' or 'nghia'
   const [filter, setFilter] = useState('all'); // 'all', 1, 2, 3
   

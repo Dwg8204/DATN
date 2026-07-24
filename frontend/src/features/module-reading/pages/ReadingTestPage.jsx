@@ -1,18 +1,18 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ReadingTestContext } from '../context/ReadingTestContext';
-import TestHeader from '../components/test-engine/TestHeader';
-import ExitModal from '../components/test-engine/ExitModal';
-import SubmitModal from '../components/test-engine/SubmitModal';
+import TestFooter from '../../../components/layout/TestFooter';
+import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
+import { getReadingRemainingSeconds, getReadingDuration } from '../utils/readingSessionStorage';
 
 import Part1GapFilling from '../components/test-engine/parts/Part1GapFilling';
 import Part2TextCohesion from '../components/test-engine/parts/Part2TextCohesion';
 import Part3OpinionMatch from '../components/test-engine/parts/Part3OpinionMatch';
 import Part4MatchHeading from '../components/test-engine/parts/Part4MatchHeading';
 
-import { TestEngineSkeleton } from '../../../components/common/SkeletonLoaders';
+import styles from './ReadingTestPage.module.css';
 
-const ReadingTestPage = () => {
+export default function ReadingTestPage() {
   const { testId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -22,11 +22,10 @@ const ReadingTestPage = () => {
     testData, setTestData, 
     currentPart, setCurrentPart,
     setIsStarted, setTimeLeft,
-    answers, timeLeft
+    answers
   } = useContext(ReadingTestContext);
 
   const [loading, setLoading] = useState(true);
-  const [showExitModal, setShowExitModal] = useState(false);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   useEffect(() => {
@@ -38,16 +37,14 @@ const ReadingTestPage = () => {
           setIsStarted(true);
           
           let initialPart = 1;
-          let timeLimit = 35 * 60;
-          if (mode === 'part1') { initialPart = 1; timeLimit = 5 * 60; }
-          else if (mode === 'part2') { initialPart = 2; timeLimit = 6 * 60; }
-          else if (mode === 'part3') { initialPart = 3; timeLimit = 10 * 60; }
-          else if (mode === 'part4') { initialPart = 4; timeLimit = 14 * 60; }
+          if (mode === 'part1') initialPart = 1;
+          else if (mode === 'part2') initialPart = 2;
+          else if (mode === 'part3') initialPart = 3;
+          else if (mode === 'part4') initialPart = 4;
           
           setCurrentPart(initialPart);
-          setTimeLeft(timeLimit);
           setLoading(false);
-        }, 500);
+        }, 400);
       } catch (error) {
         console.error("Failed to load test data", error);
         setLoading(false);
@@ -56,53 +53,59 @@ const ReadingTestPage = () => {
     
     fetchTestData();
 
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = '';
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
     return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
       setIsStarted(false);
     };
-  }, [testId, setTestData, setIsStarted, setTimeLeft, mode]);
+  }, [testId, setTestData, setIsStarted, setCurrentPart, mode]);
 
-  const handleExit = () => setShowExitModal(true);
-  const confirmExit = () => {
-    setIsStarted(false);
-    navigate('/reading/choose');
+  // Dynamic automatic timeout submission
+  useEffect(() => {
+    const checkTimer = setInterval(() => {
+      const remaining = getReadingRemainingSeconds();
+      if (remaining === 0) {
+        clearInterval(checkTimer);
+        confirmSubmit();
+      }
+    }, 1000);
+    return () => clearInterval(checkTimer);
+  }, [answers, mode, testId]);
+
+  const handleSubmit = () => {
+    setShowSubmitModal(true);
   };
-  const handleSubmit = () => setShowSubmitModal(true);
+
   const confirmSubmit = () => {
     const fakeSessionId = 'sess-' + Math.random().toString(36).substr(2, 9);
-    
-    let timeLimit = 35 * 60;
-    if (mode === 'part1') timeLimit = 5 * 60;
-    else if (mode === 'part2') timeLimit = 6 * 60;
-    else if (mode === 'part3') timeLimit = 10 * 60;
-    else if (mode === 'part4') timeLimit = 14 * 60;
+    const duration = getReadingDuration(mode);
+    const timeLeft = getReadingRemainingSeconds();
 
     const sessionData = {
       testId: testId || 'apt-r-001',
       answers: answers,
-      timeSpent: timeLimit - timeLeft,
+      timeSpent: duration - timeLeft,
       mode: mode,
       timestamp: new Date().toISOString()
     };
     localStorage.setItem(fakeSessionId, JSON.stringify(sessionData));
+    setShowSubmitModal(false);
     navigate(`/reading/result/${fakeSessionId}`);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#d9d9d9] flex flex-col">
-        <header className="bg-white shadow-sm border-b border-gray-100 h-16"></header>
-        <main className="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-6 flex flex-col">
-          <TestEngineSkeleton />
-        </main>
-      </div>
-    );
-  }
+  const handleNextPart = () => {
+    if (currentPart < 4) setCurrentPart(currentPart + 1);
+  };
+  
+  const handlePrevPart = () => {
+    if (currentPart > 1) setCurrentPart(currentPart - 1);
+  };
+
+  const handleFooterSubmit = () => {
+    if (mode === 'full' && currentPart < 4) {
+      handleNextPart();
+    } else {
+      handleSubmit();
+    }
+  };
 
   const renderCurrentPart = () => {
     switch (currentPart) {
@@ -114,87 +117,131 @@ const ReadingTestPage = () => {
     }
   };
 
-  const handleNextPart = () => {
-    if (currentPart < 4) setCurrentPart(currentPart + 1);
-  };
-  
-  const handlePrevPart = () => {
-    if (currentPart > 1) setCurrentPart(currentPart - 1);
+  const getFooterData = () => {
+    let footerQuestions = [];
+    let currentQuestionIds = [];
+    let answeredIds = [];
+
+    if (currentPart === 1) {
+      footerQuestions = [1, 2, 3, 4, 5].map(id => ({ id }));
+      currentQuestionIds = [1, 2, 3, 4, 5];
+      answeredIds = [1, 2, 3, 4, 5]
+        .filter(idx => answers[`p1-q${idx}`])
+        .map(String);
+    } else if (currentPart === 2) {
+      footerQuestions = [6, 7, 8, 9, 10].map(id => ({ id }));
+      currentQuestionIds = [6, 7, 8, 9, 10];
+      const part2Answers = [2, 3, 4, 5, 6].map(pos => {
+        const sentenceId = Object.keys(answers).find(key => key.startsWith('s') && answers[key] === pos);
+        return sentenceId ? true : false;
+      });
+      answeredIds = [6, 7, 8, 9, 10]
+        .filter((_, idx) => part2Answers[idx])
+        .map(String);
+    } else if (currentPart === 3) {
+      footerQuestions = [11, 12, 13, 14, 15, 16, 17].map(id => ({ id }));
+      currentQuestionIds = [11, 12, 13, 14, 15, 16, 17];
+      answeredIds = [11, 12, 13, 14, 15, 16, 17]
+        .filter(id => answers[`p3-q${id - 10}`])
+        .map(String);
+    } else if (currentPart === 4) {
+      footerQuestions = [18, 19, 20, 21, 22, 23, 24].map(id => ({ id }));
+      currentQuestionIds = [18, 19, 20, 21, 22, 23, 24];
+      answeredIds = [18, 19, 20, 21, 22, 23, 24]
+        .filter(id => answers[`para${id - 17}`])
+        .map(String);
+    }
+
+    return { footerQuestions, currentQuestionIds, answeredIds };
   };
 
-  // Navigator bar matching the mockup
-  const NavigationBar = () => {
-    const isFull = mode === 'full';
+  const getHeaderInfo = () => {
+    switch (currentPart) {
+      case 1:
+        return {
+          title: 'Part 1',
+          skill: 'Reading Test',
+          range: 'Questions 1-5',
+          instruction: 'Read the short text. Choose a word from the list to complete the text. The first one is done for you.'
+        };
+      case 2:
+        return {
+          title: 'Part 2',
+          skill: 'Reading Test',
+          range: 'Questions 6-10',
+          instruction: 'The sentences below are from a report. Put the sentences in the right order. The first sentence is done for you.'
+        };
+      case 3:
+        return {
+          title: 'Part 3',
+          skill: 'Reading Test',
+          range: 'Questions 11-17',
+          instruction: 'Four people respond in the comments section of an online magazine article about advanced level tests. Read the texts and then answer the questions below.'
+        };
+      case 4:
+        return {
+          title: 'Part 4',
+          skill: 'Reading Test',
+          range: 'Questions 18-24',
+          instruction: 'Read the passage quickly. Choose a heading for each numbered paragraph (1 - 7) from the drop-down box. There is one more heading than you need.'
+        };
+      default:
+        return {
+          title: 'Part 1',
+          skill: 'Reading Test',
+          range: 'Questions 1-5',
+          instruction: 'Read the short text. Choose a word from the list to complete the text.'
+        };
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="flex justify-between items-center px-6 py-3 border-b border-gray-200 bg-white">
-        <div className="flex items-center gap-6">
-          <span className="font-bold text-sm text-gray-800">Part {currentPart}</span>
-          {isFull && (
-            <div className="flex items-center gap-1.5">
-              <button onClick={handlePrevPart} disabled={currentPart === 1} className="w-6 h-6 flex items-center justify-center text-blue-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:hover:bg-transparent font-bold">{'<'}</button>
-              {[1, 2, 3, 4].map(partNum => (
-                <button
-                  key={partNum}
-                  onClick={() => setCurrentPart(partNum)}
-                  className={`w-6 h-6 flex items-center justify-center rounded text-sm font-bold ${
-                    currentPart === partNum ? 'bg-blue-600 text-white' : 'text-blue-600 hover:bg-blue-50'
-                  }`}
-                >
-                  {partNum}
-                </button>
-              ))}
-              <button onClick={handleNextPart} disabled={currentPart === 4} className="w-6 h-6 flex items-center justify-center text-blue-600 hover:bg-gray-100 rounded disabled:opacity-30 disabled:hover:bg-transparent font-bold">{'>'}</button>
-            </div>
-          )}
-        </div>
-        <div className="flex items-center gap-4">
-          {isFull && currentPart < 4 && (
-            <button onClick={handleNextPart} className="w-6 h-6 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors">
-              {'>'}
-            </button>
-          )}
-          <button onClick={handleSubmit} className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1.5 px-6 rounded-full transition-colors">
-            Submit
-          </button>
-        </div>
+      <div className="min-h-[calc(100vh-80px)] flex justify-center items-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#A11D33]"></div>
       </div>
     );
-  };
+  }
+
+  const { footerQuestions, currentQuestionIds, answeredIds } = getFooterData();
+  const headerInfo = getHeaderInfo();
+  const submitLabel = (mode === 'full' && currentPart < 4) ? 'Next Part' : 'Submit';
 
   return (
-    <div className="min-h-screen bg-[#d9d9d9] flex flex-col">
-      <TestHeader onExit={handleExit} onSubmit={handleSubmit} />
-      
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 md:px-8 py-8 flex flex-col">
-        <div className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden flex flex-col min-h-[600px]">
-          
-          {currentPart === 1 && <NavigationBar />}
-          
-          <div className="flex-1 p-0 flex flex-col">
-            {renderCurrentPart()}
-          </div>
-          
-          {currentPart > 1 && <NavigationBar />}
-
+    <div className={styles.page}>
+      <div className={styles.contentWrap}>
+        <div className={styles.headerBlock}>
+          <div className={styles.partTitle}>{headerInfo.title}</div>
+          <div className={styles.skillTitle}>{headerInfo.skill}</div>
         </div>
-      </main>
 
-      {showExitModal && (
-        <ExitModal 
-          onConfirm={confirmExit} 
-          onCancel={() => setShowExitModal(false)} 
-        />
-      )}
-      
-      {showSubmitModal && (
-        <SubmitModal 
-          onConfirm={confirmSubmit} 
-          onCancel={() => setShowSubmitModal(false)}
-          answers={answers}
-        />
-      )}
+        <div className={styles.instructionBlock}>
+          <span className={styles.instructionTitle}>{headerInfo.range}</span>
+          <span className={styles.instructionText}>{headerInfo.instruction}</span>
+        </div>
+
+        <div className={styles.mainArea}>
+          {renderCurrentPart()}
+        </div>
+      </div>
+
+      <TestFooter 
+        partLabel={`Part ${currentPart}`}
+        questions={footerQuestions}
+        answeredIds={answeredIds}
+        currentPageQuestionIds={currentQuestionIds}
+        onQuestionClick={() => {}}
+        onPrevClick={handlePrevPart}
+        onNextClick={handleNextPart}
+        onSubmitClick={handleFooterSubmit}
+        submitLabel={submitLabel}
+      />
+
+      <SubmitModal 
+        isOpen={showSubmitModal}
+        onBack={() => setShowSubmitModal(false)}
+        onNext={confirmSubmit}
+      />
     </div>
   );
-};
-
-export default ReadingTestPage;
+}

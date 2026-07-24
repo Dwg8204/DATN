@@ -43,18 +43,9 @@ const Part1GapFilling = ({ data }) => {
       );
     });
   };
-
   return (
     <div className="flex flex-col h-full bg-white animate-in fade-in">
-      <div className="p-6 border-b border-gray-200">
-         <h2 className="text-sm font-bold text-gray-900 uppercase">READING PART 1</h2>
-      </div>
-      <div className="p-6 md:p-8 flex-1">
-        <div className="mb-6">
-          <h3 className="font-bold text-gray-900 mb-1">Question 1 of 5</h3>
-          <p className="text-gray-700 text-sm">Read the short text. Choose a word from the list to complete the text. The first one is done for you.</p>
-        </div>
-
+      <div className="p-4 flex-1">
         <div className="text-sm leading-loose text-gray-800 max-w-3xl">
           {renderPassage()}
         </div>
