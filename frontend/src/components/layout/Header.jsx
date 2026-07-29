@@ -65,39 +65,39 @@ export default function Header() {
             className={styles.logo}
           />
         </Link>
-        <nav className={styles.nav}>
-          {navItems.map((item) => (
-            <div key={item.label} className={styles.navItemContainer}>
-              <button
-                className={styles.navItem}
-                onClick={() => navigate(item.to)}
-              >
-                <span className={styles.navLabel}>{item.label}</span>
-                {item.icon && (
-                  <img
-                    src={item.icon}
-                    alt=""
-                    className={styles.navIcon}
-                  />
-                )}
-              </button>
-              {item.dropdown && (
-                <div className={styles.dropdownMenu}>
-                  {item.dropdown.map((subItem) => (
-                    <button
-                      key={subItem.label}
-                      className={styles.dropdownItem}
-                      onClick={() => navigate(subItem.to)}
-                    >
-                      {subItem.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
-        </nav>
       </div>
+      <nav className={styles.nav}>
+        {navItems.map((item) => (
+          <div key={item.label} className={styles.navItemContainer}>
+            <button
+              className={styles.navItem}
+              onClick={() => navigate(item.to)}
+            >
+              <span className={styles.navLabel}>{item.label}</span>
+              {item.icon && (
+                <img
+                  src={item.icon}
+                  alt=""
+                  className={styles.navIcon}
+                />
+              )}
+            </button>
+            {item.dropdown && (
+              <div className={styles.dropdownMenu}>
+                {item.dropdown.map((subItem) => (
+                  <button
+                    key={subItem.label}
+                    className={styles.dropdownItem}
+                    onClick={() => navigate(subItem.to)}
+                  >
+                    {subItem.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </nav>
       <button className={styles.signInBtn} onClick={() => navigate('/login')}>
         <span className={styles.signInText}>SIGN IN</span>
       </button>

@@ -12,12 +12,16 @@ export default function TestFooter({
   onSubmitClick,
   submitLabel = 'Submit'
 }) {
+  const validQuestions = questions.filter(
+    (question) => question?.id !== undefined && question?.id !== null && question.id !== '',
+  );
+
   return (
     <div className={styles.testFooter}>
       <div className={styles.leftSection}>
         <div className={styles.partLabel}>{partLabel}</div>
         <div className={styles.questionList}>
-          {questions.map((q) => {
+          {validQuestions.map((q) => {
             const isAnswered = answeredIds.includes(String(q.id));
             const isOnCurrentPage = currentPageQuestionIds.includes(q.id);
             return (

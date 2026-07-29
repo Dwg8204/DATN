@@ -3,9 +3,9 @@ import styles from './FeatureShowcase.module.css';
 
 export default function FeatureShowcase({
   sectionTitle = 'Key Features',
-  featureTitle = 'Realistic Exam Interface',
+  featureTitle = 'Realistic Aptis Exam Experience',
   featureImage = 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/jie2waj6_expires_30_days.png',
-  featureDescription = 'YouReady.net simulates the actual IELTS test format and timing, helping learners get familiar with the real test environment from home. Accessible on both laptops and mobile phones for flexible learning.',
+  featureDescription = 'AptiMate recreates the Aptis test format, question types, and timing so you can practise Listening, Reading, Writing, Speaking, Grammar, and Vocabulary with confidence. Study on desktop or mobile, receive instant results, review every answer, and focus your practice on the skills that need the most improvement.',
   totalDots = 3,
   activeDot = 0,
 }) {
