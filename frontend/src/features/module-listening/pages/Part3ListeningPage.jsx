@@ -1,10 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { savePartAnswers } from '../utils/listeningSessionStorage';
 import { PART3_DATA } from '../data/part3MockData';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
+import AnswerSelect from '../../../components/common/AnswerSelect';
+import InstructionBlock from '../../../components/common/InstructionBlock';
 import styles from './Part3ListeningPage.module.css';
 
 export default function Part3ListeningPage() {
@@ -18,20 +20,6 @@ export default function Part3ListeningPage() {
     return allAnswers;
   });
   const [showSubmitModal, setShowSubmitModal] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null);
-
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpenDropdown(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleOptionSelect = (statementId, option) => {
     setAnswers(prev => {
       const newAnswers = {
@@ -41,7 +29,6 @@ export default function Part3ListeningPage() {
       savePartAnswers('part3', newAnswers);
       return newAnswers;
     });
-    setOpenDropdown(null);
   };
 
   const handleSubmit = () => {
@@ -75,14 +62,9 @@ export default function Part3ListeningPage() {
           <div className={styles.skillTitle}>Listening Test</div>
         </div>
 
-        <div className={styles.instructionBlock}>
-          <span className={styles.instructionTitle}>
-            Question {PART3_DATA.id}<br />
-          </span>
-          <span className={styles.instructionText}>
-            {PART3_DATA.context}
-          </span>
-        </div>
+        <InstructionBlock title={`Question ${PART3_DATA.id}`}>
+          {PART3_DATA.context}
+        </InstructionBlock>
 
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
@@ -91,7 +73,6 @@ export default function Part3ListeningPage() {
 
               <div className={styles.matchingList}>
                 {PART3_DATA.statements.map((stmt) => {
-                  const isOpen = openDropdown === stmt.id;
                   const selectedOption = answers[stmt.id];
 
                   return (
@@ -99,30 +80,13 @@ export default function Part3ListeningPage() {
                       <span className={styles.statementText}>{stmt.text}</span>
 
                       <div className={styles.dropdownContainer}>
-                        <div
-                          className={`${styles.dropdownTrigger} ${selectedOption ? styles.hasValue : ''}`}
-                          onClick={() => setOpenDropdown(isOpen ? null : stmt.id)}
-                        >
-                          {selectedOption ? (
-                            <span>{selectedOption}</span>
-                          ) : (
-                            <span className={styles.dropdownPlaceholder}>Select opinion</span>
-                          )}
-                        </div>
-
-                        {isOpen && (
-                          <div className={styles.dropdownMenu} ref={dropdownRef}>
-                            {PART3_DATA.options.map((opt, optIdx) => (
-                              <div
-                                key={optIdx}
-                                className={`${styles.dropdownItem} ${selectedOption === opt ? styles.dropdownItemSelected : ''}`}
-                                onClick={() => handleOptionSelect(stmt.id, opt)}
-                              >
-                                {opt}
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        <AnswerSelect
+                          value={selectedOption || ''}
+                          onChange={(event) => handleOptionSelect(stmt.id, event.target.value)}
+                          placeholder="Select opinion"
+                          ariaLabel={`Answer for statement ${stmt.id}`}
+                          options={PART3_DATA.options}
+                        />
                       </div>
                     </div>
                   );

@@ -1,0 +1,20 @@
+.instructionBlock {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.instructionTitle,
+.instructionText {
+  color: #000;
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.instructionTitle {
+  font-weight: 700;
+}
+
+.instructionText {
+  font-weight: 400;
+}

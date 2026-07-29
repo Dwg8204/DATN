@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { calculateScore } from '../services/gradingService';
+import AnswerSelect from '../../../components/common/AnswerSelect';
 
 const ReviewFeedbackPage = () => {
   const { sessionId } = useParams();
@@ -89,19 +90,14 @@ const ReviewFeedbackPage = () => {
 
               return (
                 <span key={index} className="inline-flex items-center mx-2 align-middle">
-                  <select
+                  <AnswerSelect
                     disabled
                     value={userAnswer}
-                    className={`appearance-none bg-white border ${
-                      isCorrect ? 'border-[#E5E2D9]' : 'border-[#C82323] border-2 ring-1 ring-[#C82323]'
-                    } py-1 pl-3 pr-8 rounded text-sm text-gray-800 focus:outline-none min-w-[120px]`}
-                    style={{ backgroundImage: `url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto' }}
-                  >
-                    <option value="" disabled></option>
-                    {question.options.map((opt, i) => (
-                      <option key={i} value={opt}>{opt}</option>
-                    ))}
-                  </select>
+                    status={isCorrect ? 'correct' : 'incorrect'}
+                    options={question.options}
+                    placeholder="No answer"
+                    ariaLabel={`Answer for gap ${position}`}
+                  />
                   <button 
                     onClick={() => setSelectedExplanation({
                       title: `Gap [${position}]`,
@@ -247,19 +243,15 @@ const ReviewFeedbackPage = () => {
                   
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
                     <div className="flex items-center gap-2">
-                      <select
+                      <AnswerSelect
                         disabled
                         value={userAnswer}
-                        className={`appearance-none bg-white border ${
-                          isCorrect ? 'border-[#E5E2D9]' : 'border-[#C82323] border-2 ring-1 ring-[#C82323]'
-                        } py-1.5 pl-3 pr-8 rounded text-sm text-gray-800 focus:outline-none w-[130px]`}
-                        style={{ backgroundImage: `url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto' }}
-                      >
-                        <option value="" disabled></option>
-                        {data.speakers.map((opt, i) => (
-                          <option key={i} value={opt}>{opt}</option>
-                        ))}
-                      </select>
+                        className="w-[130px]"
+                        status={isCorrect ? 'correct' : 'incorrect'}
+                        options={data.speakers}
+                        placeholder="No answer"
+                        ariaLabel={`Answer for question ${index + 1}`}
+                      />
                       
                       {!isCorrect && (
                         <span className="text-xs text-gray-500 font-bold">
@@ -324,19 +316,18 @@ const ReviewFeedbackPage = () => {
                     <span className="font-black text-gray-900 text-sm">{paragraph.label}</span>
                     
                     <div className="flex items-center gap-3">
-                      <select
+                      <AnswerSelect
                         disabled
                         value={userPlacedHeadingId?.id || ''}
-                        className={`appearance-none bg-white border ${
-                          isCorrect ? 'border-[#E5E2D9]' : 'border-[#C82323] border-2 ring-1 ring-[#C82323]'
-                        } py-1 pl-2 pr-8 rounded text-sm text-gray-800 focus:outline-none min-w-[200px]`}
-                        style={{ backgroundImage: `url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right .5rem top 50%', backgroundSize: '.65rem auto' }}
-                      >
-                        <option value="" disabled>- - -</option>
-                        {data.headings.map((heading) => (
-                          <option key={heading.id} value={heading.id}>{heading.text}</option>
-                        ))}
-                      </select>
+                        className="min-w-[200px]"
+                        status={isCorrect ? 'correct' : 'incorrect'}
+                        options={data.headings.map((heading) => ({
+                          value: heading.id,
+                          label: heading.text,
+                        }))}
+                        placeholder="No answer"
+                        ariaLabel={`${paragraph.label} heading`}
+                      />
 
                       <button 
                         onClick={() => setSelectedExplanation({
