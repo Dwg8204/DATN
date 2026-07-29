@@ -5,6 +5,8 @@ import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { savePartAnswers } from '../utils/listeningSessionStorage';
 import { PART4_QUESTIONS } from '../data/part4MockData';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
+import InstructionBlock from '../../../components/common/InstructionBlock';
+import MultipleChoice from '../../../components/common/MultipleChoice';
 import styles from './Part4ListeningPage.module.css';
 
 export default function Part4ListeningPage() {
@@ -78,14 +80,9 @@ export default function Part4ListeningPage() {
           <div className={styles.skillTitle}>Listening Test</div>
         </div>
 
-        <div className={styles.instructionBlock}>
-          <span className={styles.instructionTitle}>
-            Questions {allQuestionIds.join(', ')}<br />
-          </span>
-          <span className={styles.instructionText}>
-            Listen and choose the correct answer to the question.
-          </span>
-        </div>
+        <InstructionBlock title={`Questions ${allQuestionIds.join(', ')}`}>
+          Listen and choose the correct answer to the question.
+        </InstructionBlock>
 
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
@@ -102,23 +99,12 @@ export default function Part4ListeningPage() {
                         <div className={styles.questionSubText}>{q.text}</div>
                       </div>
                       
-                      <div className={styles.radioOptionsList}>
-                        {q.options.map((opt, idx) => {
-                          const isSelected = answers[q.id] === idx;
-                          return (
-                            <div 
-                              key={idx} 
-                              className={styles.radioOptionItem}
-                              onClick={() => handleOptionSelect(q.id, idx)}
-                            >
-                              <div className={`${styles.radioCircle} ${isSelected ? styles.radioCircleSelected : ''}`}>
-                                {isSelected && <div className={styles.radioCircleInner}></div>}
-                              </div>
-                              <div className={styles.radioOptionText}>{opt}</div>
-                            </div>
-                          );
-                        })}
-                      </div>
+                      <MultipleChoice
+                        name={`listening-question-${q.id}`}
+                        options={q.options}
+                        value={answers[q.id]}
+                        onChange={(optionIndex) => handleOptionSelect(q.id, optionIndex)}
+                      />
                     </div>
                   ))}
                 </div>

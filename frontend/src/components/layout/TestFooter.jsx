@@ -13,7 +13,11 @@ export default function TestFooter({
   submitLabel = 'Submit'
 }) {
   const validQuestions = questions.filter(
-    (question) => question?.id !== undefined && question?.id !== null && question.id !== '',
+    (question) => (
+      question?.id !== undefined
+      && question?.id !== null
+      && String(question.id).trim() !== ''
+    ),
   );
 
   return (

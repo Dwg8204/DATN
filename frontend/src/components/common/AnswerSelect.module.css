@@ -1,0 +1,53 @@
+.select {
+  width: 100%;
+  min-width: 120px;
+  min-height: 40px;
+  padding: 7px 42px 7px 14px;
+  appearance: none;
+  border: 1px solid #000;
+  border-radius: 4px;
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #131927 50%),
+    linear-gradient(135deg, #131927 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-repeat: no-repeat;
+  background-size: 5px 5px, 5px 5px;
+  color: #000;
+  font-size: 16px;
+  line-height: 24px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.select:hover {
+  background-color: #f9f9f9;
+}
+
+.select:focus-visible {
+  border-color: #0095ff;
+  box-shadow: 0 0 0 3px rgba(0, 149, 255, 0.18);
+}
+
+.hasValue {
+  background-color: #f3d5b5;
+}
+
+.correct {
+  border-color: #43b75d;
+  background-color: #edf9f0;
+}
+
+.incorrect {
+  border: 2px solid #c82323;
+  background-color: #fff0f1;
+}
+
+.select:disabled {
+  color: #000;
+  cursor: default;
+  opacity: 1;
+}
