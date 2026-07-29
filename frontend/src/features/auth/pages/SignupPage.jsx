@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PasswordInput from '../components/PasswordInput';
 import styles from './Auth.module.css';
 
 export default function SignupPage() {
@@ -35,16 +36,16 @@ export default function SignupPage() {
             </div>
             <div className={styles.inputCol}>
               <span className={styles.label} style={{ marginRight: '557px' }}>Password</span>
-              <input
-                type="password"
+              <PasswordInput
                 className={`${styles.input} ${styles.inputFull}`}
+                autoComplete="new-password"
               />
             </div>
             <div className={styles.inputCol}>
               <span className={styles.label} style={{ marginRight: '488px' }}>Confirm password</span>
-              <input
-                type="password"
+              <PasswordInput
                 className={`${styles.input} ${styles.inputFull}`}
+                autoComplete="new-password"
               />
             </div>
           </div>

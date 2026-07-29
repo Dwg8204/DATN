@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PasswordInput from '../components/PasswordInput';
 import styles from './Auth.module.css';
 
 export default function LoginPage() {
@@ -20,16 +21,12 @@ export default function LoginPage() {
               </div>
               <div className={styles.inputCol}>
                 <span className={styles.label} style={{ marginRight: '557px' }}>Password</span>
-                <input
-                  type="password"
+                <PasswordInput
                   className={`${styles.input} ${styles.inputFull}`}
+                  autoComplete="current-password"
                 />
               </div>
               <div className={styles.optionsRow}>
-                <div className={styles.rememberMe}>
-                  <div className={styles.checkbox}></div>
-                  <span className={styles.optionText}>Remember me</span>
-                </div>
                 <Link to="/forgot-password" className={styles.forgotPassword}>
                   Forgot password?
                 </Link>
