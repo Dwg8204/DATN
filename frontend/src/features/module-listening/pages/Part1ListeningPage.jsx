@@ -118,6 +118,8 @@ export default function Part1ListeningPage() {
         onNextClick={handleNext}
         onSubmitClick={handleSubmit}
         submitLabel={submitLabel}
+        hasPrev={currentPage > 1}
+        hasNext={currentPage < totalPages}
       />
 
       <SubmitModal

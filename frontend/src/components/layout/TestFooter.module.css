@@ -143,3 +143,10 @@
   font-weight: 700;
   line-height: 24px;
 }
+.arrowBtnDisabled {
+  background: #B0B0B0;
+  cursor: default;
+}
+.arrowBtnDisabled:hover {
+  opacity: 1;
+}

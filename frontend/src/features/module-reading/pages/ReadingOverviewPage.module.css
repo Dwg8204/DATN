@@ -1,61 +1,204 @@
-.pageContainer {
+.page {
+  padding-left: 72px;
+  padding-right: 72px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  background: #FFFFFF;
-  min-height: 100vh;
-}
-
-.contentContainer {
-  max-width: 966px;
-  margin: 0 auto;
-  padding: 0 24px 60px;
-  width: 100%;
+  gap: 50px;
+  background: #FFFEFC;
+  overflow-x: hidden;
 }
 
 .section {
-  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.mainTitle {
-  color: #A11D33;
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.title {
+  color: #AF101A;
   font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 24px;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
-.textContent {
-  color: #000000;
-  font-size: 16px;
-  line-height: 1.6;
+.titleLight {
+  font-weight: 400;
 }
 
-.textContent p {
-  margin-bottom: 16px;
+.divider {
+  width: 100%;
+  height: 1px;
+  background: black;
 }
 
-.docLinks {
+.contentBlock {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 9px;
+  width: 100%;
 }
 
-.docLink {
-  color: #000000;
+.heading {
+  color: #A11D33;
+  font-size: 20px;
+  line-height: 36px;
+}
+
+.headingLight {
+  font-weight: 400;
+}
+
+.headingBold {
+  font-weight: 700;
+}
+
+.text {
+  text-align: justify;
+  color: black;
   font-size: 16px;
+  line-height: 28px;
+}
+
+.subHeading {
+  color: black;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.textBlock {
+  color: black;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.documentLink {
+  color: #A71E34;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 28px;
+  cursor: pointer;
+}
+
+.documentLink:hover {
   text-decoration: underline;
 }
 
-.docLink:hover {
+/* Most Popular Section */
+.popularTitle {
   color: #A11D33;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-.popularSection {
-  margin-top: 60px;
+.popularGrid {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  width: 100%;
 }
 
-.cardsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+.popularCard {
+  width: 265px;
+  background: #FFFEFC;
+  border-radius: 10px;
+  outline: 2px solid #A71E34;
+  outline-offset: -2px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 10px 16px;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.cardHeaderTop {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitle {
+  color: #FFCB8B;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.cardSubTitle {
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.cardBadge {
+  align-self: flex-end;
+  padding: 4px 8px;
+  background: #DA1E21;
+  border-radius: 20px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardBadgeText {
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.cardBody {
+  height: 58px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.cardBodyText {
+  color: black;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.goToTestBtn {
+  align-self: center;
+  margin-top: 20px;
+  padding: 12px 40px;
+  background: #DA1E21;
+  color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.goToTestBtn:hover {
+  opacity: 0.9;
 }

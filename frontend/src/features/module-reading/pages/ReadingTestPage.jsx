@@ -235,6 +235,8 @@ export default function ReadingTestPage() {
         onNextClick={handleNextPart}
         onSubmitClick={handleFooterSubmit}
         submitLabel={submitLabel}
+        hasPrev={currentPart > 1}
+        hasNext={currentPart < 4}
       />
 
       <SubmitModal 

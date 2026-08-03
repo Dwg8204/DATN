@@ -127,7 +127,8 @@ export default function Part4ListeningPage() {
         onNextClick={handleNext}
         onSubmitClick={handleSubmit}
         submitLabel="Submit"
-        hideNext={currentMainIdx === PART4_QUESTIONS.length - 1}
+        hasPrev={currentMainIdx > 0 || isFullTest}
+        hasNext={currentMainIdx < PART4_QUESTIONS.length - 1}
       />
 
       <SubmitModal 

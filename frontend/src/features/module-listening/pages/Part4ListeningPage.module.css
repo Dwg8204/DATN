@@ -103,19 +103,23 @@
 }
 
 .questionNumberBox {
-  background: #8ACEFF;
-  border: 1px solid #000;
+  width: 30px;
+  height: 30px;
+  background: #E6F4FF;
   border-radius: 5px;
-  padding: 4px 12px;
+  outline: 2px solid #0095FF;
+  outline-offset: -1px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  height: 32px;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .questionNumber {
-  font-weight: bold;
+  color: black;
   font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
 }
 
 .questionSubText {
@@ -239,7 +243,8 @@
   cursor: pointer;
 }
 
-.rewindBtn, .forwardBtn {
+.rewindBtn,
+.forwardBtn {
   background: none;
   border: none;
   cursor: pointer;

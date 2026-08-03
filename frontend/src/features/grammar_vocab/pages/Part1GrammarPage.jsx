@@ -119,14 +119,13 @@ export default function Part1GrammarPage() {
         questions={MOCK_QUESTIONS}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={currentPageQuestionIds}
-        onQuestionClick={(questionId) => {
-          const page = getPageOfQuestion(questionId);
-          setCurrentPage(page);
-        }}
+        onQuestionClick={(qId) => setCurrentPage(getPageOfQuestion(qId))}
         onPrevClick={handlePrev}
         onNextClick={handleNext}
         onSubmitClick={handleSubmit}
         submitLabel={submitLabel}
+        hasPrev={currentPage > 1}
+        hasNext={currentPage < totalPages}
       />
       <SubmitModal 
         isOpen={showSubmitModal} 
