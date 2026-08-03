@@ -85,7 +85,7 @@ export default function Part3ListeningPage() {
                           onChange={(event) => handleOptionSelect(stmt.id, event.target.value)}
                           placeholder="Select opinion"
                           ariaLabel={`Answer for statement ${stmt.id}`}
-                          options={PART3_DATA.options}
+                          options={PART3_DATA.options.map((opt, i) => ({ value: opt, label: `${String.fromCharCode(65 + i)}. ${opt}` }))}
                         />
                       </div>
                     </div>
@@ -111,6 +111,8 @@ export default function Part3ListeningPage() {
         onNextClick={() => { }}
         onSubmitClick={handleSubmit}
         submitLabel={submitLabel}
+        hasPrev={isFullTest}
+        hasNext={false}
       />
 
       <SubmitModal

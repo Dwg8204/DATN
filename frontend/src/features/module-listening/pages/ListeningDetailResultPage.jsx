@@ -382,6 +382,8 @@ export default function ListeningDetailResultPage() {
         onNextClick={handleNext}
         onSubmitClick={() => navigate('/listening/tests')}
         submitLabel="Take another test"
+        hasPrev={(activePart === 1 && currentPage > 1) || (activePart === 4 && currentPage > 1) || (isFullTest && activePart > 1)}
+        hasNext={(activePart === 1 && currentPage < PART1_QUESTIONS.length) || (activePart === 4 && currentPage < PART4_QUESTIONS.length) || (isFullTest && activePart < 4)}
       />
     </div>
   );

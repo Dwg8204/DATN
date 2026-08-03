@@ -125,14 +125,13 @@ export default function Part2GrammarPage() {
         questions={allQuestions}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={currentPageQuestionIds}
-        onQuestionClick={(questionId) => {
-          const page = getPageOfQuestion(questionId);
-          setCurrentPage(page);
-        }}
+        onQuestionClick={(qId) => setCurrentPage(getPageOfQuestion(qId))}
         onPrevClick={handlePrev}
         onNextClick={handleNext}
         onSubmitClick={handleSubmit}
         submitLabel={submitLabel}
+        hasPrev={currentPage > 1}
+        hasNext={currentPage < totalPages}
       />
 
       <SubmitModal 
