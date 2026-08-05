@@ -1,16 +1,18 @@
 .footer {
   align-self: stretch;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-start;
   background: #FFF9F1;
-  padding: 52px 72px;
+  padding: 48px clamp(24px, 5vw, 72px);
+  gap: clamp(48px, 7vw, 96px);
   box-sizing: border-box;
   overflow-x: hidden;
 }
 
 .footerLeft {
   min-width: 0;
+  width: min(100%, 820px);
   display: flex;
   align-items: flex-start;
   gap: 60px;
@@ -119,6 +121,7 @@
   flex-direction: column;
   align-items: center;
   padding-top: 8px;
+  max-width: 280px;
 }
 
 .feedbackBtn {
@@ -173,14 +176,70 @@
 
 @media (max-width: 600px) {
   .footer {
-    padding-inline: 24px;
+    width: 100%;
+    gap: 28px;
+    padding: 36px 24px;
   }
 
   .footerLeft {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .brandCol {
+    width: auto;
+    gap: 14px;
+  }
+
+  .brandDescription {
+    display: none;
+  }
+
+  .footerLogo {
+    width: 100px;
+    height: 48px;
+    margin: 0;
+    object-fit: contain;
   }
 
   .contactCol {
     min-width: 0;
+    padding-top: 14px;
+    gap: 14px;
+  }
+
+  .contactList,
+  .linkList {
+    gap: 8px;
+  }
+
+  .contactItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .linkItem {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .footerRight {
+    width: 100%;
+    max-width: none;
+    gap: 14px;
+  }
+
+  .feedbackBtn {
+    margin: 0;
+  }
+
+  .copyright {
+    font-size: 12px;
+    line-height: 18px;
   }
 }

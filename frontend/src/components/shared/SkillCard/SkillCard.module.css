@@ -11,3 +11,13 @@
 .card:hover {
   opacity: 0.9;
 }
+
+@media (max-width: 768px) {
+  .card {
+    aspect-ratio: 5 / 6;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+}

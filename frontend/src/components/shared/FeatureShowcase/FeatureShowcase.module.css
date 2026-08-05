@@ -22,8 +22,60 @@
   font-weight: bold;
 }
 
-.showcase {
+.carouselFrame {
+  position: relative;
   align-self: stretch;
+}
+
+.carouselViewport {
+  align-self: stretch;
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  touch-action: pan-x pan-y;
+}
+
+.arrowButton {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  transform: translateY(-50%);
+  border: 1px solid #e1e1e1;
+  border-radius: 50%;
+  background: #fff;
+  color: #a11d33;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+
+.arrowButton:hover {
+  background: #a11d33;
+  color: #fff;
+}
+
+.arrowButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.arrowPrevious { left: 16px; }
+.arrowNext { right: 16px; }
+
+.carouselViewport::-webkit-scrollbar {
+  display: none;
+}
+
+.showcase {
+  flex: 0 0 100%;
+  min-width: 0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -33,6 +85,8 @@
   flex-wrap: wrap;
   padding: 40px;
   box-sizing: border-box;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .textWrap {
@@ -68,4 +122,42 @@
   color: #000000;
   font-size: 18px;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .arrowButton {
+    display: none;
+  }
+  .section {
+    gap: 16px;
+  }
+
+  .content {
+    padding: 0 24px;
+    gap: 16px;
+  }
+
+  .sectionTitle {
+    align-self: center;
+    font-size: 22px;
+  }
+
+  .showcase {
+    padding: 24px 18px;
+    gap: 20px;
+  }
+
+  .textWrap {
+    gap: 12px;
+  }
+
+  .featureTitle {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .featureDescription {
+    font-size: 14px;
+    line-height: 21px;
+  }
 }

@@ -20,8 +20,14 @@
 
 @media (max-width: 768px) {
   .heroBanner {
-    min-height: 440px;
-    padding: 32px 24px;
+    min-height: 140px;
+    height: clamp(140px, 34vw, 220px);
+    padding: 0;
+    background-position: center 48%;
+  }
+
+  .heroBanner .inner {
+    display: none;
   }
 }
 

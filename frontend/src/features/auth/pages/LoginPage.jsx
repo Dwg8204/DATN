@@ -12,7 +12,7 @@ export default function LoginPage() {
           <div className={styles.formGroup}>
             <div className={styles.signupFormGroup}>
               <div className={styles.inputCol}>
-                <span className={styles.label} style={{ marginRight: '592px' }}>Email</span>
+                <span className={styles.label}>Email</span>
                 <input
                   type="email"
                   className={`${styles.input} ${styles.inputFull}`}
@@ -20,7 +20,7 @@ export default function LoginPage() {
                 />
               </div>
               <div className={styles.inputCol}>
-                <span className={styles.label} style={{ marginRight: '557px' }}>Password</span>
+                <span className={styles.label}>Password</span>
                 <PasswordInput
                   className={`${styles.input} ${styles.inputFull}`}
                   autoComplete="current-password"

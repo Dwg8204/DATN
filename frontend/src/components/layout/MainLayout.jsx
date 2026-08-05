@@ -1,11 +1,12 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
+import styles from './MainLayout.module.css';
 
 export default function MainLayout() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: '#FFFFFF', minHeight: '100vh', overflowX: 'clip' }}>
-      <div style={{ alignSelf: 'stretch', display: 'flex', flexDirection: 'column', background: '#FFFEFC', gap: '40px', overflowX: 'clip' }}>
+    <div className={styles.shell}>
+      <div className={styles.layout}>
         <Header />
         <main>
           <Outlet />

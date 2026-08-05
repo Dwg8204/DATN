@@ -318,3 +318,106 @@
   margin-right: 171px;
   width: 463px;
 }
+
+@media (max-width: 768px) {
+  .wrapper,
+  .signupWrapper {
+    padding: 30px 24px 48px;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .container,
+  .form,
+  .signupForm,
+  .formGroup,
+  .signupFormGroup {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .container {
+    max-width: 520px;
+    gap: 32px;
+  }
+
+  .title {
+    font-size: 16px;
+    line-height: 28px;
+    text-align: center;
+  }
+
+  .form {
+    gap: 20px;
+  }
+
+  .signupForm {
+    gap: 32px;
+  }
+
+  .signupFormGroup {
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .inputRow {
+    width: 100%;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .inputCol,
+  .inputColMargin {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .label {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .input,
+  .inputFull,
+  .inputHalf,
+  .passwordInputWrap {
+    width: 100%;
+  }
+
+  .input {
+    font-size: 14px;
+  }
+
+  .forgotPassword,
+  .orText {
+    font-size: 14px;
+  }
+
+  .submitBtn,
+  .submitBtnSignup {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 28px;
+  }
+
+  .submitBtnText {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .verifyBottomLink,
+  .signupBottomLink,
+  .bottomLink {
+    padding: 0;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .bottomText,
+  .bottomAction {
+    font-size: 14px;
+    line-height: 24px;
+  }
+}
