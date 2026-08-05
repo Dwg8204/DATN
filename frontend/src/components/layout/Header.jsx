@@ -1,9 +1,12 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { AudioLines, BookA, BookOpen, ChevronDown, Headphones, Home, Languages, Mic, PenLine } from 'lucide-react';
 import styles from './Header.module.css';
 
 const navItems = [
   {
     label: 'LISTENING',
+    mobileLabel: 'Listening',
+    MobileIcon: Headphones,
     to: '/listening/overview',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/p9xrd9hn_expires_30_days.png',
     dropdown: [
@@ -14,6 +17,8 @@ const navItems = [
   },
   {
     label: 'READING',
+    mobileLabel: 'Reading',
+    MobileIcon: BookOpen,
     to: '/reading',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/4d89xmet_expires_30_days.png',
     dropdown: [
@@ -23,16 +28,22 @@ const navItems = [
   },
   {
     label: 'WRITING',
+    mobileLabel: 'Writing',
+    MobileIcon: PenLine,
     to: '/writing',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/fc21zx6v_expires_30_days.png',
   },
   {
     label: 'SPEAKING',
+    mobileLabel: 'Speaking',
+    MobileIcon: Mic,
     to: '/speaking',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/gg3z1wbc_expires_30_days.png',
   },
   {
     label: 'GRAMMAR & VOCAB',
+    mobileLabel: 'Grammar',
+    MobileIcon: Languages,
     to: '/grammar-vocab/overview',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/gg3z1wbc_expires_30_days.png',
     dropdown: [
@@ -42,11 +53,15 @@ const navItems = [
   },
   {
     label: 'VOCABULARY',
+    mobileLabel: 'Vocab',
+    MobileIcon: BookA,
     to: '/vocab',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/gg3z1wbc_expires_30_days.png',
   },
   {
     label: 'DICTATION',
+    mobileLabel: 'Dictation',
+    MobileIcon: AudioLines,
     to: '/dictation',
     icon: null,
   },
@@ -74,13 +89,7 @@ export default function Header() {
               onClick={() => navigate(item.to)}
             >
               <span className={styles.navLabel}>{item.label}</span>
-              {item.icon && (
-                <img
-                  src={item.icon}
-                  alt=""
-                  className={styles.navIcon}
-                />
-              )}
+              {item.dropdown && <ChevronDown className={styles.navIcon} aria-hidden="true" />}
             </button>
             {item.dropdown && (
               <div className={styles.dropdownMenu}>
@@ -101,6 +110,25 @@ export default function Header() {
       <button className={styles.signInBtn} onClick={() => navigate('/login')}>
         <span className={styles.signInText}>SIGN IN</span>
       </button>
+      <nav className={styles.mobileNav} aria-label="Mobile navigation">
+        <NavLink to="/" className={({ isActive }) => `${styles.mobileNavItem} ${isActive ? styles.mobileNavItemActive : ''}`}>
+          <Home className={styles.mobileNavIcon} aria-hidden="true" />
+          <span>Home</span>
+        </NavLink>
+        {navItems.map((item) => {
+          const MobileIcon = item.MobileIcon;
+          return (
+            <NavLink
+              key={item.label}
+              to={item.to}
+              className={({ isActive }) => `${styles.mobileNavItem} ${isActive ? styles.mobileNavItemActive : ''}`}
+            >
+              <MobileIcon className={styles.mobileNavIcon} aria-hidden="true" />
+              <span>{item.mobileLabel}</span>
+            </NavLink>
+          );
+        })}
+      </nav>
     </header>
   );
 }
