@@ -75,6 +75,27 @@ const readingModeConfigs = {
   }
 };
 
+const grammarVocabModeConfigs = {
+  part1: {
+    title: 'APTIS GENERAL GRAMMAR & VOCABULARY - PART 1',
+    time: 'Time: 12 min',
+    instructions: 'Choose the correct answer to complete each sentence.\nYou can change your answers at any time during the test.',
+    information: 'This part focuses on grammar.\nThere are 25 multiple-choice questions.\nEach question carries one mark.'
+  },
+  part2: {
+    title: 'APTIS GENERAL GRAMMAR & VOCABULARY - PART 2',
+    time: 'Time: 13 min',
+    instructions: 'Choose or match the words that best answer each question.\nYou can change your answers at any time during the test.',
+    information: 'This part focuses on vocabulary.\nThere are 25 questions across several vocabulary tasks.\nEach question carries one mark.'
+  },
+  full: {
+    title: 'APTIS GENERAL GRAMMAR & VOCABULARY',
+    time: 'Time: 25 min',
+    instructions: 'Answer all the questions.\nYou can change your answers at any time during the test.',
+    information: 'This test consists of 2 parts.\nPart 1 focuses on grammar and Part 2 focuses on vocabulary.\nThe test clock will show you when there are 10 minutes and 5 minutes remaining.'
+  }
+};
+
 export default function IntroductionPage({
   title,
   time,
@@ -93,6 +114,8 @@ export default function IntroductionPage({
   let config = skillConfigs[skill] || skillConfigs.reading;
   if (skill === 'reading' && readingModeConfigs[mode]) {
     config = readingModeConfigs[mode];
+  } else if (skill === 'grammar-vocab' && grammarVocabModeConfigs[mode]) {
+    config = grammarVocabModeConfigs[mode];
   }
 
   const finalTitle = title || config.title;

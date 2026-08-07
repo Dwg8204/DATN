@@ -1,5 +1,4 @@
 import MainLayout from '../components/layout/MainLayout';
-import TestLayout from '../components/layout/TestLayout';
 import HomePage from '../pages/HomePage';
 import IntroductionPage from '../pages/IntroductionPage';
 import NotFoundPage from '../pages/NotFoundPage';
@@ -68,6 +67,10 @@ export const appRoutes = [
         path: ':skill/tests',
         element: <TestListPage />,
       },
+      {
+        path: ':skill/introduction',
+        element: <IntroductionPage />,
+      },
       ...listeningMainRoutes,
       ...readingMainRoutes,
       ...practiceRoutes,
@@ -76,16 +79,6 @@ export const appRoutes = [
       {
         path: '*',
         element: <NotFoundPage />,
-      },
-    ],
-  },
-  {
-    path: '/:skill/introduction',
-    element: <TestLayout />,
-    children: [
-      {
-        index: true,
-        element: <IntroductionPage />,
       },
     ],
   },

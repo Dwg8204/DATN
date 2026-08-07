@@ -371,3 +371,155 @@
   font-weight: 700;
   line-height: 16px;
 }
+
+@media (max-width: 768px) {
+  .page {
+    padding: 20px 16px 36px;
+    gap: 12px;
+  }
+
+  .title {
+    font-size: 16px;
+    line-height: 28px;
+  }
+
+  .tabsBox {
+    padding: 16px 20px;
+    gap: 12px;
+  }
+
+  .tabsContainer {
+    gap: 10px 12px;
+  }
+
+  .tabItem {
+    padding: 4px 14px;
+  }
+
+  .mainContent {
+    padding: 12px 0 0;
+  }
+
+  .testSection {
+    min-width: 0;
+    gap: 20px;
+  }
+
+  .searchRow {
+    width: 100%;
+    height: 32px;
+    gap: 12px;
+  }
+
+  .searchInputContainer {
+    min-width: 0;
+    height: 32px;
+  }
+
+  .searchInputWrapper {
+    left: 10px;
+    right: 8px;
+    top: 6px;
+  }
+
+  .searchIcon {
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+  }
+
+  .searchInput {
+    min-width: 0;
+    font-size: 12px;
+  }
+
+  .searchBtn {
+    height: 32px;
+    padding: 4px 20px;
+  }
+
+  .searchBtnText {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .gridRow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .testCard {
+    max-width: none;
+    min-height: 208px;
+    padding: 40px 12px 20px;
+    gap: 16px;
+    box-sizing: border-box;
+  }
+
+  .cardTop {
+    height: auto;
+    min-height: 112px;
+    padding: 0;
+  }
+
+  .cardTitle {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .cardInfoRow {
+    justify-content: center;
+  }
+
+  .cardImageWrapper {
+    display: none;
+  }
+
+  .cardDetails {
+    align-items: center;
+    text-align: center;
+  }
+
+  .cardDesc {
+    color: rgba(0, 0, 0, 0.68);
+    font-size: 12px;
+    line-height: 17px;
+  }
+
+  .statsList {
+    align-items: flex-start;
+  }
+
+  .cardActions {
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .reviewBtn,
+  .doTestBtn {
+    padding: 8px 22px;
+  }
+
+  .reviewBtnText,
+  .doTestBtnText {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .commentSectionWrapper {
+    min-width: 0;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 380px) {
+  .searchBtn {
+    padding-inline: 14px;
+  }
+
+  .tabItem {
+    padding-inline: 11px;
+  }
+}

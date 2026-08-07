@@ -49,6 +49,7 @@ export default function TestListPage() {
   const { skill } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('part1');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Helper to get config based on skill
   const getConfig = () => {
@@ -59,7 +60,11 @@ export default function TestListPage() {
 
   const currentConfig = getConfig();
   const tests = currentConfig.tests || MOCK_TESTS;
-  const filteredTests = tests.filter((test) => !test.tabId || test.tabId === activeTab);
+  const filteredTests = tests.filter((test) => {
+    const matchesTab = !test.tabId || test.tabId === activeTab;
+    const matchesSearch = test.title.toLowerCase().includes(searchQuery.trim().toLowerCase());
+    return matchesTab && matchesSearch;
+  });
 
   // Helper to format skill name nicely
   const formatSkillName = (skillStr) => {
@@ -67,7 +72,7 @@ export default function TestListPage() {
     return skillStr.replace(/-/g, ' ').toUpperCase() + ' TEST';
   };
 
-  const title = formatSkillName(skill);
+  const title = currentConfig.title || formatSkillName(skill);
 
   const handleDoTest = (testId) => {
     // Navigate to the generic introduction page with testId and mode in query params
@@ -111,7 +116,13 @@ export default function TestListPage() {
                   <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <input type="text" className={styles.searchInput} placeholder="Search by test name." />
+                <input
+                  type="search"
+                  className={styles.searchInput}
+                  placeholder="Search by test name."
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                />
               </div>
             </div>
             <button className={styles.searchBtn}>

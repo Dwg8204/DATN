@@ -127,3 +127,81 @@
   font-size: 14px;
   font-weight: bold;
 }
+
+@media (max-width: 768px) {
+  .wrapper {
+    padding: 40px 9px 48px;
+  }
+
+  .card {
+    max-width: 375px;
+    padding: 32px clamp(24px, 10vw, 42px);
+    gap: 40px;
+    overflow: hidden;
+  }
+
+  .cardContent {
+    width: 100%;
+    align-items: stretch;
+    gap: 32px;
+  }
+
+  .titleBlock {
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 25px;
+    line-height: 32px;
+  }
+
+  .time {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .infoBlock,
+  .infoBlockWide {
+    gap: 12px;
+  }
+
+  .infoTitle {
+    font-size: 18px;
+    line-height: 32px;
+  }
+
+  .infoText,
+  .infoTextWide {
+    max-width: none;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .warning {
+    font-size: 14px;
+    line-height: 24px;
+    text-align: center;
+  }
+
+  .startBtn {
+    align-items: center;
+    padding: 8px 28px;
+  }
+
+  .startBtnText {
+    line-height: 24px;
+  }
+}
+
+@media (max-width: 360px) {
+  .card {
+    padding-inline: 22px;
+  }
+
+  .title {
+    font-size: 22px;
+    line-height: 29px;
+  }
+}

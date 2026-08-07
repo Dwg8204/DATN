@@ -202,3 +202,29 @@
 .goToTestBtn:hover {
   opacity: 0.9;
 }
+
+.mobileTestBtn {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .mobileTestBtn {
+    align-self: stretch;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #da1e21;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 20px;
+    cursor: pointer;
+  }
+
+  .goToTestBtn {
+    display: none;
+  }
+}

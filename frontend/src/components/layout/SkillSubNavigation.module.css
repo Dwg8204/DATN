@@ -1,0 +1,63 @@
+.navigation {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .navigation {
+    position: sticky;
+    top: 60px;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 48px;
+    padding: 6px 16px;
+    box-sizing: border-box;
+    background: rgba(255, 254, 252, 0.98);
+    border-bottom: 1px solid #e1e1e1;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  }
+
+  .skillName {
+    min-width: 0;
+    color: #a11d33;
+    font-size: clamp(10px, 2.8vw, 12px);
+    font-weight: 700;
+    line-height: 16px;
+  }
+
+  .tabs {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    padding: 3px;
+    border-radius: 8px;
+    background: #f2e8df;
+  }
+
+  .tab {
+    padding: 6px clamp(8px, 2.8vw, 12px);
+    border-radius: 6px;
+    color: #4f4f4f;
+    font-size: clamp(9px, 2.5vw, 11px);
+    font-weight: 600;
+    line-height: 14px;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .tabActive {
+    background: #da1e21;
+    color: #fff;
+    box-shadow: 0 2px 5px rgba(161, 29, 51, 0.22);
+  }
+}
+
+@media (max-width: 360px) {
+  .navigation {
+    padding-inline: 10px;
+    gap: 6px;
+  }
+}

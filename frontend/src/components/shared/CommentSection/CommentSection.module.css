@@ -246,3 +246,55 @@
   width: 100%;
   margin-bottom: 20px;
 }
+
+@media (max-width: 768px) {
+  .container {
+    min-width: 0;
+  }
+
+  .mainInputContainer,
+  .commentItem,
+  .replyInputContainer {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .inputWrap,
+  .commentBody {
+    min-width: 0;
+  }
+
+  .commentMeta {
+    flex-wrap: wrap;
+    gap: 4px 8px;
+  }
+
+  .authorName,
+  .roleText,
+  .time,
+  .replyBtn,
+  .replyInput,
+  .commentContent {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .roleBadge {
+    padding-inline: 8px;
+  }
+
+  .repliesContainer {
+    width: auto;
+    padding-left: 28px;
+  }
+
+  .sendBtn {
+    width: 34px;
+    height: 34px;
+  }
+}

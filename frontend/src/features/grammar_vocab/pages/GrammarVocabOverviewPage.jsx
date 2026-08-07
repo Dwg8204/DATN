@@ -31,6 +31,9 @@ export default function GrammarVocabOverviewPage() {
             Complete all five components to receive your estimated CEFR band score. You can take the components in any order, but we recommend following the standard sequence.
           </div>
         </div>
+        <button className={styles.mobileTestBtn} onClick={() => navigate('/grammar-vocab/tests')}>
+          View Practice Tests
+        </button>
       </div>
 
       <div className={styles.section}>
