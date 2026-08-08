@@ -51,13 +51,13 @@
   border: 1px solid #e1e1e1;
   border-radius: 50%;
   background: #fff;
-  color: #a11d33;
+  color: var(--button-primary);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
   cursor: pointer;
 }
 
 .arrowButton:hover {
-  background: #a11d33;
+  background: var(--button-primary);
   color: #fff;
 }
 

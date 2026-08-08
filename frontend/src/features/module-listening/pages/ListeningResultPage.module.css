@@ -256,8 +256,8 @@
 
 .backBtn {
   background: white;
-  color: #B21E35;
-  border: 2px solid #B21E35;
+  color: var(--button-primary);
+  border: 2px solid var(--button-primary);
   padding: 12px 28px;
   border-radius: 8px;
   font-weight: bold;

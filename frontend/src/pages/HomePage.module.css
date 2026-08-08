@@ -166,7 +166,7 @@
 }
 
 .reviewArrow:hover {
-  background: #a11d33;
+  background: var(--button-primary);
   color: #fff;
 }
 
