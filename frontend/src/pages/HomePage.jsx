@@ -34,6 +34,11 @@ const skillCards = [
     alt: 'Grammar & Vocab',
     path: '/grammar-vocab/overview',
   },
+  {
+    image: 'https://placehold.co/600x720/FFD3A8/A11D33?text=VOCABULARY',
+    alt: 'Vocabulary',
+    path: '/vocab',
+  },
 ];
 
 const reviews = [

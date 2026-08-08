@@ -74,6 +74,19 @@ export default function TestListPage() {
     navigate(`/${skill}/introduction?testId=${testId}&mode=${activeTab}`);
   };
 
+  const handleReviewTest = (test) => {
+    const resultDetailPath = currentConfig.resultDetailPath || `/${skill}/result-detail`;
+    const part = test.tabId === 'part2' ? '2' : '1';
+    const isFull = test.tabId === 'full';
+    const params = new URLSearchParams({
+      testId: String(test.id),
+      part,
+      isFull: String(isFull),
+    });
+
+    navigate(`${resultDetailPath}?${params.toString()}`);
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.titleContainer}>
@@ -159,7 +172,7 @@ export default function TestListPage() {
 
                   <div className={styles.cardActions}>
                     {test.status === 'Completed' && (
-                      <button className={styles.reviewBtn}>
+                      <button className={styles.reviewBtn} onClick={() => handleReviewTest(test)}>
                         <span className={styles.reviewBtnText}>Review</span>
                       </button>
                     )}

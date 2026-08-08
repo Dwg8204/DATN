@@ -1,6 +1,7 @@
 export const GRAMMAR_VOCAB_CONFIG = {
   skillKey: 'grammar-vocab',
   title: 'GRAMMAR & VOCABULARY TEST',
+  resultDetailPath: '/grammar-vocab/result-detail',
   parts: ['part1', 'part2'],
   tabs: [
     { id: 'part1', label: 'Part 1' },
