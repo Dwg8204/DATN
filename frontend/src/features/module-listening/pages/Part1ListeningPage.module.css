@@ -147,9 +147,9 @@
 }
 
 .optionBtnSelected {
-  background: #A11D33;
+  background: var(--button-primary);
   color: white;
-  border-color: #A11D33;
+  border-color: var(--button-primary);
 }
 
 .optionText {

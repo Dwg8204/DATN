@@ -184,3 +184,112 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+@media (max-width: 700px) {
+  .testHeader {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    height: 64px;
+    padding: 6px 12px;
+  }
+
+  .inner {
+    gap: 8px;
+  }
+
+  .leftSide {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .logo {
+    width: 92px;
+    height: 48px;
+    object-fit: contain;
+  }
+
+  .testTakerInfo {
+    min-width: 0;
+    padding: 0;
+    align-items: center;
+  }
+
+  .testTakerLabel {
+    overflow: hidden;
+    font-size: 11px;
+    line-height: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rightSide {
+    flex: 0 0 auto;
+    gap: 8px;
+  }
+
+  .timeLabel {
+    font-size: 10px;
+    line-height: 14px;
+  }
+
+  .timeRow {
+    gap: 4px;
+  }
+
+  .timeIconWrap,
+  .timeIconWrap svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .timeValue {
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .exitBtn {
+    min-height: 34px;
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
+
+  .exitBtnText {
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  .exitModal {
+    width: calc(100% - 32px);
+    max-width: 420px;
+    padding: 32px 20px 24px;
+    gap: 24px;
+    box-sizing: border-box;
+  }
+
+  .modalText {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  .modalActions {
+    gap: 12px;
+  }
+
+  .stayBtn,
+  .confirmExitBtn {
+    flex: 1;
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .testTakerInfo {
+    display: none;
+  }
+
+  .logo {
+    width: 84px;
+  }
+}

@@ -47,3 +47,31 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+@media (max-width: 700px) {
+  .submitModal {
+    width: calc(100% - 32px);
+    max-width: 420px;
+    padding: 24px 20px;
+    box-sizing: border-box;
+  }
+
+  .modalText {
+    margin: 0;
+    font-size: 14px;
+    line-height: 21px;
+  }
+
+  .modalActions {
+    gap: 12px;
+    padding: 0;
+    margin-top: 4px;
+  }
+
+  .backBtn,
+  .nextBtn {
+    flex: 1;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}

@@ -141,7 +141,7 @@
   padding: 8px 28px;
   background: white;
   border-radius: 8px;
-  outline: 2px solid #B21E35;
+  outline: 2px solid var(--button-primary);
   outline-offset: -2px;
   display: flex;
   justify-content: center;
@@ -151,7 +151,7 @@
 }
 
 .searchBtnText {
-  color: #B21E35;
+  color: var(--button-primary);
   font-size: 14px;
   font-weight: 700;
   line-height: 24px;
@@ -303,7 +303,7 @@
   padding: 8px 28px;
   background: white;
   border-radius: 8px;
-  outline: 2px solid #B21E35;
+  outline: 2px solid var(--button-primary);
   outline-offset: -2px;
   display: flex;
   justify-content: center;
@@ -313,7 +313,7 @@
 }
 
 .doTestBtnText {
-  color: #B21E35;
+  color: var(--button-primary);
   font-size: 14px;
   font-weight: 700;
   line-height: 24px;

@@ -18,7 +18,9 @@ export default function Part2GrammarPage() {
   startGrammarVocabSession(testId, isFullTest ? 'full' : 'part2');
 
   const formattedPart = part ? part.replace(/([a-zA-Z]+)(\d+)/, (m, p1, p2) => `${p1.charAt(0).toUpperCase() + p1.slice(1)} ${p2}`) : 'Part 2';
-  const formattedSkill = skill ? skill.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Vocabulary';
+  const formattedSkill = skill === 'grammar-vocab'
+    ? 'Grammar & Vocabulary'
+    : skill.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState(() => getGrammarVocabAnswers('part2'));

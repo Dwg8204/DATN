@@ -160,3 +160,68 @@
 .dropdownItemSelected {
   background: #F3D5B5;
 }
+
+@media (max-width: 700px) {
+  .page {
+    min-height: calc(100vh - 64px);
+  }
+
+  .contentWrap {
+    padding: 16px 14px 28px;
+  }
+
+  .headerBlock {
+    margin-bottom: 18px;
+    padding: 10px 14px;
+    gap: 2px;
+  }
+
+  .partTitle,
+  .skillTitle {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .wordSetBlock {
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+
+  .matchingArea {
+    display: block;
+  }
+
+  .targetWordsColumn {
+    max-width: none;
+    gap: 12px;
+  }
+
+  .matchingRow {
+    display: grid;
+    grid-template-columns: minmax(72px, 0.75fr) minmax(0, 1.7fr);
+    gap: 10px;
+    align-items: center;
+    padding: 12px;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    background: #fff;
+  }
+
+  .targetWordText {
+    width: auto;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .dropdownContainer {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .matchingRow {
+    grid-template-columns: 1fr;
+  }
+}

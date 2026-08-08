@@ -213,9 +213,9 @@
 }
 
 .secondaryButton {
-  border: 2px solid #b21e35;
+  border: 2px solid var(--button-primary);
   background: #fff;
-  color: #b21e35;
+  color: var(--button-primary);
 }
 
 .primaryButton:hover,

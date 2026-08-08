@@ -142,7 +142,7 @@
   padding: 8px 28px;
   background: white;
   border-radius: 8px;
-  outline: 2px solid #B21E35;
+  outline: 2px solid var(--button-primary);
   outline-offset: -2px;
   display: flex;
   justify-content: center;
@@ -152,7 +152,7 @@
 }
 
 .searchBtnText {
-  color: #B21E35;
+  color: var(--button-primary);
   font-size: 14px;
   font-weight: 700;
   line-height: 24px;
@@ -305,7 +305,7 @@
   padding: 8px 28px;
   background: white;
   border-radius: 8px;
-  outline: 2px solid #B21E35;
+  outline: 2px solid var(--button-primary);
   outline-offset: -2px;
   display: flex;
   justify-content: center;
@@ -315,7 +315,7 @@
 }
 
 .doTestBtnText {
-  color: #B21E35;
+  color: var(--button-primary);
   font-size: 14px;
   font-weight: 700;
   line-height: 24px;
@@ -370,4 +370,146 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 16px;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 20px 16px 36px;
+    gap: 14px;
+  }
+
+  .title {
+    font-size: 18px;
+    line-height: 26px;
+  }
+
+  .tabsBox {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .tabsContainer {
+    gap: 8px;
+  }
+
+  .tabItem {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 5px 10px;
+  }
+
+  .tabText {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .mainContent {
+    padding: 10px 0;
+  }
+
+  .testSection {
+    min-width: 0;
+    gap: 20px;
+  }
+
+  .searchRow {
+    width: 100%;
+    height: 34px;
+    gap: 10px;
+  }
+
+  .searchInputContainer {
+    min-width: 0;
+    height: 34px;
+  }
+
+  .searchInputWrapper {
+    right: 8px;
+    top: 7px;
+  }
+
+  .searchIcon {
+    width: 17px;
+    height: 17px;
+  }
+
+  .searchInput {
+    min-width: 0;
+    font-size: 12px;
+  }
+
+  .searchBtn {
+    min-height: 34px;
+    padding: 5px 14px;
+  }
+
+  .searchBtnText {
+    font-size: 12px;
+    line-height: 20px;
+  }
+
+  .gridContainer,
+  .gridRow {
+    gap: 14px;
+  }
+
+  .gridRow {
+    align-items: stretch;
+  }
+
+  .testCard {
+    max-width: none;
+    min-height: 210px;
+    padding: 38px 12px 18px;
+    gap: 14px;
+    box-sizing: border-box;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .cardTop {
+    height: auto;
+    min-height: 108px;
+    padding: 0;
+  }
+
+  .cardTitle {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .cardInfoRow {
+    justify-content: center;
+  }
+
+  .cardImageWrapper {
+    display: none;
+  }
+
+  .cardDetails {
+    max-width: 250px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .statsList {
+    align-items: flex-start;
+  }
+
+  .cardActions {
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .reviewBtn,
+  .doTestBtn {
+    min-width: 100px;
+    padding: 7px 16px;
+  }
+
+  .reviewBtnText,
+  .doTestBtnText {
+    font-size: 12px;
+    line-height: 20px;
+  }
 }

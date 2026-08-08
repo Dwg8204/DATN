@@ -2,7 +2,7 @@
 .content { flex: 1; padding: 32px 72px 48px; display: flex; flex-direction: column; gap: 32px; }
 .partTabs { display: flex; gap: 12px; }
 .partTabs button { padding: 10px 20px; border: 1px solid #868686; border-radius: 8px; background: #fff; cursor: pointer; font-weight: 700; }
-.partTabs .activeTab { border-color: #a11d33; background: #a11d33; color: #fff; }
+.partTabs .activeTab { border-color: var(--button-primary); background: var(--button-primary); color: #fff; }
 .sectionHeader { display: flex; flex-direction: column; gap: 4px; font-size: 16px; line-height: 28px; }
 .sectionHeader strong { font-size: 18px; line-height: 32px; }
 .part1List { display: flex; flex-direction: column; gap: 24px; }
@@ -13,14 +13,14 @@
 .part1Options { display: flex; flex-direction: column; gap: 8px; padding-left: 44px; }
 .optionRow { min-height: 40px; padding: 6px 12px; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; border: 1px solid transparent; border-radius: 6px; }
 .optionLetter { font-weight: 700; }
-.optionRow small { padding: 2px 8px; border-radius: 999px; background: rgba(0,0,0,.06); }
+.optionRow small { padding: 3px 9px; border-radius: 999px; background: rgba(0,0,0,.06); line-height: 18px; white-space: nowrap; }
 .correctOption { border-color: #43b75d; background: #edf9f0; }
 .wrongOption { border-color: #da1e21; background: #fff0f1; }
 .statusBadge { min-width: 82px; padding: 4px 10px; border-radius: 999px; text-align: center; font-size: 13px; font-weight: 700; }
 .correct { background: #e2f5e6; color: #237d36; }
 .wrong { background: #fde7e9; color: #b0182d; }
 .skipped { background: #ededed; color: #686868; }
-.explainButton { width: fit-content; min-width: 100px; padding: 7px 18px; border: 0; border-radius: 8px; background: #43b75d; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
+.explainButton { width: fit-content; min-width: 100px; padding: 7px 18px; border: 0; border-radius: 8px; background: var(--button-primary); color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; }
 .questionCard > .explainButton { margin-left: 44px; }
 .explanation { padding: 14px 18px; border-left: 4px solid #43b75d; background: #f4faf5; font-size: 15px; line-height: 24px; }
 .questionCard > .explanation { margin-left: 44px; }
@@ -37,4 +37,32 @@
 .optionBank h2 { margin: 0 0 8px; text-align: center; font-size: 18px; }
 .optionBank > div { display: grid; grid-template-columns: 28px 1fr; gap: 24px; font-size: 16px; line-height: 26px; }
 @media (max-width: 1000px) { .content { padding-inline: 32px; } .part2Layout { grid-template-columns: 1fr; gap: 32px; } }
-@media (max-width: 700px) { .content { padding: 24px 16px 40px; } .questionHeading { grid-template-columns: 32px 1fr; } .questionHeading .statusBadge { grid-column: 2; width: fit-content; } .part1Options { padding-left: 0; } .optionRow { grid-template-columns: 28px 1fr; } .optionRow small { width: fit-content; } .questionCard > .explainButton, .questionCard > .explanation { margin-left: 0; } .matchingRow { grid-template-columns: 84px 1fr; } .matchingRow .statusBadge, .matchingRow .explainButton { grid-column: 2; } }
+@media (max-width: 700px) {
+  .content { padding: 22px 14px 32px; gap: 24px; }
+  .partTabs { width: 100%; gap: 8px; }
+  .partTabs button { flex: 1; min-width: 0; padding: 9px 8px; font-size: 12px; line-height: 18px; white-space: nowrap; }
+  .sectionHeader { gap: 5px; font-size: 13px; line-height: 20px; }
+  .sectionHeader strong { font-size: 15px; line-height: 22px; }
+  .part1List { gap: 16px; }
+  .questionCard { padding: 16px; gap: 14px; }
+  .questionHeading { grid-template-columns: 28px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+  .questionHeading p { font-size: 14px; line-height: 21px; overflow-wrap: anywhere; }
+  .questionNumber { width: 26px; height: 26px; box-sizing: border-box; font-size: 13px; }
+  .questionHeading .statusBadge { grid-column: 3; width: fit-content; min-width: 58px; }
+  .part1Options { padding-left: 0; gap: 6px; }
+  .optionRow { min-height: 38px; padding: 7px 9px; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; font-size: 13px; line-height: 20px; }
+  .optionRow small { grid-column: 3; justify-self: end; width: auto; max-width: 100%; padding: 2px 7px; font-size: 9px; line-height: 16px; }
+  .statusBadge { min-width: 72px; padding: 3px 9px; font-size: 11px; }
+  .questionCard > .explainButton, .questionCard > .explanation { margin-left: 0; }
+  .explainButton { min-width: 96px; padding: 7px 12px; font-size: 12px; }
+  .explanation { padding: 12px 13px; font-size: 12px; line-height: 19px; overflow-wrap: anywhere; }
+  .part2Layout { gap: 22px; }
+  .matchingList { gap: 16px; }
+  .matchingRow { grid-template-columns: 76px minmax(0, 1fr); gap: 8px; }
+  .targetWord, .answerField { font-size: 13px; line-height: 20px; }
+  .answerField { min-width: 0; min-height: 38px; padding: 8px 10px; box-sizing: border-box; overflow-wrap: anywhere; }
+  .matchingRow .statusBadge, .matchingRow .explainButton { grid-column: 2; }
+  .optionBank { padding: 16px; gap: 8px; }
+  .optionBank h2 { font-size: 16px; }
+  .optionBank > div { grid-template-columns: 22px minmax(0, 1fr); gap: 10px; font-size: 13px; line-height: 20px; }
+}

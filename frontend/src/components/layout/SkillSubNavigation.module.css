@@ -1,0 +1,33 @@
+.navigation {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .navigation {
+    align-self: stretch;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 10px 14px 0;
+    background: #fffefc;
+  }
+
+  .link {
+    max-width: calc(50vw - 22px);
+    padding: 8px 10px;
+    color: var(--button-primary);
+    background: #fff;
+    border: 1px solid var(--button-primary);
+    border-radius: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 15px;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  .active {
+    color: #fff;
+    background: var(--button-primary);
+  }
+}
