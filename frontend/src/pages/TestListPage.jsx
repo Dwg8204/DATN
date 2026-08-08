@@ -67,7 +67,7 @@ export default function TestListPage() {
     return skillStr.replace(/-/g, ' ').toUpperCase() + ' TEST';
   };
 
-  const title = formatSkillName(skill);
+  const title = currentConfig.title || formatSkillName(skill);
 
   const handleDoTest = (testId) => {
     // Navigate to the generic introduction page with testId and mode in query params
