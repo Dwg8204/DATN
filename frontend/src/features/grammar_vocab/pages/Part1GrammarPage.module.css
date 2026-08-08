@@ -155,3 +155,53 @@
   text-transform: uppercase;
   line-height: 28px;
 }
+
+@media (max-width: 700px) {
+  .page {
+    min-height: calc(100vh - 64px);
+  }
+
+  .contentWrap {
+    padding: 16px 14px 28px;
+    gap: 18px;
+  }
+
+  .headerBlock {
+    padding: 10px 14px;
+    gap: 2px;
+  }
+
+  .partTitle,
+  .skillTitle {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .questionsContainer {
+    gap: 14px;
+  }
+
+  .questionItem {
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid #e1e1e1;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04);
+  }
+
+  .questionHeader {
+    gap: 10px;
+  }
+
+  .questionNumberBox {
+    width: 28px;
+    height: 28px;
+  }
+
+  .questionText {
+    min-width: 0;
+    font-size: 14px;
+    line-height: 22px;
+  }
+}
