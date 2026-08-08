@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import styles from './TestFooter.module.css';
 
 export default function TestFooter({ 
@@ -15,6 +15,8 @@ export default function TestFooter({
   hasNext = true,
   hideNext = false, // backward compatibility with Part4
 }) {
+  const questionListRef = useRef(null);
+  const questionNodeRefs = useRef(new Map());
   const validQuestions = questions.filter(
     (question) => (
       question?.id !== undefined
@@ -23,17 +25,30 @@ export default function TestFooter({
     ),
   );
 
+  useEffect(() => {
+    const list = questionListRef.current;
+    const activeNode = questionNodeRefs.current.get(String(currentPageQuestionIds[0]));
+    if (!list || !activeNode) return;
+
+    const targetLeft = activeNode.offsetLeft - ((list.clientWidth - activeNode.offsetWidth) / 2);
+    list.scrollTo({ left: Math.max(0, targetLeft), behavior: 'smooth' });
+  }, [currentPageQuestionIds]);
+
   return (
     <div className={styles.testFooter}>
       <div className={styles.leftSection}>
         <div className={styles.partLabel}>{partLabel}</div>
-        <div className={styles.questionList}>
+        <div className={styles.questionList} ref={questionListRef}>
           {validQuestions.map((q) => {
             const isAnswered = answeredIds.includes(String(q.id));
-            const isOnCurrentPage = currentPageQuestionIds.includes(q.id);
+            const isOnCurrentPage = currentPageQuestionIds.some((id) => String(id) === String(q.id));
             return (
               <div 
                 key={q.id} 
+                ref={(node) => {
+                  if (node) questionNodeRefs.current.set(String(q.id), node);
+                  else questionNodeRefs.current.delete(String(q.id));
+                }}
                 className={`
                   ${styles.questionNode} 
                   ${isOnCurrentPage ? styles.nodeCurrentPage : ''}
