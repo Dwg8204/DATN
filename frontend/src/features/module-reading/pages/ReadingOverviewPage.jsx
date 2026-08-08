@@ -1,15 +1,34 @@
 import React from 'react';
-import PopularDocumentCard from '../../../components/shared/PopularDocumentCard/PopularDocumentCard';
+import { useNavigate } from 'react-router-dom';
 import styles from './ReadingOverviewPage.module.css';
 
+const popularDocs = Array.from({ length: 5 }, (_, index) => ({
+  id: index + 1,
+  title: 'APTIS READING PRACTICE',
+  subTitle: 'Practice questions with detailed explanations',
+  badge: 'LATEST 2026',
+  desc: 'Improve your reading skills with regularly updated Aptis practice materials.',
+}));
+
 export default function ReadingOverviewPage() {
+  const navigate = useNavigate();
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.contentContainer}>
+    <div className={styles.page}>
+      <div className={styles.section}>
+        <div className={styles.titleContainer}>
+          <div className={styles.title}>
+            <span className={styles.titleLight}>READING</span> OVERVIEW
+          </div>
+          <div className={styles.divider}></div>
+        </div>
         
-        <div className={styles.section}>
-          <h2 className={styles.mainTitle}>READING OVERVIEW</h2>
-          <div className={styles.textContent}>
+        <div className={styles.contentBlock}>
+          <div className={styles.heading}>
+            <span className={styles.headingBold}>A quick look at the </span>
+            <span className={styles.headingLight}>Aptis Reading</span>
+            <span className={styles.headingBold}> test</span>
+          </div>
+          <div className={styles.textBlock}>
             <p>
               APTIS Reading is one of the four components of the APTIS test, developed by the British Council, which is designed to assess a test taker's proficiency in the English language. The APTIS Reading test evaluates your ability to understand and interpret written texts in English across a range of contexts and complexity levels.
             </p>
@@ -51,36 +70,46 @@ export default function ReadingOverviewPage() {
             </p>
           </div>
         </div>
-
-        <div className={styles.section}>
-          <h2 className={styles.mainTitle}>READING DOCUMENTS</h2>
-          <div className={styles.docLinks}>
-            <a href="#" className={styles.docLink}>Some tips for taking the APTIS Reading test</a>
-            <a href="#" className={styles.docLink}>APTIS Reading practice test</a>
-            <a href="#" className={styles.docLink}>Question types in the APTIS Reading test</a>
-            <a href="#" className={styles.docLink}>APTIS Reading band scores</a>
-          </div>
-        </div>
-
-        <div className={styles.popularSection}>
-          <h2 className={styles.mainTitle}>MOST POPULAR</h2>
-          <div className={styles.cardsGrid}>
-            <PopularDocumentCard 
-              skillName="WRITING" 
-              description="Explore the latest Aptis Writing samples, updated regularly."
-            />
-            <PopularDocumentCard 
-              skillName="READING" 
-              description="Explore the latest Aptis Reading samples, updated regularly."
-            />
-            <PopularDocumentCard 
-              skillName="LISTENING" 
-              description="Explore the latest Aptis Listening samples, updated regularly."
-            />
-          </div>
-        </div>
-
       </div>
+
+      <div className={styles.section}>
+        <div className={styles.titleContainer}>
+          <div className={styles.title}>READING DOCUMENTS</div>
+          <div className={styles.divider}></div>
+        </div>
+        <div className={styles.contentBlock}>
+          <div className={styles.documentLink}>Some tips for taking the APTIS Reading test</div>
+          <div className={styles.documentLink}>APTIS Reading practice test</div>
+          <div className={styles.documentLink}>Question types in the APTIS Reading test</div>
+          <div className={styles.documentLink}>APTIS Reading band scores</div>
+        </div>
+      </div>
+
+      <div className={styles.section}>
+        <div className={styles.popularTitle}>MOST POPULAR</div>
+        <div className={styles.popularGrid}>
+          {popularDocs.map((doc) => (
+            <div key={doc.id} className={styles.popularCard}>
+              <div className={styles.cardHeader}>
+                <div className={styles.cardHeaderTop}>
+                  <div className={styles.cardTitle}>{doc.title}</div>
+                  <div className={styles.cardSubTitle}>{doc.subTitle}</div>
+                </div>
+                <div className={styles.cardBadge}>
+                  <span className={styles.cardBadgeText}>{doc.badge}</span>
+                </div>
+              </div>
+              <div className={styles.cardBody}>
+                <div className={styles.cardBodyText}>{doc.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <button className={styles.goToTestBtn} onClick={() => navigate('/reading/tests')}>
+        View Test List
+      </button>
     </div>
   );
 }

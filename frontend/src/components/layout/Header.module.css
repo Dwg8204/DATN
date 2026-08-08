@@ -1,16 +1,21 @@
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   align-self: stretch;
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: clamp(20px, 3vw, 56px);
   align-items: center;
   background: #FFF9F1;
   padding-left: 72px;
   padding-right: 72px;
   box-sizing: border-box;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
 .logoWrap {
-  flex-shrink: 0;
   display: flex;
   align-items: center;
 }
@@ -18,17 +23,17 @@
 .logo {
   width: 146px;
   height: 72px;
-  margin-right: 72px;
   object-fit: fill;
 }
 
 .nav {
-  flex-shrink: 0;
+  min-width: 0;
   display: flex;
+  justify-content: center;
   align-items: center;
   padding-top: 22px;
   padding-bottom: 22px;
-  gap: 44px;
+  gap: clamp(14px, 2.2vw, 44px);
 }
 
 .navItem {
@@ -49,6 +54,7 @@
 .navLabel {
   color: #000000;
   font-size: 16px;
+  white-space: nowrap;
 }
 
 .navIcon {
@@ -119,4 +125,151 @@
 
 .dropdownItem:hover {
   background-color: #f1f1f1;
+}
+
+.mobileNav {
+  display: none;
+}
+
+@media (max-width: 1500px) {
+  .header {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+
+  .navLabel {
+    font-size: 14px;
+  }
+
+  .signInBtn {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .header {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    column-gap: clamp(8px, 1.4vw, 18px);
+    padding: 0 clamp(12px, 2vw, 28px);
+  }
+
+  .nav {
+    grid-column: 2;
+    grid-row: 1;
+    justify-content: center;
+    flex-wrap: nowrap;
+    overflow: visible;
+    padding: 20px 0;
+    gap: clamp(6px, 1vw, 13px);
+  }
+
+  .signInBtn {
+    grid-column: 3;
+    grid-row: 1;
+    padding-inline: clamp(18px, 2.2vw, 28px);
+  }
+
+  .logo {
+    width: clamp(92px, 11vw, 128px);
+  }
+
+  .navLabel {
+    font-size: clamp(8px, 1.08vw, 13px);
+  }
+
+  .navItem {
+    gap: 2px;
+  }
+
+  .navIcon {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 700px) {
+  .header {
+    height: 60px;
+    grid-template-columns: 1fr auto;
+    padding: 0 16px 0 20px;
+  }
+
+  .logo {
+    width: 110px;
+    height: 60px;
+    object-fit: contain;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .signInBtn {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 8px 24px;
+  }
+
+  .signInText {
+    font-size: 12px;
+  }
+
+  .mobileNav {
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 60px;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 0 3px;
+    overflow: hidden;
+    background: #fff9f1;
+    border-top: 1px solid #e1e1e1;
+    box-sizing: border-box;
+  }
+
+  .mobileNav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .mobileNavItem {
+    min-width: 0;
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    padding: 7px 1px 4px;
+    color: #131927;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 14px;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .mobileNavItem span {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: clamp(6px, 1.9vw, 9px);
+    line-height: 10px;
+    text-overflow: clip;
+  }
+
+  .mobileNavIcon {
+    width: clamp(14px, 4.2vw, 18px);
+    height: clamp(14px, 4.2vw, 18px);
+    flex: 0 0 auto;
+  }
+
+  .mobileNavItemActive {
+    color: #da1e21;
+    font-weight: 700;
+  }
 }

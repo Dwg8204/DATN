@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ReadingTestContext } from '../context/ReadingTestContext';
 import TestFooter from '../../../components/layout/TestFooter';
+import InstructionBlock from '../../../components/common/InstructionBlock';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { getReadingRemainingSeconds, getReadingDuration } from '../utils/readingSessionStorage';
 
@@ -215,10 +216,9 @@ export default function ReadingTestPage() {
           <div className={styles.skillTitle}>{headerInfo.skill}</div>
         </div>
 
-        <div className={styles.instructionBlock}>
-          <span className={styles.instructionTitle}>{headerInfo.range}</span>
-          <span className={styles.instructionText}>{headerInfo.instruction}</span>
-        </div>
+        <InstructionBlock title={headerInfo.range}>
+          {headerInfo.instruction}
+        </InstructionBlock>
 
         <div className={styles.mainArea}>
           {renderCurrentPart()}
@@ -235,6 +235,8 @@ export default function ReadingTestPage() {
         onNextClick={handleNextPart}
         onSubmitClick={handleFooterSubmit}
         submitLabel={submitLabel}
+        hasPrev={currentPart > 1}
+        hasNext={currentPart < 4}
       />
 
       <SubmitModal 

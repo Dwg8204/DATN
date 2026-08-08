@@ -35,17 +35,17 @@
   align-items: center;
   gap: 12px;
   overflow-x: auto;
+  overflow-y: hidden;
   flex-wrap: nowrap;
   max-width: 60vw;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .questionList::-webkit-scrollbar {
-  height: 6px;
-}
-
-.questionList::-webkit-scrollbar-thumb {
-  background: rgba(0,0,0,0.2);
-  border-radius: 4px;
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .questionNode {
@@ -103,7 +103,7 @@
 }
 
 .arrowBtnPrev {
-  background: rgba(0, 0, 0, 0.50);
+  background: black;
 }
 
 .arrowBtnNext {
@@ -142,4 +142,11 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 24px;
+}
+.arrowBtnDisabled {
+  background: #B0B0B0;
+  cursor: default;
+}
+.arrowBtnDisabled:hover {
+  opacity: 1;
 }

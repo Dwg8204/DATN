@@ -1,7 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
+import AnswerSelect from '../../../components/common/AnswerSelect';
+import InstructionBlock from '../../../components/common/InstructionBlock';
 import { PART2_WORD_SETS } from '../data/part2MockData';
 import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
 import styles from './Part2GrammarPage.module.css';
@@ -21,24 +23,9 @@ export default function Part2GrammarPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState(() => getGrammarVocabAnswers('part2'));
   const [showSubmitModal, setShowSubmitModal] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null);
-
-  const dropdownRef = useRef(null);
-
   useEffect(() => {
     saveGrammarVocabAnswers('part2', answers);
   }, [answers]);
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpenDropdown(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const itemsPerPage = 2; // 2 word sets per page
   const totalPages = Math.ceil(PART2_WORD_SETS.length / itemsPerPage);
@@ -55,20 +42,17 @@ export default function Part2GrammarPage() {
       ...prev,
       [questionId]: optionLabel
     }));
-    setOpenDropdown(null);
   };
 
   const handleNext = () => {
     if (currentPage < totalPages) {
       setCurrentPage(p => p + 1);
-      setOpenDropdown(null);
     }
   };
 
   const handlePrev = () => {
     if (currentPage > 1) {
       setCurrentPage(p => p - 1);
-      setOpenDropdown(null);
     }
   };
 
@@ -102,47 +86,30 @@ export default function Part2GrammarPage() {
 
         {currentSets.map((wordSet) => (
           <div key={wordSet.setId} className={styles.wordSetBlock}>
-            <div className={styles.instructionBlock}>
-              <span className={styles.instructionTitle}>Questions {wordSet.questionRange}<br /></span>
-              <span className={styles.instructionText}>{wordSet.instruction}</span>
-            </div>
+            <InstructionBlock title={`Questions ${wordSet.questionRange}`}>
+              {wordSet.instruction}
+            </InstructionBlock>
 
             <div className={styles.matchingArea}>
               <div className={styles.targetWordsColumn}>
                 {wordSet.targetWords.map((tw) => {
-                  const isOpen = openDropdown === tw.id;
                   const selectedLabel = answers[tw.id];
-                  const selectedOption = selectedLabel ? wordSet.options.find(o => o.label === selectedLabel) : null;
 
                   return (
                     <div key={tw.id} className={styles.matchingRow}>
                       <div className={styles.targetWordText}>{tw.word} = </div>
                       
                       <div className={styles.dropdownContainer}>
-                        <div 
-                          className={`${styles.dropdownTrigger} ${selectedOption ? styles.hasValue : ''}`}
-                          onClick={() => setOpenDropdown(isOpen ? null : tw.id)}
-                        >
-                          {selectedOption ? (
-                            <span><span className={styles.dropdownOptionLabel}>{selectedOption.label}.</span> {selectedOption.text}</span>
-                          ) : (
-                            <span className={styles.dropdownPlaceholder}>{tw.id}</span>
-                          )}
-                        </div>
-
-                        {isOpen && (
-                          <div className={styles.dropdownMenu} ref={dropdownRef}>
-                            {wordSet.options.map((opt) => (
-                              <div 
-                                key={opt.label} 
-                                className={`${styles.dropdownItem} ${selectedLabel === opt.label ? styles.dropdownItemSelected : ''}`}
-                                onClick={() => handleOptionSelect(tw.id, opt.label)}
-                              >
-                                <span className={styles.dropdownOptionLabel}>{opt.label}.</span> {opt.text}
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        <AnswerSelect
+                          value={selectedLabel || ''}
+                          onChange={(event) => handleOptionSelect(tw.id, event.target.value)}
+                          placeholder={`Question ${tw.id}`}
+                          ariaLabel={`Answer for question ${tw.id}`}
+                          options={wordSet.options.map((option) => ({
+                            value: option.label,
+                            label: `${option.label}. ${option.text}`,
+                          }))}
+                        />
                       </div>
                     </div>
                   );
@@ -158,14 +125,13 @@ export default function Part2GrammarPage() {
         questions={allQuestions}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={currentPageQuestionIds}
-        onQuestionClick={(questionId) => {
-          const page = getPageOfQuestion(questionId);
-          setCurrentPage(page);
-        }}
+        onQuestionClick={(qId) => setCurrentPage(getPageOfQuestion(qId))}
         onPrevClick={handlePrev}
         onNextClick={handleNext}
         onSubmitClick={handleSubmit}
         submitLabel={submitLabel}
+        hasPrev={currentPage > 1}
+        hasNext={currentPage < totalPages}
       />
 
       <SubmitModal 

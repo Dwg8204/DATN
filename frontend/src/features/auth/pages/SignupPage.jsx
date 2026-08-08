@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import PasswordInput from '../components/PasswordInput';
 import styles from './Auth.module.css';
 
 export default function SignupPage() {
@@ -11,14 +12,14 @@ export default function SignupPage() {
           <div className={styles.signupFormGroup}>
             <div className={styles.inputRow}>
               <div className={styles.inputColMargin}>
-                <span className={styles.label} style={{ marginRight: '192px' }}>First Name</span>
+                <span className={styles.label}>First Name</span>
                 <input
                   type="text"
                   className={`${styles.input} ${styles.inputHalf}`}
                 />
               </div>
               <div className={styles.inputCol}>
-                <span className={styles.label} style={{ marginRight: '194px' }}>Last Name</span>
+                <span className={styles.label}>Last Name</span>
                 <input
                   type="text"
                   className={`${styles.input} ${styles.inputHalf}`}
@@ -26,7 +27,7 @@ export default function SignupPage() {
               </div>
             </div>
             <div className={styles.inputCol}>
-              <span className={styles.label} style={{ marginRight: '592px' }}>Email</span>
+              <span className={styles.label}>Email</span>
               <input
                 type="email"
                 className={`${styles.input} ${styles.inputFull}`}
@@ -34,17 +35,17 @@ export default function SignupPage() {
               />
             </div>
             <div className={styles.inputCol}>
-              <span className={styles.label} style={{ marginRight: '557px' }}>Password</span>
-              <input
-                type="password"
+              <span className={styles.label}>Password</span>
+              <PasswordInput
                 className={`${styles.input} ${styles.inputFull}`}
+                autoComplete="new-password"
               />
             </div>
             <div className={styles.inputCol}>
-              <span className={styles.label} style={{ marginRight: '488px' }}>Confirm password</span>
-              <input
-                type="password"
+              <span className={styles.label}>Confirm password</span>
+              <PasswordInput
                 className={`${styles.input} ${styles.inputFull}`}
+                autoComplete="new-password"
               />
             </div>
           </div>

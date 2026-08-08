@@ -10,14 +10,25 @@ export default function TestFooter({
   onPrevClick,
   onNextClick,
   onSubmitClick,
-  submitLabel = 'Submit'
+  submitLabel = 'Submit',
+  hasPrev = true,
+  hasNext = true,
+  hideNext = false, // backward compatibility with Part4
 }) {
+  const validQuestions = questions.filter(
+    (question) => (
+      question?.id !== undefined
+      && question?.id !== null
+      && String(question.id).trim() !== ''
+    ),
+  );
+
   return (
     <div className={styles.testFooter}>
       <div className={styles.leftSection}>
         <div className={styles.partLabel}>{partLabel}</div>
         <div className={styles.questionList}>
-          {questions.map((q) => {
+          {validQuestions.map((q) => {
             const isAnswered = answeredIds.includes(String(q.id));
             const isOnCurrentPage = currentPageQuestionIds.includes(q.id);
             return (
@@ -39,14 +50,20 @@ export default function TestFooter({
       
       <div className={styles.rightSection}>
         <div className={styles.navArrows}>
-          <button className={`${styles.arrowBtn} ${styles.arrowBtnPrev}`} onClick={onPrevClick}>
+          <button 
+            className={`${styles.arrowBtn} ${styles.arrowBtnPrev} ${!hasPrev ? styles.arrowBtnDisabled : ''}`} 
+            onClick={hasPrev ? onPrevClick : undefined}
+          >
             <div className={styles.arrowIconWrap}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
           </button>
-          <button className={`${styles.arrowBtn} ${styles.arrowBtnNext}`} onClick={onNextClick}>
+          <button 
+            className={`${styles.arrowBtn} ${styles.arrowBtnNext} ${!hasNext ? styles.arrowBtnDisabled : ''}`} 
+            onClick={hasNext ? onNextClick : undefined}
+          >
             <div className={styles.arrowIconWrap}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9 18L15 12L9 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
