@@ -22,7 +22,7 @@ const skillCards = [
   {
     image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/3c94qbfj_expires_30_days.png',
     alt: 'Writing',
-    path: '/writing',
+    path: '/writing/overview',
   },
   {
     image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/emndtqro_expires_30_days.png',
@@ -33,6 +33,11 @@ const skillCards = [
     image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1784102681/Gemini_Generated_Image_mc1u72mc1u72mc1u_1111_rys0cc.png',
     alt: 'Grammar & Vocab',
     path: '/grammar-vocab/overview',
+  },
+  {
+    image: 'https://placehold.co/600x720/FFD3A8/A11D33?text=VOCABULARY',
+    alt: 'Vocabulary',
+    path: '/vocab',
   },
 ];
 

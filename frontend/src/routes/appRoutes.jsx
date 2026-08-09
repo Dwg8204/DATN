@@ -12,7 +12,7 @@ import GrammarVocabOverviewPage from '../features/grammar_vocab/pages/GrammarVoc
 import GrammarVocabResultPage from '../features/grammar_vocab/pages/GrammarVocabResultPage';
 import TestListPage from '../pages/TestListPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
-import { writingRoutes } from '../features/writing-test/writingRoutes';
+import { writingMainRoutes, writingTestRoutes } from '../features/writing/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
 import { listeningMainRoutes, listeningTestRoutes } from '../features/module-listening/listeningRoutes';
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
@@ -71,7 +71,7 @@ export const appRoutes = [
       ...listeningMainRoutes,
       ...readingMainRoutes,
       ...practiceRoutes,
-      ...writingRoutes,
+      ...writingMainRoutes,
       ...chatbotRoutes,
       {
         path: '*',
@@ -92,4 +92,5 @@ export const appRoutes = [
   ...listeningTestRoutes,
   ...readingTestRoutes,
   ...grammarVocabRoutes,
+  ...writingTestRoutes,
 ];

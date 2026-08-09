@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import CommentSection from '../components/shared/CommentSection/CommentSection';
 import styles from './TestListPage.module.css';
 import { GRAMMAR_VOCAB_CONFIG } from '../features/grammar_vocab/config/grammarVocabConfig';
+import { WRITING_CONFIG } from '../features/writing/config/writingConfig';
 
 // Fake data for tests
 const MOCK_TESTS = [
@@ -53,6 +54,7 @@ export default function TestListPage() {
   // Helper to get config based on skill
   const getConfig = () => {
     if (skill === 'grammar-vocab') return GRAMMAR_VOCAB_CONFIG;
+    if (skill === 'writing') return WRITING_CONFIG;
     // fallback config
     return { tabs: [{ id: 'part1', label: 'Part 1' }] };
   };
@@ -72,6 +74,19 @@ export default function TestListPage() {
   const handleDoTest = (testId) => {
     // Navigate to the generic introduction page with testId and mode in query params
     navigate(`/${skill}/introduction?testId=${testId}&mode=${activeTab}`);
+  };
+
+  const handleReviewTest = (test) => {
+    const resultDetailPath = currentConfig.resultDetailPath || `/${skill}/result-detail`;
+    const part = test.tabId === 'part2' ? '2' : '1';
+    const isFull = test.tabId === 'full';
+    const params = new URLSearchParams({
+      testId: String(test.id),
+      part,
+      isFull: String(isFull),
+    });
+
+    navigate(`${resultDetailPath}?${params.toString()}`);
   };
 
   return (
@@ -159,7 +174,7 @@ export default function TestListPage() {
 
                   <div className={styles.cardActions}>
                     {test.status === 'Completed' && (
-                      <button className={styles.reviewBtn}>
+                      <button className={styles.reviewBtn} onClick={() => handleReviewTest(test)}>
                         <span className={styles.reviewBtnText}>Review</span>
                       </button>
                     )}
