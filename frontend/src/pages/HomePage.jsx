@@ -22,7 +22,7 @@ const skillCards = [
   {
     image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/3c94qbfj_expires_30_days.png',
     alt: 'Writing',
-    path: '/writing',
+    path: '/writing/overview',
   },
   {
     image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/emndtqro_expires_30_days.png',

@@ -1,0 +1,9 @@
+.page { padding: 44px 72px 56px; display: flex; flex-direction: column; gap: 38px; color: #111; background: #fffefc; }
+.titleBlock h1, .page h2 { margin: 0; color: #a11d33; }
+.titleBlock h1 { font-size: 24px; }.titleBlock div { height: 1px; margin-top: 12px; background: #111; }
+.page h2 { margin-bottom: 14px; font-size: 20px; }.page p, .page li { font-size: 16px; line-height: 28px; }
+.intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 420px); gap: 34px; align-items: center; }
+.imagePlaceholder { min-height: 220px; display: grid; place-items: center; border: 1px solid #aaa; border-radius: 10px; color: #777; background: #f5f1eb; }
+.partGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }.partGrid article { padding: 18px; border: 1px solid #ddd; border-radius: 10px; }.partGrid h3 { margin: 0; font-size: 16px; }.partGrid p { margin-bottom: 0; }
+.documents { display: grid; gap: 8px; color: #a71e34; font-weight: 700; line-height: 28px; }.testButton { align-self: center; padding: 11px 30px; border: 0; border-radius: 8px; background: var(--button-primary); color: #fff; font-weight: 700; cursor: pointer; }
+@media (max-width: 700px) { .page { padding: 24px 16px 36px; gap: 28px; }.titleBlock h1 { font-size: 18px; }.page h2 { font-size: 17px; }.page p, .page li { font-size: 14px; line-height: 22px; }.intro, .partGrid { grid-template-columns: 1fr; }.imagePlaceholder { min-height: 150px; }.testButton { width: 100%; } }

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import CommentSection from '../components/shared/CommentSection/CommentSection';
 import styles from './TestListPage.module.css';
 import { GRAMMAR_VOCAB_CONFIG } from '../features/grammar_vocab/config/grammarVocabConfig';
+import { WRITING_CONFIG } from '../features/writing/config/writingConfig';
 
 // Fake data for tests
 const MOCK_TESTS = [
@@ -53,6 +54,7 @@ export default function TestListPage() {
   // Helper to get config based on skill
   const getConfig = () => {
     if (skill === 'grammar-vocab') return GRAMMAR_VOCAB_CONFIG;
+    if (skill === 'writing') return WRITING_CONFIG;
     // fallback config
     return { tabs: [{ id: 'part1', label: 'Part 1' }] };
   };

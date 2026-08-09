@@ -3,6 +3,14 @@ import styles from './SkillSubNavigation.module.css';
 
 const skillNavigation = [
   {
+    pathPrefix: '/writing',
+    label: 'Writing',
+    items: [
+      { label: 'Writing Overview', to: '/writing/overview' },
+      { label: 'Writing Test', to: '/writing/tests' },
+    ],
+  },
+  {
     pathPrefix: '/grammar-vocab',
     label: 'Grammar & Vocabulary',
     items: [

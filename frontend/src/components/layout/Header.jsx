@@ -30,7 +30,11 @@ const navItems = [
     label: 'WRITING',
     mobileLabel: 'Writing',
     MobileIcon: PenLine,
-    to: '/writing',
+    to: '/writing/overview',
+    dropdown: [
+      { label: 'Writing Overview', to: '/writing/overview' },
+      { label: 'Writing Test', to: '/writing/tests' },
+    ],
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/fc21zx6v_expires_30_days.png',
   },
   {
