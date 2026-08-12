@@ -45,7 +45,7 @@ export default function ListeningFeedPage() {
       <div className={styles.section}>
         <div className={styles.titleContainer}>
           <div className={styles.title}>
-            <span className={styles.titleLight}>APTIS LISTENING</span> BAND SCORES
+            <span className={styles.titleLight}>LISTENING</span> FEED
           </div>
           <div className={styles.divider}></div>
         </div>

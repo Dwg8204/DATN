@@ -168,3 +168,72 @@
   width: 100%;
   font-weight: 500;
 }
+
+@media (max-width: 700px) {
+  .audioPlaceholder {
+    height: 180px;
+  }
+
+  .audioControlsRow {
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    gap: 12px 8px;
+    justify-content: space-between;
+  }
+
+  /* Force first row for progress bar and times */
+  .timeDisplay:nth-child(2) {
+    order: 1;
+    font-size: 12px;
+    min-width: 40px;
+  }
+
+  .progressContainer {
+    order: 2;
+    flex: 1;
+  }
+
+  .timeDisplay:nth-child(4) {
+    order: 3;
+    font-size: 12px;
+    min-width: 40px;
+  }
+
+  /* Break to second row */
+  .playbackControls {
+    order: 4;
+    flex: 1 1 100%; /* take full width to force break */
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .volumeGroup {
+    display: flex;
+    order: 5;
+    width: 60px;
+  }
+  
+  .speedControl {
+    position: absolute; /* Place speed control absolutely or keep it small */
+    top: 12px;
+    right: 16px;
+    font-size: 12px;
+    padding: 4px 6px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #eee;
+  }
+
+  .audioMock, .audioCompact {
+    position: relative; /* for absolute speed control */
+  }
+
+  .playBtn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .rewindBtn svg, .forwardBtn svg {
+    width: 18px;
+    height: 18px;
+  }
+}

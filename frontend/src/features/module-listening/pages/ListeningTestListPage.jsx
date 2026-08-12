@@ -59,7 +59,10 @@ const MOCK_TESTS = [
     desc: 'Complete Listening Test\nAll 4 Parts (17 questions)',
     part: 'Full Listening Test',
     tabId: 'full',
-    status: 'Not Started',
+    status: 'Completed',
+    submitted: '15:30 - Mar 10, 2026',
+    duration: '00:35:12',
+    accuracy: 85,
   }
 ];
 

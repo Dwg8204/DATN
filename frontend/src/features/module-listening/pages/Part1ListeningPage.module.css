@@ -251,3 +251,77 @@
   border-radius: 4px;
   padding: 8px 12px;
 }
+
+@media (max-width: 700px) {
+  .page {
+    min-height: calc(100vh - 64px);
+  }
+
+  .contentWrap {
+    padding: 16px 14px 28px;
+    gap: 18px;
+  }
+
+  .headerBlock {
+    padding: 10px 14px;
+    gap: 2px;
+  }
+
+  .partTitle,
+  .skillTitle {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .instructionBlock {
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  
+  .instructionTitle, .instructionText {
+    font-size: 14px;
+  }
+
+  .mainArea {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .audioSection {
+    width: 100%;
+    align-items: center;
+  }
+
+  .questionSection {
+    width: 100%;
+  }
+
+  .questionItem {
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid #e1e1e1;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04);
+  }
+
+  .questionHeader {
+    gap: 10px;
+  }
+
+  .questionNumberBox {
+    width: 28px;
+    height: 28px;
+  }
+
+  .questionText {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .optionText {
+    font-size: 16px;
+    padding: 8px 16px;
+    min-width: 160px;
+  }
+}
