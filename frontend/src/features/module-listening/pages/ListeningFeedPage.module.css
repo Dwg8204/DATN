@@ -238,3 +238,96 @@
   font-size: 16px;
   line-height: 1.5;
 }
+
+@media (max-width: 700px) {
+  .page {
+    padding: 24px 16px 36px;
+    gap: 30px;
+  }
+
+  .section {
+    gap: 18px;
+  }
+
+  .titleContainer {
+    gap: 8px;
+  }
+
+  .title,
+  .popularTitle {
+    font-size: 18px;
+    line-height: 24px;
+    overflow-wrap: anywhere;
+  }
+
+  .contentBlock {
+    gap: 7px;
+  }
+
+  .heading {
+    font-size: 17px;
+    line-height: 25px;
+  }
+
+  .text,
+  .textBlock,
+  .documentLink {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .text {
+    text-align: left;
+  }
+
+  .subHeading {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .popularGrid {
+    gap: 14px;
+    padding: 2px 2px 12px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .popularCard {
+    width: min(240px, calc(100vw - 40px));
+    scroll-snap-align: start;
+  }
+
+  .cardHeader {
+    gap: 24px;
+  }
+
+  .goToTestBtn {
+    width: 100%;
+    margin-top: 0;
+    padding: 11px 20px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+
+  .bandScoresGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .scoreCard {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .scoreBand {
+    font-size: 16px;
+  }
+
+  .scoreLabel {
+    font-size: 15px;
+  }
+
+  .scoreValue {
+    font-size: 14px;
+  }
+}
+

@@ -18,6 +18,15 @@ const skillNavigation = [
       { label: 'Grammar & Vocab Test', to: '/grammar-vocab/tests' },
     ],
   },
+  {
+    pathPrefix: '/listening',
+    label: 'Listening',
+    items: [
+      { label: 'Listening Overview', to: '/listening/overview' },
+      { label: 'Listening Feed', to: '/listening/feed' },
+      { label: 'Listening Test', to: '/listening/tests' },
+    ],
+  },
 ];
 
 export default function SkillSubNavigation() {

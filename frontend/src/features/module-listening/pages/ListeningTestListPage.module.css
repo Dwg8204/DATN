@@ -73,6 +73,84 @@
   background: white;
 }
 
+@media (max-width: 700px) {
+  .page {
+    padding: 24px 16px 36px;
+    gap: 18px;
+  }
+
+  .titleContainer {
+    gap: 8px;
+  }
+
+  .title {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .tabsBox {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .tabsLabel {
+    font-size: 12px;
+  }
+
+  .tabsIcon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .tabsContainer {
+    gap: 8px;
+  }
+
+  .tabItem {
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+
+  .testCard {
+    flex-direction: column;
+    padding: 14px;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .leftSection {
+    max-width: 100%;
+    gap: 8px;
+  }
+
+  .testTitle {
+    font-size: 16px;
+  }
+
+  .testDesc {
+    font-size: 12px;
+  }
+
+  .rightSection {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .testStatus {
+    font-size: 12px;
+    text-align: left;
+  }
+
+  .doTestBtn {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+
 .tabItemInactive .tabText {
   color: black;
   font-weight: 400;
