@@ -184,3 +184,20 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+@media (max-width: 700px) {
+  .testHeader { height: 64px; padding: 6px 14px; }
+  .leftSide { gap: 10px; min-width: 0; }
+  .logo { width: 92px; height: 48px; object-fit: contain; }
+  .testTakerInfo { padding-bottom: 0; min-width: 0; }
+  .testTakerLabel { font-size: 12px; line-height: 18px; white-space: nowrap; }
+  .rightSide { gap: 10px; }
+  .timeLabel { display: none; }
+  .timeRow { gap: 4px; }
+  .timeIconWrap, .timeIconWrap svg { width: 18px; height: 18px; }
+  .timeValue { font-size: 16px; line-height: 24px; }
+  .exitBtn { padding: 7px 12px; }
+  .exitBtnText { font-size: 12px; line-height: 18px; }
+  .exitModal { padding: 28px 20px; gap: 24px; }
+  .modalActions { flex-direction: column; gap: 10px; }
+}

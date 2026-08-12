@@ -41,7 +41,7 @@ const ReadingHeroSection = () => {
         </div>
         
         <button 
-          onClick={() => navigate('/reading/choose')}
+          onClick={() => navigate('/reading/tests')}
           className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-red-600 border border-transparent rounded-full hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-600 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
         >
           <Play className="w-5 h-5 mr-2" />

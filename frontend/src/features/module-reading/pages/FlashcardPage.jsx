@@ -95,30 +95,30 @@ const FlashcardPage = () => {
     <div className="min-h-screen bg-[#d9d9d9] flex flex-col pb-12">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-3 sm:py-0 flex items-center justify-between gap-3">
           {/* Left: Breadcrumb title */}
-          <div className="flex items-center">
+          <div className="flex min-w-0 items-center overflow-x-auto whitespace-nowrap">
             <button
               onClick={() => { setViewMode('list'); }}
-              className={`text-xl font-bold transition-colors mr-2 ${
+              className={`text-base sm:text-xl font-bold transition-colors mr-1 sm:mr-2 ${
                 viewMode === 'list' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-700'
               }`}
             >
               Dictation
             </button>
-            <span className="text-gray-300 text-xl font-light mx-2">|</span>
+            <span className="text-gray-300 text-base sm:text-xl font-light mx-1 sm:mx-2">|</span>
             <button
               onClick={() => { setCardMode('flashcard'); setViewMode('flashcard'); setIsFlipped(false); setCurrentIndex(0); }}
-              className={`text-xl font-bold transition-colors ${
+              className={`text-base sm:text-xl font-bold transition-colors ${
                 viewMode === 'flashcard' && cardMode === 'flashcard' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-700'
               }`}
             >
               Flashcard
             </button>
-            <span className="text-gray-300 text-xl font-light mx-2">/</span>
+            <span className="text-gray-300 text-base sm:text-xl font-light mx-1 sm:mx-2">/</span>
             <button
               onClick={() => { setCardMode('nghia'); setViewMode('flashcard'); setIsFlipped(false); setCurrentIndex(0); }}
-              className={`text-xl font-bold transition-colors ${
+              className={`text-base sm:text-xl font-bold transition-colors ${
                 viewMode === 'flashcard' && cardMode === 'nghia' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-700'
               }`}
             >
@@ -126,39 +126,39 @@ const FlashcardPage = () => {
             </button>
           </div>
 
-          <div className="flex items-center gap-4 text-sm font-medium">
+          <div className="hidden sm:flex items-center gap-4 text-sm font-medium">
             <span className="text-gray-600">👤 User Profile</span>
           </div>
         </div>
       </header>
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 flex flex-col">
         
         {viewMode === 'flashcard' ? (
           
           /* FLASHCARD ENGINE */
-          <div className="flex-1 flex flex-col items-center justify-center w-full bg-white p-8 rounded-lg shadow-sm">
+          <div className="flex-1 flex flex-col items-center justify-center w-full bg-white p-4 sm:p-8 rounded-lg shadow-sm">
             
             {/* Flashcard Container */}
             <div 
-              className="relative w-full max-w-2xl h-[400px] cursor-pointer group rounded-xl"
+              className="relative w-full max-w-2xl h-[300px] sm:h-[400px] cursor-pointer group rounded-xl"
               onClick={handleFlip}
               style={{ backgroundColor: '#e6c8b3' }} // Match the pale tan color from mockup
             >
-              <div className="w-full h-full flex flex-col items-center justify-center p-10 text-center">
+              <div className="w-full h-full flex flex-col items-center justify-center p-6 sm:p-10 text-center">
                 {cardMode === 'flashcard' ? (
                   isFlipped ? (
                     // Back (Meaning)
-                    <h2 className="text-3xl font-medium text-gray-900 mb-2">
+                    <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 mb-2 break-words">
                       {filteredVocab[currentIndex]?.meaning}
                     </h2>
                   ) : (
                     // Front (English word)
                     <>
-                      <h2 className="text-4xl font-semibold text-gray-900 mb-2">
+                      <h2 className="text-2xl sm:text-4xl font-semibold text-gray-900 mb-2 break-words">
                         {filteredVocab[currentIndex]?.word} <span className="font-normal">/{filteredVocab[currentIndex]?.pronunciation}/</span>
                       </h2>
-                      <p className="text-gray-700 text-xl font-medium">
+                      <p className="text-gray-700 text-base sm:text-xl font-medium">
                         ({filteredVocab[currentIndex]?.type})
                       </p>
                     </>
@@ -167,16 +167,16 @@ const FlashcardPage = () => {
                   isFlipped ? (
                     // Back (English word)
                     <>
-                      <h2 className="text-4xl font-semibold text-gray-900 mb-2">
+                      <h2 className="text-2xl sm:text-4xl font-semibold text-gray-900 mb-2 break-words">
                         {filteredVocab[currentIndex]?.word} <span className="font-normal">/{filteredVocab[currentIndex]?.pronunciation}/</span>
                       </h2>
-                      <p className="text-gray-700 text-xl font-medium">
+                      <p className="text-gray-700 text-base sm:text-xl font-medium">
                         ({filteredVocab[currentIndex]?.type})
                       </p>
                     </>
                   ) : (
                     // Front (Meaning)
-                    <h2 className="text-3xl font-medium text-gray-900 mb-2">
+                    <h2 className="text-2xl sm:text-3xl font-medium text-gray-900 mb-2 break-words">
                       {filteredVocab[currentIndex]?.meaning}
                     </h2>
                   )
@@ -185,7 +185,7 @@ const FlashcardPage = () => {
             </div>
 
             {/* Bottom Controls */}
-            <div className="flex items-center justify-center gap-8 mt-8 text-gray-500">
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-4 sm:gap-8 mt-6 sm:mt-8 text-gray-500">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-blue-500">Auto play</span>
                 <div className="w-8 h-4 bg-red-500 rounded-full flex items-center p-0.5 cursor-pointer">
@@ -219,11 +219,11 @@ const FlashcardPage = () => {
         ) : (
           
           /* LIST VIEW (DICTATION / NOTEBOOK) */
-          <div className="w-full flex gap-8">
+          <div className="w-full flex flex-col lg:flex-row gap-4 sm:gap-8">
             {/* Left Column: Word List */}
-            <div className="flex-1 bg-white rounded-lg shadow-sm p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold text-gray-800">My Vocabulary's Notebook</h2>
+            <div className="flex-1 bg-white rounded-lg shadow-sm p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row gap-3 justify-between sm:items-center mb-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800">My Vocabulary's Notebook</h2>
                 <div className="relative">
                   <input type="text" placeholder="Search..." className="border border-gray-200 rounded-md py-1.5 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
                   <span className="absolute right-2 top-2 text-gray-400">🔍</span>
@@ -264,8 +264,8 @@ const FlashcardPage = () => {
             </div>
 
             {/* Right Column: Notebook Tools */}
-            <div className="w-[300px] shrink-0">
-              <div className="bg-red-50/50 rounded-lg p-6 border border-red-100">
+            <div className="w-full lg:w-[300px] shrink-0">
+              <div className="bg-red-50/50 rounded-lg p-4 sm:p-6 border border-red-100">
                 <h3 className="font-bold text-gray-800 mb-6">Notebook tools</h3>
                 
                 <div className="space-y-4 mb-8">

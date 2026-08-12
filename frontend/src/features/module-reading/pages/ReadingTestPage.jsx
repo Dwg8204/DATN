@@ -230,7 +230,16 @@ export default function ReadingTestPage() {
         questions={footerQuestions}
         answeredIds={answeredIds}
         currentPageQuestionIds={currentQuestionIds}
-        onQuestionClick={() => {}}
+        onQuestionClick={(questionId) => {
+          const element = document.getElementById(`question-${questionId}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            element.classList.add('bg-yellow-100');
+            setTimeout(() => {
+              element.classList.remove('bg-yellow-100');
+            }, 1500);
+          }
+        }}
         onPrevClick={handlePrevPart}
         onNextClick={handleNextPart}
         onSubmitClick={handleFooterSubmit}

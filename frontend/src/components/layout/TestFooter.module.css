@@ -73,6 +73,10 @@
   color: white;
 }
 
+.nodeCurrentOutline {
+  outline: 2px solid black !important;
+}
+
 .questionNodeText {
   font-size: 14px;
   font-weight: 700;
@@ -142,4 +146,26 @@
   font-size: 14px;
   font-weight: 700;
   line-height: 24px;
+}
+
+@media (max-width: 700px) {
+  .testFooter {
+    padding: 10px 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .leftSection { padding: 7px 10px; gap: 10px; min-width: 0; }
+  .partLabel { font-size: 14px; line-height: 22px; white-space: nowrap; }
+  .questionList { max-width: none; gap: 8px; }
+  .questionNode { width: 24px; height: 24px; }
+  .questionNodeText { font-size: 12px; line-height: 18px; }
+  .rightSection { justify-content: space-between; gap: 16px; }
+  .navArrows { gap: 8px; }
+  .arrowBtn { padding: 6px; }
+  .arrowIconWrap { width: 20px; height: 20px; }
+  .arrowIconWrap svg { width: 20px; height: 20px; }
+  .submitBtn { padding: 8px 18px; }
+  .submitBtnText { font-size: 12px; line-height: 20px; }
 }

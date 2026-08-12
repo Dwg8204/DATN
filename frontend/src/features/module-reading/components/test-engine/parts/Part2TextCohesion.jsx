@@ -34,11 +34,11 @@ const DroppableGap = ({ id, droppedSentence, onRemove }) => {
 
   if (droppedSentence) {
     return (
-      <div className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 min-h-[60px] w-full flex items-center shadow-inner relative group my-3">
-        <span className="text-sm font-medium text-gray-800 flex-1">{droppedSentence.content}</span>
+      <div className="bg-[#F3D5B5] border border-black rounded-lg px-4 py-3 min-h-[60px] w-full flex items-center shadow-inner relative group my-3">
+        <span className="text-sm font-semibold text-black flex-1">{droppedSentence.content}</span>
         <button 
           onClick={() => onRemove(droppedSentence.id)}
-          className="ml-2 text-gray-400 hover:text-red-600 font-bold focus:outline-none hidden group-hover:block"
+          className="ml-2 text-black hover:text-red-600 font-bold focus:outline-none hidden group-hover:block"
         >
           ×
         </button>
@@ -94,13 +94,9 @@ const Part2TextCohesion = ({ data }) => {
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-      <div className="flex flex-col h-full bg-white animate-in fade-in">
-        <div className="p-6 border-b border-gray-200">
-           <h2 className="text-sm font-bold text-gray-900 uppercase mb-2">READING PART 2</h2>
-           <p className="text-gray-700 text-sm">The sentences below are from a report. Put the sentences in the right order. The first sentence is done for you.</p>
-        </div>
+      <div className="flex flex-col h-full bg-transparent animate-in fade-in">
         
-        <div className="p-6 md:p-8 flex-1 flex flex-col md:flex-row gap-10">
+        <div className="py-2 sm:py-6 flex-1 flex flex-col md:flex-row gap-6 md:gap-10">
           
           {/* Left: Gaps */}
           <div className="w-full md:w-1/2 flex flex-col">
@@ -119,15 +115,18 @@ const Part2TextCohesion = ({ data }) => {
               {[2, 3, 4, 5, 6].map(position => {
                 const sentenceId = Object.keys(answers).find(key => answers[key] === position);
                 const sentence = data.sentences.find(s => s.id === sentenceId);
+                const questionId = position + 4;
                 return (
-                  <DroppableGap key={position} id={position} droppedSentence={sentence} onRemove={handleRemove} />
+                  <div key={position} id={`question-${questionId}`} className="transition-all duration-300 rounded p-1">
+                    <DroppableGap id={position} droppedSentence={sentence} onRemove={handleRemove} />
+                  </div>
                 );
               })}
             </div>
           </div>
 
           {/* Right: Available Sentences */}
-          <div className="w-full md:w-1/2 flex flex-col pt-12">
+          <div className="w-full md:w-1/2 flex flex-col pt-0 md:pt-12">
             <div className="flex-1">
               {availableSentences.length === 0 ? (
                 <div className="text-center p-8 bg-gray-50 rounded-lg border border-gray-200 border-dashed">
@@ -146,7 +145,7 @@ const Part2TextCohesion = ({ data }) => {
 
       <DragOverlay>
         {activeSentence ? (
-          <div className="bg-white border-2 border-blue-400 shadow-xl rounded-lg p-4 flex items-center opacity-90 scale-105 cursor-grabbing min-h-[60px] w-[400px]">
+          <div className="bg-white border-2 border-blue-400 shadow-xl rounded-lg p-4 flex items-center opacity-90 scale-105 cursor-grabbing min-h-[60px] w-[min(400px,calc(100vw-32px))]">
             <span className="text-sm font-medium text-gray-900 flex-1">{activeSentence.content}</span>
             <GripVertical className="w-4 h-4 text-blue-500 ml-2 flex-shrink-0" />
           </div>

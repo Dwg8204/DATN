@@ -65,3 +65,12 @@
   flex-direction: column;
   flex: 1;
 }
+
+@media (max-width: 700px) {
+  .page { min-height: calc(100vh - 64px); }
+  .contentWrap { padding: 16px 14px 100px; }
+  .headerBlock { margin-bottom: 16px; padding: 10px 14px; gap: 2px; }
+  .partTitle, .skillTitle { font-size: 14px; line-height: 22px; }
+  .instructionBlock { margin-bottom: 18px; padding: 14px; gap: 8px; }
+  .instructionTitle, .instructionText { font-size: 14px; line-height: 22px; }
+}

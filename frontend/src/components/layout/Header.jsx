@@ -18,7 +18,7 @@ const navItems = [
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/4d89xmet_expires_30_days.png',
     dropdown: [
       { label: 'Reading Overview', to: '/reading' },
-      { label: 'Practice Tests', to: '/reading/choose' },
+      { label: 'Reading Test', to: '/reading/tests' },
     ],
   },
   {
@@ -39,11 +39,6 @@ const navItems = [
       { label: 'Grammar & Vocab Overview', to: '/grammar-vocab/overview' },
       { label: 'Grammar & Vocab Test', to: '/grammar-vocab/tests' },
     ],
-  },
-  {
-    label: 'VOCABULARY',
-    to: '/vocab',
-    icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/gg3z1wbc_expires_30_days.png',
   },
   {
     label: 'DICTATION',

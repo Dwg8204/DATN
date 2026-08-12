@@ -1,4 +1,5 @@
 import React from 'react';
+import { Navigate } from 'react-router-dom';
 import ReadingOverviewPage from './pages/ReadingOverviewPage';
 import ReadingChooseTestPage from './pages/ReadingChooseTestPage';
 import ReadingTestPage from './pages/ReadingTestPage';
@@ -13,16 +14,16 @@ export const readingMainRoutes = [
     element: <ReadingOverviewPage />,
   },
   {
-    path: 'reading/choose',
+    path: 'reading/tests',
     element: <ReadingChooseTestPage />,
+  },
+  {
+    path: 'reading/choose',
+    element: <Navigate to="/reading/tests" replace />,
   },
   {
     path: 'reading/result/:sessionId',
     element: <ReadingResultPage />,
-  },
-  {
-    path: 'reading/review/:sessionId',
-    element: <ReviewFeedbackPage />,
   },
 ];
 
@@ -38,6 +39,16 @@ export const readingTestRoutes = [
             <ReadingTestPage />
           </ReadingTestProvider>
         ),
+      },
+    ],
+  },
+  {
+    path: 'reading/review/:sessionId',
+    element: <TestLayout headerProps={{ showTimer: false, showExit: false }} />,
+    children: [
+      {
+        index: true,
+        element: <ReviewFeedbackPage />,
       },
     ],
   },

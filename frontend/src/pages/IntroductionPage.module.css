@@ -127,3 +127,22 @@
   font-size: 14px;
   font-weight: bold;
 }
+
+@media (max-width: 700px) {
+  .wrapper { padding: 40px 10px 48px; }
+  .card { max-width: 375px; padding: 28px 22px; gap: 32px; overflow: hidden; }
+  .cardContent { width: 100%; align-items: stretch; gap: 28px; }
+  .titleBlock { gap: 12px; }
+  .title { font-size: 20px; line-height: 28px; }
+  .time { color: rgba(0, 0, 0, 0.6); font-size: 14px; line-height: 22px; }
+  .infoBlock, .infoBlockWide { gap: 10px; }
+  .infoTitle { font-size: 16px; line-height: 24px; }
+  .infoText, .infoTextWide { max-width: none; color: rgba(0, 0, 0, 0.7); font-size: 14px; line-height: 22px; }
+  .warning { font-size: 14px; line-height: 22px; text-align: center; }
+  .startBtn { align-items: center; padding: 10px 24px; }
+}
+
+@media (max-width: 360px) {
+  .card { padding-inline: 18px; }
+  .title { font-size: 18px; line-height: 26px; }
+}

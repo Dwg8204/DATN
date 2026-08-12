@@ -25,8 +25,8 @@ export default function TestFooter({
                 key={q.id} 
                 className={`
                   ${styles.questionNode} 
-                  ${isOnCurrentPage ? styles.nodeCurrentPage : ''}
-                  ${isAnswered && !isOnCurrentPage ? styles.nodeAnswered : ''}
+                  ${isAnswered ? styles.nodeAnswered : (isOnCurrentPage ? styles.nodeCurrentPage : '')}
+                  ${isOnCurrentPage ? styles.nodeCurrentOutline : ''}
                 `}
                 onClick={() => onQuestionClick && onQuestionClick(q.id)}
               >

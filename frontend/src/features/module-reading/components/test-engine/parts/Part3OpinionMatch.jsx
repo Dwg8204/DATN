@@ -7,18 +7,13 @@ const Part3OpinionMatch = ({ data }) => {
   if (!data) return null;
 
   return (
-    <div className="flex flex-col h-full bg-white animate-in fade-in">
-      <div className="p-6 border-b border-gray-200">
-         <h2 className="text-sm font-bold text-gray-900 uppercase mb-2">READING PART 3</h2>
-         <p className="text-gray-700 text-sm">Four people respond in the comments section of an online magazine article about advanced level tests. Read the texts and then answer the questions below.</p>
-      </div>
-
-      <div className="p-6 md:p-8 flex-1 flex flex-col md:flex-row gap-10">
+    <div className="flex flex-col h-full bg-transparent animate-in fade-in">
+      <div className="py-2 sm:py-6 flex-1 flex flex-col md:flex-row gap-6 md:gap-10">
         
         {/* Left: Texts */}
-        <div className="w-full md:w-1/2 flex flex-col border-r border-gray-100 pr-6">
+        <div className="w-full md:w-1/2 flex flex-col border-b md:border-b-0 md:border-r border-gray-100 pb-5 md:pb-0 pr-0 md:pr-6">
           <h3 className="font-bold text-gray-900 mb-4 text-sm">Posts</h3>
-          <div className="space-y-6 text-sm text-gray-800 leading-relaxed max-h-[500px] overflow-y-auto pr-4 whitespace-pre-wrap">
+          <div className="space-y-6 text-sm text-gray-800 leading-relaxed max-h-[360px] md:max-h-[500px] overflow-y-auto pr-2 md:pr-4 whitespace-pre-wrap">
             {data.passage}
           </div>
         </div>
@@ -30,22 +25,32 @@ const Part3OpinionMatch = ({ data }) => {
           </div>
 
           <div className="space-y-4">
-            {data.questions.map((q, index) => (
-              <div key={q.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
-                <span className="text-gray-800 flex-1">{index + 1}. {q.statement}</span>
-                <select
-                  value={answers[q.id] || ''}
-                  onChange={(e) => handleAnswerChange(q.id, e.target.value)}
-                  className="appearance-none bg-white border border-gray-300 py-1.5 pl-3 pr-8 rounded text-sm text-gray-800 focus:outline-none focus:border-blue-500 cursor-pointer w-[100px] sm:w-[120px] flex-shrink-0"
-                  style={{ backgroundImage: `url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007CB2%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7rem top 50%', backgroundSize: '.65rem auto' }}
-                >
-                  <option value="" disabled></option>
-                  {(data.speakers || []).map((opt, i) => (
-                    <option key={i} value={opt}>{opt}</option>
-                  ))}
-                </select>
-              </div>
-            ))}
+            {data.questions.map((q, index) => {
+              const answerValue = answers[q.id] || '';
+
+              return (
+                <div key={q.id} id={`question-${index + 11}`} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm transition-all duration-300 rounded border border-gray-100 p-3 sm:border-0 sm:p-1">
+                  <span className="text-gray-800 flex-1">{index + 1}. {q.statement}</span>
+                  
+                  <select
+                    value={answerValue}
+                    onChange={(e) => handleAnswerChange(q.id, e.target.value)}
+                    className={`border rounded px-3 py-1.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer w-full sm:w-[150px] flex-shrink-0 transition-colors ${
+                      answerValue 
+                        ? 'bg-[#F3D5B5] border-black text-black font-semibold' 
+                        : 'bg-white border-gray-300 text-gray-800'
+                    }`}
+                  >
+                    <option value="" disabled>{`Question ${index + 11}`}</option>
+                    {(data.speakers || []).map((opt, i) => (
+                      <option key={i} value={opt}>
+                        {String.fromCharCode(65 + i)}. {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              );
+            })}
           </div>
         </div>
 

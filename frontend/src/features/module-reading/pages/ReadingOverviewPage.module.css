@@ -59,3 +59,38 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
 }
+
+@media (max-width: 700px) {
+  .contentContainer {
+    box-sizing: border-box;
+    padding: 24px 16px 40px;
+  }
+
+  .section { margin-bottom: 32px; }
+  .mainTitle { margin-bottom: 16px; font-size: 18px; line-height: 24px; }
+
+  .textContent,
+  .docLink {
+    font-size: 14px;
+    line-height: 22px;
+    overflow-wrap: anywhere;
+  }
+
+  .textContent p { margin-bottom: 14px; }
+  .docLinks { gap: 12px; }
+  .popularSection { margin-top: 36px; }
+
+  .cardsGrid {
+    display: flex;
+    overflow-x: auto;
+    gap: 14px;
+    padding: 2px 2px 12px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .cardsGrid > * {
+    width: min(280px, calc(100vw - 36px));
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+}

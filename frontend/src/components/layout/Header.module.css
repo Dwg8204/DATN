@@ -120,3 +120,15 @@
 .dropdownItem:hover {
   background-color: #f1f1f1;
 }
+
+@media (max-width: 700px) {
+  .header { min-height: 60px; padding: 0 14px; gap: 12px; overflow: hidden; }
+  .logoWrap { min-width: 0; flex: 1; }
+  .logo { width: 96px; height: 52px; margin-right: 14px; object-fit: contain; }
+  .nav { min-width: 0; flex: 1; gap: 16px; padding: 18px 0; overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .navLabel { font-size: 11px; white-space: nowrap; }
+  .navIcon, .dropdownMenu { display: none; }
+  .signInBtn { padding: 7px 12px; }
+  .signInText { font-size: 11px; }
+}
