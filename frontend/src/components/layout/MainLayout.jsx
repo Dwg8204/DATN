@@ -1,12 +1,15 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
+import SkillSubNavigation from './SkillSubNavigation';
+import styles from './MainLayout.module.css';
 
 export default function MainLayout() {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', background: '#FFFFFF', minHeight: '100vh', overflowX: 'hidden' }}>
-      <div style={{ alignSelf: 'stretch', display: 'flex', flexDirection: 'column', background: '#FFFEFC', gap: '40px', overflowX: 'hidden' }}>
+    <div className={styles.shell}>
+      <div className={styles.layout}>
         <Header />
+        <SkillSubNavigation />
         <main>
           <Outlet />
         </main>

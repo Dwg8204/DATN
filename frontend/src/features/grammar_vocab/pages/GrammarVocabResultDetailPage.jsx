@@ -43,7 +43,6 @@ function Part1Review({ questions, answers, expandedId, onExplain }) {
                   >
                     <span className={styles.optionLetter}>{String.fromCharCode(65 + index)}</span>
                     <span>{option}</span>
-                    {isCorrectAnswer && <small>Correct answer</small>}
                     {isUserAnswer && <small>Your answer</small>}
                   </div>
                 );

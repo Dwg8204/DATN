@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
+import InstructionBlock from '../../../components/common/InstructionBlock';
+import MultipleChoice from '../../../components/common/MultipleChoice';
 import { PART1_QUESTIONS as MOCK_QUESTIONS } from '../data/part1MockData';
 import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
 import styles from './Part1GrammarPage.module.css';
@@ -19,7 +21,9 @@ export default function Part1GrammarPage() {
 
   // Format dynamic titles
   const formattedPart = part ? part.replace(/([a-zA-Z]+)(\d+)/, (m, p1, p2) => `${p1.charAt(0).toUpperCase() + p1.slice(1)} ${p2}`) : 'Part 1';
-  const formattedSkill = skill ? skill.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Grammar';
+  const formattedSkill = skill === 'grammar-vocab'
+    ? 'Grammar & Vocabulary'
+    : skill.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState(() => getGrammarVocabAnswers('part1'));
@@ -88,14 +92,9 @@ export default function Part1GrammarPage() {
           <div className={styles.skillTitle}>{formattedSkill}</div>
         </div>
 
-        <div className={styles.instructionBlock}>
-          <span className={styles.instructionTitle}>
-            Questions {startIndex + 1}-{Math.min(startIndex + itemsPerPage, MOCK_QUESTIONS.length)}<br />
-          </span>
-          <span className={styles.instructionText}>
-            Choose the correct letter, A, B or C.
-          </span>
-        </div>
+        <InstructionBlock title={`Questions ${startIndex + 1}-${Math.min(startIndex + itemsPerPage, MOCK_QUESTIONS.length)}`}>
+          Choose the correct letter, A, B or C.
+        </InstructionBlock>
 
         <div className={styles.questionsContainer}>
           {currentQuestions.map(q => (
@@ -106,21 +105,12 @@ export default function Part1GrammarPage() {
                 </div>
                 <div className={styles.questionText}>{q.text}</div>
               </div>
-              <div className={styles.optionsList}>
-                {q.options.map((opt, idx) => (
-                  <div 
-                    key={idx} 
-                    className={styles.optionItem}
-                    onClick={() => handleOptionSelect(q.id, idx)}
-                  >
-                    <div className={styles.radioWrap}>
-                      <div className={`${styles.radioOuter} ${answers[q.id] === idx ? styles.radioOuterSelected : ''}`}></div>
-                      {answers[q.id] === idx && <div className={styles.radioInner}></div>}
-                    </div>
-                    <div className={styles.optionText}>{opt}</div>
-                  </div>
-                ))}
-              </div>
+              <MultipleChoice
+                name={`grammar-question-${q.id}`}
+                options={q.options}
+                value={answers[q.id]}
+                onChange={(optionIndex) => handleOptionSelect(q.id, optionIndex)}
+              />
             </div>
           ))}
         </div>
@@ -131,14 +121,13 @@ export default function Part1GrammarPage() {
         questions={MOCK_QUESTIONS}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={currentPageQuestionIds}
-        onQuestionClick={(questionId) => {
-          const page = getPageOfQuestion(questionId);
-          setCurrentPage(page);
-        }}
+        onQuestionClick={(qId) => setCurrentPage(getPageOfQuestion(qId))}
         onPrevClick={handlePrev}
         onNextClick={handleNext}
         onSubmitClick={handleSubmit}
         submitLabel={submitLabel}
+        hasPrev={currentPage > 1}
+        hasNext={currentPage < totalPages}
       />
       <SubmitModal 
         isOpen={showSubmitModal} 

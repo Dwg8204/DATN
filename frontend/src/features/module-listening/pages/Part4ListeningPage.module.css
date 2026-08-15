@@ -103,19 +103,23 @@
 }
 
 .questionNumberBox {
-  background: #8ACEFF;
-  border: 1px solid #000;
+  width: 30px;
+  height: 30px;
+  background: #E6F4FF;
   border-radius: 5px;
-  padding: 4px 12px;
+  outline: 2px solid #0095FF;
+  outline-offset: -1px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  height: 32px;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .questionNumber {
-  font-weight: bold;
+  color: black;
   font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
 }
 
 .questionSubText {
@@ -239,7 +243,8 @@
   cursor: pointer;
 }
 
-.rewindBtn, .forwardBtn {
+.rewindBtn,
+.forwardBtn {
   background: none;
   border: none;
   cursor: pointer;
@@ -254,4 +259,91 @@
   border: 1px solid #000;
   border-radius: 4px;
   padding: 8px 12px;
+}
+@media (max-width: 700px) {
+  .page {
+    min-height: calc(100vh - 64px);
+  }
+
+  .contentWrap {
+    padding: 16px 14px 28px;
+    gap: 18px;
+  }
+
+  .headerBlock {
+    padding: 10px 14px;
+    gap: 2px;
+  }
+
+  .partTitle,
+  .skillTitle {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .instructionBlock {
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  
+  .instructionTitle, .instructionText {
+    font-size: 14px;
+  }
+
+  .mainArea {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .audioSection {
+    width: 100%;
+    align-items: center;
+  }
+
+  .questionSection {
+    width: 100%;
+  }
+
+  .questionItem {
+    gap: 20px;
+    padding: 16px 14px;
+    border: 1px solid #e1e1e1;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04);
+  }
+
+  .questionContext {
+    font-size: 16px;
+  }
+
+  .multipleChoiceGroup {
+    gap: 14px;
+  }
+
+  .questionHeader {
+    gap: 10px;
+  }
+
+  .questionNumberBox {
+    width: 28px;
+    height: 28px;
+  }
+
+  .questionSubText {
+    font-size: 16px;
+  }
+
+  .radioOptionsList {
+    margin-left: 12px;
+    gap: 12px;
+  }
+
+  .radioOptionItem {
+    gap: 12px;
+  }
+
+  .radioOptionText {
+    font-size: 15px;
+  }
 }

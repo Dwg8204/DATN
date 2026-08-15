@@ -1,59 +1,37 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
+import AnswerSelect from '../../../../../components/common/AnswerSelect';
 import { ReadingTestContext } from '../../../context/ReadingTestContext';
 
 const Part1GapFilling = ({ data }) => {
   const { answers, handleAnswerChange } = useContext(ReadingTestContext);
-
   if (!data) return null;
 
-  const renderPassage = () => {
-    const parts = data.passage.split(/(\[\d+\])/g);
-
-    return parts.map((part, index) => {
-      const match = part.match(/\[(\d+)\]/);
-      if (match) {
-        const position = parseInt(match[1]);
-        const question = data.questions.find(q => q.position === position);
-        
-        if (!question) return part;
-
-        const answerValue = answers[question.id] || '';
-
-        return (
-          <span key={index} id={`question-${position}`} className="inline-flex max-w-full items-center mx-1 sm:mx-2 align-middle transition-all duration-300 rounded p-1">
-            <select
-              value={answerValue}
-              onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-              className={`w-full max-w-[220px] sm:w-auto border rounded px-2 py-1 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer min-w-0 sm:min-w-[130px] transition-colors ${
-                answerValue 
-                  ? 'bg-[#F3D5B5] border-black text-black font-semibold' 
-                  : 'bg-white border-gray-300 text-gray-800'
-              }`}
-            >
-              <option value="" disabled>{`Question ${position}`}</option>
-              {question.options.map((opt, i) => (
-                <option key={i} value={opt}>
-                  {String.fromCharCode(65 + i)}. {opt}
-                </option>
-              ))}
-            </select>
-          </span>
-        );
-      }
-
-      return (
-        <span key={index} className="whitespace-pre-wrap">
-          {part}
-        </span>
-      );
-    });
-  };
+  const parts = data.passage.split(/(\[\d+\])/g);
 
   return (
-    <div className="flex flex-col h-full bg-transparent animate-in fade-in">
-      <div className="py-2 sm:py-4 flex-1">
+    <div className="flex flex-col h-full bg-white animate-in fade-in">
+      <div className="p-3 sm:p-4 flex-1">
         <div className="text-sm leading-7 sm:leading-loose text-gray-800 max-w-3xl break-words">
-          {renderPassage()}
+          {parts.map((part, index) => {
+            const match = part.match(/\[(\d+)\]/);
+            if (!match) return <span key={index} className="whitespace-pre-wrap">{part}</span>;
+
+            const position = parseInt(match[1]);
+            const question = data.questions.find((item) => item.position === position);
+            if (!question) return part;
+
+            return (
+              <span key={index} id={`question-${position}`} className="inline-flex w-full sm:w-[180px] max-w-full items-center mx-0 sm:mx-2 my-1 align-middle">
+                <AnswerSelect
+                  value={answers[question.id] || ''}
+                  onChange={(event) => handleAnswerChange(question.id, event.target.value)}
+                  options={question.options}
+                  placeholder={`Gap ${position}`}
+                  ariaLabel={`Answer for gap ${position}`}
+                />
+              </span>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -1,8 +1,17 @@
-
-import PopularDocumentCard from '../../../components/shared/PopularDocumentCard/PopularDocumentCard';
+import { useNavigate } from 'react-router-dom';
 import styles from './ListeningFeedPage.module.css';
 
+const popularDocs = Array.from({ length: 5 }, (_, index) => ({
+  id: index + 1,
+  title: 'APTIS LISTENING PRACTICE',
+  subTitle: 'Practice questions with detailed explanations',
+  badge: 'LATEST 2026',
+  desc: 'Improve your listening skills with regularly updated Aptis practice materials.',
+}));
+
 export default function ListeningFeedPage() {
+  const navigate = useNavigate();
+
   const bandScores = [
     {
       band: 'C — Proficient',
@@ -32,14 +41,20 @@ export default function ListeningFeedPage() {
   ];
 
   return (
-    <div className={styles.pageContainer}>
-      <div className={styles.mainLayout}>
-        {/* Left Column - Article */}
-        <div className={styles.articleSection}>
-          <h1 className={styles.mainTitle}>Aptis Listening band scores</h1>
-          <h2 className={styles.subTitle}>Listening band scores</h2>
-          
-          <div className={styles.textContent}>
+    <div className={styles.page}>
+      <div className={styles.section}>
+        <div className={styles.titleContainer}>
+          <div className={styles.title}>
+            <span className={styles.titleLight}>LISTENING</span> FEED
+          </div>
+          <div className={styles.divider}></div>
+        </div>
+        <div className={styles.contentBlock}>
+          <div className={styles.heading}>
+            <span className={styles.headingBold}>Listening </span>
+            <span className={styles.headingLight}>band scores</span>
+          </div>
+          <div className={styles.textBlock}>
             <p>The Aptis Listening test consists of 17 tasks with a total of 20 questions based on a variety of audio recordings. It focuses on listening skills in real-life situations. Your final score is calculated based on the number of correct answers you provide.</p>
             <p>The questions in the Listening test are based on four different task types: identifying specific information from short messages or conversations (Part 1), matching information from four speakers talking about the same topic (Part 2), inferring opinions from a conversation between a man and a woman (Part 3), and inferring opinions from longer monologues on a range of topics (Part 4).</p>
             <p>You will have approximately 40 minutes to complete the Listening test. Each correct answer is worth one mark, and the total score is converted to the Aptis scale from A1 to C. Each audio recording can be played a maximum of two times.</p>
@@ -66,39 +81,44 @@ export default function ListeningFeedPage() {
         </div>
       </div>
 
-      <div className={styles.bottomSection}>
-        <div className={styles.documentsBlock}>
-          <h2 className={styles.bottomTitle}>LISTENING DOCUMENTS</h2>
-          <div className={styles.docLinks}>
-            <a href="#" className={styles.docLink}>Some tips for taking the APTIS Listening test</a>
-            <a href="#" className={styles.docLink}>APTIS Listening practice test</a>
-            <a href="#" className={styles.docLink}>Question types in the APTIS Listening test</a>
-            <a href="#" className={styles.docLink}>APTIS Listening band scores</a>
-          </div>
+      <div className={styles.section}>
+        <div className={styles.titleContainer}>
+          <div className={styles.title}>LISTENING DOCUMENTS</div>
+          <div className={styles.divider}></div>
         </div>
-
-        <div className={styles.popularBlock}>
-          <h2 className={styles.bottomTitle}>MOST POPULAR</h2>
-          <div className={styles.popularGrid}>
-            <PopularDocumentCard 
-              skillName="WRITING" 
-              description="Explore the latest Aptis Writing samples, updated regularly."
-            />
-            <PopularDocumentCard 
-              skillName="READING" 
-              description="Explore the latest Aptis Reading samples, updated regularly."
-            />
-            <PopularDocumentCard 
-              skillName="LISTENING" 
-              description="Explore the latest Aptis Listening samples, updated regularly."
-            />
-            <PopularDocumentCard 
-              skillName="SPEAKING" 
-              description="Explore the latest Aptis Speaking samples, updated regularly."
-            />
-          </div>
+        <div className={styles.contentBlock}>
+          <div className={styles.documentLink}>Some tips for taking the APTIS Listening test</div>
+          <div className={styles.documentLink}>APTIS Listening practice test</div>
+          <div className={styles.documentLink}>Question types in the APTIS Listening test</div>
+          <div className={styles.documentLink}>APTIS Listening band scores</div>
         </div>
       </div>
+
+      <div className={styles.section}>
+        <div className={styles.popularTitle}>MOST POPULAR</div>
+        <div className={styles.popularGrid}>
+          {popularDocs.map((doc) => (
+            <div key={doc.id} className={styles.popularCard}>
+              <div className={styles.cardHeader}>
+                <div className={styles.cardHeaderTop}>
+                  <div className={styles.cardTitle}>{doc.title}</div>
+                  <div className={styles.cardSubTitle}>{doc.subTitle}</div>
+                </div>
+                <div className={styles.cardBadge}>
+                  <span className={styles.cardBadgeText}>{doc.badge}</span>
+                </div>
+              </div>
+              <div className={styles.cardBody}>
+                <div className={styles.cardBodyText}>{doc.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <button className={styles.goToTestBtn} onClick={() => navigate('/listening/tests')}>
+        View Test List
+      </button>
     </div>
   );
 }

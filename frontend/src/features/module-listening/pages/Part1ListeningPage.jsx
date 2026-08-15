@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
+import InstructionBlock from '../../../components/common/InstructionBlock';
+import MultipleChoice from '../../../components/common/MultipleChoice';
 import { savePartAnswers } from '../utils/listeningSessionStorage';
 import { PART1_QUESTIONS } from '../data/part1MockData';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
@@ -75,14 +77,9 @@ export default function Part1ListeningPage() {
           <div className={styles.skillTitle}>Listening Test</div>
         </div>
 
-        <div className={styles.instructionBlock}>
-          <span className={styles.instructionTitle}>
-            Question {startIndex + 1} of {PART1_QUESTIONS.length}<br />
-          </span>
-          <span className={styles.instructionText}>
-            Listen to the recording and choose the correct answer (A, B or C) for each question.
-          </span>
-        </div>
+        <InstructionBlock title={`Question ${startIndex + 1} of ${PART1_QUESTIONS.length}`}>
+          Listen to the recording and choose the correct answer (A, B or C) for each question.
+        </InstructionBlock>
 
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
@@ -94,20 +91,12 @@ export default function Part1ListeningPage() {
                   </div>
                   <div className={styles.questionText}>{q.text}</div>
                 </div>
-                <div className={styles.optionsList}>
-                  {q.options.map((opt, idx) => (
-                    <div
-                      key={idx}
-                      className={styles.optionItem}
-                      onClick={() => handleOptionSelect(q.id, idx)}
-                    >
-                      <button className={`${styles.optionBtn} ${answers[q.id] === idx ? styles.optionBtnSelected : ''}`}>
-                        {String.fromCharCode(65 + idx)}
-                      </button>
-                      <div className={styles.optionText}>{opt}</div>
-                    </div>
-                  ))}
-                </div>
+                <MultipleChoice
+                  name={`listening-question-${q.id}`}
+                  options={q.options}
+                  value={answers[q.id]}
+                  onChange={(optionIndex) => handleOptionSelect(q.id, optionIndex)}
+                />
               </div>
             ))}
           </div>
@@ -129,6 +118,8 @@ export default function Part1ListeningPage() {
         onNextClick={handleNext}
         onSubmitClick={handleSubmit}
         submitLabel={submitLabel}
+        hasPrev={currentPage > 1}
+        hasNext={currentPage < totalPages}
       />
 
       <SubmitModal

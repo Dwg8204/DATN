@@ -1,10 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { savePartAnswers } from '../utils/listeningSessionStorage';
 import { PART2_DATA } from '../data/part2MockData';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
+import AnswerSelect from '../../../components/common/AnswerSelect';
+import InstructionBlock from '../../../components/common/InstructionBlock';
 import styles from './Part2ListeningPage.module.css';
 
 export default function Part2ListeningPage() {
@@ -18,20 +20,6 @@ export default function Part2ListeningPage() {
     return allAnswers;
   });
   const [showSubmitModal, setShowSubmitModal] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState(null);
-
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpenDropdown(null);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleOptionSelect = (speakerIndex, option) => {
     setAnswers(prev => {
       const newAnswers = {
@@ -41,7 +29,6 @@ export default function Part2ListeningPage() {
       savePartAnswers('part2', newAnswers);
       return newAnswers;
     });
-    setOpenDropdown(null);
   };
 
   const handleSubmit = () => {
@@ -77,21 +64,15 @@ export default function Part2ListeningPage() {
           <div className={styles.skillTitle}>Listening Test</div>
         </div>
 
-        <div className={styles.instructionBlock}>
-          <span className={styles.instructionTitle}>
-            Question {PART2_DATA.id}<br />
-          </span>
-          <span className={styles.instructionText}>
-            {PART2_DATA.instruction}
-          </span>
-        </div>
+        <InstructionBlock title={`Question ${PART2_DATA.id}`}>
+          {PART2_DATA.instruction}
+        </InstructionBlock>
 
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
             <div className={styles.questionItem}>
               <div className={styles.matchingList}>
                 {PART2_DATA.speakers.map((speaker, idx) => {
-                  const isOpen = openDropdown === idx;
                   const selectedOption = answers[idx];
 
                   return (
@@ -99,30 +80,13 @@ export default function Part2ListeningPage() {
                       <span className={styles.speakerText}>{speaker} ...</span>
 
                       <div className={styles.dropdownContainer}>
-                        <div
-                          className={`${styles.dropdownTrigger} ${selectedOption ? styles.hasValue : ''}`}
-                          onClick={() => setOpenDropdown(isOpen ? null : idx)}
-                        >
-                          {selectedOption ? (
-                            <span>{selectedOption}</span>
-                          ) : (
-                            <span className={styles.dropdownPlaceholder}>Select statement</span>
-                          )}
-                        </div>
-
-                        {isOpen && (
-                          <div className={styles.dropdownMenu} ref={dropdownRef}>
-                            {PART2_DATA.options.map((opt, optIdx) => (
-                              <div
-                                key={optIdx}
-                                className={`${styles.dropdownItem} ${selectedOption === opt ? styles.dropdownItemSelected : ''}`}
-                                onClick={() => handleOptionSelect(idx, opt)}
-                              >
-                                {opt}
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        <AnswerSelect
+                          value={selectedOption || ''}
+                          onChange={(event) => handleOptionSelect(idx, event.target.value)}
+                          placeholder="Select statement"
+                          ariaLabel={`Answer for ${speaker}`}
+                          options={PART2_DATA.options.map((opt, i) => ({ value: opt, label: `${String.fromCharCode(65 + i)}. ${opt}` }))}
+                        />
                       </div>
                     </div>
                   );
@@ -147,6 +111,8 @@ export default function Part2ListeningPage() {
         onNextClick={() => { }}
         onSubmitClick={handleSubmit}
         submitLabel={submitLabel}
+        hasPrev={isFullTest}
+        hasNext={false}
       />
 
       <SubmitModal

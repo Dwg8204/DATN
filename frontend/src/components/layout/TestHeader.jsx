@@ -4,6 +4,7 @@ import styles from './TestHeader.module.css';
 import { getGrammarVocabRemainingSeconds } from '../../features/grammar_vocab/utils/grammarVocabSessionStorage';
 import { getListeningRemainingSeconds } from '../../features/module-listening/utils/listeningSessionStorage';
 import { getReadingRemainingSeconds } from '../../features/module-reading/utils/readingSessionStorage';
+import { getWritingRemainingSeconds } from '../../features/writing/utils/writingSessionStorage';
 
 function formatRemainingTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -19,15 +20,17 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
   const isGrammarVocabTest = location.pathname.startsWith('/grammar-vocab/test/');
   const isListeningTest = location.pathname.startsWith('/listening/test/');
   const isReadingTest = location.pathname.startsWith('/reading/test/');
+  const isWritingTest = location.pathname.startsWith('/writing/test/');
   const [remainingSeconds, setRemainingSeconds] = useState(() => {
     if (isGrammarVocabTest) return getGrammarVocabRemainingSeconds();
     if (isListeningTest) return getListeningRemainingSeconds();
     if (isReadingTest) return getReadingRemainingSeconds();
+    if (isWritingTest) return getWritingRemainingSeconds();
     return null;
   });
 
   useEffect(() => {
-    if (!isGrammarVocabTest && !isListeningTest && !isReadingTest) return undefined;
+    if (!isGrammarVocabTest && !isListeningTest && !isReadingTest && !isWritingTest) return undefined;
 
     const updateTimer = () => {
       let remaining = null;
@@ -37,6 +40,8 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
         remaining = getListeningRemainingSeconds();
       } else if (isReadingTest) {
         remaining = getReadingRemainingSeconds();
+      } else if (isWritingTest) {
+        remaining = getWritingRemainingSeconds();
       }
       setRemainingSeconds(remaining);
 
@@ -49,6 +54,8 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
         } else if (isListeningTest) {
           // For listening test, when timeout always redirect to full test results because we want to see the total score
           navigate(`/listening/result?testId=${testId}&isFull=true&timedOut=true`, { replace: true });
+        } else if (isWritingTest) {
+          navigate('/writing/tests', { replace: true });
         }
       }
     };
@@ -56,7 +63,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
     updateTimer();
     const intervalId = window.setInterval(updateTimer, 1000);
     return () => window.clearInterval(intervalId);
-  }, [isGrammarVocabTest, isListeningTest, location.pathname, navigate, searchParams]);
+  }, [isGrammarVocabTest, isListeningTest, isReadingTest, isWritingTest, location.pathname, navigate, searchParams]);
 
   const displayedTime = timeRemaining
     || (remainingSeconds === null ? '' : formatRemainingTime(remainingSeconds));

@@ -1,0 +1,94 @@
+.selectRoot {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.select {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 14px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  background: #fff;
+  color: #000;
+  font-size: 16px;
+  line-height: 24px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.select:hover { background-color: #f9f9f9; }
+.select:focus-visible { border-color: #0095ff; box-shadow: 0 0 0 3px rgba(0, 149, 255, 0.18); }
+.hasValue { background-color: #f3d5b5; }
+.correct { border-color: #43b75d; background-color: #edf9f0; }
+.incorrect { border: 2px solid #c82323; background-color: #fff0f1; }
+.select:disabled { color: #000; cursor: default; opacity: 1; }
+
+.selectedText {
+  min-width: 0;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placeholder { font-weight: 700; }
+
+.chevron {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 0.18s ease;
+}
+
+.chevronOpen { transform: translateY(2px) rotate(225deg); }
+
+.menu {
+  position: absolute;
+  z-index: 200;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-width: 100%;
+  max-height: 240px;
+  overflow-y: auto;
+  border: 1px solid #bdbdbd;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.16);
+}
+
+.option {
+  width: 100%;
+  display: block;
+  padding: 9px 12px;
+  border: 0;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+  color: #000;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.option:last-child { border-bottom: 0; }
+.option:hover, .optionSelected { background: #a9deef; }
+
+@media (max-width: 700px) {
+  .select { min-height: 42px; padding: 7px 10px; font-size: 13px; line-height: 20px; }
+  .menu { max-height: min(260px, 45vh); }
+  .option { padding: 8px 10px; font-size: 13px; line-height: 18px; }
+}

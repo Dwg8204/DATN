@@ -1,5 +1,7 @@
 export const GRAMMAR_VOCAB_CONFIG = {
   skillKey: 'grammar-vocab',
+  title: 'GRAMMAR & VOCABULARY TEST',
+  resultDetailPath: '/grammar-vocab/result-detail',
   parts: ['part1', 'part2'],
   tabs: [
     { id: 'part1', label: 'Part 1' },
@@ -7,8 +9,20 @@ export const GRAMMAR_VOCAB_CONFIG = {
     { id: 'full', label: 'Full test' },
   ],
   tests: [
-    { id: 1, title: 'Grammar Practice Set 1', desc: 'Multiple-choice grammar questions\nAptis Practice Test', part: 'Part 1', tabId: 'part1', status: 'Not Started' },
-    { id: 2, title: 'Vocabulary Practice Set 1', desc: 'Synonyms and word matching\nAptis Practice Test', part: 'Part 2', tabId: 'part2', status: 'Not Started' },
-    { id: 3, title: 'Full Grammar & Vocabulary Test 1', desc: 'Grammar and vocabulary\n50 questions in 25 minutes', part: 'Full Test', tabId: 'full', status: 'Not Started' },
+    { id: 1, title: 'Grammar & Vocabulary Practice Set 1', desc: 'Sentence completion and grammar accuracy\nAptis Practice Test', part: 'Part 1', tabId: 'part1', status: 'Completed', submitted: '09:30 - Aug 05, 2026', duration: '00:11:42', accuracy: 84 },
+    { id: 2, title: 'Grammar & Vocabulary Practice Set 2', desc: 'Verb forms and sentence structure\nAptis Practice Test', part: 'Part 1', tabId: 'part1', status: 'Not Started' },
+    { id: 3, title: 'Grammar & Vocabulary Practice Set 3', desc: 'Prepositions and connectors\nAptis Practice Test', part: 'Part 1', tabId: 'part1', status: 'Not Started' },
+    { id: 4, title: 'Grammar & Vocabulary Practice Set 4', desc: 'Tenses and agreement\nAptis Practice Test', part: 'Part 1', tabId: 'part1', status: 'Not Started' },
+    { id: 5, title: 'Grammar & Vocabulary Practice Set 5', desc: 'Mixed grammar review\nAptis Practice Test', part: 'Part 1', tabId: 'part1', status: 'Not Started' },
+    { id: 6, title: 'Vocabulary Practice Set 1', desc: 'Synonyms and word matching\nAptis Practice Test', part: 'Part 2', tabId: 'part2', status: 'Completed', submitted: '14:10 - Aug 06, 2026', duration: '00:09:18', accuracy: 76 },
+    { id: 7, title: 'Vocabulary Practice Set 2', desc: 'Word definitions and meaning\nAptis Practice Test', part: 'Part 2', tabId: 'part2', status: 'Not Started' },
+    { id: 8, title: 'Vocabulary Practice Set 3', desc: 'Collocations and word groups\nAptis Practice Test', part: 'Part 2', tabId: 'part2', status: 'Not Started' },
+    { id: 9, title: 'Vocabulary Practice Set 4', desc: 'Words in context\nAptis Practice Test', part: 'Part 2', tabId: 'part2', status: 'Not Started' },
+    { id: 10, title: 'Vocabulary Practice Set 5', desc: 'Mixed vocabulary review\nAptis Practice Test', part: 'Part 2', tabId: 'part2', status: 'Not Started' },
+    { id: 11, title: 'Full Grammar & Vocabulary Test 1', desc: 'Grammar and vocabulary\n50 questions in 25 minutes', part: 'Full Test', tabId: 'full', status: 'Completed', submitted: '18:45 - Aug 07, 2026', duration: '00:23:06', accuracy: 80 },
+    { id: 12, title: 'Full Grammar & Vocabulary Test 2', desc: 'Complete Aptis-style test\n50 questions in 25 minutes', part: 'Full Test', tabId: 'full', status: 'Not Started' },
+    { id: 13, title: 'Full Grammar & Vocabulary Test 3', desc: 'Complete Aptis-style test\n50 questions in 25 minutes', part: 'Full Test', tabId: 'full', status: 'Not Started' },
+    { id: 14, title: 'Full Grammar & Vocabulary Test 4', desc: 'Complete Aptis-style test\n50 questions in 25 minutes', part: 'Full Test', tabId: 'full', status: 'Not Started' },
+    { id: 15, title: 'Full Grammar & Vocabulary Test 5', desc: 'Complete Aptis-style test\n50 questions in 25 minutes', part: 'Full Test', tabId: 'full', status: 'Not Started' },
   ],
 };

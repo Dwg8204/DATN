@@ -1,0 +1,36 @@
+.instructionBlock {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.instructionTitle,
+.instructionText {
+  color: #000;
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.instructionTitle {
+  font-weight: 700;
+}
+
+.instructionText {
+  font-weight: 400;
+}
+
+@media (max-width: 700px) {
+  .instructionBlock {
+    gap: 4px;
+    padding: 12px 14px;
+    border-left: 4px solid #a11d33;
+    border-radius: 8px;
+    background: #fff9f1;
+  }
+
+  .instructionTitle,
+  .instructionText {
+    font-size: 14px;
+    line-height: 22px;
+  }
+}

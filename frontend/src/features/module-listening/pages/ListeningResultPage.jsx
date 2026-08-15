@@ -23,6 +23,20 @@ function formatTime(ms) {
   return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
+function getFeedback(percentage) {
+  if (percentage >= 90) return { title: "Outstanding!", text: "Your listening skills are excellent. You demonstrated strong comprehension across all parts. Keep up this level!" };
+  if (percentage >= 75) return { title: "Great job!", text: "You performed well and show solid listening comprehension. Review the few missed questions to reach the top level." };
+  if (percentage >= 55) return { title: "Good effort!", text: "You have a decent grasp of listening skills, but there are areas to improve. Focus on opinion-matching and inference tasks." };
+  if (percentage >= 35) return { title: "Keep practising!", text: "Your listening comprehension is developing. Try listening to more English content daily and retaking the test." };
+  return { title: "Don't give up!", text: "This is a challenging test. We recommend reviewing each part's instructions and audio scripts carefully before retrying." };
+}
+
+function getStatColor(percentage) {
+  if (percentage >= 75) return '#43B75D'; // Green
+  if (percentage >= 40) return '#F5A623'; // Orange
+  return '#DA1E21'; // Red
+}
+
 export default function ListeningResultPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -98,6 +112,19 @@ export default function ListeningResultPage() {
     const percentage = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
     const cefrLevel = getCefrLevel(percentage);
 
+    const getPartStats = (partResults) => {
+      const total = partResults.length;
+      const correct = partResults.filter(r => r.isCorrect).length;
+      return total > 0 ? Math.round((correct / total) * 100) : 0;
+    };
+
+    const partStats = {
+      'Part 1': getPartStats(part1Results),
+      'Part 2': getPartStats(part2Results),
+      'Part 3': getPartStats(part3Results),
+      'Part 4': getPartStats(part4Results),
+    };
+
     setResults({
       part1Results,
       part2Results,
@@ -109,7 +136,8 @@ export default function ListeningResultPage() {
       percentage,
       cefrLevel,
       timeString: formatTime(timeSpent),
-      totalQuestions
+      totalQuestions,
+      partStats
     });
 
   }, [isFullTest, partParam]);
@@ -220,7 +248,7 @@ export default function ListeningResultPage() {
         <div className={styles.feedbackBox}>
           <div className={styles.feedbackLabel}>Feedback</div>
           <div className={styles.feedbackText}>
-            {results.percentage >= 80 ? "Excellent work! Keep it up." : "Good effort. Try to review the wrong answers and try again."}
+            <strong style={{ color: getStatColor(results.percentage) }}>{getFeedback(results.percentage).title}</strong> {getFeedback(results.percentage).text}
           </div>
         </div>
 
@@ -228,12 +256,30 @@ export default function ListeningResultPage() {
           <div className={styles.statsBox}>
             <div className={styles.statsLabel}>Statistics</div>
             <div className={styles.circlesWrapper}>
-              {['Part 1', 'Part 2', 'Part 3', 'Part 4'].map((p, idx) => (
-                <div key={idx} className={styles.circleItem}>
-                  <div className={styles.statCircleSmall}></div>
-                  <div className={styles.statName}>{p}</div>
-                </div>
-              ))}
+              {['Part 1', 'Part 2', 'Part 3', 'Part 4'].map((p, idx) => {
+                const pct = results.partStats[p] || 0;
+                const color = getStatColor(pct);
+                return (
+                  <div key={idx} className={styles.circleItem}>
+                    <div className={styles.statCircleWrap}>
+                      <svg viewBox="0 0 80 80" width="80" height="80">
+                        <circle cx="40" cy="40" r="36" fill="white" stroke="#E0E0E0" strokeWidth="4" />
+                        <circle 
+                          cx="40" cy="40" r="36" 
+                          fill="transparent" 
+                          stroke={color} 
+                          strokeWidth="4" 
+                          strokeDasharray={`${pct * 2.26} 226`} 
+                          strokeDashoffset="0" 
+                          transform="rotate(-90 40 40)" 
+                        />
+                      </svg>
+                      <div className={styles.statPercentageText}>{pct}%</div>
+                    </div>
+                    <div className={styles.statName}>{p}</div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

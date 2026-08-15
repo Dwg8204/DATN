@@ -3,6 +3,7 @@ import styles from './IntroductionPage.module.css';
 import { startGrammarVocabSession } from '../features/grammar_vocab/utils/grammarVocabSessionStorage';
 import { startListeningSession } from '../features/module-listening/utils/listeningSessionStorage';
 import { startReadingSession } from '../features/module-reading/utils/readingSessionStorage';
+import { startWritingSession } from '../features/writing/utils/writingSessionStorage';
 
 const skillConfigs = {
   reading: {
@@ -123,6 +124,10 @@ export default function IntroductionPage({
       } else if (skill === 'reading') {
         startReadingSession(testId, mode, { force: true });
         navigate(`/reading/test/${testId}?mode=${mode}`);
+      } else if (skill === 'writing') {
+        startWritingSession(testId, mode, { force: true });
+        const firstPart = mode === 'full' ? 'part1' : mode;
+        navigate(`/writing/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
       }
     }
   };

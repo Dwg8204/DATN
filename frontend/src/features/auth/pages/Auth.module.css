@@ -170,30 +170,8 @@
 .optionsRow {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   width: 100%;
-}
-
-.rememberMe {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  margin-right: 370px;
-  gap: 8px;
-}
-
-.checkbox {
-  width: 24px;
-  height: 24px;
-  box-sizing: border-box;
-  background: #FFFFFF;
-  border-radius: 5px;
-  border: 2px solid #000000;
-  cursor: pointer;
-}
-
-.optionText {
-  color: #000000;
-  font-size: 16px;
 }
 
 .forgotPassword {
@@ -201,6 +179,49 @@
   font-size: 16px;
   text-decoration: none;
   cursor: pointer;
+}
+
+.passwordInputWrap {
+  position: relative;
+  width: 635px;
+}
+
+.passwordInputWrap .inputFull {
+  width: 100%;
+  padding-right: 52px;
+}
+
+.passwordToggle {
+  position: absolute;
+  top: 50%;
+  right: 14px;
+  width: 32px;
+  height: 32px;
+  padding: 5px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #4f4f4f;
+  cursor: pointer;
+}
+
+.passwordToggle:hover,
+.passwordToggle:focus-visible {
+  background: rgba(161, 29, 51, 0.08);
+  color: #a11d33;
+}
+
+.passwordToggle svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .submitBtn {
@@ -296,4 +317,107 @@
   margin-bottom: 19px;
   margin-right: 171px;
   width: 463px;
+}
+
+@media (max-width: 768px) {
+  .wrapper,
+  .signupWrapper {
+    padding: 30px 24px 48px;
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .container,
+  .form,
+  .signupForm,
+  .formGroup,
+  .signupFormGroup {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .container {
+    max-width: 520px;
+    gap: 32px;
+  }
+
+  .title {
+    font-size: 16px;
+    line-height: 28px;
+    text-align: center;
+  }
+
+  .form {
+    gap: 20px;
+  }
+
+  .signupForm {
+    gap: 32px;
+  }
+
+  .signupFormGroup {
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .inputRow {
+    width: 100%;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .inputCol,
+  .inputColMargin {
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .label {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .input,
+  .inputFull,
+  .inputHalf,
+  .passwordInputWrap {
+    width: 100%;
+  }
+
+  .input {
+    font-size: 14px;
+  }
+
+  .forgotPassword,
+  .orText {
+    font-size: 14px;
+  }
+
+  .submitBtn,
+  .submitBtnSignup {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 28px;
+  }
+
+  .submitBtnText {
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .verifyBottomLink,
+  .signupBottomLink,
+  .bottomLink {
+    padding: 0;
+    gap: 6px;
+    text-align: center;
+  }
+
+  .bottomText,
+  .bottomAction {
+    font-size: 14px;
+    line-height: 24px;
+  }
 }

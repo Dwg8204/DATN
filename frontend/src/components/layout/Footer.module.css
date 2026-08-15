@@ -1,27 +1,37 @@
 .footer {
   align-self: stretch;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: center;
+  align-items: flex-start;
   background: #FFF9F1;
-  padding: 52px 72px;
+  padding: 48px clamp(24px, 5vw, 72px);
+  gap: clamp(48px, 7vw, 96px);
   box-sizing: border-box;
   overflow-x: hidden;
 }
 
 .footerLeft {
-  flex-shrink: 0;
+  min-width: 0;
+  width: min(100%, 820px);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 60px;
 }
 
 .brandCol {
-  flex-shrink: 0;
+  width: min(360px, 32vw);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 19px;
+}
+
+.brandDescription {
+  max-width: 340px;
+  margin: 0;
+  color: rgba(0, 0, 0, 0.65);
+  font-size: 14px;
+  line-height: 22px;
 }
 
 .footerLogo {
@@ -35,18 +45,20 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 7px 40px 7px 20px;
+  padding: 7px 0;
+  gap: 12px;
 }
 
 .linkItem {
   color: #000000;
   font-size: 14px;
-  margin-bottom: 18px;
+  margin-bottom: 0;
   cursor: pointer;
   background: none;
   border: none;
   padding: 0;
   text-align: left;
+  text-decoration: none;
 }
 
 .linkItem:last-child {
@@ -58,12 +70,12 @@
 }
 
 .contactCol {
-  flex-shrink: 0;
+  min-width: 280px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding-top: 21px;
-  gap: 40px;
+  gap: 20px;
 }
 
 .contactTitle {
@@ -77,13 +89,30 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 6px 49px 6px 1px;
-  gap: 18px;
+  padding: 0;
+  gap: 14px;
 }
 
 .contactItem {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 10px;
   color: #000000;
   font-size: 14px;
+  line-height: 20px;
+  text-decoration: none;
+}
+
+.contactItem strong {
+  font-weight: 700;
+}
+
+.contactItem span {
+  color: rgba(0, 0, 0, 0.68);
+}
+
+.contactItem:hover span {
+  color: #a11d33;
 }
 
 .footerRight {
@@ -92,6 +121,7 @@
   flex-direction: column;
   align-items: center;
   padding-top: 8px;
+  max-width: 280px;
 }
 
 .feedbackBtn {
@@ -105,6 +135,7 @@
   margin-bottom: 24px;
   text-align: left;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .feedbackBtn:hover {
@@ -120,4 +151,95 @@
 .copyright {
   color: #000000;
   font-size: 14px;
+}
+
+@media (max-width: 960px) {
+  .footer {
+    flex-direction: column;
+    gap: 36px;
+    padding: 40px 32px;
+  }
+
+  .footerLeft {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .brandCol {
+    width: min(100%, 420px);
+  }
+
+  .footerRight {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer {
+    width: 100%;
+    gap: 28px;
+    padding: 36px 24px;
+  }
+
+  .footerLeft {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+  }
+
+  .brandCol {
+    width: auto;
+    gap: 14px;
+  }
+
+  .brandDescription {
+    display: none;
+  }
+
+  .footerLogo {
+    width: 100px;
+    height: 48px;
+    margin: 0;
+    object-fit: contain;
+  }
+
+  .contactCol {
+    min-width: 0;
+    padding-top: 14px;
+    gap: 14px;
+  }
+
+  .contactList,
+  .linkList {
+    gap: 8px;
+  }
+
+  .contactItem {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .linkItem {
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  .footerRight {
+    width: 100%;
+    max-width: none;
+    gap: 14px;
+  }
+
+  .feedbackBtn {
+    margin: 0;
+  }
+
+  .copyright {
+    font-size: 12px;
+    line-height: 18px;
+  }
 }
