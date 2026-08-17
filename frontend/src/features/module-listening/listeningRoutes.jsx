@@ -42,7 +42,7 @@ export const listeningTestRoutes = [
   },
   {
     path: 'listening/detail-result',
-    element: <TestLayout headerProps={{ showTimer: false, showExit: true }} />,
+    element: <TestLayout headerProps={{ showTimer: false, showExit: false }} />,
     children: [
       { index: true, element: <ListeningDetailResultPage /> },
     ],
