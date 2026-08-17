@@ -27,7 +27,7 @@ const skillCards = [
   {
     image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/emndtqro_expires_30_days.png',
     alt: 'Speaking',
-    path: '/speaking',
+    path: '/speaking/overview',
   },
   {
     image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1784102681/Gemini_Generated_Image_mc1u72mc1u72mc1u_1111_rys0cc.png',
