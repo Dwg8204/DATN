@@ -41,8 +41,13 @@ const navItems = [
     label: 'SPEAKING',
     mobileLabel: 'Speaking',
     MobileIcon: Mic,
-    to: '/speaking',
+    to: '/speaking/overview',
     icon: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/gg3z1wbc_expires_30_days.png',
+    dropdown: [
+      { label: 'Speaking Overview', to: '/speaking/overview' },
+      { label: 'Speaking Feed', to: '/speaking/feed' },
+      { label: 'Speaking Test', to: '/speaking/tests' },
+    ],
   },
   {
     label: 'GRAMMAR & VOCAB',

@@ -1,0 +1,274 @@
+.page {
+  padding-left: 72px;
+  padding-right: 72px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+  background: #FFFEFC;
+  overflow-x: hidden;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  width: 100%;
+}
+
+.title {
+  color: #AF101A;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.titleLight {
+  font-weight: 400;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background: black;
+}
+
+.contentBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+}
+
+.heading {
+  color: #A11D33;
+  font-size: 20px;
+  line-height: 36px;
+}
+
+.headingLight {
+  font-weight: 400;
+}
+
+.headingBold {
+  font-weight: 700;
+}
+
+.text {
+  text-align: justify;
+  color: black;
+  font-size: 16px;
+  line-height: 28px;
+}
+
+.subHeading {
+  color: black;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.textBlock {
+  color: black;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  line-height: 24px;
+}
+
+.documentLink {
+  color: #A71E34;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 28px;
+  cursor: pointer;
+}
+
+.documentLink:hover {
+  text-decoration: underline;
+}
+
+/* Most Popular Section */
+.popularTitle {
+  color: #A11D33;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.popularGrid {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  width: 100%;
+}
+
+.popularCard {
+  width: 265px;
+  background: #FFFEFC;
+  border-radius: 10px;
+  outline: 2px solid #A71E34;
+  outline-offset: -2px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.cardHeader {
+  padding: 10px 16px;
+  background: black;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.cardHeaderTop {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardTitle {
+  color: #FFCB8B;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.cardSubTitle {
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.cardBadge {
+  align-self: flex-end;
+  padding: 4px 8px;
+  background: #DA1E21;
+  border-radius: 20px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardBadgeText {
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.cardBody {
+  height: 58px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.cardBodyText {
+  color: black;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.goToTestBtn {
+  align-self: center;
+  margin-top: 20px;
+  padding: 12px 40px;
+  background: #DA1E21;
+  color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.goToTestBtn:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 24px 16px 36px;
+    gap: 30px;
+  }
+
+  .section {
+    gap: 18px;
+  }
+
+  .titleContainer {
+    gap: 8px;
+  }
+
+  .title,
+  .popularTitle {
+    font-size: 18px;
+    line-height: 24px;
+    overflow-wrap: anywhere;
+  }
+
+  .contentBlock {
+    gap: 7px;
+  }
+
+  .heading {
+    font-size: 17px;
+    line-height: 25px;
+  }
+
+  .text,
+  .textBlock,
+  .documentLink {
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .text {
+    text-align: left;
+  }
+
+  .subHeading {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .popularGrid {
+    gap: 14px;
+    padding: 2px 2px 12px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .popularCard {
+    width: min(240px, calc(100vw - 40px));
+    scroll-snap-align: start;
+  }
+
+  .cardHeader {
+    gap: 24px;
+  }
+
+  .goToTestBtn {
+    width: 100%;
+    margin-top: 0;
+    padding: 11px 20px;
+    box-sizing: border-box;
+    font-size: 14px;
+  }
+}
