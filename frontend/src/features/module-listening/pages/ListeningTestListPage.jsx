@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
+import { getCompletedListeningTests } from '../utils/listeningSessionStorage';
 import styles from './ListeningTestListPage.module.css';
 
 const TABS = [
@@ -18,10 +19,6 @@ const MOCK_TESTS = [
     desc: 'Information recognition\nAptis Practice Tests',
     part: 'Part 1',
     tabId: 'part1',
-    status: 'Completed',
-    submitted: '20:15 - Jan 06, 2026',
-    duration: '00:05:30',
-    accuracy: 80,
   },
   {
     id: 2,
@@ -29,10 +26,6 @@ const MOCK_TESTS = [
     desc: 'Information matching\nActual Tests',
     part: 'Part 2',
     tabId: 'part2',
-    status: 'Completed',
-    submitted: '21:00 - Jan 29, 2026',
-    duration: '00:08:45',
-    accuracy: 100,
   },
   {
     id: 3,
@@ -40,10 +33,6 @@ const MOCK_TESTS = [
     desc: 'Inference/discussion\nTrainer & Practice Tests+',
     part: 'Part 3',
     tabId: 'part3',
-    status: 'Completed',
-    submitted: '10:20 - Feb 24, 2026',
-    duration: '00:12:00',
-    accuracy: 35,
   },
   {
     id: 4,
@@ -51,7 +40,6 @@ const MOCK_TESTS = [
     desc: 'Identifying opinions\nForecast Quarter 1/2026',
     part: 'Part 4',
     tabId: 'part4',
-    status: 'Not Started',
   },
   {
     id: 5,
@@ -59,30 +47,49 @@ const MOCK_TESTS = [
     desc: 'Complete Listening Test\nAll 4 Parts (17 questions)',
     part: 'Full Listening Test',
     tabId: 'full',
-    status: 'Completed',
-    submitted: '15:30 - Mar 10, 2026',
-    duration: '00:35:12',
-    accuracy: 85,
   }
 ];
 
 export default function ListeningTestListPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('part1');
+  const [completedTests, setCompletedTests] = useState({});
 
-  // Handles clicking "Do the test" for a single part
+  useEffect(() => {
+    setCompletedTests(getCompletedListeningTests());
+  }, []);
+
   const handleDoTestPart = (testId, partNum) => {
-    // Navigate to introduction page first
     navigate(`/listening/introduction?testId=${testId}&mode=part${partNum}`);
   };
 
-  // Handles clicking "Do the test" for a full test
   const handleDoFullTest = (testId) => {
-    // Navigate to introduction page first
     navigate(`/listening/introduction?testId=${testId}&mode=full`);
   };
 
+  const handleReview = (test) => {
+    const isFull = test.tabId === 'full';
+    const partNum = test.part ? test.part.replace('Part ', '') : '1';
+    navigate(`/listening/detail-result?testId=${test.id}&isFull=${isFull}${!isFull ? `&part=${partNum}` : ''}`);
+  };
+
   const filteredTests = MOCK_TESTS.filter(test => test.tabId === activeTab);
+
+  const testsToRender = filteredTests.map(test => {
+    const comp = completedTests[test.id];
+    if (comp) {
+      const d = new Date(comp.submittedAt);
+      const formattedDate = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate().toString().padStart(2, '0')}, ${d.getFullYear()}`;
+      return {
+        ...test,
+        status: 'Completed',
+        submitted: formattedDate,
+        duration: comp.timeString || '00:00:00',
+        accuracy: comp.accuracy || 0
+      };
+    }
+    return { ...test, status: 'Not Started' };
+  });
 
   return (
     <div className={styles.page}>
@@ -99,11 +106,11 @@ export default function ListeningTestListPage() {
             </svg>
           </div>
         </div>
-        <div className={styles.tabsContainer}>
+        <div className={styles.tabsGrid}>
           {TABS.map((tab) => (
             <div
               key={tab.id}
-              className={`${styles.tabItem} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
+              className={`${styles.tabItem} ${tab.id === 'full' ? styles.tabItemSpan2 : ''} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
               onClick={() => setActiveTab(tab.id)}
             >
               <span className={styles.tabText}>{tab.label}</span>
@@ -131,12 +138,12 @@ export default function ListeningTestListPage() {
 
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
-              {filteredTests.length === 0 ? (
+              {testsToRender.length === 0 ? (
                 <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>
                   No tests available for this part yet.
                 </div>
               ) : (
-                filteredTests.map((test) => (
+                testsToRender.map((test) => (
                   <div key={test.id} className={styles.testCard}>
                     <div className={styles.cardTop}>
                       <div className={styles.cardTitle}>{test.title}</div>
@@ -174,7 +181,7 @@ export default function ListeningTestListPage() {
 
                     <div className={styles.cardActions}>
                       {test.status === 'Completed' && (
-                        <button className={styles.reviewBtn}>
+                        <button className={styles.reviewBtn} onClick={() => handleReview(test)}>
                           <span className={styles.reviewBtnText}>Review</span>
                         </button>
                       )}

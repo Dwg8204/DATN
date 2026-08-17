@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { getAllAnswers, getTestMeta, clearListeningSession } from '../utils/listeningSessionStorage';
+import { getAllAnswers, getTestMeta, clearListeningSession, saveListeningResult } from '../utils/listeningSessionStorage';
 import { PART1_QUESTIONS } from '../data/part1MockData';
 import { PART2_DATA } from '../data/part2MockData';
 import { PART3_DATA } from '../data/part3MockData';
@@ -85,7 +85,7 @@ export default function ListeningResultPage() {
     // Process Part 4 (2 questions)
     // answers saved as { "16": 0, "17": 1, ... }
     const p4Raw = allAnswers.part4;
-    const part4Results = PART4_QUESTIONS.flatMap(mainQ => 
+    const part4Results = PART4_QUESTIONS.flatMap(mainQ =>
       mainQ.subQuestions.map(sq => {
         const userAnswerIdx = p4Raw[String(sq.id)];
         const isSkipped = userAnswerIdx === undefined || userAnswerIdx === null;
@@ -125,7 +125,7 @@ export default function ListeningResultPage() {
       'Part 4': getPartStats(part4Results),
     };
 
-    setResults({
+    const resultData = {
       part1Results,
       part2Results,
       part3Results,
@@ -138,7 +138,19 @@ export default function ListeningResultPage() {
       timeString: formatTime(timeSpent),
       totalQuestions,
       partStats
-    });
+    };
+
+    setResults(resultData);
+
+    const { testId } = getTestMeta();
+    if (testId) {
+      saveListeningResult(testId, isFullTest, partParam, {
+        accuracy: percentage,
+        cefrLevel,
+        timeString: formatTime(timeSpent),
+        allAnswers: { p1Raw, p2Raw, p3Raw, p4Raw },
+      });
+    }
 
   }, [isFullTest, partParam]);
 
@@ -231,17 +243,41 @@ export default function ListeningResultPage() {
         <div className={styles.detailBox}>
           <div className={styles.resultLabel}>Result</div>
           <div className={styles.columnsWrapper}>
-            <div className={styles.mainColumn}>
-              {(isFullTest || partParam === '1') && renderPartColumn('Part 1', results.part1Results.slice(0, 6))}
-              {(isFullTest || partParam === '4') && renderPartColumn('Part 4', results.part4Results)}
-            </div>
-            <div className={styles.mainColumn}>
-              {(isFullTest || partParam === '1') && renderPartColumn('Part 1', results.part1Results.slice(6))}
-              {(isFullTest || partParam === '2') && renderPartColumn('Part 2', results.part2Results)}
-            </div>
-            <div className={styles.mainColumn}>
-              {(isFullTest || partParam === '3') && renderPartColumn('Part 3', results.part3Results)}
-            </div>
+            {(isFullTest || partParam === '1') && (
+              <>
+                <div className={styles.mainColumn}>
+                  {renderPartColumn('Part 1', results.part1Results.slice(0, 7))}
+                </div>
+                <div className={styles.mainColumn}>
+                  <div className={styles.partColumn}>
+                    {/* Empty title space to align with the first column */}
+                    <div className={styles.partTitle} style={{ visibility: 'hidden' }}>Part 1</div>
+                    {results.part1Results.slice(7).map(item => (
+                      <div key={item.id} className={styles.answerRow}>
+                        <span className={styles.qId}>{item.id}</span>
+                        <span className={styles.userAns}>{item.userAnswer || '--'}</span>
+                        <div className={styles.iconWrap}>
+                          {renderIcon(item.isCorrect, item.isSkipped)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {(isFullTest || partParam === '2' || partParam === '3') && (
+              <div className={styles.mainColumn}>
+                {(isFullTest || partParam === '2') && renderPartColumn('Part 2', results.part2Results)}
+                {(isFullTest || partParam === '3') && renderPartColumn('Part 3', results.part3Results)}
+              </div>
+            )}
+
+            {(isFullTest || partParam === '4') && (
+              <div className={styles.mainColumn}>
+                {renderPartColumn('Part 4', results.part4Results)}
+              </div>
+            )}
           </div>
         </div>
 
@@ -264,14 +300,14 @@ export default function ListeningResultPage() {
                     <div className={styles.statCircleWrap}>
                       <svg viewBox="0 0 80 80" width="80" height="80">
                         <circle cx="40" cy="40" r="36" fill="white" stroke="#E0E0E0" strokeWidth="4" />
-                        <circle 
-                          cx="40" cy="40" r="36" 
-                          fill="transparent" 
-                          stroke={color} 
-                          strokeWidth="4" 
-                          strokeDasharray={`${pct * 2.26} 226`} 
-                          strokeDashoffset="0" 
-                          transform="rotate(-90 40 40)" 
+                        <circle
+                          cx="40" cy="40" r="36"
+                          fill="transparent"
+                          stroke={color}
+                          strokeWidth="4"
+                          strokeDasharray={`${pct * 2.26} 226`}
+                          strokeDashoffset="0"
+                          transform="rotate(-90 40 40)"
                         />
                       </svg>
                       <div className={styles.statPercentageText}>{pct}%</div>
@@ -285,9 +321,9 @@ export default function ListeningResultPage() {
         )}
 
         <div className={styles.actionRow}>
-          <button 
-            className={`${styles.tryAgainBtn} ${styles.detailBtn || ''}`} 
-            style={{ backgroundColor: '#43B75D', borderColor: '#43B75D' }} 
+          <button
+            className={`${styles.tryAgainBtn} ${styles.detailBtn || ''}`}
+            style={{ backgroundColor: '#da1e21', borderColor: '#da1e21' }}
             onClick={() => navigate(`/listening/detail-result?testId=${searchParams.get('testId') || '1'}&isFull=${isFullTest}${!isFullTest ? `&part=${partParam}` : ''}`)}
           >
             View detail result

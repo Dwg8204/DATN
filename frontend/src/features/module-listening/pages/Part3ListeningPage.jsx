@@ -96,7 +96,7 @@ export default function Part3ListeningPage() {
           </div>
 
           <div className={styles.audioSection}>
-            <AudioPlayer src={PART3_DATA.audioUrl} maxPlays={2} />
+            <AudioPlayer src={PART3_DATA.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
           </div>
         </div>
       </div>

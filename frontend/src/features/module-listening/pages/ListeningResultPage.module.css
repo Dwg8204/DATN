@@ -80,7 +80,10 @@
 
 .percentageText {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -100,12 +103,38 @@
   font-size: 18px;
 }
 
-.statLabel { color: #000; font-weight: bold; width: 120px;}
-.statValueBold { color: #000; font-weight: bold; }
-.statLabelCorrect { color: #43B75D; font-weight: bold; width: 120px; }
-.statLabelWrong { color: #DA1E21; font-weight: bold; width: 120px;}
-.statLabelSkip { color: #686868; font-weight: bold; width: 120px;}
-.statValue { color: #000; }
+.statLabel {
+  color: #000;
+  font-weight: bold;
+  width: 120px;
+}
+
+.statValueBold {
+  color: #000;
+  font-weight: bold;
+}
+
+.statLabelCorrect {
+  color: #43B75D;
+  font-weight: bold;
+  width: 120px;
+}
+
+.statLabelWrong {
+  color: #DA1E21;
+  font-weight: bold;
+  width: 120px;
+}
+
+.statLabelSkip {
+  color: #686868;
+  font-weight: bold;
+  width: 120px;
+}
+
+.statValue {
+  color: #000;
+}
 
 .detailBox {
   background: #FFFFFF;
@@ -205,9 +234,10 @@
 }
 
 .circlesWrapper {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 32px;
+  justify-items: center;
 }
 
 .circleItem {
@@ -225,7 +255,10 @@
 
 .statPercentageText {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -269,9 +302,11 @@
   .topSection {
     flex-direction: column;
   }
+
   .resultContent {
     gap: 40px;
   }
+
   .columnsWrapper {
     flex-direction: column;
     gap: 24px;
@@ -282,27 +317,36 @@
   .contentWrap {
     padding: 24px 16px 64px;
   }
+
   .resultContent {
     flex-direction: column;
     align-items: flex-start;
     gap: 24px;
   }
+
   .statRow {
     gap: 24px;
   }
+
   .circlesWrapper {
-    flex-direction: column;
-    align-items: center;
-    gap: 32px;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
   }
+
   .actionRow {
     flex-direction: column;
     gap: 12px;
   }
-  .tryAgainBtn, .backBtn {
+
+  .tryAgainBtn,
+  .backBtn {
     width: 100%;
   }
-  .statLabel, .statLabelCorrect, .statLabelWrong, .statLabelSkip {
+
+  .statLabel,
+  .statLabelCorrect,
+  .statLabelWrong,
+  .statLabelSkip {
     width: auto;
     min-width: 120px;
   }

@@ -8,14 +8,13 @@ function formatTime(seconds) {
   return `${m}:${s}`;
 }
 
-export default function AudioPlayer({ src, maxPlays = 2, compact = false }) {
+export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowSkip = true }) {
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playCount, setPlayCount] = useState(0);
   const [volume, setVolume] = useState(1);
-  const [playbackRate, setPlaybackRate] = useState(1);
 
   const isMaxPlaysReached = maxPlays !== undefined && maxPlays !== Infinity && playCount >= maxPlays;
 
@@ -47,18 +46,12 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false }) {
     };
   }, []);
 
-  // Update audio volume and rate when state changes
+  // Update audio volume when state changes
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
   }, [volume]);
-
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.playbackRate = playbackRate;
-    }
-  }, [playbackRate]);
 
   const togglePlay = () => {
     if (isMaxPlaysReached) return;
@@ -104,12 +97,6 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false }) {
     setCurrentTime(seekTime);
   };
 
-  const cycleSpeed = () => {
-    const speeds = [1, 1.25, 1.5, 0.75];
-    const currentIndex = speeds.indexOf(playbackRate);
-    setPlaybackRate(speeds[(currentIndex + 1) % speeds.length]);
-  };
-
   return (
     <div className={compact ? styles.audioCompact : styles.audioMock}>
       <audio ref={audioRef} src={src} preload="metadata" />
@@ -122,7 +109,12 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false }) {
       
       <div className={styles.audioControlsRow}>
         <div className={styles.playbackControls}>
-          <button className={styles.rewindBtn} onClick={skipBackward} disabled={isMaxPlaysReached && !isPlaying}>
+          <button 
+            className={styles.rewindBtn} 
+            onClick={skipBackward} 
+            disabled={!allowSkip || (isMaxPlaysReached && !isPlaying)}
+            style={{ opacity: allowSkip ? 1 : 0.35, cursor: allowSkip ? 'pointer' : 'not-allowed' }}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M3 11V9a4 4 0 0 1 4-4h14" />
               <polyline points="7 23 3 19 7 15" />
@@ -143,7 +135,12 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false }) {
             )}
           </button>
           
-          <button className={styles.forwardBtn} onClick={skipForward} disabled={isMaxPlaysReached && !isPlaying}>
+          <button 
+            className={styles.forwardBtn} 
+            onClick={skipForward} 
+            disabled={!allowSkip || (isMaxPlaysReached && !isPlaying)}
+            style={{ opacity: allowSkip ? 1 : 0.35, cursor: allowSkip ? 'pointer' : 'not-allowed' }}
+          >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 11V9a4 4 0 0 0-4-4H3" />
               <polyline points="17 23 21 19 17 15" />
@@ -177,10 +174,6 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false }) {
           <div className={styles.volumeTrack} onClick={handleVolumeChange}>
             <div className={styles.volumeFill} style={{ width: `${volume * 100}%` }}></div>
           </div>
-        </div>
-        
-        <div className={styles.speedControl} onClick={cycleSpeed}>
-          Speed: {playbackRate}x
         </div>
       </div>
       
