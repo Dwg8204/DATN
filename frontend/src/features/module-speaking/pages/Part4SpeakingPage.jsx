@@ -12,7 +12,7 @@ import styles from './Part4SpeakingPage.module.css';
 
 const INITIAL_DURATION = 10; // 10 seconds
 const THINKING_DURATION = 60; // 60 seconds
-const MAX_RECORD_TIME = 10; // 10 seconds
+const MAX_RECORD_TIME = 120; // 120 seconds (2 minutes)
 
 export default function Part4SpeakingPage() {
   const navigate = useNavigate();
@@ -139,7 +139,7 @@ export default function Part4SpeakingPage() {
         </div>
 
         <InstructionBlock title={`Question 1 of 1`}>
-          In this part, you will have 1 minute to prepare and 10 seconds to speak on a topic.
+          In this part, you will have 1 minute to prepare and 2 minutes to speak on a topic.
           Read the questions carefully. You can start recording early if you are ready.
         </InstructionBlock>
 
