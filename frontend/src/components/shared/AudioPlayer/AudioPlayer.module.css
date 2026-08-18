@@ -36,11 +36,24 @@
 
 .audioControlsRow {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 16px;
   padding: 16px 24px;
   background-color: #fff;
   border-top: 1px solid #eee;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .playbackControls {
@@ -93,6 +106,7 @@
   flex: 1;
   display: flex;
   align-items: center;
+  margin: 0 16px;
 }
 
 .progressTrack {
@@ -162,49 +176,23 @@
   }
 
   .audioControlsRow {
-    flex-wrap: wrap;
     padding: 12px 16px;
-    gap: 12px 8px;
-    justify-content: space-between;
+    gap: 12px;
   }
 
-  /* Force first row for progress bar and times */
-  .timeDisplay:nth-child(2) {
-    order: 1;
-    font-size: 12px;
-    min-width: 40px;
-  }
-
-  .progressContainer {
-    order: 2;
-    flex: 1;
-  }
-
-  .timeDisplay:nth-child(4) {
-    order: 3;
-    font-size: 12px;
-    min-width: 40px;
-  }
-
-  /* Break to second row */
-  .playbackControls {
-    order: 4;
-    flex: 1 1 100%; /* take full width to force break */
-    justify-content: center;
+  .bottomRow {
+    flex-direction: column;
     gap: 16px;
   }
 
-  .volumeGroup {
-    display: flex;
-    order: 5;
+  .playbackControls {
     width: 100%;
-    margin-top: 8px;
     justify-content: center;
   }
-  
-  .volumeTrack {
-    flex: 1;
-    max-width: 80%;
+
+  .volumeGroup {
+    width: 80%;
+    justify-content: center;
   }
 
   .playBtn {

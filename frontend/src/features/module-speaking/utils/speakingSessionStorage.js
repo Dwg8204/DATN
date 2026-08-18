@@ -33,3 +33,12 @@ export const clearCompletedSpeakingTests = () => {
     console.error('Error clearing completed speaking tests:', error);
   }
 };
+
+export const saveSpeakingPartAnswers = (part, answers) => {
+  sessionStorage.setItem("speaking_$part_answers", JSON.stringify(answers));
+};
+
+export const getSpeakingPartAnswers = (part) => {
+  return JSON.parse(sessionStorage.getItem("speaking_$part_answers") || '{}');
+};
+

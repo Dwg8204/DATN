@@ -108,71 +108,75 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
       )}
       
       <div className={styles.audioControlsRow}>
-        <div className={styles.playbackControls}>
-          <button 
-            className={styles.rewindBtn} 
-            onClick={skipBackward} 
-            disabled={!allowSkip || (isMaxPlaysReached && !isPlaying)}
-            style={{ opacity: allowSkip ? 1 : 0.35, cursor: allowSkip ? 'pointer' : 'not-allowed' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-              <polyline points="7 23 3 19 7 15" />
-              <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-            </svg>
-          </button>
-          
-          <button className={styles.playBtn} onClick={togglePlay} disabled={isMaxPlaysReached && !isPlaying}>
-            {isPlaying ? (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
-                <rect x="6" y="4" width="4" height="16" />
-                <rect x="14" y="4" width="4" height="16" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            )}
-          </button>
-          
-          <button 
-            className={styles.forwardBtn} 
-            onClick={skipForward} 
-            disabled={!allowSkip || (isMaxPlaysReached && !isPlaying)}
-            style={{ opacity: allowSkip ? 1 : 0.35, cursor: allowSkip ? 'pointer' : 'not-allowed' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 11V9a4 4 0 0 0-4-4H3" />
-              <polyline points="17 23 21 19 17 15" />
-              <path d="M3 13v2a4 4 0 0 0 4 4h14" />
-            </svg>
-          </button>
-        </div>
+        <div className={styles.topRow}>
+          <div className={styles.timeDisplay}>
+            {formatTime(currentTime)}
+          </div>
 
-        <div className={styles.timeDisplay}>
-          {formatTime(currentTime)}
-        </div>
+          <div className={styles.progressContainer}>
+            <div className={styles.progressTrack} onClick={handleTimeSeek}>
+              <div 
+                className={styles.progressFill} 
+                style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
+              ></div>
+            </div>
+          </div>
 
-        <div className={styles.progressContainer}>
-          <div className={styles.progressTrack} onClick={handleTimeSeek}>
-            <div 
-              className={styles.progressFill} 
-              style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
-            ></div>
+          <div className={styles.timeDisplay}>
+            {formatTime(duration)}
           </div>
         </div>
 
-        <div className={styles.timeDisplay}>
-          {formatTime(duration)}
-        </div>
-        
-        <div className={styles.volumeGroup}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-            <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            <path d="M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 11.995C17.004 13.3208 16.4774 14.5924 15.54 15.53" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          </svg>
-          <div className={styles.volumeTrack} onClick={handleVolumeChange}>
-            <div className={styles.volumeFill} style={{ width: `${volume * 100}%` }}></div>
+        <div className={styles.bottomRow}>
+          <div className={styles.playbackControls}>
+            <button 
+              className={styles.rewindBtn} 
+              onClick={skipBackward} 
+              disabled={!allowSkip || (isMaxPlaysReached && !isPlaying)}
+              style={{ opacity: allowSkip ? 1 : 0.35, cursor: allowSkip ? 'pointer' : 'not-allowed' }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                <polyline points="7 23 3 19 7 15" />
+                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+              </svg>
+            </button>
+            
+            <button className={styles.playBtn} onClick={togglePlay} disabled={isMaxPlaysReached && !isPlaying}>
+              {isPlaying ? (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
+                  <rect x="6" y="4" width="4" height="16" />
+                  <rect x="14" y="4" width="4" height="16" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              )}
+            </button>
+            
+            <button 
+              className={styles.forwardBtn} 
+              onClick={skipForward} 
+              disabled={!allowSkip || (isMaxPlaysReached && !isPlaying)}
+              style={{ opacity: allowSkip ? 1 : 0.35, cursor: allowSkip ? 'pointer' : 'not-allowed' }}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 11V9a4 4 0 0 0-4-4H3" />
+                <polyline points="17 23 21 19 17 15" />
+                <path d="M3 13v2a4 4 0 0 0 4 4h14" />
+              </svg>
+            </button>
+          </div>
+
+          <div className={styles.volumeGroup}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M11 5L6 9H2V15H6L11 19V5Z" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <path d="M15.54 8.46C16.4774 9.39764 17.004 10.6692 17.004 11.995C17.004 13.3208 16.4774 14.5924 15.54 15.53" stroke="#666" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
+            <div className={styles.volumeTrack} onClick={handleVolumeChange}>
+              <div className={styles.volumeFill} style={{ width: `${volume * 100}%` }}></div>
+            </div>
           </div>
         </div>
       </div>
