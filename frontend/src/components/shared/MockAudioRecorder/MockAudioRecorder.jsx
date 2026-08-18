@@ -1,14 +1,88 @@
-import React from 'react';
-import { Mic, MicOff, Square } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Mic, MicOff, Square, Camera, CameraOff } from 'lucide-react';
 import styles from './MockAudioRecorder.module.css';
 import cameraImg from '../../../features/module-speaking/assets/OIP.webp';
 
 export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, maxTime, onStartRecord, onStopRecord, countdownBeforeStart = 0 }) {
+  const [cameraOn, setCameraOn] = useState(false);
+  const [cameraPermission, setCameraPermission] = useState('pending'); // 'pending', 'granted', 'denied'
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+    setCameraOn(false);
+  };
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setCameraPermission('granted');
+      setCameraOn(true);
+    } catch (err) {
+      console.error("Camera access denied or error:", err);
+      setCameraPermission('denied');
+      setCameraOn(false);
+    }
+  };
+
+  const toggleCamera = () => {
+    if (cameraOn) {
+      stopCamera();
+    } else {
+      startCamera();
+    }
+  };
+
+  useEffect(() => {
+    // Start camera on mount
+    startCamera();
+
+    // Cleanup on unmount
+    return () => {
+      stopCamera();
+    };
+  }, []);
+
+  // Assign stream to video element when it mounts (cameraOn becomes true)
+  useEffect(() => {
+    if (cameraOn && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+    }
+  }, [cameraOn]);
   return (
     <div className={styles.recorderContainer}>
-      {/* Camera simulation */}
+      {/* Camera simulation / Real Camera */}
       <div className={styles.cameraWrapper}>
-        <img src={cameraImg} alt="Camera simulation" className={styles.cameraImg} />
+        {cameraOn ? (
+          <video 
+            ref={videoRef} 
+            autoPlay 
+            muted 
+            playsInline 
+            className={styles.cameraVideo} 
+          />
+        ) : (
+          <div className={styles.cameraOff}>
+            Camera đang tắt
+          </div>
+        )}
+        
+        <button 
+          className={`${styles.cameraToggleBtn} ${!cameraOn ? styles.cameraToggleBtnOff : ''}`}
+          onClick={toggleCamera}
+          title={cameraOn ? "Tắt Camera" : "Bật Camera"}
+        >
+          {cameraOn ? <Camera size={16} /> : <CameraOff size={16} />}
+        </button>
+
         {isRecording && (
           <div className={styles.recIndicator}>
             <div className={styles.recDot}></div>
