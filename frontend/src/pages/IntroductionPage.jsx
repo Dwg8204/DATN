@@ -128,6 +128,9 @@ export default function IntroductionPage({
         startWritingSession(testId, mode, { force: true });
         const firstPart = mode === 'full' ? 'part1' : mode;
         navigate(`/writing/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
+      } else if (skill === 'speaking') {
+        const firstPart = mode === 'full' ? 'part1' : mode;
+        navigate(`/speaking/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
       }
     }
   };

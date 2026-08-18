@@ -3,7 +3,10 @@ import SpeakingOverviewPage from './pages/SpeakingOverviewPage';
 import SpeakingFeedPage from './pages/SpeakingFeedPage';
 import SpeakingTestListPage from './pages/SpeakingTestListPage';
 import TestLayout from '../../components/layout/TestLayout';
-
+import Part1SpeakingPage from './pages/Part1SpeakingPage';
+import Part2SpeakingPage from './pages/Part2SpeakingPage';
+import Part3SpeakingPage from './pages/Part3SpeakingPage';
+import Part4SpeakingPage from './pages/Part4SpeakingPage';
 // Mock test parts and results pages to avoid routing errors before they are implemented
 const MockSpeakingPage = () => <div>Speaking Part Placeholder</div>;
 const MockSpeakingResultPage = () => <div>Speaking Result Placeholder</div>;
@@ -33,10 +36,10 @@ export const speakingTestRoutes = [
     path: 'speaking/test',
     element: <TestLayout />,
     children: [
-      { path: 'part1', element: <MockSpeakingPage /> },
-      { path: 'part2', element: <MockSpeakingPage /> },
-      { path: 'part3', element: <MockSpeakingPage /> },
-      { path: 'part4', element: <MockSpeakingPage /> },
+      { path: 'part1', element: <Part1SpeakingPage /> },
+      { path: 'part2', element: <Part2SpeakingPage /> },
+      { path: 'part3', element: <Part3SpeakingPage /> },
+      { path: 'part4', element: <Part4SpeakingPage /> },
     ]
   },
   {
