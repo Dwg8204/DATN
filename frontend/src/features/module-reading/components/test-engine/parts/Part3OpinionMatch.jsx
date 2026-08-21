@@ -19,14 +19,15 @@ const Part3OpinionMatch = ({ data }) => {
             {data.questions.map((question, index) => (
               <div key={question.id} id={`question-${index + 11}`} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm rounded border border-gray-100 p-3 sm:border-0 sm:p-0">
                 <span className="text-gray-800 flex-1">{index + 1}. {question.statement}</span>
-                <AnswerSelect
-                  value={answers[question.id] || ''}
-                  onChange={(event) => handleAnswerChange(question.id, event.target.value)}
-                  className="w-full sm:w-[150px] flex-shrink-0"
-                  options={data.speakers || []}
-                  placeholder={`Question ${index + 11}`}
-                  ariaLabel={`Answer for question ${index + 1}`}
-                />
+                <div className="w-full flex-shrink-0 sm:w-[150px]">
+                  <AnswerSelect
+                    value={answers[question.id] || ''}
+                    onChange={(event) => handleAnswerChange(question.id, event.target.value)}
+                    options={data.speakers || []}
+                    placeholder={`Question ${index + 11}`}
+                    ariaLabel={`Answer for question ${index + 1}`}
+                  />
+                </div>
               </div>
             ))}
           </div>
