@@ -19,6 +19,14 @@ const skillNavigation = [
     ],
   },
   {
+    pathPrefix: '/reading',
+    label: 'Reading',
+    items: [
+      { label: 'Reading Overview', to: '/reading' },
+      { label: 'Reading Test', to: '/reading/tests' },
+    ],
+  },
+  {
     pathPrefix: '/listening',
     label: 'Listening',
     items: [
@@ -41,6 +49,7 @@ export default function SkillSubNavigation() {
         <NavLink
           key={item.to}
           to={item.to}
+          end={item.to === '/reading'}
           className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
         >
           {item.label}

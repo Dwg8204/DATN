@@ -117,7 +117,7 @@ const ReviewFeedbackPage = () => {
                   </select>
                   <button 
                     onClick={() => setExpandedId(current => current === question.id ? null : question.id)}
-                    className="ml-1.5 px-3 py-1 bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-black rounded tracking-wide transition-colors cursor-pointer"
+                    className="ml-1.5 px-3 py-1 bg-[#DA1E21] hover:bg-[#B5161A] text-white text-xs font-black rounded tracking-wide transition-colors cursor-pointer"
                   >
                     {expandedId === question.id ? 'Hide' : 'Explain'}
                   </button>
@@ -141,7 +141,7 @@ const ReviewFeedbackPage = () => {
           const userAnswer = detail?.userAnswer || '';
 
           return (
-            <div className="mt-4 p-4 border-l-4 border-[#16A34A] bg-[#F4FAF5] rounded-r-lg space-y-2 animate-in slide-in-from-top-2 duration-200">
+            <div className="mt-4 p-4 border-l-4 border-[#DA1E21] bg-[#FFF0F1] rounded-r-lg space-y-2 animate-in slide-in-from-top-2 duration-200">
               <div className="flex items-center justify-between mb-2 border-b border-gray-200/50 pb-2">
                 <h4 className="text-xs font-black text-gray-850 uppercase tracking-wider">
                   Explanation: Gap [{question.position}]
@@ -161,7 +161,7 @@ const ReviewFeedbackPage = () => {
                   </span>
                 </div>
                 <div className="bg-white border border-gray-150 p-2.5 rounded-lg">
-                  <span className="text-[#16A34A] block mb-0.5 uppercase tracking-wide">Correct Answer</span>
+                  <span className="text-[#DA1E21] block mb-0.5 uppercase tracking-wide">Correct Answer</span>
                   <span className="text-gray-750">
                     {question.answer}
                   </span>
@@ -244,7 +244,7 @@ const ReviewFeedbackPage = () => {
                     )}
                     <button 
                       onClick={() => setExpandedId(current => current === targetExplainId ? null : targetExplainId)}
-                      className="px-3 py-1 bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-black rounded tracking-wide transition-colors cursor-pointer"
+                      className="px-3 py-1 bg-[#DA1E21] hover:bg-[#B5161A] text-white text-xs font-black rounded tracking-wide transition-colors cursor-pointer"
                     >
                       {expandedId === targetExplainId ? 'Hide' : 'Explain'}
                     </button>
@@ -252,7 +252,7 @@ const ReviewFeedbackPage = () => {
                 </div>
 
                 {expandedId === targetExplainId && (
-                  <div className="mt-2 p-4 border-l-4 border-[#16A34A] bg-[#F4FAF5] rounded-r-lg space-y-2 animate-in slide-in-from-top-2 duration-200">
+                  <div className="mt-2 p-4 border-l-4 border-[#DA1E21] bg-[#FFF0F1] rounded-r-lg space-y-2 animate-in slide-in-from-top-2 duration-200">
                     <div className="flex items-center justify-between mb-2 border-b border-gray-200/50 pb-2">
                       <h4 className="text-xs font-black text-gray-850 uppercase tracking-wider">
                         Explanation: Sentence Gap [{position}]
@@ -266,7 +266,7 @@ const ReviewFeedbackPage = () => {
                         </span>
                       </div>
                       <div className="bg-white border border-gray-150 p-2.5 rounded-lg">
-                        <span className="text-[#16A34A] block mb-0.5 uppercase tracking-wide">Correct Answer</span>
+                        <span className="text-[#DA1E21] block mb-0.5 uppercase tracking-wide">Correct Answer</span>
                         <span className="text-gray-700">
                           {correctSentence.content}
                         </span>
@@ -349,7 +349,7 @@ const ReviewFeedbackPage = () => {
                         )}
                         <button 
                           onClick={() => setExpandedId(current => current === q.id ? null : q.id)}
-                          className="px-3 py-1 bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-black rounded tracking-wide transition-colors cursor-pointer"
+                          className="px-3 py-1 bg-[#DA1E21] hover:bg-[#B5161A] text-white text-xs font-black rounded tracking-wide transition-colors cursor-pointer"
                         >
                           {expandedId === q.id ? 'Hide' : 'Explain'}
                         </button>
@@ -358,7 +358,7 @@ const ReviewFeedbackPage = () => {
                   </div>
 
                   {expandedId === q.id && (
-                    <div className="mt-2 p-4 border-l-4 border-[#16A34A] bg-[#F4FAF5] rounded-r-lg space-y-2 animate-in slide-in-from-top-2 duration-200">
+                    <div className="mt-2 p-4 border-l-4 border-[#DA1E21] bg-[#FFF0F1] rounded-r-lg space-y-2 animate-in slide-in-from-top-2 duration-200">
                       <div className="flex items-center justify-between mb-2 border-b border-gray-200/50 pb-2">
                         <h4 className="text-xs font-black text-gray-850 uppercase tracking-wider">
                           Explanation: Question {index + 1}
@@ -372,7 +372,7 @@ const ReviewFeedbackPage = () => {
                           </span>
                         </div>
                         <div className="bg-white border border-gray-150 p-2.5 rounded-lg">
-                          <span className="text-[#16A34A] block mb-0.5 uppercase tracking-wide">Correct Answer</span>
+                          <span className="text-[#DA1E21] block mb-0.5 uppercase tracking-wide">Correct Answer</span>
                           <span className="text-gray-700">
                             {q.answer}
                           </span>
@@ -435,7 +435,7 @@ const ReviewFeedbackPage = () => {
 
                       <button 
                         onClick={() => setExpandedId(current => current === paragraph.id ? null : paragraph.id)}
-                        className="px-3 py-1 bg-[#16A34A] hover:bg-[#15803D] text-white text-xs font-black rounded tracking-wide transition-colors cursor-pointer"
+                        className="px-3 py-1 bg-[#DA1E21] hover:bg-[#B5161A] text-white text-xs font-black rounded tracking-wide transition-colors cursor-pointer"
                       >
                         {expandedId === paragraph.id ? 'Hide' : 'Explain'}
                       </button>
@@ -453,7 +453,7 @@ const ReviewFeedbackPage = () => {
                   )}
 
                   {expandedId === paragraph.id && (
-                    <div className="mt-2 p-4 border-l-4 border-[#16A34A] bg-[#F4FAF5] rounded-r-lg space-y-2 animate-in slide-in-from-top-2 duration-200">
+                    <div className="mt-2 p-4 border-l-4 border-[#DA1E21] bg-[#FFF0F1] rounded-r-lg space-y-2 animate-in slide-in-from-top-2 duration-200">
                       <div className="flex items-center justify-between mb-2 border-b border-gray-200/50 pb-2">
                         <h4 className="text-xs font-black text-gray-850 uppercase tracking-wider">
                           Explanation: {paragraph.label}
@@ -467,7 +467,7 @@ const ReviewFeedbackPage = () => {
                           </span>
                         </div>
                         <div className="bg-white border border-gray-150 p-2.5 rounded-lg">
-                          <span className="text-[#16A34A] block mb-0.5 uppercase tracking-wide">Correct Answer</span>
+                          <span className="text-[#DA1E21] block mb-0.5 uppercase tracking-wide">Correct Answer</span>
                           <span className="text-gray-700">
                             {correctHeading ? correctHeading.text : 'None'}
                           </span>
@@ -501,7 +501,7 @@ const ReviewFeedbackPage = () => {
     return (
       <article key={id} className="flex flex-col gap-4 rounded-[10px] border border-[#C8C8C8] px-5 py-5 md:px-6">
         <div className="grid grid-cols-[32px_minmax(0,1fr)] items-start gap-3 md:grid-cols-[32px_minmax(0,1fr)_auto]">
-          <span className="grid h-[30px] w-[30px] place-items-center rounded-[5px] border-2 border-[#0095FF] bg-[#E6F4FF] font-bold">
+          <span className="grid h-[30px] w-[30px] place-items-center rounded-[5px] border-2 border-[#DA1E21] bg-[#FFF0F1] font-bold text-[#DA1E21]">
             {number}
           </span>
           <p className="m-0 break-words text-sm sm:text-base leading-6 sm:leading-7 text-black">{title}</p>
@@ -542,14 +542,14 @@ const ReviewFeedbackPage = () => {
         </div>
 
         <button
-          className="ml-0 w-fit rounded-lg bg-[#43B75D] px-[18px] py-[7px] text-sm font-bold text-white hover:bg-[#237D36] md:ml-11"
+          className="ml-0 w-fit rounded-lg bg-[#DA1E21] px-[18px] py-[7px] text-sm font-bold text-white hover:bg-[#B5161A] md:ml-11"
           onClick={() => setExpandedId((current) => current === id ? null : id)}
         >
           {isExpanded ? 'Hide explanation' : 'Explain'}
         </button>
 
         {isExpanded && (
-          <div className="ml-0 border-l-4 border-[#43B75D] bg-[#F4FAF5] px-[18px] py-[14px] text-[15px] leading-6 md:ml-11">
+          <div className="ml-0 border-l-4 border-[#DA1E21] bg-[#FFF0F1] px-[18px] py-[14px] text-[15px] leading-6 md:ml-11">
             {detail?.explanation || 'Review the correct answer and compare it with your selected answer.'}
           </div>
         )}
@@ -654,8 +654,8 @@ const ReviewFeedbackPage = () => {
                 onClick={() => handlePartChange(partNum)}
                 className={`px-3 sm:px-5 py-2.5 border rounded-lg text-sm sm:text-base font-bold transition-colors ${
                   currentPart === partNum
-                    ? 'border-[#A11D33] bg-[#A11D33] text-white'
-                    : 'border-[#868686] bg-white text-black hover:border-[#A11D33]'
+                    ? 'border-[#DA1E21] bg-[#DA1E21] text-white hover:bg-[#B5161A]'
+                    : 'border-[#DA1E21] bg-white text-[#DA1E21] hover:bg-[#FFF0F1]'
                 }`}
               >
                 Part {partNum}

@@ -9,8 +9,8 @@ const Part1GapFilling = ({ data }) => {
   const parts = data.passage.split(/(\[\d+\])/g);
 
   return (
-    <div className="flex flex-col h-full bg-white animate-in fade-in">
-      <div className="p-3 sm:p-4 flex-1">
+    <div className="flex flex-col h-full bg-transparent animate-in fade-in">
+      <div className="p-0 sm:p-2 flex-1">
         <div className="text-sm leading-7 sm:leading-loose text-gray-800 max-w-3xl break-words">
           {parts.map((part, index) => {
             const match = part.match(/\[(\d+)\]/);
@@ -26,7 +26,7 @@ const Part1GapFilling = ({ data }) => {
                   value={answers[question.id] || ''}
                   onChange={(event) => handleAnswerChange(question.id, event.target.value)}
                   options={question.options}
-                  placeholder={`Gap ${position}`}
+                  placeholder={`Question ${position}`}
                   ariaLabel={`Answer for gap ${position}`}
                 />
               </span>
