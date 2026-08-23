@@ -18,6 +18,7 @@ import { listeningMainRoutes, listeningTestRoutes } from '../features/module-lis
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
 import { readingMainRoutes, readingTestRoutes } from '../features/module-reading/readingRoutes';
 import FlashcardPage from '../features/module-reading/pages/FlashcardPage';
+import { adminRoutes } from '../features/admin/adminRoutes';
 
 export const appRoutes = [
   {
@@ -93,4 +94,5 @@ export const appRoutes = [
   ...readingTestRoutes,
   ...grammarVocabRoutes,
   ...writingTestRoutes,
+  ...adminRoutes,
 ];
