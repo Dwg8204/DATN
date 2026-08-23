@@ -40,8 +40,8 @@ const PartNavigator = () => {
             onClick={() => setCurrentPart(part.id)}
             className={`flex-1 min-w-[100px] flex flex-col items-center justify-center py-2 px-4 rounded-lg transition-all ${
               isActive 
-                ? 'bg-red-50 text-red-600 border border-red-100' 
-                : 'text-gray-500 hover:bg-gray-50 border border-transparent hover:text-gray-900'
+                ? 'bg-[#DA1E21] text-white border border-[#DA1E21]'
+                : 'text-[#DA1E21] hover:bg-[#FFF0F1] border border-[#F3B0B1]'
             }`}
           >
             <span className="font-bold text-sm mb-1">{part.name}</span>
@@ -52,8 +52,8 @@ const PartNavigator = () => {
                   isComplete 
                     ? 'bg-green-100 text-green-700' 
                     : isActive 
-                      ? 'bg-white text-red-600 border border-red-200 shadow-sm'
-                      : 'bg-gray-100 text-gray-500'
+                      ? 'bg-white text-[#DA1E21] border border-[#F3B0B1] shadow-sm'
+                      : 'bg-[#FFF0F1] text-[#DA1E21]'
                 }`}>
                   {answered}/{part.totalQs}
                 </span>

@@ -14,19 +14,9 @@ export default function ListeningFeedPage() {
 
   const bandScores = [
     {
-      band: 'C — Proficient',
-      level: 'Expert user',
-      desc: 'Can fully and accurately understand all types of listening tasks, including complex opinion inference in extended monologues. Demonstrates no difficulty in processing information across a wide range of real-life situations.'
-    },
-    {
-      band: 'B2 — Upper Intermediate',
-      level: 'Good user',
-      desc: 'Can identify specific information, match details, and infer opinions in most situations. May occasionally make minor errors in more complex or inference-based listening tasks, but overall demonstrates a strong ability to handle the different task types in the test.'
-    },
-    {
-      band: 'B1 — Intermediate',
-      level: 'Independent user',
-      desc: 'Can process specific information and perform basic matching tasks. May experience difficulty with listening tasks that require opinion inference or involve more abstract and complex content.'
+      band: 'A1 — Beginner',
+      level: 'Beginner user',
+      desc: 'Can only understand isolated words or simple phrases in very familiar contexts. Listening ability is very limited, and the user is not yet able to infer meaning or match information systematically.'
     },
     {
       band: 'A2 — Elementary',
@@ -34,9 +24,19 @@ export default function ListeningFeedPage() {
       desc: 'Can recognise very simple and familiar information such as phone numbers, times, and places in short conversations. Has significant difficulty with matching tasks and inferring opinions.'
     },
     {
-      band: 'A1 — Beginner',
-      level: 'Beginner user',
-      desc: 'Can only understand isolated words or simple phrases in very familiar contexts. Listening ability is very limited, and the user is not yet able to infer meaning or match information systematically.'
+      band: 'B1 — Intermediate',
+      level: 'Independent user',
+      desc: 'Can process specific information and perform basic matching tasks. May experience difficulty with listening tasks that require opinion inference or involve more abstract and complex content.'
+    },
+    {
+      band: 'B2 — Upper Intermediate',
+      level: 'Good user',
+      desc: 'Can identify specific information, match details, and infer opinions in most situations. May occasionally make minor errors in more complex or inference-based listening tasks, but overall demonstrates a strong ability to handle the different task types in the test.'
+    },
+    {
+      band: 'C — Proficient',
+      level: 'Expert user',
+      desc: 'Can fully and accurately understand all types of listening tasks, including complex opinion inference in extended monologues. Demonstrates no difficulty in processing information across a wide range of real-life situations.'
     }
   ];
 

@@ -1,0 +1,457 @@
+.page {
+  padding: 52px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #FFFEFC;
+}
+
+.titleContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  color: #A11D33;
+  font-size: 24px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.tabsBox {
+  padding: 16px 20px;
+  background: #E7BC91;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tabsLabel {
+  display: flex;
+  align-items: center;
+  color: black;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.tabsIcon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tabsGrid {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.tabItemSpan2 {
+}
+
+.tabItem {
+  padding: 4px 16px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.tabItemActive {
+  background: #DA1E21;
+}
+
+.tabItemActive .tabText {
+  color: white;
+  text-align: center;
+  font-weight: 700;
+}
+
+.tabItemInactive {
+  background: white;
+}
+
+@media (max-width: 700px) {
+  .page {
+    padding: 24px 16px 36px;
+    gap: 18px;
+  }
+
+  .titleContainer {
+    gap: 8px;
+  }
+
+  .title {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .tabsBox {
+    padding: 14px;
+    gap: 12px;
+  }
+
+  .tabsLabel {
+    font-size: 12px;
+  }
+
+  .tabsIcon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .tabsGrid {
+    gap: 8px;
+  }
+
+  .tabItem {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .testCard {
+    flex-direction: column;
+    padding: 14px;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .leftSection {
+    max-width: 100%;
+    gap: 8px;
+  }
+
+  .testTitle {
+    font-size: 16px;
+  }
+
+  .testDesc {
+    font-size: 12px;
+  }
+
+  .rightSection {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .testStatus {
+    font-size: 12px;
+    text-align: left;
+  }
+
+  .doTestBtn {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+
+
+.tabItemInactive .tabText {
+  color: black;
+  font-weight: 400;
+}
+
+.tabText {
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.mainContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 24px 0;
+  width: 100%;
+}
+
+.testSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.searchRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  height: 36px;
+}
+
+.searchInputContainer {
+  flex: 1;
+  height: 36px;
+  position: relative;
+  border-radius: 5px;
+  outline: 1px solid rgba(0, 0, 0, 0.50);
+  outline-offset: -1px;
+}
+
+.searchInputWrapper {
+  position: absolute;
+  left: 10px;
+  top: 7px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.searchIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.searchInput {
+  color: #4F4F4F;
+  font-size: 14px;
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+}
+
+.searchBtn {
+  padding: 8px 28px;
+  background: white;
+  border-radius: 8px;
+  outline: 2px solid var(--button-primary);
+  outline-offset: -2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.searchBtnText {
+  color: var(--button-primary);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.gridContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.gridRow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.testCard {
+  width: 100%;
+  max-width: 418px;
+  padding-top: 40px;
+  padding-bottom: 20px;
+  position: relative;
+  background: #FFFEFC;
+  border-radius: 10px;
+  outline: 2px solid #A71E34;
+  outline-offset: -2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.cardTop {
+  height: 137px;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.cardTitle {
+  text-align: center;
+  color: black;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 28px;
+  width: 100%;
+}
+
+.cardInfoRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+.cardImageWrapper {
+  width: 112px;
+  height: 64px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.cardImage {
+  width: 157px;
+  height: 79px;
+  position: absolute;
+  left: -25.5px;
+  top: -8px;
+}
+
+.cardDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardDesc {
+  color: rgba(0, 0, 0, 0.40);
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.statsList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.statLabel {
+  color: black;
+  font-size: 10px;
+}
+
+.statValue {
+  color: black;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.statValueSuccess {
+  color: #43B75D;
+}
+
+.statValueDanger {
+  color: #DA1E21;
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.reviewBtn {
+  padding: 8px 28px;
+  background: #DA1E21;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+}
+
+.reviewBtnText {
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.doTestBtn {
+  padding: 8px 28px;
+  background: white;
+  border-radius: 8px;
+  outline: 2px solid var(--button-primary);
+  outline-offset: -2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  border: none;
+}
+
+.doTestBtnText {
+  color: var(--button-primary);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.partBadge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 4px 12px;
+  background: #FFA435;
+  border-bottom-right-radius: 8px;
+  border-top-left-radius: 8px;
+}
+
+.partBadgeText {
+  color: black;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.statusBadgeCompleted {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 4px 12px;
+  background: #A9DEB4;
+  border-bottom-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.statusBadgeCompletedText {
+  color: #256533;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.statusBadgeNotStarted {
+  position: absolute;
+  right: 0;
+  top: 0;
+  padding: 4px 12px;
+  background: #F0F0F0;
+  border-bottom-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.statusBadgeNotStartedText {
+  color: #6B6B6B;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}

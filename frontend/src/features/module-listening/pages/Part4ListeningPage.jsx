@@ -112,7 +112,7 @@ export default function Part4ListeningPage() {
           </div>
 
           <div className={styles.audioSection}>
-            <AudioPlayer key={currentMainQ.id} src={currentMainQ.audioUrl} maxPlays={2} />
+            <AudioPlayer key={currentMainQ.id} src={currentMainQ.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
           </div>
         </div>
       </div>

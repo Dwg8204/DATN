@@ -57,3 +57,36 @@ export function getListeningRemainingSeconds() {
   const elapsed = Math.floor((Date.now() - startTime) / 1000);
   return Math.max(0, LISTENING_DURATION_SECONDS - elapsed);
 }
+
+// ------------------------------------------------------------------
+// LocalStorage logic for persistent result tracking
+// ------------------------------------------------------------------
+
+export function saveListeningResult(testId, isFull, part, resultData) {
+  const key = `listening_result_${testId}`;
+  localStorage.setItem(key, JSON.stringify({
+    testId,
+    isFull,
+    part,
+    ...resultData,
+    submittedAt: new Date().toISOString()
+  }));
+}
+
+export function getListeningResult(testId) {
+  const key = `listening_result_${testId}`;
+  const data = localStorage.getItem(key);
+  return data ? JSON.parse(data) : null;
+}
+
+export function getCompletedListeningTests() {
+  const completed = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('listening_result_')) {
+      const data = JSON.parse(localStorage.getItem(key));
+      completed[data.testId] = data;
+    }
+  }
+  return completed;
+}

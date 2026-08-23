@@ -15,6 +15,7 @@ import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingMainRoutes, writingTestRoutes } from '../features/writing/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
 import { listeningMainRoutes, listeningTestRoutes } from '../features/module-listening/listeningRoutes';
+import { speakingMainRoutes, speakingTestRoutes } from '../features/module-speaking/speakingRoutes';
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
 import { readingMainRoutes, readingTestRoutes } from '../features/module-reading/readingRoutes';
 import FlashcardPage from '../features/module-reading/pages/FlashcardPage';
@@ -70,6 +71,7 @@ export const appRoutes = [
         element: <TestListPage />,
       },
       ...listeningMainRoutes,
+      ...speakingMainRoutes,
       ...readingMainRoutes,
       ...practiceRoutes,
       ...writingMainRoutes,
@@ -91,6 +93,7 @@ export const appRoutes = [
     ],
   },
   ...listeningTestRoutes,
+  ...speakingTestRoutes,
   ...readingTestRoutes,
   ...grammarVocabRoutes,
   ...writingTestRoutes,

@@ -103,7 +103,7 @@ export default function Part1ListeningPage() {
 
           {/* Right Column: Audio Player */}
           <div className={styles.audioSection}>
-            <AudioPlayer key={currentQuestions[0]?.id} src={currentQuestions[0]?.audioUrl} maxPlays={2} />
+            <AudioPlayer key={currentQuestions[0]?.id} src={currentQuestions[0]?.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
           </div>
         </div>
       </div>

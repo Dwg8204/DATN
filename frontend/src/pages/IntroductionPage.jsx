@@ -30,9 +30,9 @@ const skillConfigs = {
   speaking: {
     title: 'APTIS GENERAL SPEAKING',
     time: 'Time: 12 min',
-    instructions: 'Answer all the questions.\nYou can change your answers at any time during the test.',
+    instructions: 'Ensure your headphones and camera are working properly before starting.\nPlease note that you will not be able to go back to a previous section of the test.\nMake sure to answer each question carefully.',
     information:
-      'This test consists of 4 parts.\nThe tasks become more difficult as the test progresses.\nThe test clock will show you when there are 10 minutes and 5 minutes remaining.',
+      'In the APTIS Speaking test, you will have a 12-minute discussion with our AI examiner.\nThis discussion will be interactive and as close to a real conversation as possible.\nA visible timer will indicate the remaining time for each part of the test.',
   },
   'grammar-vocab': {
     title: 'APTIS GENERAL GRAMMAR & VOCABULARY',
@@ -128,6 +128,9 @@ export default function IntroductionPage({
         startWritingSession(testId, mode, { force: true });
         const firstPart = mode === 'full' ? 'part1' : mode;
         navigate(`/writing/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
+      } else if (skill === 'speaking') {
+        const firstPart = mode === 'full' ? 'part1' : mode;
+        navigate(`/speaking/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
       }
     }
   };

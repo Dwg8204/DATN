@@ -109,7 +109,6 @@ export default function ListeningDetailResultPage() {
                   >
                     <span className={styles.optionLetter}>{String.fromCharCode(65 + idx)}</span>
                     <span>{opt}</span>
-                    {isCorrectAnswer && <small>Correct answer</small>}
                     {isUserAnswer && <small>Your answer</small>}
                   </div>
                 );
@@ -261,9 +260,8 @@ export default function ListeningDetailResultPage() {
                         key={idx}
                         className={`${styles.optionRow} ${isCorrectAnswer ? styles.correctOption : ''} ${isUserAnswer && !isCorrectAnswer ? styles.wrongOption : ''}`}
                       >
-                        <span className={styles.optionLetter}>{String.fromCharCode(65 + idx)}</span>
-                        <span>{opt}</span>
-                        {isCorrectAnswer && <small>Correct answer</small>}
+                          <span className={styles.optionLetter}>{String.fromCharCode(65 + idx)}</span>
+                          <span>{opt}</span>
                         {isUserAnswer && <small>Your answer</small>}
                       </div>
                     );

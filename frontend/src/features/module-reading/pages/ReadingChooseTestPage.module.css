@@ -371,37 +371,44 @@
 }
 
 @media (max-width: 700px) {
-  .page { padding: 24px 16px 36px; gap: 18px; }
-  .title { font-size: 18px; line-height: 24px; }
-  .tabsBox { padding: 14px; gap: 12px; }
+  .page { padding: 20px 16px 36px; gap: 14px; }
+  .title { font-size: 18px; line-height: 26px; }
+  .tabsBox { padding: 14px 16px; gap: 12px; }
   .tabsLabel { font-size: 12px; }
   .tabsIcon { width: 20px; height: 20px; }
   .tabsContainer { gap: 8px; }
-  .tabItem { padding: 4px 12px; }
+  .tabItem { flex: 1 1 auto; justify-content: center; padding: 5px 10px; }
   .tabText { font-size: 12px; line-height: 20px; }
 
-  .mainContent { padding: 12px 0 0; }
+  .mainContent { padding: 10px 0; }
   .testSection { min-width: 0; gap: 20px; }
-  .searchRow { width: 100%; height: 32px; gap: 12px; }
-  .searchInputContainer { min-width: 0; height: 32px; }
-  .searchInputWrapper { left: 10px; right: 8px; top: 6px; }
-  .searchIcon { width: 16px; height: 16px; flex: 0 0 auto; }
+  .searchRow { width: 100%; height: 34px; gap: 10px; }
+  .searchInputContainer { min-width: 0; height: 34px; }
+  .searchInputWrapper { left: 10px; right: 8px; top: 7px; }
+  .searchIcon { width: 17px; height: 17px; flex: 0 0 auto; }
   .searchInput { min-width: 0; font-size: 12px; }
-  .searchBtn { height: 32px; padding: 4px 18px; flex: 0 0 auto; }
-  .searchBtnText { font-size: 12px; line-height: 16px; }
+  .searchBtn { min-height: 34px; padding: 5px 14px; flex: 0 0 auto; }
+  .searchBtnText { font-size: 12px; line-height: 20px; }
 
-  .gridContainer, .gridRow { align-items: stretch; }
-  .gridRow { flex-direction: column; gap: 12px; }
-  .testCard { width: 100%; min-height: 208px; box-sizing: border-box; padding: 40px 12px 20px; gap: 16px; }
-  .cardTop { height: auto; min-height: 112px; padding: 0; }
-  .cardTitle { font-size: 14px; line-height: 24px; }
+  .gridContainer, .gridRow { gap: 14px; }
+  .gridRow { align-items: stretch; flex-direction: column; }
+  .testCard {
+    width: 100%;
+    min-height: 210px;
+    box-sizing: border-box;
+    padding: 38px 12px 18px;
+    gap: 14px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+  .cardTop { height: auto; min-height: 108px; padding: 0; }
+  .cardTitle { font-size: 14px; line-height: 22px; }
+  .cardInfoRow { justify-content: center; }
   .cardImageWrapper { display: none; }
-  .cardDetails { align-items: center; text-align: center; }
-  .cardDesc { font-size: 12px; line-height: 17px; }
+  .cardDetails { max-width: 250px; align-items: center; text-align: center; }
   .statsList { align-items: flex-start; }
   .cardActions { width: 100%; justify-content: center; gap: 12px; }
-  .reviewBtn, .doTestBtn { padding: 8px 20px; }
-  .reviewBtnText, .doTestBtnText { font-size: 12px; line-height: 16px; }
+  .reviewBtn, .doTestBtn { min-width: 100px; padding: 7px 16px; }
+  .reviewBtnText, .doTestBtnText { font-size: 12px; line-height: 20px; }
   .commentSectionWrapper { min-width: 0; overflow: hidden; }
 }
 

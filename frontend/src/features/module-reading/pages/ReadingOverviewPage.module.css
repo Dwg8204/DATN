@@ -204,36 +204,76 @@
 }
 
 @media (max-width: 700px) {
-  .contentContainer {
-    box-sizing: border-box;
-    padding: 24px 16px 40px;
+  .page {
+    padding: 24px 16px 36px;
+    gap: 30px;
   }
 
-  .section { margin-bottom: 32px; }
-  .mainTitle { margin-bottom: 16px; font-size: 18px; line-height: 24px; }
+  .section {
+    gap: 18px;
+  }
 
-  .textContent,
-  .docLink {
+  .titleContainer {
+    gap: 8px;
+  }
+
+  .title,
+  .popularTitle {
+    font-size: 18px;
+    line-height: 24px;
+    overflow-wrap: anywhere;
+  }
+
+  .contentBlock {
+    gap: 7px;
+  }
+
+  .heading {
+    font-size: 17px;
+    line-height: 25px;
+  }
+
+  .text,
+  .textBlock,
+  .documentLink {
     font-size: 14px;
     line-height: 22px;
     overflow-wrap: anywhere;
   }
 
-  .textContent p { margin-bottom: 14px; }
-  .docLinks { gap: 12px; }
-  .popularSection { margin-top: 36px; }
+  .textBlock p {
+    margin: 0 0 14px;
+  }
 
-  .cardsGrid {
-    display: flex;
-    overflow-x: auto;
+  .textBlock p:last-child {
+    margin-bottom: 0;
+  }
+
+  .subHeading {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .popularGrid {
     gap: 14px;
     padding: 2px 2px 12px;
     scroll-snap-type: x mandatory;
   }
 
-  .cardsGrid > * {
-    width: min(280px, calc(100vw - 36px));
-    flex: 0 0 auto;
+  .popularCard {
+    width: min(240px, calc(100vw - 40px));
     scroll-snap-align: start;
+  }
+
+  .cardHeader {
+    gap: 24px;
+  }
+
+  .goToTestBtn {
+    width: 100%;
+    margin-top: 0;
+    padding: 11px 20px;
+    box-sizing: border-box;
+    font-size: 14px;
   }
 }
