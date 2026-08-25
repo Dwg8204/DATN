@@ -4,7 +4,7 @@ import styles from './TestHeader.module.css';
 import { getGrammarVocabRemainingSeconds } from '../../features/grammar_vocab/utils/grammarVocabSessionStorage';
 import { getListeningRemainingSeconds } from '../../features/module-listening/utils/listeningSessionStorage';
 import { getReadingRemainingSeconds } from '../../features/module-reading/utils/readingSessionStorage';
-import { getWritingRemainingSeconds } from '../../features/writing/utils/writingSessionStorage';
+import { finishWritingSession, getWritingRemainingSeconds } from '../../features/writing/utils/writingSessionStorage';
 
 function formatRemainingTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -55,7 +55,9 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
           // For listening test, when timeout always redirect to full test results because we want to see the total score
           navigate(`/listening/result?testId=${testId}&isFull=true&timedOut=true`, { replace: true });
         } else if (isWritingTest) {
-          navigate('/writing/tests', { replace: true });
+          const part = location.pathname.match(/\/(part[1-4])$/)?.[1] || 'part1';
+          finishWritingSession();
+          navigate(`/writing/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
         }
       }
     };

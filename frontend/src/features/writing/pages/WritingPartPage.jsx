@@ -5,7 +5,7 @@ import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { countWords } from '../utils/wordCount';
 import { WRITING_TASKS } from '../data/writingTasks';
-import { getWritingAnswers, saveWritingAnswers, startWritingSession } from '../utils/writingSessionStorage';
+import { finishWritingSession, getWritingAnswers, saveWritingAnswers, startWritingSession } from '../utils/writingSessionStorage';
 import styles from './WritingPartPage.module.css';
 
 const partOrder = ['part1', 'part2', 'part3', 'part4'];
@@ -30,7 +30,8 @@ export default function WritingPartPage() {
     if (isFull && partIndex < partOrder.length - 1) {
       navigate(`/writing/test/${partOrder[partIndex + 1]}?testId=${testId}&isFull=true`);
     } else {
-      navigate('/writing/tests');
+      finishWritingSession();
+      navigate(`/writing/result?testId=${testId}&isFull=${isFull}&part=${part}`);
     }
   };
 
