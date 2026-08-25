@@ -1,0 +1,2 @@
+.header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; }.header h1 { margin: 0; font-size: 26px; }.header p { margin: 7px 0 0; color: #747474; font-size: 14px; }.actions { display: flex; align-items: center; gap: 10px; }
+@media (max-width: 600px) { .header { flex-direction: column; }.header h1 { font-size: 21px; }.actions { width: 100%; } }
