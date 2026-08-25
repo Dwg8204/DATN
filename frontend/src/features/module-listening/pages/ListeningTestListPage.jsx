@@ -9,7 +9,7 @@ const TABS = [
   { id: 'part2', label: 'Part 2' },
   { id: 'part3', label: 'Part 3' },
   { id: 'part4', label: 'Part 4' },
-  { id: 'full', label: 'Full Listening test' },
+  { id: 'full', label: 'Full test' },
 ];
 
 const MOCK_TESTS = [
@@ -106,11 +106,11 @@ export default function ListeningTestListPage() {
             </svg>
           </div>
         </div>
-        <div className={styles.tabsGrid}>
+        <div className={styles.tabsContainer}>
           {TABS.map((tab) => (
             <div
               key={tab.id}
-              className={`${styles.tabItem} ${tab.id === 'full' ? styles.tabItemSpan2 : ''} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
+              className={`${styles.tabItem} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
               onClick={() => setActiveTab(tab.id)}
             >
               <span className={styles.tabText}>{tab.label}</span>
