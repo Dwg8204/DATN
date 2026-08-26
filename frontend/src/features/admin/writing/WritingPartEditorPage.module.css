@@ -1,1 +1,51 @@
-.overlay{position:fixed;z-index:1000;inset:0;overflow:auto;background:#fff;color:#111;font-family:Arial,sans-serif}.close{position:absolute;top:34px;left:42px;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:50%;background:none;cursor:pointer}.close:hover{background:#f3f3f3}.close svg{width:24px}.overlay main{width:min(1040px,calc(100% - 120px));margin:82px auto 120px}.overlay main>header{width:100%;min-height:72px;padding:14px 20px;box-sizing:border-box;display:flex;align-items:center;gap:12px;border:1px solid #aaa;border-radius:8px;background:#f3f4ef}.overlay main>header strong{font-size:17px;white-space:nowrap}.overlay main>header span{font-size:14px;line-height:1.5}.richField{margin-top:38px;display:grid}.richField>b,.memberList h3{margin:0 0 8px 14px;color:#ad1830;font-size:16px}.rich{border:1px solid #333;border-radius:5px}.rich textarea{width:100%;height:180px;padding:24px 28px;box-sizing:border-box;resize:vertical;border:0;outline:0;background:transparent;font:600 14px/1.7 Arial}.essay .rich textarea{height:360px;font-weight:400}.questions{margin-top:30px}.questions h3{margin:0 0 14px 14px;color:#ad1830;font-size:20px}.questions>div{padding:28px 32px;display:grid;gap:22px;border-radius:8px;background:#f3e7df}.questions label{display:grid;gap:9px}.questions label b{color:#777;font-size:12px;letter-spacing:.12em}.questions input{height:50px;padding:0 16px;border:1px solid transparent;font-size:15px;outline:0}.questions input:focus{border-color:#e5b9b9}.memberList{margin-top:28px}.memberList article{margin:18px 22px;padding:24px 28px;display:grid;gap:13px;border:1px solid #f2f2f2;box-shadow:0 5px 18px rgba(0,0,0,.035)}.memberList article>span{width:max-content;padding:5px 9px;border-radius:10px;background:#eee;font-size:9px}.memberList article>b{color:#777;font-size:10px;letter-spacing:.08em}.memberList article>input{height:42px;padding:0 10px;border:0;border-bottom:1px solid #ddd;outline:0;font-size:14px}.save{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);width:170px;height:42px;border:0;border-radius:22px;color:#fff;background:#e51d2a;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.12)}.error{color:#c51629;font-size:13px}@media(max-width:700px){.close{top:13px;left:10px}.overlay main{width:calc(100% - 28px);margin:62px auto 90px}.overlay main>header{min-height:64px;padding:12px 14px;align-items:flex-start;flex-direction:column;gap:4px}.richField{margin-top:26px}.richField>b,.memberList h3{font-size:14px;margin-left:4px}.rich textarea{height:170px;padding:18px 15px;font-size:13px}.essay .rich textarea{height:270px}.questions h3{margin-left:4px;font-size:18px}.questions>div{padding:18px 16px;gap:17px}.questions input{height:46px;font-size:14px}.memberList article{margin-inline:0;padding:18px 15px}.save{bottom:10px;height:40px}}
+.overlay { position: fixed; z-index: 1000; inset: 0; overflow: auto; background: #fff; color: #111; font-family: Arial, sans-serif; }
+.close { position: absolute; top: 34px; left: 42px; width: 40px; height: 40px; display: grid; place-items: center; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+.close:hover { background: #f3f3f3; }
+.close svg { width: 24px; }
+.overlay main { width: min(1040px, calc(100% - 120px)); margin: 82px auto 120px; }
+.overlay main > header { width: 100%; min-height: 72px; padding: 16px 20px; box-sizing: border-box; display: flex; align-items: center; gap: 12px; border: 1px solid #aaa; border-radius: 8px; background: #f3f4ef; }
+.overlay main > header strong { font-size: 18px; white-space: nowrap; }
+.overlay main > header span { font-size: 15px; line-height: 1.5; }
+.richField { margin-top: 34px; display: grid; }
+.richField > b, .memberList h3, .emailSection > h3 { margin: 0 0 9px 10px; color: #ad1830; font-size: 17px; }
+.rich { border: 1px solid #777; border-radius: 6px; background: #fff; }
+.rich textarea { width: 100%; height: 170px; padding: 22px 24px; box-sizing: border-box; resize: vertical; border: 0; border-radius: 6px; outline: 0; background: transparent; font: 600 15px/1.65 Arial; }
+.essay .rich textarea { height: 300px; font-weight: 400; }
+.questions { margin-top: 34px; }
+.questions h3 { margin: 0 0 14px 10px; color: #ad1830; font-size: 20px; }
+.questions > div { padding: 24px; display: grid; gap: 18px; border-radius: 9px; background: #f3e7df; }
+.questionEditor { padding: 20px; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(220px, .65fr); gap: 18px; border: 1px solid #eadbd2; border-radius: 7px; background: #fff; }
+.questions label, .memberList label { display: grid; gap: 9px; }
+.questions label b, .memberList label b { color: #777; font-size: 11px; letter-spacing: .11em; }
+.questions input, .memberList input, .memberList textarea { width: 100%; box-sizing: border-box; border: 1px solid #ddd; border-radius: 5px; outline: 0; font: 14px Arial; }
+.questions input, .memberList input { height: 48px; padding: 0 14px; }
+.memberList textarea { min-height: 110px; padding: 14px; resize: vertical; line-height: 1.55; }
+.questions input:focus, .memberList input:focus, .memberList textarea:focus { border-color: #d84b5d; box-shadow: 0 0 0 2px rgba(216, 75, 93, .09); }
+.memberList { margin-top: 32px; }
+.memberList article { margin: 16px 0; padding: 22px 24px; display: grid; gap: 15px; border: 1px solid #e4e4e4; border-radius: 8px; box-shadow: 0 5px 18px rgba(0, 0, 0, .035); }
+.memberList article > span { width: max-content; padding: 5px 9px; border-radius: 10px; background: #eee; font-size: 10px; }
+.emailSection { margin-top: 34px; padding: 22px 24px 26px; border: 1px solid #e2e2e2; border-radius: 9px; background: #fcfcfc; }
+.emailSection .richField { margin-top: 20px; }
+.save { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); width: 170px; height: 42px; border: 0; border-radius: 22px; color: #fff; background: #e51d2a; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, .12); }
+.error { margin-top: 20px; padding: 12px 16px; border-left: 3px solid #c51629; background: #fff3f3; color: #c51629; font-size: 13px; }
+@media (max-width: 760px) {
+  .close { top: 10px; left: 8px; }
+  .overlay main { width: calc(100% - 24px); margin: 58px auto 90px; }
+  .overlay main > header { min-height: 68px; padding: 12px 14px; align-items: flex-start; flex-direction: column; gap: 4px; }
+  .overlay main > header strong { font-size: 16px; }
+  .overlay main > header span { font-size: 13px; }
+  .richField { margin-top: 24px; }
+  .richField > b, .memberList h3, .emailSection > h3 { margin-left: 3px; font-size: 15px; }
+  .rich textarea { height: 150px; padding: 16px 14px; font-size: 14px; }
+  .essay .rich textarea { height: 230px; }
+  .questions { margin-top: 26px; }
+  .questions h3 { margin-left: 3px; font-size: 17px; }
+  .questions > div { padding: 12px; gap: 12px; }
+  .questionEditor { padding: 14px; grid-template-columns: 1fr; gap: 14px; }
+  .questions input { height: 44px; font-size: 14px; }
+  .memberList article { margin: 12px 0; padding: 16px 14px; }
+  .memberList textarea { min-height: 100px; }
+  .emailSection { margin-top: 24px; padding: 16px 13px 20px; }
+  .emailSection .richField { margin-top: 18px; }
+  .save { bottom: 9px; height: 40px; }
+}

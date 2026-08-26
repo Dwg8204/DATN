@@ -16,7 +16,7 @@ export const TEST_VOLUME = [
 ];
 
 const names = ['Milk and Butter', 'Going to the cinema', 'Local food shops', 'Language Club', 'Weekend Exhibition', 'Learning a new skill', 'Community Garden', 'Travel Club', 'Book Club'];
-const components = ['Full', 'Reading', 'Listening', 'Writing', 'Speaking'];
+const components = ['Full', 'Reading', 'Listening', 'Writing', 'Grammar & Vocab', 'Speaking'];
 export const ADMIN_TESTS = Array.from({ length: 45 }, (_, index) => ({
   id: `writing-${index + 1}`,
   name: names[index % names.length] + (index >= names.length ? ` ${Math.floor(index / names.length) + 1}` : ''),

@@ -31,6 +31,14 @@ export const adminRoutes = [
           { path: 'part/:partNumber', element: load(<WritingPartEditorPage />) },
         ],
       },
+      {
+        path: 'tests/writing/:testId/edit',
+        element: load(<WritingBuilderLayout />),
+        children: [
+          { index: true, element: load(<WritingTestDetailsPage />) },
+          { path: 'part/:partNumber', element: load(<WritingPartEditorPage />) },
+        ],
+      },
     ],
   },
 ];
