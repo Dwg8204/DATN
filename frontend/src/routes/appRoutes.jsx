@@ -19,6 +19,7 @@ import { speakingMainRoutes, speakingTestRoutes } from '../features/module-speak
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
 import { readingMainRoutes, readingTestRoutes } from '../features/module-reading/readingRoutes';
 import FlashcardPage from '../features/module-reading/pages/FlashcardPage';
+import { dictationRoutes } from '../features/dictation/dictationRoutes';
 
 export const appRoutes = [
   {
@@ -62,10 +63,6 @@ export const appRoutes = [
         element: <FlashcardPage />,
       },
       {
-        path: 'dictation',
-        element: <FlashcardPage />,
-      },
-      {
         path: ':skill/tests',
         element: <TestListPage />,
       },
@@ -75,6 +72,7 @@ export const appRoutes = [
       ...practiceRoutes,
       ...writingMainRoutes,
       ...chatbotRoutes,
+      ...dictationRoutes,
       {
         path: '*',
         element: <NotFoundPage />,
