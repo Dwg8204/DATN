@@ -1,0 +1,407 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px);
+  background: #FFFFFF;
+}
+
+.contentWrap {
+  display: flex;
+  flex-direction: column;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 72px 100px;
+  gap: 24px;
+}
+
+.instructionBox {
+  background: #f1f2ec;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  padding: 8px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.partName {
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+}
+
+.instructionText {
+  font-size: 16px;
+  color: #000;
+}
+
+.pageTitle {
+  font-size: 32px;
+  font-weight: bold;
+  color: #a11d33;
+  text-align: center;
+  margin-top: 32px;
+}
+
+.topSection {
+  display: flex;
+  gap: 40px;
+  margin-top: 32px;
+}
+
+.cefrBox {
+  width: 306px;
+  background: #FFFFFF;
+  border: 1px solid #868686;
+  border-radius: 10px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 0;
+}
+
+.cefrLabel {
+  font-size: 18px;
+  font-weight: bold;
+  color: #a11d33;
+}
+
+.cefrValue {
+  font-size: 40px;
+  font-weight: bold;
+  color: #a11d33;
+}
+
+.reportBox {
+  flex: 1;
+  background: #FFFFFF;
+  border: 1px solid #868686;
+  border-radius: 10px;
+  padding: 12px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.reportTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: #a11d33;
+}
+
+.reportSub {
+  font-size: 16px;
+  color: #000;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.divider {
+  height: 1px;
+  background: #d9d9d9;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.criteriaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  justify-items: center;
+  align-items: center;
+}
+
+.criteriaItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.criteriaCircleWrap {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.criteriaPctText {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: bold;
+  color: #000;
+}
+
+.criteriaName {
+  font-size: 16px;
+  color: #000;
+}
+
+.tabsRow {
+  display: flex;
+  align-items: center;
+  margin-top: 32px;
+}
+
+.tabsContainer {
+  display: flex;
+  background: #fff9f1;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tabItem {
+  padding: 8px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.tabItemActive {
+  background: #ffffff;
+  border: 2px solid #b21e35;
+  border-radius: 8px;
+  margin: 4px;
+  padding: 6px 30px;
+}
+
+.tabText {
+  font-size: 14px;
+  font-weight: bold;
+  color: #b21e35;
+}
+
+.tabTextInactive {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000;
+}
+
+.mainBody {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.transcriptCol {
+  flex: 1;
+  border: 1px solid #868686;
+  border-radius: 10px;
+  padding: 16px 24px;
+  background: #fff;
+}
+
+.transcriptBadge {
+  background: #ffa435;
+  border-radius: 5px;
+  padding: 4px 12px;
+  font-weight: bold;
+  font-size: 16px;
+  color: #000;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.qnaScrollArea {
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.qnaScrollArea::-webkit-scrollbar {
+  width: 6px;
+}
+
+.qnaScrollArea::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+.qnaPair {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fdfdfd;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #eaeaea;
+}
+
+.examinerText {
+  font-size: 16px;
+  color: #000;
+  border-left: 4px solid #a11d33;
+  padding-left: 12px;
+  background: #fff5e6;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-radius: 4px;
+}
+
+.candidateText {
+  font-size: 16px;
+  color: #000;
+  line-height: 1.6;
+}
+
+.feedbackCol {
+  width: 420px;
+  background: #fff5e6;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  padding: 24px;
+  position: relative;
+}
+
+.feedbackTabs {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  display: flex;
+}
+
+.fbTab {
+  background: #fff5e6;
+  padding: 4px 16px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  font-size: 16px;
+  color: #a11d33;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.fbTabActive {
+  font-weight: bold;
+}
+
+.fbTabInactive {
+  opacity: 0.7;
+}
+
+.feedbackCard {
+  background: #fff;
+  border: 1px solid #bdbdbd;
+  border-radius: 10px;
+  box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.25);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.feedbackText {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #000;
+}
+
+.actionRow {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+}
+
+.tryAgainBtn {
+  background: #DA1E21;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.backBtn {
+  background: white;
+  color: #131927;
+  border: 2px solid #131927;
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .topSection {
+    flex-direction: column;
+  }
+  
+  .cefrBox {
+    width: 100%;
+  }
+
+  .mainBody {
+    flex-direction: column;
+  }
+
+  .feedbackCol {
+    width: 100%;
+    margin-top: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .contentWrap {
+    padding: 24px 16px 64px;
+  }
+
+  .criteriaGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+  
+  .tabsContainer {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .tabItem {
+    flex: 1;
+    padding: 6px 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .tabItemActive {
+    margin: 2px;
+    padding: 6px 4px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .tabText, .tabTextInactive {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .actionRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tryAgainBtn,
+  .backBtn {
+    width: 100%;
+  }
+}

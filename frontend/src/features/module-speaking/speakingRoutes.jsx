@@ -7,9 +7,10 @@ import Part1SpeakingPage from './pages/Part1SpeakingPage';
 import Part2SpeakingPage from './pages/Part2SpeakingPage';
 import Part3SpeakingPage from './pages/Part3SpeakingPage';
 import Part4SpeakingPage from './pages/Part4SpeakingPage';
+import SpeakingResultPage from './pages/SpeakingResultPage';
+
 // Mock test parts and results pages to avoid routing errors before they are implemented
 const MockSpeakingPage = () => <div>Speaking Part Placeholder</div>;
-const MockSpeakingResultPage = () => <div>Speaking Result Placeholder</div>;
 const MockSpeakingDetailResultPage = () => <div>Speaking Detail Result Placeholder</div>;
 
 export const speakingMainRoutes = [
@@ -27,7 +28,7 @@ export const speakingMainRoutes = [
   },
   {
     path: 'speaking/result',
-    element: <MockSpeakingResultPage />,
+    element: <SpeakingResultPage />,
   }
 ];
 
