@@ -1,0 +1,3 @@
+import { getStoredGrammarTest, getStoredGrammarTests } from '../../admin/grammar/data/grammarTestStorage';
+export function getAdminGrammarListItems(){return getStoredGrammarTests().map((test)=>({id:test.id,title:test.details.title,desc:`${test.mode==='full'?'50 Grammar & Vocabulary questions':test.mode==='part1'?'25 multiple-choice grammar questions':'25 vocabulary matching questions'}\n${test.details.source}`,part:test.mode==='full'?'Full Test':test.mode.replace('part','Part '),tabId:test.mode,status:'Not Started',pictureUrl:test.details.pictureUrl,isAdminTest:true}))}
+export function getAdminGrammarPart(testId,part){const test=getStoredGrammarTest(testId);if(!test)return null;return part==='part1'?test.parts[1].questions:test.parts[2].sets}

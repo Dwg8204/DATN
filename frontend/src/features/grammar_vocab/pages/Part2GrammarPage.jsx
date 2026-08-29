@@ -5,6 +5,7 @@ import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import { PART2_WORD_SETS } from '../data/part2MockData';
+import { getAdminGrammarPart } from '../utils/adminGrammarTestAdapter';
 import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
 import styles from './Part2GrammarPage.module.css';
 
@@ -14,6 +15,7 @@ export default function Part2GrammarPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const testId = searchParams.get('testId') || '1';
+  const wordSets = getAdminGrammarPart(testId, part) || PART2_WORD_SETS;
   const isFullTest = searchParams.get('isFull') === 'true';
   startGrammarVocabSession(testId, isFullTest ? 'full' : 'part2');
 
@@ -30,13 +32,13 @@ export default function Part2GrammarPage() {
   }, [answers]);
 
   const itemsPerPage = 2; // 2 word sets per page
-  const totalPages = Math.ceil(PART2_WORD_SETS.length / itemsPerPage);
+  const totalPages = Math.ceil(wordSets.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentSets = PART2_WORD_SETS.slice(startIndex, startIndex + itemsPerPage);
+  const currentSets = wordSets.slice(startIndex, startIndex + itemsPerPage);
   
   // Extract all individual questions to pass to Footer
-  const allQuestions = PART2_WORD_SETS.flatMap(set => set.targetWords.map(tw => ({ id: tw.id })));
+  const allQuestions = wordSets.flatMap(set => set.targetWords.map(tw => ({ id: tw.id })));
   const currentPageQuestionIds = currentSets.flatMap(set => set.targetWords.map(tw => tw.id));
 
   const handleOptionSelect = (questionId, optionLabel) => {
@@ -72,7 +74,7 @@ export default function Part2GrammarPage() {
   };
 
   const getPageOfQuestion = (questionId) => {
-    const setIndex = PART2_WORD_SETS.findIndex(set => set.targetWords.some(tw => tw.id === questionId));
+    const setIndex = wordSets.findIndex(set => set.targetWords.some(tw => tw.id === questionId));
     return Math.floor(setIndex / itemsPerPage) + 1;
   };
 

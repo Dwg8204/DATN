@@ -5,6 +5,7 @@ import styles from './TestListPage.module.css';
 import { GRAMMAR_VOCAB_CONFIG } from '../features/grammar_vocab/config/grammarVocabConfig';
 import { WRITING_CONFIG } from '../features/writing/config/writingConfig';
 import { getAdminWritingListItems } from '../features/writing/utils/adminWritingTestAdapter';
+import { getAdminGrammarListItems } from '../features/grammar_vocab/utils/adminGrammarTestAdapter';
 
 // Fake data for tests
 const MOCK_TESTS = [
@@ -52,6 +53,7 @@ export default function TestListPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('part1');
   const [adminWritingTests, setAdminWritingTests] = useState(() => skill === 'writing' ? getAdminWritingListItems() : []);
+  const [adminGrammarTests, setAdminGrammarTests] = useState(() => skill === 'grammar-vocab' ? getAdminGrammarListItems() : []);
 
   useEffect(() => {
     if (skill !== 'writing') return undefined;
@@ -59,6 +61,13 @@ export default function TestListPage() {
     window.addEventListener('writing-tests-updated', refresh);
     window.addEventListener('storage', refresh);
     return () => { window.removeEventListener('writing-tests-updated', refresh); window.removeEventListener('storage', refresh); };
+  }, [skill]);
+  useEffect(() => {
+    if (skill !== 'grammar-vocab') return undefined;
+    const refresh = () => setAdminGrammarTests(getAdminGrammarListItems());
+    window.addEventListener('grammar-tests-updated', refresh);
+    window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener('grammar-tests-updated', refresh); window.removeEventListener('storage', refresh); };
   }, [skill]);
 
   // Helper to get config based on skill
@@ -70,7 +79,7 @@ export default function TestListPage() {
   };
 
   const currentConfig = getConfig();
-  const tests = skill === 'writing' ? [...adminWritingTests, ...(currentConfig.tests || [])] : currentConfig.tests || MOCK_TESTS;
+  const tests = skill === 'writing' ? [...adminWritingTests, ...(currentConfig.tests || [])] : skill === 'grammar-vocab' ? [...adminGrammarTests, ...(currentConfig.tests || [])] : currentConfig.tests || MOCK_TESTS;
   const filteredTests = tests.filter((test) => !test.tabId || test.tabId === activeTab);
 
   // Helper to format skill name nicely
