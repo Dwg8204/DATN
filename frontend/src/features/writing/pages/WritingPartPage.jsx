@@ -5,6 +5,7 @@ import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { countWords } from '../utils/wordCount';
 import { WRITING_TASKS } from '../data/writingTasks';
+import { getAdminWritingTask } from '../utils/adminWritingTestAdapter';
 import { finishWritingSession, getWritingAnswers, saveWritingAnswers, startWritingSession } from '../utils/writingSessionStorage';
 import styles from './WritingPartPage.module.css';
 
@@ -14,12 +15,14 @@ export default function WritingPartPage() {
   const { part = 'part1' } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const task = WRITING_TASKS[part] || WRITING_TASKS.part1;
   const testId = searchParams.get('testId') || '1';
+  const task = getAdminWritingTask(testId, part) || WRITING_TASKS[part] || WRITING_TASKS.part1;
   const isFull = searchParams.get('isFull') === 'true';
   const partIndex = partOrder.indexOf(part);
-  startWritingSession(testId, isFull ? 'full' : part);
-  const [answers, setAnswers] = useState(() => getWritingAnswers(part));
+  const [answers, setAnswers] = useState(() => {
+    startWritingSession(testId, isFull ? 'full' : part, { force: searchParams.get('fresh') === 'true' });
+    return getWritingAnswers(part);
+  });
   const [showSubmit, setShowSubmit] = useState(false);
   const questions = useMemo(() => task.questions.map((_, index) => ({ id: index + 1 })), [task]);
 

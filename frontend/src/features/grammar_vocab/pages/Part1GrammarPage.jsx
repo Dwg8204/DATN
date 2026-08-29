@@ -5,6 +5,7 @@ import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MultipleChoice from '../../../components/common/MultipleChoice';
 import { PART1_QUESTIONS as MOCK_QUESTIONS } from '../data/part1MockData';
+import { getAdminGrammarPart } from '../utils/adminGrammarTestAdapter';
 import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
 import styles from './Part1GrammarPage.module.css';
 
@@ -16,6 +17,7 @@ export default function Part1GrammarPage() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const testId = searchParams.get('testId') || '1';
+  const questions = getAdminGrammarPart(testId, part) || MOCK_QUESTIONS;
   const isFullTest = searchParams.get('isFull') === 'true';
   startGrammarVocabSession(testId, isFullTest ? 'full' : 'part1');
 
@@ -34,10 +36,10 @@ export default function Part1GrammarPage() {
   }, [answers]);
 
   const itemsPerPage = 3;
-  const totalPages = Math.ceil(MOCK_QUESTIONS.length / itemsPerPage);
+  const totalPages = Math.ceil(questions.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentQuestions = MOCK_QUESTIONS.slice(startIndex, startIndex + itemsPerPage);
+  const currentQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
   const currentPageQuestionIds = currentQuestions.map(q => q.id);
 
   const handleOptionSelect = (questionId, optionIndex) => {
@@ -78,7 +80,7 @@ export default function Part1GrammarPage() {
   };
 
   const getPageOfQuestion = (questionId) => {
-    const index = MOCK_QUESTIONS.findIndex(q => q.id === questionId);
+    const index = questions.findIndex(q => q.id === questionId);
     return Math.floor(index / itemsPerPage) + 1;
   };
 
@@ -92,7 +94,7 @@ export default function Part1GrammarPage() {
           <div className={styles.skillTitle}>{formattedSkill}</div>
         </div>
 
-        <InstructionBlock title={`Questions ${startIndex + 1}-${Math.min(startIndex + itemsPerPage, MOCK_QUESTIONS.length)}`}>
+          <InstructionBlock title={`Questions ${startIndex + 1}-${Math.min(startIndex + itemsPerPage, questions.length)}`}>
           Choose the correct letter, A, B or C.
         </InstructionBlock>
 
@@ -118,7 +120,7 @@ export default function Part1GrammarPage() {
 
       <TestFooter 
         partLabel={formattedPart} 
-        questions={MOCK_QUESTIONS}
+        questions={questions}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={currentPageQuestionIds}
         onQuestionClick={(qId) => setCurrentPage(getPageOfQuestion(qId))}

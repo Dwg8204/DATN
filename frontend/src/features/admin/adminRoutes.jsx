@@ -9,6 +9,10 @@ const WritingBuilderLayout = lazy(() => import('./writing/components/WritingBuil
 const WritingPartEditorPage = lazy(() => import('./writing/WritingPartEditorPage'));
 const WritingTestDetailsPage = lazy(() => import('./writing/WritingTestDetailsPage'));
 const WritingTestPreviewPage = lazy(() => import('./writing/WritingTestPreviewPage'));
+const GrammarBuilderLayout = lazy(() => import('./grammar/components/GrammarBuilderLayout'));
+const GrammarTestDetailsPage = lazy(() => import('./grammar/GrammarTestDetailsPage'));
+const GrammarPartEditorPage = lazy(() => import('./grammar/GrammarPartEditorPage'));
+const GrammarTestPreviewPage = lazy(() => import('./grammar/GrammarTestPreviewPage'));
 const load = (element) => <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>{element}</Suspense>;
 
 export const adminRoutes = [
@@ -20,6 +24,7 @@ export const adminRoutes = [
       { path: 'dashboard', element: load(<AdminDashboardPage />) },
       { path: 'tests', element: load(<TestManagerPage />) },
       { path: 'tests/writing/:testId/preview', element: load(<WritingTestPreviewPage />) },
+      { path: 'tests/grammar/:testId/preview', element: load(<GrammarTestPreviewPage />) },
       { path: 'users', element: <AdminPlaceholderPage title="User Management" /> },
       { path: 'feedback', element: <AdminPlaceholderPage title="Feedback" /> },
       { path: 'notifications', element: <AdminPlaceholderPage title="Notification" /> },
@@ -29,6 +34,30 @@ export const adminRoutes = [
         children: [
           { index: true, element: load(<WritingTestDetailsPage />) },
           { path: 'part/:partNumber', element: load(<WritingPartEditorPage />) },
+        ],
+      },
+      {
+        path: 'tests/writing/:testId/edit',
+        element: load(<WritingBuilderLayout />),
+        children: [
+          { index: true, element: load(<WritingTestDetailsPage />) },
+          { path: 'part/:partNumber', element: load(<WritingPartEditorPage />) },
+        ],
+      },
+      {
+        path: 'tests/new/grammar',
+        element: load(<GrammarBuilderLayout />),
+        children: [
+          { index: true, element: load(<GrammarTestDetailsPage />) },
+          { path: 'part/:partNumber', element: load(<GrammarPartEditorPage />) },
+        ],
+      },
+      {
+        path: 'tests/grammar/:testId/edit',
+        element: load(<GrammarBuilderLayout />),
+        children: [
+          { index: true, element: load(<GrammarTestDetailsPage />) },
+          { path: 'part/:partNumber', element: load(<GrammarPartEditorPage />) },
         ],
       },
     ],

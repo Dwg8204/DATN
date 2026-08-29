@@ -1,0 +1,13 @@
+@media(max-width:700px){
+  .dashboardPeriods{width:100%!important;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible!important;box-sizing:border-box}
+  .dashboardPeriods button{min-width:0;padding-inline:5px!important;font-size:11px!important}
+  .dashboardMiniCard{height:220px!important;padding:15px!important;grid-template-columns:1fr!important;grid-template-rows:auto minmax(0,1fr);gap:8px!important}
+  .dashboardMiniCard [class*="_metric_"]{display:flex;align-items:center;justify-content:space-between}
+  .dashboardMiniCard [class*="_metric_"] h2{margin:0!important}
+  .dashboardMiniCard [class*="_miniChart_"]{height:135px!important;margin:0!important}
+  .dashboardChartPanel{padding:16px 10px 12px!important;overflow:hidden}
+  .dashboardChartPanel>header h2{font-size:15px!important}
+  .dashboardChartScroller{width:100%;overflow-x:auto;padding-bottom:5px}
+  .dashboardLargeChart{width:620px!important;height:270px!important;margin-top:18px!important}
+}
+@media(max-width:380px){.dashboardPeriods{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboardLargeChart{width:560px!important}}

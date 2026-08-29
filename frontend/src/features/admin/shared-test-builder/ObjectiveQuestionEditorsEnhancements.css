@@ -1,0 +1,1 @@
+article[class*="_questionCard_"] div[class*="_options_"] { grid-template-columns: 1fr !important; }
