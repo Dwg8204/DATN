@@ -113,7 +113,17 @@ export default function GrammarVocabResultDetailPage() {
   const [activePart, setActivePart] = useState(isFullTest ? 'part1' : requestedPart);
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedId, setExpandedId] = useState(null);
-  const answers = useMemo(() => getAllGrammarVocabAnswers(), []);
+  const historyIdParam = searchParams.get('historyId');
+  const answers = useMemo(() => {
+    if (historyIdParam) {
+      const stored = localStorage.getItem(`history_data_${historyIdParam}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.rawAnswers) return parsed.rawAnswers;
+      }
+    }
+    return getAllGrammarVocabAnswers();
+  }, [historyIdParam]);
 
   const isPart1 = activePart === 'part1';
   const totalPages = isPart1

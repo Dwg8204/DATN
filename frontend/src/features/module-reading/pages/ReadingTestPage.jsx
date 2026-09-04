@@ -5,6 +5,7 @@ import TestFooter from '../../../components/layout/TestFooter';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { getReadingRemainingSeconds, getReadingDuration } from '../utils/readingSessionStorage';
+import { saveHistoryEntry } from '../../../utils/historyStorage';
 
 import Part1GapFilling from '../components/test-engine/parts/Part1GapFilling';
 import Part2TextCohesion from '../components/test-engine/parts/Part2TextCohesion';
@@ -79,15 +80,35 @@ export default function ReadingTestPage() {
     const fakeSessionId = 'sess-' + Math.random().toString(36).substr(2, 9);
     const duration = getReadingDuration(mode);
     const timeLeft = getReadingRemainingSeconds();
+    const historyId = `hist_${Date.now()}_${fakeSessionId}`;
 
     const sessionData = {
       testId: testId || 'apt-r-001',
       answers: answers,
       timeSpent: duration - timeLeft,
       mode: mode,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      historyId
     };
     localStorage.setItem(fakeSessionId, JSON.stringify(sessionData));
+
+    // Save draft history entry (missing correct/wrong scores)
+    saveHistoryEntry({
+      id: historyId,
+      skill: 'reading',
+      testId: String(sessionData.testId),
+      testName: `Aptis Reading Test ${sessionData.testId}`,
+      mode: mode,
+      submittedAt: sessionData.timestamp,
+      timeSpent: 'Pending...',
+      correct: 0,
+      wrong: 0,
+      skipped: 0,
+      total: 0,
+      partScores: [],
+      reviewUrl: `/reading/result/${fakeSessionId}`
+    });
+
     setShowSubmitModal(false);
     navigate(`/reading/result/${fakeSessionId}`);
   };

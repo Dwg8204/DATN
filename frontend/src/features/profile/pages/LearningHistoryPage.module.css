@@ -1,0 +1,292 @@
+.page {
+  background: var(--bg-primary);
+  min-height: calc(100vh - 72px);
+  padding: 40px 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 32px;
+}
+
+.content {
+  flex: 1;
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.header h2 {
+  font-size: 24px;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 12px;
+}
+
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filterLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 60px;
+}
+
+.filterBtn {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filterBtn:hover {
+  background: #f1f5f9;
+}
+
+.filterBtn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.select {
+  padding: 6px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.cardTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.skillBadge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.skillBadge.listening { background: #fee2e2; color: #dc2626; }
+.skillBadge.reading { background: #dbeafe; color: #2563eb; }
+.skillBadge.writing { background: #ffedd5; color: #ea580c; }
+.skillBadge.speaking { background: #f3e8ff; color: #9333ea; }
+.skillBadge.grammar { background: #e0e7ff; color: #4f46e5; }
+
+.testName {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modeBadge {
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: #f1f5f9;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.metaInfo {
+  display: flex;
+  gap: 24px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cefrBadge {
+  background: #fef3c7;
+  color: #d97706;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.cardBody {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.scoreRow {
+  display: flex;
+  gap: 24px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.correct { color: #43B75D; }
+.wrong { color: #DA1E21; }
+.skipped { color: #686868; }
+
+.partScores {
+  display: flex;
+  gap: 12px;
+}
+
+.partScoreBox {
+  flex: 1;
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.partScoreBox.disabled {
+  background: #f1f5f9;
+  opacity: 0.6;
+}
+
+.partLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+}
+
+.partValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.criteriaGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.criteriaItem {
+  background: white;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.criteriaLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+}
+
+.progressWrap {
+  background: #e2e8f0;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.progressBar {
+  height: 100%;
+  border-radius: 3px;
+}
+
+.progressValue {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.reviewBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.reviewBtn:hover {
+  opacity: 0.9;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.emptyState svg {
+  color: #cbd5e1;
+  margin-bottom: 16px;
+}

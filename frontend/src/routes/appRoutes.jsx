@@ -13,6 +13,7 @@ import GrammarVocabResultPage from '../features/grammar_vocab/pages/GrammarVocab
 import TestListPage from '../pages/TestListPage';
 import ProfilePage from '../features/profile/pages/ProfilePage';
 import ProfileEmptyPage from '../features/profile/pages/ProfileEmptyPage';
+import LearningHistoryPage from '../features/profile/pages/LearningHistoryPage';
 import ChangePasswordPage from '../features/profile/pages/ChangePasswordPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingMainRoutes, writingTestRoutes } from '../features/writing/writingRoutes';
@@ -63,7 +64,7 @@ export const appRoutes = [
       },
       {
         path: 'profile/history',
-        element: <ProfileEmptyPage activeTab="history" />,
+        element: <LearningHistoryPage />,
       },
       {
         path: 'profile/change-password',
