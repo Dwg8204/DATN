@@ -1,9 +1,8 @@
-import { useRef, useState } from 'react';
-import { ImagePlus } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminConfirmDialog, AdminValidationToast } from '../components/AdminFeedback';
+import ImageField from '../shared-test-builder/ImageField';
 import PartSummaryCard from '../writing/components/PartSummaryCard';
-import { resizeImage } from '../../../utils/resizeImage';
 import { useReadingBuilder } from './context/ReadingBuilderContext';
 import { READING_PARTS } from './data/readingTestModel';
 import { saveStoredReadingTest } from './data/readingTestStorage';
@@ -17,7 +16,6 @@ export default function ReadingTestDetailsPage() {
     basePath
   } = useReadingBuilder();
   const navigate = useNavigate();
-  const fileInput = useRef(null);
   const [errors, setErrors] = useState([]);
   const [confirm, setConfirm] = useState(false);
   const detail = (field, value) => setTest(current => ({
@@ -46,23 +44,6 @@ export default function ReadingTestDetailsPage() {
       setConfirm(false);
     }
   };
-  const upload = async e => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      setErrors(['Choose an image file.']);
-      return;
-    }
-    try {
-      detail('pictureUrl', await resizeImage(file, 1400, 900, {
-        output: 'dataURL',
-        mimeType: 'image/jpeg',
-        quality: .82
-      }));
-    } catch {
-      setErrors(['Unable to process image.']);
-    }
-  };
   const parts = READING_PARTS.filter(p => test.mode === 'full' || test.mode === `part${p.number}`);
   return (
     <div className={styles.page}>
@@ -83,14 +64,7 @@ export default function ReadingTestDetailsPage() {
         <div className={styles.infoGrid}>
           <div className={styles.fields}>
             <Field label="Title" value={test.details.title} onChange={value => detail('title', value)} />
-            <label>
-              <b>Picture:</b>
-              <button type="button" onClick={() => fileInput.current?.click()}>
-                <ImagePlus /> Upload image
-              </button>
-              <input ref={fileInput} className={styles.fileInput} type="file" accept="image/*" onChange={upload} />
-              {test.details.pictureUrl && <small>Image uploaded.</small>}
-            </label>
+            <ImageField label="Test cover" value={test.details.pictureUrl} onChange={value => detail('pictureUrl', value)} />
           </div>
           <aside>
             <b>Preview</b>

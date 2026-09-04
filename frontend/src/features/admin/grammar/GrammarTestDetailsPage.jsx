@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
-import { ChevronRight, ImagePlus } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { resizeImage } from '../../../utils/resizeImage';
 import { AdminConfirmDialog } from '../components/AdminFeedback';
+import ImageField from '../shared-test-builder/ImageField';
 import PartSummaryCard from '../writing/components/PartSummaryCard';
 import { useGrammarTestBuilder } from './context/GrammarTestBuilderContext';
 import { saveStoredGrammarTest } from './data/grammarTestStorage';
@@ -16,23 +16,11 @@ const PARTS = [
 
 export default function GrammarTestDetailsPage() {
   const navigate = useNavigate();
-  const fileRef = useRef(null);
   const { test, updateDetails, basePath } = useGrammarTestBuilder();
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState('');
   const [confirm, setConfirm] = useState(false);
   const visible = test.mode === 'full' ? PARTS : PARTS.filter(part => `part${part.number}` === test.mode);
-  const upload = async event => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) return setErrors({ pictureUrl: 'Please choose an image file.' });
-    try {
-      updateDetails('pictureUrl', await resizeImage(file, 1400, 900, { output: 'dataURL', mimeType: 'image/jpeg', quality: .82 }));
-      setMessage('Picture uploaded successfully.');
-    } catch {
-      setErrors({ pictureUrl: 'Unable to process this image.' });
-    }
-  };
   const requestSave = () => {
     const next = validateGrammarTest(test);
     setErrors(next);
@@ -53,7 +41,7 @@ export default function GrammarTestDetailsPage() {
       <div className={styles.infoGrid}>
         <div className={styles.fields}>
           <label><b>Title:</b><input value={test.details.title} onChange={event => updateDetails('title', event.target.value)} />{errors.title && <small>{errors.title}</small>}</label>
-          <label><b>Picture:</b><button type="button" onClick={() => fileRef.current?.click()}><ImagePlus />Upload image</button><input ref={fileRef} className={styles.fileInput} type="file" accept="image/*" onChange={upload} />{errors.pictureUrl && <small>{errors.pictureUrl}</small>}</label>
+          <ImageField label="Test cover" value={test.details.pictureUrl} onChange={value => updateDetails('pictureUrl', value)} />
           <button className={styles.saveInfo} onClick={() => setMessage('Test information saved in the current draft.')}>Save</button>
           {message && <p className={styles.message}>{message}</p>}
         </div>
