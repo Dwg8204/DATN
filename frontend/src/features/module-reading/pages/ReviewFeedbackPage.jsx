@@ -4,6 +4,16 @@ import { calculateScore } from '../services/gradingService';
 import { loadReadingTest } from '../services/readingTestRepository';
 import TestFooter from '../../../components/layout/TestFooter';
 
+const getGapQuestionText = (passage, position) => {
+  const marker = `[${position}]`;
+  const sentence = String(passage || '')
+    .split(/(?<=[.!?])\s+|\n+/)
+    .map((item) => item.trim())
+    .find((item) => item.includes(marker));
+
+  return sentence ? sentence.replace(marker, '_____') : `Question ${position}`;
+};
+
 const ReviewFeedbackPage = () => {
   const { sessionId } = useParams();
   const navigate = useNavigate();
@@ -504,7 +514,9 @@ const ReviewFeedbackPage = () => {
           <span className="grid h-[30px] w-[30px] place-items-center rounded-[5px] border-2 border-[#DA1E21] bg-[#FFF0F1] font-bold text-[#DA1E21]">
             {number}
           </span>
-          <p className="m-0 break-words text-sm sm:text-base leading-6 sm:leading-7 text-black">{title}</p>
+          {title && (
+            <p className="m-0 break-words text-sm sm:text-base leading-6 sm:leading-7 text-black">{title}</p>
+          )}
           <span className={`col-start-2 w-fit rounded-full px-3 py-1 text-[13px] font-bold md:col-start-auto ${statusClass}`}>
             {statusLabel}
           </span>
@@ -549,7 +561,7 @@ const ReviewFeedbackPage = () => {
         </button>
 
         {isExpanded && (
-          <div className="ml-0 border-l-4 border-[#DA1E21] bg-[#FFF0F1] px-[18px] py-[14px] text-[15px] leading-6 md:ml-11">
+          <div className="ml-0 border-l-4 border-[#43B75D] bg-[#F4FAF5] px-[18px] py-[14px] text-[15px] leading-6 text-[#30343B] md:ml-11">
             {detail?.explanation || 'Review the correct answer and compare it with your selected answer.'}
           </div>
         )}
@@ -566,7 +578,7 @@ const ReviewFeedbackPage = () => {
             return renderReviewCard({
               id: question.id,
               number: index + 1,
-              title: `Gap [${question.position}]`,
+              title: getGapQuestionText(testData.part1.passage, question.position),
               detail,
               options: question.options.map((text, optionIndex) => ({
                 label: String.fromCharCode(65 + optionIndex),

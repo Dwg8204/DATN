@@ -1,0 +1,89 @@
+.part {
+  min-height: 100%;
+  padding: 24px 0 32px;
+}
+
+.content {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0 0 28px;
+  color: #171717;
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.paragraphList {
+  display: grid;
+  gap: 20px;
+}
+
+.paragraphRow {
+  display: grid;
+  grid-template-columns: 24px minmax(260px, 320px) minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #ece7e7;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.paragraphNumber {
+  padding-top: 10px;
+  color: #171717;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.answerField,
+.answerSelect {
+  width: 100%;
+  min-width: 0;
+}
+
+.paragraphText {
+  margin: 7px 0 0;
+  color: #30343b;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+@media (max-width: 820px) {
+  .paragraphRow {
+    grid-template-columns: 24px minmax(0, 1fr);
+  }
+
+  .paragraphText {
+    grid-column: 2;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .part {
+    padding-top: 16px;
+  }
+
+  .title {
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+
+  .paragraphRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .paragraphNumber {
+    padding-top: 0;
+    text-align: left;
+  }
+
+  .paragraphText {
+    grid-column: 1;
+  }
+}
