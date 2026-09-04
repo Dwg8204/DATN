@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminConfirmDialog, AdminValidationToast } from '../components/AdminFeedback';
+import AdminBreadcrumb from '../components/AdminBreadcrumb';
 import { Field } from '../shared-test-builder/BuilderFields';
 import ImageField from '../shared-test-builder/ImageField';
 import PartSummaryCard from '../writing/components/PartSummaryCard';
@@ -35,7 +36,7 @@ export default function ListeningTestDetailsPage() {
   return <div className={styles.page}>
     <AdminValidationToast errors={errors} onClose={() => setErrors([])} />
     <AdminConfirmDialog open={confirm} title={test.id ? 'Save changes to this Listening test?' : 'Create Listening test?'} message="The test will be saved and displayed in both Test Management and the Listening test list." confirmLabel={test.id ? 'Save changes' : 'Create test'} onCancel={() => setConfirm(false)} onConfirm={persist} />
-    <div className={styles.crumb}>Test Management › Admin › {test.details.title || 'New Listening test'}</div>
+    <AdminBreadcrumb current={test.details.title || 'New Listening test'} />
     <section className={styles.information}>
       <h2>INFORMATION TEST</h2>
       <div className={styles.infoGrid}>

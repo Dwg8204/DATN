@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AdminConfirmDialog } from '../components/AdminFeedback';
+import AdminBreadcrumb from '../components/AdminBreadcrumb';
 import ImageField from '../shared-test-builder/ImageField';
 import PartSummaryCard from '../writing/components/PartSummaryCard';
 import { useGrammarTestBuilder } from './context/GrammarTestBuilderContext';
@@ -35,7 +35,7 @@ export default function GrammarTestDetailsPage() {
 
   return <div className={styles.page}>
     <AdminConfirmDialog open={confirm} title={test.id ? 'Save changes to this test?' : 'Create this test?'} message={test.id ? 'Your changes will replace the saved Grammar & Vocabulary test.' : 'The test will be saved and displayed in the Grammar & Vocabulary test list.'} confirmLabel={test.id ? 'Save changes' : 'Create test'} onCancel={() => setConfirm(false)} onConfirm={persist} />
-    <div className={styles.crumb}><b>Test Management</b><ChevronRight /><b>Admin</b><ChevronRight /><span>{test.details.title || 'New test'}</span></div>
+    <AdminBreadcrumb current={test.details.title || 'New test'} />
     <section className={styles.information}>
       <h2>INFORMATION TEST</h2>
       <div className={styles.infoGrid}>

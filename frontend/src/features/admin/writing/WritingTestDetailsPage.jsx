@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AdminConfirmDialog } from '../components/AdminFeedback';
+import AdminBreadcrumb from '../components/AdminBreadcrumb';
 import ImageField from '../shared-test-builder/ImageField';
 import { useWritingTestBuilder } from './context/WritingTestBuilderContext';
 import { WRITING_PART_META } from './data/writingBuilderInitialState';
@@ -51,7 +51,7 @@ export default function WritingTestDetailsPage() {
 
   return <div className={styles.page}>
     <AdminConfirmDialog open={confirmSave} title="Save changes to this test?" message="Your current changes will replace the previously saved version of this Writing test." confirmLabel="Save changes" onCancel={() => setConfirmSave(false)} onConfirm={persistTest}/>
-    <div className={styles.crumb}><b>Test Management</b><ChevronRight/><b>Admin</b><ChevronRight/><span>{test.details.title || 'New test'}</span></div>
+    <AdminBreadcrumb current={test.details.title || 'New test'} />
     <section className={styles.information}><h2>INFORMATION TEST</h2><div className={styles.infoGrid}><div className={styles.fields}>
       <label><b>Title:</b><input value={test.details.title} onChange={(event) => updateDetails('title', event.target.value)}/>{errors.title && <small>{errors.title}</small>}</label>
       <ImageField label="Test cover" value={test.details.pictureUrl} onChange={(value) => updateDetails('pictureUrl', value)}/>
