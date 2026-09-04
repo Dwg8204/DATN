@@ -17,6 +17,10 @@ const ReadingBuilderLayout = lazy(() => import('./reading/context/ReadingBuilder
 const ReadingTestDetailsPage = lazy(() => import('./reading/ReadingTestDetailsPage'));
 const ReadingPartEditorPage = lazy(() => import('./reading/ReadingPartEditorPage'));
 const ReadingTestPreviewPage = lazy(() => import('./reading/ReadingTestPreviewPage'));
+const ListeningBuilderLayout = lazy(() => import('./listening/context/ListeningBuilderContext'));
+const ListeningTestDetailsPage = lazy(() => import('./listening/ListeningTestDetailsPage'));
+const ListeningPartEditorPage = lazy(() => import('./listening/ListeningPartEditorPage'));
+const ListeningTestPreviewPage = lazy(() => import('./listening/ListeningTestPreviewPage'));
 const load = (element) => <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>{element}</Suspense>;
 
 export const adminRoutes = [
@@ -28,6 +32,11 @@ export const adminRoutes = [
       { path: 'dashboard', element: load(<AdminDashboardPage />) },
       { path: 'tests', element: load(<TestManagerPage />) },
       { path: 'tests/reading/:testId/preview', element: load(<ReadingTestPreviewPage />) },
+      { path: 'tests/listening/:testId/preview', element: load(<ListeningTestPreviewPage />) },
+      ...['tests/new/listening', 'tests/listening/:testId/edit'].map(path => ({ path, element: load(<ListeningBuilderLayout />), children: [
+        { index: true, element: load(<ListeningTestDetailsPage />) },
+        { path: 'part/:partNumber', element: load(<ListeningPartEditorPage />) },
+      ] })),
       ...['tests/new/reading', 'tests/reading/:testId/edit'].map(path => ({ path, element: load(<ReadingBuilderLayout />), children: [
         { index: true, element: load(<ReadingTestDetailsPage />) },
         { path: 'part/:partNumber', element: load(<ReadingPartEditorPage />) },
