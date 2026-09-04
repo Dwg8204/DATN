@@ -11,6 +11,10 @@ import ForgotPasswordResetPage from '../features/auth/pages/ForgotPasswordResetP
 import GrammarVocabOverviewPage from '../features/grammar_vocab/pages/GrammarVocabOverviewPage';
 import GrammarVocabResultPage from '../features/grammar_vocab/pages/GrammarVocabResultPage';
 import TestListPage from '../pages/TestListPage';
+import ProfilePage from '../features/profile/pages/ProfilePage';
+import ProfileEmptyPage from '../features/profile/pages/ProfileEmptyPage';
+import LearningHistoryPage from '../features/profile/pages/LearningHistoryPage';
+import ChangePasswordPage from '../features/profile/pages/ChangePasswordPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingMainRoutes, writingTestRoutes } from '../features/writing/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
@@ -19,6 +23,8 @@ import { speakingMainRoutes, speakingTestRoutes } from '../features/module-speak
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
 import { readingMainRoutes, readingTestRoutes } from '../features/module-reading/readingRoutes';
 import FlashcardPage from '../features/module-reading/pages/FlashcardPage';
+import { adminRoutes } from '../features/admin/adminRoutes';
+import { dictationRoutes } from '../features/dictation/dictationRoutes';
 
 export const appRoutes = [
   {
@@ -50,6 +56,22 @@ export const appRoutes = [
         element: <ForgotPasswordResetPage />,
       },
       {
+        path: 'profile',
+        element: <ProfilePage />,
+      },
+      {
+        path: 'profile/notifications',
+        element: <ProfileEmptyPage activeTab="notifications" />,
+      },
+      {
+        path: 'profile/history',
+        element: <LearningHistoryPage />,
+      },
+      {
+        path: 'profile/change-password',
+        element: <ChangePasswordPage />,
+      },
+      {
         path: 'grammar-vocab/overview',
         element: <GrammarVocabOverviewPage />,
       },
@@ -62,10 +84,6 @@ export const appRoutes = [
         element: <FlashcardPage />,
       },
       {
-        path: 'dictation',
-        element: <FlashcardPage />,
-      },
-      {
         path: ':skill/tests',
         element: <TestListPage />,
       },
@@ -75,6 +93,7 @@ export const appRoutes = [
       ...practiceRoutes,
       ...writingMainRoutes,
       ...chatbotRoutes,
+      ...dictationRoutes,
       {
         path: '*',
         element: <NotFoundPage />,
@@ -96,4 +115,5 @@ export const appRoutes = [
   ...readingTestRoutes,
   ...grammarVocabRoutes,
   ...writingTestRoutes,
+  ...adminRoutes,
 ];

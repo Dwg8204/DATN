@@ -1,14 +1,46 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from '../components/PasswordInput';
 import styles from './Auth.module.css';
+import { useAuth } from '../../../context/AuthContext';
 
 export default function LoginPage() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!email || !password) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
+    const user = existingUsers.find(u => u.email === email && u.password === password);
+
+    if (!user) {
+      setError('Invalid email or password.');
+      return;
+    }
+
+    // Exclude password from profile
+    const { password: _, ...profile } = user;
+    
+    login({ accessToken: 'mock-token-' + Date.now(), profile });
+    navigate('/');
+  };
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
         <span className={styles.title}>LOG IN TO YOUR ACCOUNT</span>
-        <div className={styles.form}>
+        {error && <div style={{ color: 'red', marginBottom: '16px', textAlign: 'center' }}>{error}</div>}
+        <form className={styles.form} onSubmit={handleLogin}>
           <div className={styles.formGroup}>
             <div className={styles.signupFormGroup}>
               <div className={styles.inputCol}>
@@ -17,6 +49,8 @@ export default function LoginPage() {
                   type="email"
                   className={`${styles.input} ${styles.inputFull}`}
                   placeholder="abcxyz@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className={styles.inputCol}>
@@ -24,6 +58,8 @@ export default function LoginPage() {
                 <PasswordInput
                   className={`${styles.input} ${styles.inputFull}`}
                   autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
               <div className={styles.optionsRow}>
@@ -32,7 +68,7 @@ export default function LoginPage() {
                 </Link>
               </div>
             </div>
-            <button className={styles.submitBtn}>
+            <button type="submit" className={styles.submitBtn}>
               <span className={styles.submitBtnText}>LOG IN</span>
             </button>
           </div>
@@ -49,7 +85,7 @@ export default function LoginPage() {
               className={styles.socialIcon}
             />
           </div>
-        </div>
+        </form>
         <div className={styles.verifyBottomLink}>
           <span className={styles.bottomText}>Don’t have account?</span>
           <Link to="/signup" className={styles.bottomAction}>SIGN UP</Link>

@@ -5,6 +5,7 @@ import TestFooter from '../../../components/layout/TestFooter';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { getReadingRemainingSeconds, getReadingDuration } from '../utils/readingSessionStorage';
+import { saveHistoryEntry } from '../../../utils/historyStorage';
 
 import Part1GapFilling from '../components/test-engine/parts/Part1GapFilling';
 import Part2TextCohesion from '../components/test-engine/parts/Part2TextCohesion';
@@ -12,6 +13,7 @@ import Part3OpinionMatch from '../components/test-engine/parts/Part3OpinionMatch
 import Part4MatchHeading from '../components/test-engine/parts/Part4MatchHeading';
 
 import styles from './ReadingTestPage.module.css';
+import {loadReadingTest} from '../services/readingTestRepository';
 
 export default function ReadingTestPage() {
   const { testId } = useParams();
@@ -30,11 +32,12 @@ export default function ReadingTestPage() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     const fetchTestData = async () => {
       try {
-        const data = await import('../services/mockData/testData.json');
-        setTimeout(() => {
-          setTestData(data.default || data);
+        const data = await loadReadingTest(testId);
+        if (cancelled) return;
+          setTestData(data);
           setIsStarted(true);
           
           let initialPart = 1;
@@ -45,7 +48,6 @@ export default function ReadingTestPage() {
           
           setCurrentPart(initialPart);
           setLoading(false);
-        }, 400);
       } catch (error) {
         console.error("Failed to load test data", error);
         setLoading(false);
@@ -55,6 +57,7 @@ export default function ReadingTestPage() {
     fetchTestData();
 
     return () => {
+      cancelled = true;
       setIsStarted(false);
     };
   }, [testId, setTestData, setIsStarted, setCurrentPart, mode]);
@@ -79,15 +82,36 @@ export default function ReadingTestPage() {
     const fakeSessionId = 'sess-' + Math.random().toString(36).substr(2, 9);
     const duration = getReadingDuration(mode);
     const timeLeft = getReadingRemainingSeconds();
+    const historyId = `hist_${Date.now()}_${fakeSessionId}`;
 
     const sessionData = {
+      testSnapshot: testData,
       testId: testId || 'apt-r-001',
       answers: answers,
       timeSpent: duration - timeLeft,
       mode: mode,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      historyId
     };
     localStorage.setItem(fakeSessionId, JSON.stringify(sessionData));
+
+    // Save draft history entry (missing correct/wrong scores)
+    saveHistoryEntry({
+      id: historyId,
+      skill: 'reading',
+      testId: String(sessionData.testId),
+      testName: `Aptis Reading Test ${sessionData.testId}`,
+      mode: mode,
+      submittedAt: sessionData.timestamp,
+      timeSpent: 'Pending...',
+      correct: 0,
+      wrong: 0,
+      skipped: 0,
+      total: 0,
+      partScores: [],
+      reviewUrl: `/reading/result/${fakeSessionId}`
+    });
+
     setShowSubmitModal(false);
     navigate(`/reading/result/${fakeSessionId}`);
   };

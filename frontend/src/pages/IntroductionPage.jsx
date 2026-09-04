@@ -127,7 +127,7 @@ export default function IntroductionPage({
       } else if (skill === 'writing') {
         startWritingSession(testId, mode, { force: true });
         const firstPart = mode === 'full' ? 'part1' : mode;
-        navigate(`/writing/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
+        navigate(`/writing/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}&fresh=true`);
       } else if (skill === 'speaking') {
         const firstPart = mode === 'full' ? 'part1' : mode;
         navigate(`/speaking/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);

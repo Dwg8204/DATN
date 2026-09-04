@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { calculateScore } from '../services/gradingService';
+import { loadReadingTest } from '../services/readingTestRepository';
 import TestFooter from '../../../components/layout/TestFooter';
 
 const getGapQuestionText = (passage, position) => {
@@ -33,8 +34,7 @@ const ReviewFeedbackPage = () => {
         }
 
         const sessionData = JSON.parse(sessionDataString);
-        const testDataModule = await import('../services/mockData/testData.json');
-        const testData = testDataModule.default || testDataModule;
+        const testData = sessionData.testSnapshot || await loadReadingTest(sessionData.testId);
 
         setTestData(testData);
         setMode(sessionData.mode || 'full');

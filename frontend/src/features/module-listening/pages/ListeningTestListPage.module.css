@@ -44,14 +44,12 @@
   overflow: hidden;
 }
 
-.tabsGrid {
+.tabsContainer {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
-}
-
-.tabItemSpan2 {
+  flex-wrap: nowrap;
+  overflow-x: auto;
 }
 
 .tabItem {
@@ -59,9 +57,9 @@
   border-radius: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .tabItemActive {
@@ -107,15 +105,17 @@
     height: 20px;
   }
 
-  .tabsGrid {
+  .tabsContainer {
     gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
 
   .tabItem {
     flex: 1 1 auto;
     justify-content: center;
     padding: 5px 10px;
-    font-size: 12px;
+    white-space: nowrap;
   }
 
   .testCard {
@@ -155,6 +155,17 @@
     width: 100%;
     margin-top: 8px;
   }
+
+  .commentSectionWrapper {
+    min-width: 0;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 380px) {
+  .searchBtn { padding-inline: 12px; }
+  .tabItem { padding-inline: 10px; }
+  .cardActions { flex-direction: column; align-items: stretch; }
 }
 
 

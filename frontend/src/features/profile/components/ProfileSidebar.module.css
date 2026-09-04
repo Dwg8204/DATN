@@ -1,0 +1,83 @@
+.sidebar {
+  width: 306px;
+  display: flex;
+  flex-direction: column;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 6px 0;
+}
+
+.avatar {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  line-height: 32px;
+}
+
+.email {
+  font-size: 16px;
+  color: #4F4F4F;
+  line-height: 28px;
+}
+
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(0,0,0,0.2);
+  margin: 12px 0 38px 0;
+}
+
+.navMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.navItem {
+  width: 100%;
+  height: 52px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  cursor: pointer;
+  color: #4F4F4F;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: left;
+}
+
+.navItem:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.active {
+  background-color: #FFF9F1;
+  color: #85182a;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+  }
+}

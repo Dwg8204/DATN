@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PART1_QUESTIONS } from '../data/part1MockData';
 import { PART2_WORD_SETS } from '../data/part2MockData';
 import { getAllGrammarVocabAnswers, getGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
+import { saveHistoryEntry } from '../../../utils/historyStorage';
 import styles from './GrammarVocabResultPage.module.css';
 
 function formatDuration(startTime) {
@@ -51,8 +52,14 @@ export default function GrammarVocabResultPage() {
   const selectedPart = searchParams.get('part') || '1';
   const timedOut = searchParams.get('timedOut') === 'true';
   const testId = searchParams.get('testId') || '1';
+  const historyIdParam = searchParams.get('historyId');
 
   const result = useMemo(() => {
+    if (historyIdParam) {
+      const stored = localStorage.getItem(`history_data_${historyIdParam}`);
+      if (stored) return JSON.parse(stored);
+    }
+
     const answers = getAllGrammarVocabAnswers();
     const { startTime } = getGrammarVocabSession();
     const part1 = PART1_QUESTIONS.map((question) => {
@@ -99,8 +106,40 @@ export default function GrammarVocabResultPage() {
       wrong: questions.length - correct - skipped,
       percentage: questions.length ? Math.round((correct / questions.length) * 100) : 0,
       duration: formatDuration(startTime),
+      rawAnswers: answers
     };
-  }, [isFullTest, selectedPart]);
+  }, [isFullTest, selectedPart, historyIdParam]);
+
+  const historySaved = useRef(false);
+
+  useEffect(() => {
+    if (historyIdParam) return;
+    if (result && !historySaved.current) {
+      historySaved.current = true;
+      const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+      localStorage.setItem(`history_data_${newHistoryId}`, JSON.stringify(result));
+
+      saveHistoryEntry({
+        id: newHistoryId,
+        skill: 'grammar',
+        testId: String(testId),
+        testName: `Aptis Grammar & Vocab Test ${testId}`,
+        mode: isFullTest ? 'full' : `part${selectedPart}`,
+        submittedAt: new Date().toISOString(),
+        timeSpent: result.duration,
+        correct: result.correct,
+        wrong: result.wrong,
+        skipped: result.skipped,
+        total: result.correct + result.wrong + result.skipped,
+        partScores: [
+          isFullTest || selectedPart === '1' ? { label: 'Part 1 (Grammar)', correct: result.groupStats.find(g => g.label === 'Grammar')?.correct || 0, total: result.groupStats.find(g => g.label === 'Grammar')?.total || 0 } : null,
+          isFullTest || selectedPart === '2' ? { label: 'Part 2 (Vocabulary)', correct: result.groupStats.find(g => g.label.startsWith('Vocabulary'))?.correct || 0, total: result.groupStats.find(g => g.label.startsWith('Vocabulary'))?.total || 0 } : null,
+        ],
+        reviewUrl: `/grammar-vocab/result-detail?testId=${testId}&isFull=${isFullTest}&part=${selectedPart}&historyId=${newHistoryId}`
+      });
+    }
+  }, [result, testId, isFullTest, selectedPart, historyIdParam]);
 
   const feedback = result.percentage >= 80
     ? 'You performed very well and demonstrated a strong understanding of the grammar and vocabulary tested. Keep practising to maintain your accuracy and confidence.'

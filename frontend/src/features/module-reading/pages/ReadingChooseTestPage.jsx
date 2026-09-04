@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
 import styles from './ReadingChooseTestPage.module.css';
+import {getAdminReadingList} from '../services/readingTestRepository';
 
 const TABS = [
   { id: 'part1', label: 'Part 1' },
@@ -14,36 +15,40 @@ const TABS = [
 export default function ReadingChooseTestPage() {
   const navigate = useNavigate();
   const [tests, setTests] = useState([]);
+  const [adminTests,setAdminTests]=useState(getAdminReadingList);
+  useEffect(()=>{const refresh=()=>setAdminTests(getAdminReadingList());window.addEventListener('reading-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('reading-tests-updated',refresh);window.removeEventListener('storage',refresh)}},[]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('part1');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
+    let cancelled = false;
     const fetchTests = async () => {
       setLoading(true);
       try {
         const data = await import('../services/mockData/testList.json');
-        setTimeout(() => {
+        if (!cancelled) {
           setTests(data.tests || []);
           setLoading(false);
-        }, 400);
+        }
       } catch (error) {
         console.error("Failed to load tests", error);
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
     
     fetchTests();
+    return () => { cancelled = true; };
   }, []);
 
   const handleDoTest = (testId) => {
     navigate(`/reading/introduction?testId=${testId}&mode=${activeTab}`);
   };
 
-  const filteredTests = tests.filter(test => {
+  const filteredTests = [...adminTests,...tests].filter(test => {
     // Filter by type: Full test or Dễ lẻ (Parts)
     const isFull = activeTab === 'full';
-    const matchesTab = isFull ? (test.type === 'full') : (test.type === 'dễ lẻ');
+    const matchesTab = test.mode ? test.mode === activeTab : isFull ? (test.type === 'full') : (test.type === 'dễ lẻ');
     
     // Filter by search query
     if (searchQuery.trim() === '') return matchesTab;

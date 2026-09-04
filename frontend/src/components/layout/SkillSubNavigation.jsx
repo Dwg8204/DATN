@@ -35,6 +35,15 @@ const skillNavigation = [
       { label: 'Listening Test', to: '/listening/tests' },
     ],
   },
+  {
+    pathPrefix: '/speaking',
+    label: 'Speaking',
+    items: [
+      { label: 'Speaking Overview', to: '/speaking/overview' },
+      { label: 'Speaking Feed', to: '/speaking/feed' },
+      { label: 'Speaking Test', to: '/speaking/tests' },
+    ],
+  },
 ];
 
 export default function SkillSubNavigation() {
