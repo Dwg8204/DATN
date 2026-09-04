@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { calculateScore } from '../services/gradingService';
+import { updateHistoryEntry } from '../../../utils/historyStorage';
 import styles from './ReadingResultPage.module.css';
 
 function formatTestingTime(seconds) {
@@ -66,7 +67,9 @@ const ReadingResultPage = () => {
         setResults({ 
           ...gradedResults, 
           timeSpent: sessionData.timeSpent,
-          userAnswers: sessionData.answers
+          userAnswers: sessionData.answers,
+          mode: sessionData.mode || 'full',
+          historyId: sessionData.historyId
         });
       } catch (error) {
         console.error("Error loading results", error);
@@ -112,14 +115,34 @@ const ReadingResultPage = () => {
       percentage: stat.total > 0 ? Math.round((stat.correct / stat.total) * 100) : 0
     }));
 
-    return {
+    const resultStats = {
       percentage,
       questions,
       correct,
       skipped,
       wrong,
       groupStats,
+      timeSpent: results.timeSpent,
+      mode: results.mode
     };
+
+    if (results.historyId) {
+      updateHistoryEntry(results.historyId, {
+        correct,
+        wrong,
+        skipped,
+        total: questions.length,
+        timeSpent: formatTestingTime(results.timeSpent),
+        partScores: [
+          results.mode === 'full' || results.mode === 'part1' ? { label: 'Part 1', correct: results.part1.score, total: results.part1.total } : null,
+          results.mode === 'full' || results.mode === 'part2' ? { label: 'Part 2', correct: results.part2.score, total: results.part2.total } : null,
+          results.mode === 'full' || results.mode === 'part3' ? { label: 'Part 3', correct: results.part3.score, total: results.part3.total } : null,
+          results.mode === 'full' || results.mode === 'part4' ? { label: 'Part 4', correct: results.part4.score, total: results.part4.total } : null,
+        ].filter(Boolean)
+      });
+    }
+
+    return resultStats;
   }, [results]);
 
   const getFeedbackText = () => {

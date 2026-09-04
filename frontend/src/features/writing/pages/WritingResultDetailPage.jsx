@@ -21,7 +21,14 @@ function ResponseCard({ part, index, answer, view, task }) {
 export default function WritingResultDetailPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const session = useMemo(() => getWritingSession(), []);
+  const historyIdParam = params.get('historyId');
+  const session = useMemo(() => {
+    if (historyIdParam) {
+      const stored = localStorage.getItem(`history_data_${historyIdParam}`);
+      if (stored) return JSON.parse(stored);
+    }
+    return getWritingSession();
+  }, [historyIdParam]);
   const isFull = params.get('isFull') === 'true' || session.mode === 'full';
   const initialPart = params.get('part') && WRITING_PART_ORDER.includes(params.get('part')) ? params.get('part') : 'part1';
   const [activePart, setActivePart] = useState(initialPart);
