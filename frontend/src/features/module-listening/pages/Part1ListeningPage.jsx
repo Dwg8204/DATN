@@ -5,7 +5,7 @@ import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MultipleChoice from '../../../components/common/MultipleChoice';
 import { savePartAnswers } from '../utils/listeningSessionStorage';
-import { PART1_QUESTIONS } from '../data/part1MockData';
+import { getListeningTestParts } from '../services/listeningTestRepository';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import styles from './Part1ListeningPage.module.css';
 
@@ -14,6 +14,7 @@ export default function Part1ListeningPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  const { part1: questions } = getListeningTestParts(testId);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState(() => {
@@ -24,10 +25,10 @@ export default function Part1ListeningPage() {
 
   // Part 1 displays one question per page to match the original design.
   const itemsPerPage = 1;
-  const totalPages = Math.ceil(PART1_QUESTIONS.length / itemsPerPage);
+  const totalPages = Math.ceil(questions.length / itemsPerPage);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentQuestions = PART1_QUESTIONS.slice(startIndex, startIndex + itemsPerPage);
+  const currentQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
   const currentPageQuestionIds = currentQuestions.map(q => q.id);
 
   const handleOptionSelect = (questionId, optionIndex) => {
@@ -77,7 +78,7 @@ export default function Part1ListeningPage() {
           <div className={styles.skillTitle}>Listening Test</div>
         </div>
 
-        <InstructionBlock title={`Question ${startIndex + 1} of ${PART1_QUESTIONS.length}`}>
+        <InstructionBlock title={`Question ${startIndex + 1} of ${questions.length}`}>
           Listen to the recording and choose the correct answer (A, B or C) for each question.
         </InstructionBlock>
 
@@ -110,7 +111,7 @@ export default function Part1ListeningPage() {
 
       <TestFooter
         partLabel="Part 1"
-        questions={PART1_QUESTIONS}
+        questions={questions}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={currentPageQuestionIds}
         onQuestionClick={(qId) => setCurrentPage(qId)}

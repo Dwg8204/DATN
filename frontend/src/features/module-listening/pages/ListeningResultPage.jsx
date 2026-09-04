@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getAllAnswers, getTestMeta, clearListeningSession, saveListeningResult } from '../utils/listeningSessionStorage';
-import { PART1_QUESTIONS } from '../data/part1MockData';
-import { PART2_DATA } from '../data/part2MockData';
-import { PART3_DATA } from '../data/part3MockData';
-import { PART4_QUESTIONS } from '../data/part4MockData';
+import { getListeningTestParts } from '../services/listeningTestRepository';
 import styles from './ListeningResultPage.module.css';
 
 function getCefrLevel(percentage) {
@@ -47,7 +44,8 @@ export default function ListeningResultPage() {
 
   useEffect(() => {
     const allAnswers = getAllAnswers();
-    const { startTime } = getTestMeta();
+    const { startTime, testId } = getTestMeta();
+    const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = getListeningTestParts(testId);
     const timeSpent = startTime ? Date.now() - startTime : 0;
 
     // Process Part 1 (13 questions)
@@ -142,7 +140,6 @@ export default function ListeningResultPage() {
 
     setResults(resultData);
 
-    const { testId } = getTestMeta();
     if (testId) {
       saveListeningResult(testId, isFullTest, partParam, {
         accuracy: percentage,

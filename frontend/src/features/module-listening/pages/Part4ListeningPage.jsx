@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { savePartAnswers } from '../utils/listeningSessionStorage';
-import { PART4_QUESTIONS } from '../data/part4MockData';
+import { getListeningTestParts } from '../services/listeningTestRepository';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MultipleChoice from '../../../components/common/MultipleChoice';
@@ -14,6 +14,7 @@ export default function Part4ListeningPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  const { part4: questions } = getListeningTestParts(testId);
 
   const [answers, setAnswers] = useState(() => {
     const allAnswers = JSON.parse(sessionStorage.getItem('listening_p4_answers') || '{}');
@@ -47,12 +48,12 @@ export default function Part4ListeningPage() {
     setShowSubmitModal(false);
   };
 
-  const currentMainQ = PART4_QUESTIONS[currentMainIdx];
-  const allQuestionIds = PART4_QUESTIONS.flatMap(q => q.subQuestions.map(sq => sq.id));
+  const currentMainQ = questions[currentMainIdx];
+  const allQuestionIds = questions.flatMap(q => q.subQuestions.map(sq => sq.id));
   const currentPageIds = currentMainQ.subQuestions.map(sq => sq.id);
 
   const handleNext = () => {
-    if (currentMainIdx < PART4_QUESTIONS.length - 1) {
+    if (currentMainIdx < questions.length - 1) {
       setCurrentMainIdx(prev => prev + 1);
     }
   };
@@ -66,7 +67,7 @@ export default function Part4ListeningPage() {
   };
 
   const handleQuestionClick = (qId) => {
-    const mainIdx = PART4_QUESTIONS.findIndex(mainQ => mainQ.subQuestions.some(sq => sq.id === qId));
+    const mainIdx = questions.findIndex(mainQ => mainQ.subQuestions.some(sq => sq.id === qId));
     if (mainIdx !== -1) {
       setCurrentMainIdx(mainIdx);
     }
@@ -119,7 +120,7 @@ export default function Part4ListeningPage() {
 
       <TestFooter 
         partLabel="Part 4" 
-        questions={PART4_QUESTIONS.flatMap(q => q.subQuestions)}
+        questions={questions.flatMap(q => q.subQuestions)}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={currentPageIds}
         onQuestionClick={handleQuestionClick}
@@ -128,7 +129,7 @@ export default function Part4ListeningPage() {
         onSubmitClick={handleSubmit}
         submitLabel="Submit"
         hasPrev={currentMainIdx > 0 || isFullTest}
-        hasNext={currentMainIdx < PART4_QUESTIONS.length - 1}
+        hasNext={currentMainIdx < questions.length - 1}
       />
 
       <SubmitModal 

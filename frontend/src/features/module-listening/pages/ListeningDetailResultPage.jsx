@@ -2,10 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import { getAllAnswers } from '../utils/listeningSessionStorage';
-import { PART1_QUESTIONS } from '../data/part1MockData';
-import { PART2_DATA } from '../data/part2MockData';
-import { PART3_DATA } from '../data/part3MockData';
-import { PART4_QUESTIONS } from '../data/part4MockData';
+import { getListeningTestParts } from '../services/listeningTestRepository';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import styles from './ListeningDetailResultPage.module.css';
 
@@ -25,6 +22,7 @@ export default function ListeningDetailResultPage() {
   const testId = searchParams.get('testId') || '1';
   const initialPart = parseInt(searchParams.get('part'), 10) || 1;
   const isFullTest = searchParams.get('isFull') === 'true';
+  const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = useMemo(() => getListeningTestParts(testId), [testId]);
 
   const [activePart, setActivePart] = useState(initialPart);
   const [currentPage, setCurrentPage] = useState(1);
