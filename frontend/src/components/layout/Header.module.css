@@ -127,6 +127,59 @@
   background-color: #f1f1f1;
 }
 
+.userMenuContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.userProfileBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.userProfileBtn:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.userAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userName {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.userDropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #FFFFFF;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 100;
+  min-width: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.userMenuContainer:hover .userDropdown {
+  display: flex;
+  flex-direction: column;
+}
+
 .mobileNav {
   display: none;
 }

@@ -68,6 +68,23 @@ export function AuthProvider({ children }) {
         setToken(null);
         setUser(null);
       },
+      updateProfile: (updates) => {
+        if (!user) return;
+        const updatedUser = { ...user, ...updates };
+        setUser(updatedUser);
+
+        // Update mock_users in localStorage
+        try {
+          const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
+          const userIndex = existingUsers.findIndex(u => u.email === user.email);
+          if (userIndex !== -1) {
+            existingUsers[userIndex] = { ...existingUsers[userIndex], ...updates };
+            localStorage.setItem('aptimate.mock_users', JSON.stringify(existingUsers));
+          }
+        } catch (e) {
+          console.error("Failed to update mock users in localStorage", e);
+        }
+      },
     }),
     [token, user],
   );
