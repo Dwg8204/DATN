@@ -40,8 +40,7 @@ export function validateReadingPart(number, part) {
 export function validateReadingTest(test) {
   const errors = [];
   if (!filled(test.details.title)) errors.push('Test title is required.');
-  if (!filled(test.details.source)) errors.push('Source is required.');
-  if (!withinTextLimit(test.details.title || '', 50) || !withinTextLimit(test.details.source || '', 50)) errors.push('Title and source must each be at most 50 words.');
+  if (!withinTextLimit(test.details.title || '', 50)) errors.push('Title must be at most 50 words.');
   const parts = test.mode === 'full' ? [1, 2, 3, 4] : [Number(test.mode.slice(-1))];
   return [...errors, ...parts.flatMap(n => validateReadingPart(n, test[`part${n}`]).map(e => `Part ${n}: ${e}`))];
 }

@@ -71,7 +71,6 @@ export default function WritingTestDetailsPage() {
     <div className={styles.crumb}><b>Test Management</b><ChevronRight/><b>Admin</b><ChevronRight/><span>{test.details.title || 'New test'}</span></div>
     <section className={styles.information}><h2>INFORMATION TEST</h2><div className={styles.infoGrid}><div className={styles.fields}>
       <label><b>Title:</b><input value={test.details.title} onChange={(event) => updateDetails('title', event.target.value)}/>{errors.title && <small>{errors.title}</small>}</label>
-      <label><b>Source:</b><input value={test.details.source} onChange={(event) => updateDetails('source', event.target.value)}/>{errors.source && <small>{errors.source}</small>}</label>
       <label><b>Picture:</b><button type="button" onClick={() => fileInputRef.current?.click()}><ImagePlus/>Upload image</button><input ref={fileInputRef} className={styles.fileInput} type="file" accept="image/*" onChange={uploadPicture}/>{errors.pictureUrl && <small>{errors.pictureUrl}</small>}</label>
       <button className={styles.saveInfo} onClick={saveInformation}>Save</button>{message && <p className={styles.message}>{message}</p>}
     </div><aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>Not Started</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview"/> : <strong>AptiMate<br/><em>Writing</em></strong>}<button onClick={requestSave}>Preview</button></div></aside></div></section>

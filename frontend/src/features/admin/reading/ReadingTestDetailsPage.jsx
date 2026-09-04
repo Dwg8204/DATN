@@ -82,8 +82,7 @@ export default function ReadingTestDetailsPage() {
         <h2>INFORMATION TEST</h2>
         <div className={styles.infoGrid}>
           <div className={styles.fields}>
-            <Field stacked label="Title" value={test.details.title} onChange={value => detail('title', value)} />
-            <Field stacked label="Source" value={test.details.source} onChange={value => detail('source', value)} />
+            <Field label="Title" value={test.details.title} onChange={value => detail('title', value)} />
             <label>
               <b>Picture:</b>
               <button type="button" onClick={() => fileInput.current?.click()}>

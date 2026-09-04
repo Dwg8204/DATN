@@ -8,7 +8,7 @@ export const WRITING_PART_META = [
 export const INITIAL_WRITING_TEST = {
   id: null,
   mode: 'full',
-  details: { title: 'Local food shops', source: 'AptiMate Practice Test', pictureUrl: '' },
+  details: { title: 'Local food shops', pictureUrl: '' },
   parts: {
     1: { context: 'You want to join a language club. You have 5 messages from a member of the club. Write short answers (1–5 words) to each message.', questions: ['Please tell us about the last book you read.', 'What kind of music do you listen to most?', '', '', ''], sampleAnswers: ['The Great Gatsby', 'Pop music', '', '', ''] },
     2: { instruction: 'You are a new member of the Travel Club. Fill in the form. Write in sentences. Use 20–30 words. Recommended time: 7 minutes.', prompt: 'Why did you join the Travel Club and what would you like to learn?', sampleAnswer: '' },

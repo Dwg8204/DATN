@@ -4,7 +4,6 @@ export function validateWritingDetails(details) {
   const errors = {};
   if (!required(details.title)) errors.title = 'Test title is required.';
   if (details.title?.trim().length > 180) errors.title = 'Test title must not exceed 180 characters.';
-  if (!required(details.source)) errors.source = 'Source is required.';
   if (details.pictureUrl && !/^(https?:\/\/|data:image\/)/i.test(details.pictureUrl)) errors.pictureUrl = 'Use a valid image.';
   return errors;
 }
