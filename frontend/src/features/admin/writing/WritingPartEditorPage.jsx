@@ -5,6 +5,7 @@ import { useWritingTestBuilder } from './context/WritingTestBuilderContext';
 import { WRITING_PART_META } from './data/writingBuilderInitialState';
 import { hasValidationErrors, validateWritingPart } from './validation/writingTestValidation';
 import styles from './WritingPartEditorPage.module.css';
+import { AdminValidationToast } from '../components/AdminFeedback';
 
 function TextAreaField({ label, value, onChange, large = false }) {
   return <label className={`${styles.richField} ${large ? styles.essay : ''}`}><b>{label}</b><div className={styles.rich}><textarea value={value} onChange={(event) => onChange(event.target.value)} /></div></label>;
@@ -41,5 +42,5 @@ export default function WritingPartEditorPage() {
   const save = () => { const nextErrors = validateWritingPart(partNumber, part); setErrors(nextErrors); if (!hasValidationErrors(nextErrors)) close(); };
   const props = { part, update };
 
-  return <div className={styles.overlay}><button className={styles.close} onClick={close} aria-label="Close"><X /></button><main><header><strong>Part {partNumber}</strong><span>{meta.title} ({meta.summary})</span></header>{partNumber === 1 && <Part1 {...props} />}{partNumber === 2 && <Part2 {...props} />}{partNumber === 3 && <Part3 {...props} />}{partNumber === 4 && <Part4 {...props} />}{Object.keys(errors).length > 0 && <div className={styles.error}>{Object.values(errors).map((error) => <p key={error}>{error}</p>)}</div>}</main><button className={styles.save} onClick={save}>Save change</button></div>;
+  return <div className={styles.overlay}><AdminValidationToast errors={errors} onClose={() => setErrors({})} /><button className={styles.close} onClick={close} aria-label="Close"><X /></button><main><header><strong>Part {partNumber}</strong><span>{meta.title} ({meta.summary})</span></header>{partNumber === 1 && <Part1 {...props} />}{partNumber === 2 && <Part2 {...props} />}{partNumber === 3 && <Part3 {...props} />}{partNumber === 4 && <Part4 {...props} />}</main><button className={styles.save} onClick={save}>Save change</button></div>;
 }

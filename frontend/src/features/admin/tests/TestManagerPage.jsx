@@ -6,6 +6,7 @@ import { AdminConfirmDialog, AdminToast } from '../components/AdminFeedback';
 import { ADMIN_TESTS } from '../data/adminMockData';
 import { deleteStoredWritingTest, getStoredWritingTests } from '../writing/data/writingTestStorage';
 import { deleteStoredGrammarTest, getStoredGrammarTests } from '../grammar/data/grammarTestStorage';
+import { deleteStoredReadingTest, getStoredReadingTests } from '../reading/data/readingTestStorage';
 import { filterTests, formatAdminDate, paginate } from '../utils/testManagerHelpers';
 import styles from './TestManagerPage.module.css';
 import './TestManagerResponsive.css';
@@ -31,6 +32,8 @@ export default function TestManagerPage() {
   const isMobile = useMobileManager();
   const [storedTests, setStoredTests] = useState(() => getStoredWritingTests());
   const [storedGrammarTests, setStoredGrammarTests] = useState(() => getStoredGrammarTests());
+  const [storedReadingTests, setStoredReadingTests] = useState(getStoredReadingTests);
+  useEffect(() => { const refresh=()=>setStoredReadingTests(getStoredReadingTests());window.addEventListener('reading-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('reading-tests-updated',refresh);window.removeEventListener('storage',refresh)}; }, []);
   const [filters, setFilters] = useState({ query: '', component: 'Writing', section: 'Full Writing', status: 'All' });
   const [page, setPage] = useState(1);
   const [confirmTest, setConfirmTest] = useState(null);
@@ -46,21 +49,22 @@ export default function TestManagerPage() {
     return () => { window.removeEventListener('writing-tests-updated', refresh); window.removeEventListener('grammar-tests-updated', refreshGrammar); window.removeEventListener('storage', refresh); window.removeEventListener('storage', refreshGrammar); };
   }, []);
 
-  const tests = useMemo(() => [...storedTests, ...storedGrammarTests, ...ADMIN_TESTS], [storedTests, storedGrammarTests]);
+  const tests = useMemo(() => [...storedTests, ...storedGrammarTests, ...storedReadingTests, ...ADMIN_TESTS], [storedTests, storedGrammarTests, storedReadingTests]);
   const filtered = useMemo(() => filterTests(tests, filters), [tests, filters]);
   const pageSize = isMobile ? 5 : 10;
   const pagination = paginate(filtered, page, pageSize);
-  const sections = filters.component === 'Grammar & Vocab' ? grammarSections : writingSections;
-  const setFilter = (name, value) => { setFilters((current) => ({ ...current, [name]: value, ...(name === 'component' ? { section: value === 'Grammar & Vocab' ? 'Full Test' : value === 'Writing' ? 'Full Writing' : 'All' } : {}) })); setPage(1); };
-  const addTest = () => filters.component === 'Grammar & Vocab' ? navigate(`/admin/tests/new/grammar?mode=${sectionToMode(filters.section)}`) : navigate(`/admin/tests/new/writing?mode=${sectionToMode(filters.section)}`);
+  const sections = filters.component === 'Grammar & Vocab' ? grammarSections : filters.component === 'Reading' ? ['Part 1','Part 2','Part 3','Part 4','Full Test'] : writingSections;
+  const setFilter = (name, value) => { setFilters((current) => ({ ...current, [name]: value, ...(name === 'component' ? { section: value === 'Grammar & Vocab' || value === 'Reading' ? 'Full Test' : value === 'Writing' ? 'Full Writing' : 'All' } : {}) })); setPage(1); };
+  const addTest = () => navigate(`/admin/tests/new/${filters.component === 'Reading' ? 'reading' : filters.component === 'Grammar & Vocab' ? 'grammar' : 'writing'}?mode=${filters.section==='All'?'full':sectionToMode(filters.section)}`);
   const remove = () => {
     if (!confirmTest) return;
-    if (confirmTest.component === 'Grammar & Vocab') { deleteStoredGrammarTest(confirmTest.id); setStoredGrammarTests(getStoredGrammarTests()); }
+    if (confirmTest.component === 'Reading') { deleteStoredReadingTest(confirmTest.id); setStoredReadingTests(getStoredReadingTests()); }
+    else if (confirmTest.component === 'Grammar & Vocab') { deleteStoredGrammarTest(confirmTest.id); setStoredGrammarTests(getStoredGrammarTests()); }
     else { deleteStoredWritingTest(confirmTest.id); setStoredTests(getStoredWritingTests()); }
     setToast(`“${confirmTest.name}” was deleted successfully.`);
     setConfirmTest(null);
   };
-  const testBase = (test) => test.component === 'Grammar & Vocab' ? `/admin/tests/grammar/${test.id}` : `/admin/tests/writing/${test.id}`;
+  const testBase = (test) => `/admin/tests/${test.component === 'Reading' ? 'reading' : test.component === 'Grammar & Vocab' ? 'grammar' : 'writing'}/${test.id}`;
   const actions = (test) => test.details ? <div className="mobileTestActions">
     <button title="Preview" aria-label={`Preview ${test.name}`} onClick={() => navigate(`${testBase(test)}/preview`)}><Eye /></button>
     <button title="Edit" aria-label={`Edit ${test.name}`} onClick={() => navigate(`${testBase(test)}/edit`)}><Edit3 /></button>
@@ -69,7 +73,7 @@ export default function TestManagerPage() {
   const from = filtered.length ? (pagination.page - 1) * pageSize + 1 : 0;
   const to = Math.min(pagination.page * pageSize, filtered.length);
 
-  return <div className={styles.page}><AdminToast message={toast} onClose={() => setToast('')}/><AdminConfirmDialog open={Boolean(confirmTest)} title={confirmTest?.component === 'Grammar & Vocab' ? 'Delete Grammar & Vocabulary test?' : 'Delete Writing test?'} message={confirmTest ? `“${confirmTest.name}” will be permanently removed from this browser. This action cannot be undone.` : ''} onCancel={() => setConfirmTest(null)} onConfirm={remove}/>
+  return <div className={styles.page}><AdminToast message={toast} onClose={() => setToast('')}/><AdminConfirmDialog open={Boolean(confirmTest)} title={`Delete ${confirmTest?.component || ''} test?`} message={confirmTest ? `“${confirmTest.name}” will be permanently removed from this browser. This action cannot be undone.` : ''} onCancel={() => setConfirmTest(null)} onConfirm={remove}/>
     <div className={styles.crumb}><b>Test Management</b><ChevronRight /><b>Admin</b></div>
     <nav className={styles.components}>{components.map((component) => <button className={filters.component === component ? styles.activeComponent : ''} onClick={() => setFilter('component', component)} key={component}>{component}</button>)}</nav>
     <section className={styles.card}>
