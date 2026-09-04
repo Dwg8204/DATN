@@ -21,6 +21,10 @@ const ListeningBuilderLayout = lazy(() => import('./listening/context/ListeningB
 const ListeningTestDetailsPage = lazy(() => import('./listening/ListeningTestDetailsPage'));
 const ListeningPartEditorPage = lazy(() => import('./listening/ListeningPartEditorPage'));
 const ListeningTestPreviewPage = lazy(() => import('./listening/ListeningTestPreviewPage'));
+const SpeakingBuilderLayout = lazy(() => import('./speaking/context/SpeakingBuilderContext'));
+const SpeakingTestDetailsPage = lazy(() => import('./speaking/SpeakingTestDetailsPage'));
+const SpeakingPartEditorPage = lazy(() => import('./speaking/SpeakingPartEditorPage'));
+const SpeakingTestPreviewPage = lazy(() => import('./speaking/SpeakingTestPreviewPage'));
 const load = (element) => <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>{element}</Suspense>;
 
 export const adminRoutes = [
@@ -33,6 +37,11 @@ export const adminRoutes = [
       { path: 'tests', element: load(<TestManagerPage />) },
       { path: 'tests/reading/:testId/preview', element: load(<ReadingTestPreviewPage />) },
       { path: 'tests/listening/:testId/preview', element: load(<ListeningTestPreviewPage />) },
+      { path: 'tests/speaking/:testId/preview', element: load(<SpeakingTestPreviewPage />) },
+      ...['tests/new/speaking', 'tests/speaking/:testId/edit'].map(path => ({ path, element: load(<SpeakingBuilderLayout />), children: [
+        { index: true, element: load(<SpeakingTestDetailsPage />) },
+        { path: 'part/:partNumber', element: load(<SpeakingPartEditorPage />) },
+      ] })),
       ...['tests/new/listening', 'tests/listening/:testId/edit'].map(path => ({ path, element: load(<ListeningBuilderLayout />), children: [
         { index: true, element: load(<ListeningTestDetailsPage />) },
         { path: 'part/:partNumber', element: load(<ListeningPartEditorPage />) },

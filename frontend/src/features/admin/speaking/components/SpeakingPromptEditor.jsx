@@ -1,0 +1,3 @@
+import { Field } from '../../shared-test-builder/BuilderFields';
+import styles from './SpeakingPromptEditor.module.css';
+export default function SpeakingPromptEditor({questions,onChange,seconds,timeLabel}){return <div className={styles.list}>{questions.map((question,index)=><section className={styles.prompt} key={question.id}><header><strong>Question {index+1}</strong><span>{timeLabel||`${seconds} seconds`}</span></header><Field multiline maxWords={80} label="Question content" value={question.text} onChange={text=>onChange(questions.map((item,current)=>current===index?{...item,text}:item))}/></section>)}</div>}
