@@ -3,7 +3,7 @@ export function filterTests(tests, { query, component, section, status }) {
   return tests.filter((test) => (
     (!normalized || test.name.toLocaleLowerCase().includes(normalized))
     && (component === 'All' || test.component === component)
-    && (section === 'All' || test.section === section)
+    && (section === 'All' || (test.section === 'Full Writing' ? 'Full Test' : test.section) === section)
     && (status === 'All' || test.status === status)
   ));
 }

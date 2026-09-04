@@ -1,11 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getAllAnswers, getTestMeta, clearListeningSession, saveListeningResult } from '../utils/listeningSessionStorage';
+import { getListeningTestParts } from '../services/listeningTestRepository';
 import { saveHistoryEntry } from '../../../utils/historyStorage';
-import { PART1_QUESTIONS } from '../data/part1MockData';
-import { PART2_DATA } from '../data/part2MockData';
-import { PART3_DATA } from '../data/part3MockData';
-import { PART4_QUESTIONS } from '../data/part4MockData';
 import styles from './ListeningResultPage.module.css';
 
 function getCefrLevel(percentage) {
@@ -44,6 +41,7 @@ export default function ListeningResultPage() {
   const isFullTest = searchParams.get('isFull') === 'true';
   const partParam = searchParams.get('part');
   const historyIdParam = searchParams.get('historyId');
+  const testIdParam = searchParams.get('testId');
   const historySaved = useRef(false);
 
   const [results, setResults] = useState(null);
@@ -51,7 +49,10 @@ export default function ListeningResultPage() {
   useEffect(() => {
     let allAnswers;
     let timeSpent = 0;
-    
+    const { startTime, testId } = getTestMeta();
+    const actualTestId = testIdParam || testId || '1';
+    const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = getListeningTestParts(actualTestId);
+
     if (historyIdParam) {
       const stored = localStorage.getItem(`history_data_${historyIdParam}`);
       if (stored) {
@@ -60,10 +61,9 @@ export default function ListeningResultPage() {
         timeSpent = parsed.timeSpent;
       }
     }
-    
+
     if (!allAnswers) {
       allAnswers = getAllAnswers();
-      const { startTime } = getTestMeta();
       timeSpent = startTime ? Date.now() - startTime : 0;
     }
 
@@ -159,8 +159,6 @@ export default function ListeningResultPage() {
 
     setResults(resultData);
 
-    const { testId } = getTestMeta();
-    const actualTestId = testId || searchParams.get('testId') || '1';
     if (!historyIdParam) {
       saveListeningResult(actualTestId, isFullTest, partParam, {
         accuracy: percentage,
@@ -172,7 +170,7 @@ export default function ListeningResultPage() {
       if (!historySaved.current) {
         historySaved.current = true;
         const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
+
         localStorage.setItem(`history_data_${newHistoryId}`, JSON.stringify({
           allAnswers: { p1Raw, p2Raw, p3Raw, p4Raw },
           timeSpent: timeSpent
@@ -201,7 +199,7 @@ export default function ListeningResultPage() {
       }
     }
 
-  }, [isFullTest, partParam, historyIdParam]);
+  }, [isFullTest, partParam, historyIdParam, testIdParam]);
 
   if (!results) return null;
 

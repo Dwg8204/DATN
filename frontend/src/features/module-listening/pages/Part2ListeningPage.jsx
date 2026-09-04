@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { savePartAnswers } from '../utils/listeningSessionStorage';
-import { PART2_DATA } from '../data/part2MockData';
+import { getListeningTestParts } from '../services/listeningTestRepository';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import InstructionBlock from '../../../components/common/InstructionBlock';
@@ -14,6 +14,7 @@ export default function Part2ListeningPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  const { part2: partData } = getListeningTestParts(testId);
 
   const [answers, setAnswers] = useState(() => {
     const allAnswers = JSON.parse(sessionStorage.getItem('listening_p2_answers') || '{}');
@@ -52,9 +53,9 @@ export default function Part2ListeningPage() {
   const submitLabel = isFullTest ? 'Next Part' : 'Submit';
 
   // Treat Part 2 as a single question (ID 14) in the footer, despite having multiple speakers.
-  const questionIds = [PART2_DATA.id];
+  const questionIds = [partData.id];
   // Mark the question as answered only when all speakers have answers.
-  const isAnswered = PART2_DATA.speakers.every((_, idx) => answers[idx]);
+  const isAnswered = partData.speakers.every((_, idx) => answers[idx]);
 
   return (
     <div className={styles.page}>
@@ -64,15 +65,15 @@ export default function Part2ListeningPage() {
           <div className={styles.skillTitle}>Listening Test</div>
         </div>
 
-        <InstructionBlock title={`Question ${PART2_DATA.id}`}>
-          {PART2_DATA.instruction}
+        <InstructionBlock title={`Question ${partData.id}`}>
+          {partData.instruction}
         </InstructionBlock>
 
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
             <div className={styles.questionItem}>
               <div className={styles.matchingList}>
-                {PART2_DATA.speakers.map((speaker, idx) => {
+                {partData.speakers.map((speaker, idx) => {
                   const selectedOption = answers[idx];
 
                   return (
@@ -85,7 +86,7 @@ export default function Part2ListeningPage() {
                           onChange={(event) => handleOptionSelect(idx, event.target.value)}
                           placeholder="Select statement"
                           ariaLabel={`Answer for ${speaker}`}
-                          options={PART2_DATA.options.map((opt, i) => ({ value: opt, label: `${String.fromCharCode(65 + i)}. ${opt}` }))}
+                          options={partData.options.map((opt, i) => ({ value: opt, label: `${String.fromCharCode(65 + i)}. ${opt}` }))}
                         />
                       </div>
                     </div>
@@ -96,7 +97,7 @@ export default function Part2ListeningPage() {
           </div>
 
           <div className={styles.audioSection}>
-            <AudioPlayer src={PART2_DATA.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
+            <AudioPlayer src={partData.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
           </div>
         </div>
       </div>
