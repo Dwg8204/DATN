@@ -5,6 +5,7 @@ import AdminPlaceholderPage from './components/AdminPlaceholderPage';
 
 const AdminDashboardPage = lazy(() => import('./dashboard/AdminDashboardPage'));
 const TestManagerPage = lazy(() => import('./tests/TestManagerPage'));
+const UserManagementPage = lazy(() => import('./users/UserManagementPage'));
 const WritingBuilderLayout = lazy(() => import('./writing/components/WritingBuilderLayout'));
 const WritingPartEditorPage = lazy(() => import('./writing/WritingPartEditorPage'));
 const WritingTestDetailsPage = lazy(() => import('./writing/WritingTestDetailsPage'));
@@ -52,7 +53,7 @@ export const adminRoutes = [
       ] })),
       { path: 'tests/writing/:testId/preview', element: load(<WritingTestPreviewPage />) },
       { path: 'tests/grammar/:testId/preview', element: load(<GrammarTestPreviewPage />) },
-      { path: 'users', element: <AdminPlaceholderPage title="User Management" /> },
+      { path: 'users', element: load(<UserManagementPage />) },
       { path: 'feedback', element: <AdminPlaceholderPage title="Feedback" /> },
       { path: 'notifications', element: <AdminPlaceholderPage title="Notification" /> },
       {
