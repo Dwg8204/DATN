@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminConfirmDialog, AdminValidationToast } from '../components/AdminFeedback';
+import AdminBreadcrumb from '../components/AdminBreadcrumb';
 import ImageField from '../shared-test-builder/ImageField';
 import PartSummaryCard from '../writing/components/PartSummaryCard';
 import { useReadingBuilder } from './context/ReadingBuilderContext';
@@ -56,9 +57,7 @@ export default function ReadingTestDetailsPage() {
         onCancel={() => setConfirm(false)}
         onConfirm={persist}
       />
-      <div className={styles.crumb}>
-        Test Management › Admin › {test.details.title || 'New Reading test'}
-      </div>
+      <AdminBreadcrumb current={test.details.title || 'New Reading test'} />
       <section className={styles.information}>
         <h2>INFORMATION TEST</h2>
         <div className={styles.infoGrid}>
