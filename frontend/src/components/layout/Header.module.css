@@ -134,6 +134,13 @@
   height: 100%;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
 .userProfileBtn {
   display: flex;
   align-items: center;
@@ -198,6 +205,12 @@
     padding-left: 30px;
     padding-right: 30px;
   }
+
+  .headerActions {
+    grid-column: 3;
+    grid-row: 1;
+    gap: 6px;
+  }
 }
 
 @media (max-width: 1200px) {
@@ -259,9 +272,18 @@
   }
 
   .signInBtn {
+    padding: 8px 24px;
+  }
+
+  .headerActions {
     grid-column: 2;
     grid-row: 1;
-    padding: 8px 24px;
+    gap: 4px;
+  }
+
+  .userName,
+  .userProfileBtn > .navIcon {
+    display: none;
   }
 
   .signInText {

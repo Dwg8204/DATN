@@ -2,6 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AudioLines, BookOpen, ChevronDown, Headphones, Home, Languages, Mic, PenLine, User, LogOut } from 'lucide-react';
 import styles from './Header.module.css';
 import { useAuth } from '../../context/AuthContext';
+import UserNotifications from './UserNotifications';
 
 const navItems = [
   {
@@ -67,6 +68,11 @@ const navItems = [
     MobileIcon: AudioLines,
     to: '/dictation',
     icon: null,
+    dropdown: [
+      { label: 'Dictation Practice', to: '/dictation' },
+      { label: 'Flashcard', to: '/dictation?mode=flashcard' },
+      { label: 'Vocabulary Notebook', to: '/dictation?mode=notebook' },
+    ],
   },
 ];
 
@@ -111,29 +117,32 @@ export default function Header() {
           </div>
         ))}
       </nav>
-      {isAuthenticated ? (
-        <div className={styles.userMenuContainer}>
-          <div className={styles.userProfileBtn}>
-            <img src={user?.avatar || 'https://placehold.co/32x32'} alt="User" className={styles.userAvatar} />
-            <span className={styles.userName}>{user?.name}</span>
-            <ChevronDown className={styles.navIcon} aria-hidden="true" />
+      <div className={styles.headerActions}>
+        <UserNotifications />
+        {isAuthenticated ? (
+          <div className={styles.userMenuContainer}>
+            <div className={styles.userProfileBtn}>
+              <img src={user?.avatar || 'https://placehold.co/32x32'} alt="User" className={styles.userAvatar} />
+              <span className={styles.userName}>{user?.name}</span>
+              <ChevronDown className={styles.navIcon} aria-hidden="true" />
+            </div>
+            <div className={styles.userDropdown}>
+              <button className={styles.dropdownItem} onClick={() => navigate('/profile')}>
+                <User size={16} style={{ marginRight: '8px' }} />
+                My Profile
+              </button>
+              <button className={styles.dropdownItem} onClick={() => { logout(); navigate('/'); }}>
+                <LogOut size={16} style={{ marginRight: '8px' }} />
+                Log out
+              </button>
+            </div>
           </div>
-          <div className={styles.userDropdown}>
-            <button className={styles.dropdownItem} onClick={() => navigate('/profile')}>
-              <User size={16} style={{ marginRight: '8px' }} />
-              My Profile
-            </button>
-            <button className={styles.dropdownItem} onClick={() => { logout(); navigate('/'); }}>
-              <LogOut size={16} style={{ marginRight: '8px' }} />
-              Log out
-            </button>
-          </div>
-        </div>
-      ) : (
-        <button className={styles.signInBtn} onClick={() => navigate('/login')}>
-          <span className={styles.signInText}>SIGN IN</span>
-        </button>
-      )}
+        ) : (
+          <button className={styles.signInBtn} onClick={() => navigate('/login')}>
+            <span className={styles.signInText}>SIGN IN</span>
+          </button>
+        )}
+      </div>
       <nav className={styles.mobileNav} aria-label="Mobile navigation">
         <NavLink to="/" className={({ isActive }) => `${styles.mobileNavItem} ${isActive ? styles.mobileNavItemActive : ''}`}>
           <Home className={styles.mobileNavIcon} aria-hidden="true" />

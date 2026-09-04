@@ -17,6 +17,7 @@ const ReadingBuilderLayout = lazy(() => import('./reading/context/ReadingBuilder
 const ReadingTestDetailsPage = lazy(() => import('./reading/ReadingTestDetailsPage'));
 const ReadingPartEditorPage = lazy(() => import('./reading/ReadingPartEditorPage'));
 const ReadingTestPreviewPage = lazy(() => import('./reading/ReadingTestPreviewPage'));
+const NotificationPage = lazy(() => import('./notifications/NotificationPage'));
 const load = (element) => <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>{element}</Suspense>;
 
 export const adminRoutes = [
@@ -36,7 +37,7 @@ export const adminRoutes = [
       { path: 'tests/grammar/:testId/preview', element: load(<GrammarTestPreviewPage />) },
       { path: 'users', element: <AdminPlaceholderPage title="User Management" /> },
       { path: 'feedback', element: <AdminPlaceholderPage title="Feedback" /> },
-      { path: 'notifications', element: <AdminPlaceholderPage title="Notification" /> },
+      { path: 'notifications', element: load(<NotificationPage />) },
       {
         path: 'tests/new/writing',
         element: load(<WritingBuilderLayout />),

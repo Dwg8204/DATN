@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, BrainCircuit, LayoutGrid, List, BookOpen } from 'lucide-react';
 import { FlashcardSkeleton } from '../../../components/common/SkeletonLoaders';
 
 const FlashcardPage = () => {
-  const location = useLocation();
-  const isDictation = location.pathname.startsWith('/dictation');
+  const navigate = useNavigate();
   
   const [vocabData, setVocabData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState(isDictation ? 'list' : 'flashcard'); // 'flashcard' or 'list'
+  const [viewMode, setViewMode] = useState('flashcard'); // 'flashcard' or 'list'
   const [cardMode, setCardMode] = useState('flashcard'); // 'flashcard' or 'nghia'
   const [filter, setFilter] = useState('all'); // 'all', 1, 2, 3
   
@@ -99,7 +98,7 @@ const FlashcardPage = () => {
           {/* Left: Breadcrumb title */}
           <div className="flex min-w-0 items-center overflow-x-auto whitespace-nowrap">
             <button
-              onClick={() => { setViewMode('list'); }}
+              onClick={() => navigate('/dictation')}
               className={`text-base sm:text-xl font-bold transition-colors mr-1 sm:mr-2 ${
                 viewMode === 'list' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-700'
               }`}
