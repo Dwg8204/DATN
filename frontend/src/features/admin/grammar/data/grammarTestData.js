@@ -3,7 +3,7 @@ const grammarQuestions = Array.from({ length: 25 }, (_, index) => ({ id: index +
 const vocabularySets = Array.from({ length: 5 }, (_, setIndex) => ({ setId: setIndex + 1, instruction: 'Select a word from the answer bank that has the same or a very similar meaning to each word.', targetWords: Array.from({ length: 5 }, (_, index) => ({ id: 26 + setIndex * 5 + index, word: '', correctAnswer: letters[index] })), options: letters.map((label) => ({ label, text: '' })) }));
 
 export function createGrammarTestDraft(mode = 'full') {
-  return { id: null, mode, details: { title: '', source: 'AptiMate Practice Test', pictureUrl: '' }, parts: { 1: { instruction: 'Choose the correct letter, A, B or C.', questions: structuredClone(grammarQuestions) }, 2: { sets: structuredClone(vocabularySets) } } };
+  return { id: null, mode, details: { title: '', pictureUrl: '' }, parts: { 1: { instruction: 'Choose the correct letter, A, B or C.', questions: structuredClone(grammarQuestions) }, 2: { sets: structuredClone(vocabularySets) } } };
 }
 
 export function normalizeGrammarTest(test) {

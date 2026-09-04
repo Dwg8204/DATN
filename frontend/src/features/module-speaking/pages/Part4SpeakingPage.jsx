@@ -4,10 +4,8 @@ import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MockAudioRecorder from '../../../components/shared/MockAudioRecorder/MockAudioRecorder';
-import { PART4_QUESTIONS } from '../data/part4SpeakingMockData';
+import { getSpeakingTestParts } from '../services/speakingTestRepository';
 import { saveSpeakingPartAnswers } from '../utils/speakingSessionStorage';
-import { resizeImage } from '../../../utils/resizeImage';
-import picture3 from '../assets/picture3.webp';
 import styles from './Part4SpeakingPage.module.css';
 
 const INITIAL_DURATION = 10; // 10 seconds
@@ -19,6 +17,9 @@ export default function Part4SpeakingPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  const partData = getSpeakingTestParts(testId).part4;
+  const PART4_QUESTIONS = partData.questions;
+  const picture3 = partData.imageUrl;
 
   const [answers, setAnswers] = useState({});
   const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -34,38 +35,6 @@ export default function Part4SpeakingPage() {
   const [isFinished, setIsFinished] = useState(false);
 
   const timerRef = useRef(null);
-  const imageSectionRef = useRef(null);
-  
-  const [resizedPictureUrl, setResizedPictureUrl] = useState(picture3);
-
-  useEffect(() => {
-    let isMounted = true;
-    
-    const handleResizeImg = async () => {
-      if (!imageSectionRef.current) return;
-      const { offsetWidth, offsetHeight } = imageSectionRef.current;
-      if (offsetWidth === 0 || offsetHeight === 0) return;
-      
-      try {
-        const blob = await resizeImage(picture3, offsetWidth, offsetHeight);
-        if (isMounted) {
-          setResizedPictureUrl(URL.createObjectURL(blob));
-        }
-      } catch (err) {
-        console.error("Failed to resize image:", err);
-      }
-    };
-
-    const timer = setTimeout(handleResizeImg, 100);
-    window.addEventListener('resize', handleResizeImg);
-    
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-      window.removeEventListener('resize', handleResizeImg);
-    };
-  }, []);
-
   useEffect(() => {
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
@@ -153,6 +122,7 @@ export default function Part4SpeakingPage() {
           {/* Left column: question + picture */}
           <div className={styles.leftCol}>
             <div className={styles.questionCard}>
+              <strong>{partData.topic}</strong>
               {PART4_QUESTIONS.map((q, idx) => (
                 <div key={q.id} className={styles.questionHeader}>
                   <div className={styles.questionNumberBox}>
@@ -163,8 +133,8 @@ export default function Part4SpeakingPage() {
               ))}
             </div>
             
-            <div className={styles.imageSection} ref={imageSectionRef}>
-              <img src={resizedPictureUrl} alt="Reference" className={styles.pictureImg} />
+            <div className={styles.imageSection}>
+              <img src={picture3} alt="Reference" className={styles.pictureImg} />
             </div>
           </div>
 

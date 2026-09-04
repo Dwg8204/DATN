@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
 import { getCompletedListeningTests } from '../utils/listeningSessionStorage';
 import styles from './ListeningTestListPage.module.css';
+import { getAdminListeningList } from '../services/listeningTestRepository';
 
 const TABS = [
   { id: 'part1', label: 'Part 1' },
@@ -54,9 +55,14 @@ export default function ListeningTestListPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('part1');
   const [completedTests, setCompletedTests] = useState({});
+  const [adminTests, setAdminTests] = useState(getAdminListeningList);
 
   useEffect(() => {
     setCompletedTests(getCompletedListeningTests());
+    const refresh = () => setAdminTests(getAdminListeningList());
+    window.addEventListener('listening-tests-updated', refresh);
+    window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener('listening-tests-updated', refresh); window.removeEventListener('storage', refresh); };
   }, []);
 
   const handleDoTestPart = (testId, partNum) => {
@@ -73,7 +79,7 @@ export default function ListeningTestListPage() {
     navigate(`/listening/detail-result?testId=${test.id}&isFull=${isFull}${!isFull ? `&part=${partNum}` : ''}`);
   };
 
-  const filteredTests = MOCK_TESTS.filter(test => test.tabId === activeTab);
+  const filteredTests = [...adminTests, ...MOCK_TESTS].filter(test => test.tabId === activeTab);
 
   const testsToRender = filteredTests.map(test => {
     const comp = completedTests[test.id];
@@ -149,7 +155,7 @@ export default function ListeningTestListPage() {
                       <div className={styles.cardTitle}>{test.title}</div>
                       <div className={styles.cardInfoRow}>
                         <div className={styles.cardImageWrapper}>
-                          <img className={styles.cardImage} src="https://placehold.co/157x79" alt="Thumbnail" />
+                          <img className={styles.cardImage} src={test.thumbnail || "https://placehold.co/157x79"} alt="Thumbnail" />
                         </div>
                         {test.status === 'Completed' ? (
                           <div className={styles.cardDetails}>

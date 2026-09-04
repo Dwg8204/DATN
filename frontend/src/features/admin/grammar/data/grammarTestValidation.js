@@ -6,12 +6,9 @@ const LETTERS = 'ABCDEFGHIJ'.split('');
 export function validateGrammarDetails(details = {}) {
   const errors = {};
   const title = text(details.title);
-  const source = text(details.source);
   if (!title) errors.title = 'Test title is required.';
   else if (title.length < 3) errors.title = 'Test title must contain at least 3 characters.';
   else if (title.length > 120) errors.title = 'Test title cannot exceed 120 characters.';
-  if (!source) errors.source = 'Source is required.';
-  else if (source.length > 120) errors.source = 'Source cannot exceed 120 characters.';
   return errors;
 }
 

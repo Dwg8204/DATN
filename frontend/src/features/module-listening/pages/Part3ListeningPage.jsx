@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { savePartAnswers } from '../utils/listeningSessionStorage';
-import { PART3_DATA } from '../data/part3MockData';
+import { getListeningTestParts } from '../services/listeningTestRepository';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import InstructionBlock from '../../../components/common/InstructionBlock';
@@ -14,6 +14,7 @@ export default function Part3ListeningPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  const { part3: partData } = getListeningTestParts(testId);
 
   const [answers, setAnswers] = useState(() => {
     const allAnswers = JSON.parse(sessionStorage.getItem('listening_p3_answers') || '{}');
@@ -52,7 +53,7 @@ export default function Part3ListeningPage() {
   const submitLabel = isFullTest ? 'Next Part' : 'Submit';
 
   // Treat Part 3 as a single question (ID 15) in the footer.
-  const isAnswered = PART3_DATA.statements.every((stmt) => answers[stmt.id]);
+  const isAnswered = partData.statements.every((stmt) => answers[stmt.id]);
 
   return (
     <div className={styles.page}>
@@ -62,17 +63,17 @@ export default function Part3ListeningPage() {
           <div className={styles.skillTitle}>Listening Test</div>
         </div>
 
-        <InstructionBlock title={`Question ${PART3_DATA.id}`}>
-          {PART3_DATA.context}
+        <InstructionBlock title={`Question ${partData.id}`}>
+          {partData.context}
         </InstructionBlock>
 
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
             <div className={styles.questionItem}>
-              <div className={styles.questionText}>{PART3_DATA.subTitle}</div>
+              <div className={styles.questionText}>{partData.subTitle}</div>
 
               <div className={styles.matchingList}>
-                {PART3_DATA.statements.map((stmt) => {
+                {partData.statements.map((stmt) => {
                   const selectedOption = answers[stmt.id];
 
                   return (
@@ -85,7 +86,7 @@ export default function Part3ListeningPage() {
                           onChange={(event) => handleOptionSelect(stmt.id, event.target.value)}
                           placeholder="Select opinion"
                           ariaLabel={`Answer for statement ${stmt.id}`}
-                          options={PART3_DATA.options.map((opt, i) => ({ value: opt, label: `${String.fromCharCode(65 + i)}. ${opt}` }))}
+                          options={partData.options.map((opt, i) => ({ value: opt, label: `${String.fromCharCode(65 + i)}. ${opt}` }))}
                         />
                       </div>
                     </div>
@@ -96,7 +97,7 @@ export default function Part3ListeningPage() {
           </div>
 
           <div className={styles.audioSection}>
-            <AudioPlayer src={PART3_DATA.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
+            <AudioPlayer src={partData.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
           </div>
         </div>
       </div>

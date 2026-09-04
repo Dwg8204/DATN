@@ -20,7 +20,6 @@ export function createReadingDraft(mode = 'full') {
     mode,
     details: {
       title: '',
-      source: 'AptiMate Practice Test',
       pictureUrl: ''
     },
     part1: {

@@ -4,20 +4,21 @@ import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MockAudioRecorder from '../../../components/shared/MockAudioRecorder/MockAudioRecorder';
-import { PART2_QUESTIONS } from '../data/part2SpeakingMockData';
+import { getSpeakingTestParts } from '../services/speakingTestRepository';
 import { saveSpeakingPartAnswers } from '../utils/speakingSessionStorage';
-import { resizeImage } from '../../../utils/resizeImage';
-import picture from '../assets/picture.webp';
 import styles from './Part2SpeakingPage.module.css';
 
 const QUESTION_VISIBLE_DURATION = 10000;
-const MAX_RECORD_TIME = 30;
+const MAX_RECORD_TIME = 45;
 
 export default function Part2SpeakingPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  const partData = getSpeakingTestParts(testId).part2;
+  const PART2_QUESTIONS = partData.questions;
+  const picture = partData.imageUrl;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState({});
@@ -34,38 +35,6 @@ export default function Part2SpeakingPage() {
   const timerRef = useRef(null);
   const hideQuestionRef = useRef(null);
   const countdownRef = useRef(null);
-  const imageSectionRef = useRef(null);
-
-  const [resizedPictureUrl, setResizedPictureUrl] = useState(picture);
-
-  useEffect(() => {
-    let isMounted = true;
-    
-    const handleResizeImg = async () => {
-      if (!imageSectionRef.current) return;
-      const { offsetWidth, offsetHeight } = imageSectionRef.current;
-      if (offsetWidth === 0 || offsetHeight === 0) return;
-      
-      try {
-        const blob = await resizeImage(picture, offsetWidth, offsetHeight);
-        if (isMounted) {
-          setResizedPictureUrl(URL.createObjectURL(blob));
-        }
-      } catch (err) {
-        console.error("Failed to resize image:", err);
-      }
-    };
-
-    const timer = setTimeout(handleResizeImg, 100);
-    window.addEventListener('resize', handleResizeImg);
-    
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-      window.removeEventListener('resize', handleResizeImg);
-    };
-  }, []);
-
   const totalPages = PART2_QUESTIONS.length;
   const currentQuestion = PART2_QUESTIONS[currentPage - 1];
 
@@ -175,7 +144,7 @@ export default function Part2SpeakingPage() {
 
         <InstructionBlock title={`Question ${currentPage} of ${totalPages}`}>
           In this part, I'm going to ask you to describe a picture.
-          You will have 30 seconds to reply to each question. Begin speaking when you are ready.
+          You will have 45 seconds to reply to each question. Begin speaking when you are ready.
         </InstructionBlock>
 
         <div className={styles.mainArea}>
@@ -195,8 +164,8 @@ export default function Part2SpeakingPage() {
                 )}
               </div>
             </div>
-            <div className={styles.imageSection} ref={imageSectionRef}>
-              <img src={resizedPictureUrl} alt="Reference" className={styles.pictureImg} />
+            <div className={styles.imageSection}>
+              <img src={picture} alt="Reference" className={styles.pictureImg} />
             </div>
           </div>
 

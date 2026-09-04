@@ -1,0 +1,8 @@
+import { useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { AdminToast } from '../components/AdminFeedback';
+import SpeakingAnswerPreview from './components/SpeakingAnswerPreview';
+import { SPEAKING_PARTS } from './data/speakingTestModel';
+import { getStoredSpeakingTest } from './data/speakingTestStorage';
+import styles from '../reading/components/ReadingEditor.module.css';
+export default function SpeakingTestPreviewPage(){const{testId}=useParams();const navigate=useNavigate();const location=useLocation();const[test]=useState(()=>getStoredSpeakingTest(testId));const parts=SPEAKING_PARTS.filter(part=>test&&(test.mode==='full'||test.mode===`part${part.number}`));const[activePart,setActivePart]=useState(parts[0]?.number||1);if(!test)return<p>Test not found.</p>;return <main className={styles.page}><AdminToast message={location.state?.toast} onClose={()=>navigate(location.pathname,{replace:true,state:{}})}/><div className={styles.actions}><button onClick={()=>navigate('/admin/tests')}>Back to Test Management</button><button onClick={()=>navigate(`/admin/tests/speaking/${test.id}/edit`)}>Edit test</button></div><header className={styles.summary}><h2>{test.title}</h2><p>Speaking · Candidate-view preview · Fixed Aptis response times are shown with each task.</p></header><nav className={styles.previewTabs}>{parts.map(part=><button aria-pressed={activePart===part.number} key={part.number} onClick={()=>setActivePart(part.number)}>Part {part.number} · {part.title}</button>)}</nav><SpeakingAnswerPreview test={test} part={activePart}/></main>}

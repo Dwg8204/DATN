@@ -22,7 +22,7 @@ export default function ReadingTestPreviewPage() {
       <button onClick={() => navigate(`/admin/tests/reading/${test.id}/edit`)}>Edit test</button>
     </div>
     <header className={styles.summary}>
-      <h2>{test.title}</h2><p>{test.details.source}</p>
+      <h2>{test.title}</h2>
       <p>Reading · Answer preview · Correct answers are highlighted in green.</p>
     </header>
     <nav className={styles.previewTabs} aria-label="Preview parts">
