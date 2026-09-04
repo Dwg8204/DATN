@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MOCK_SPEAKING_RESULT } from '../data/speakingResultMockData';
+import { saveHistoryEntry } from '../../../utils/historyStorage';
 import styles from './SpeakingResultPage.module.css';
 
 function getStatColor(percentage) {
@@ -15,6 +16,7 @@ export default function SpeakingResultPage() {
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
   const partParam = searchParams.get('part'); // e.g. "1", "2"
+  const historyIdParam = searchParams.get('historyId');
 
   // Use mock data
   const result = MOCK_SPEAKING_RESULT;
@@ -25,6 +27,34 @@ export default function SpeakingResultPage() {
   const [activeFeedbackTab, setActiveFeedbackTab] = useState('grammar'); // 'grammar' or 'vocab'
 
   const currentPartData = result.parts[activePart];
+
+  const historySaved = useRef(false);
+
+  useEffect(() => {
+    if (historyIdParam) return;
+    if (historySaved.current) return;
+    historySaved.current = true;
+    
+    const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    saveHistoryEntry({
+      id: newHistoryId,
+      skill: 'speaking',
+      testId: String(testId),
+      testName: `Aptis Speaking Test ${testId}`,
+      mode: isFullTest ? 'full' : `part${activePart}`,
+      submittedAt: new Date().toISOString(),
+      timeSpent: '00:15:00', // Mock time
+      cefrLevel: result.cefrLevel,
+      criteria: [
+        { label: 'Grammar & Vocabulary', score: result.overallScore.grammar },
+        { label: 'Pronunciation', score: result.overallScore.pronunciation },
+        { label: 'Fluency', score: result.overallScore.fluency },
+        { label: 'Task Fulfillment', score: result.overallScore.taskFulfillment },
+      ],
+      reviewUrl: `/speaking/result?testId=${testId}&isFull=${isFullTest}${!isFullTest ? `&part=${activePart}` : ''}&historyId=${newHistoryId}`
+    });
+  }, [testId, isFullTest, activePart, result, historyIdParam]);
 
   const handleTryAgain = () => {
     if (isFullTest) {

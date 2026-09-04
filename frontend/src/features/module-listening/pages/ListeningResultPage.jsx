@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getAllAnswers, getTestMeta, clearListeningSession, saveListeningResult } from '../utils/listeningSessionStorage';
 import { getListeningTestParts } from '../services/listeningTestRepository';
+import { saveHistoryEntry } from '../../../utils/historyStorage';
 import styles from './ListeningResultPage.module.css';
 
 function getCefrLevel(percentage) {
@@ -39,19 +40,37 @@ export default function ListeningResultPage() {
   const navigate = useNavigate();
   const isFullTest = searchParams.get('isFull') === 'true';
   const partParam = searchParams.get('part');
+  const historyIdParam = searchParams.get('historyId');
+  const testIdParam = searchParams.get('testId');
+  const historySaved = useRef(false);
 
   const [results, setResults] = useState(null);
 
   useEffect(() => {
-    const allAnswers = getAllAnswers();
+    let allAnswers;
+    let timeSpent = 0;
     const { startTime, testId } = getTestMeta();
-    const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = getListeningTestParts(testId);
-    const timeSpent = startTime ? Date.now() - startTime : 0;
+    const actualTestId = testIdParam || testId || '1';
+    const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = getListeningTestParts(actualTestId);
+
+    if (historyIdParam) {
+      const stored = localStorage.getItem(`history_data_${historyIdParam}`);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        allAnswers = parsed.allAnswers;
+        timeSpent = parsed.timeSpent;
+      }
+    }
+
+    if (!allAnswers) {
+      allAnswers = getAllAnswers();
+      timeSpent = startTime ? Date.now() - startTime : 0;
+    }
 
     // Process Part 1 (13 questions)
     // NOTE: sessionStorage JSON.parse returns string keys, but q.id is a number.
     // We must cast to Number when looking up: allAnswers.part1[q.id] → use String(q.id) as key.
-    const p1Raw = allAnswers.part1; // e.g. { "1": 0, "2": 2, ... }
+    const p1Raw = allAnswers.part1 || allAnswers.p1Raw || {}; // e.g. { "1": 0, "2": 2, ... }
     const part1Results = PART1_QUESTIONS.map(q => {
       const userAnswerIdx = p1Raw[String(q.id)]; // cast to string key
       const isSkipped = userAnswerIdx === undefined || userAnswerIdx === null;
@@ -62,7 +81,7 @@ export default function ListeningResultPage() {
 
     // Process Part 2 (4 speakers -> 4 answers)
     // answers saved as { "0": "now enjoys science", "1": "...", ... }
-    const p2Raw = allAnswers.part2;
+    const p2Raw = allAnswers.part2 || allAnswers.p2Raw || {};
     const part2Results = PART2_DATA.speakers.map((speaker, idx) => {
       const userAnswer = p2Raw[String(idx)];
       const correctAnswer = PART2_DATA.answers[idx];
@@ -72,7 +91,7 @@ export default function ListeningResultPage() {
 
     // Process Part 3 (4 statements -> 4 answers)
     // answers saved as { "15a": "Both", "15b": "Man", ... } — keys are already strings, OK
-    const p3Raw = allAnswers.part3;
+    const p3Raw = allAnswers.part3 || allAnswers.p3Raw || {};
     const part3Results = PART3_DATA.statements.map(stmt => {
       const userAnswer = p3Raw[stmt.id];
       const correctAnswer = PART3_DATA.answers[stmt.id];
@@ -82,7 +101,7 @@ export default function ListeningResultPage() {
 
     // Process Part 4 (2 questions)
     // answers saved as { "16": 0, "17": 1, ... }
-    const p4Raw = allAnswers.part4;
+    const p4Raw = allAnswers.part4 || allAnswers.p4Raw || {};
     const part4Results = PART4_QUESTIONS.flatMap(mainQ =>
       mainQ.subQuestions.map(sq => {
         const userAnswerIdx = p4Raw[String(sq.id)];
@@ -140,16 +159,47 @@ export default function ListeningResultPage() {
 
     setResults(resultData);
 
-    if (testId) {
-      saveListeningResult(testId, isFullTest, partParam, {
+    if (!historyIdParam) {
+      saveListeningResult(actualTestId, isFullTest, partParam, {
         accuracy: percentage,
         cefrLevel,
         timeString: formatTime(timeSpent),
         allAnswers: { p1Raw, p2Raw, p3Raw, p4Raw },
       });
+
+      if (!historySaved.current) {
+        historySaved.current = true;
+        const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+        localStorage.setItem(`history_data_${newHistoryId}`, JSON.stringify({
+          allAnswers: { p1Raw, p2Raw, p3Raw, p4Raw },
+          timeSpent: timeSpent
+        }));
+
+        saveHistoryEntry({
+          id: newHistoryId,
+          skill: 'listening',
+          testId: String(actualTestId),
+          testName: `Aptis Listening Test ${actualTestId}`,
+          mode: isFullTest ? 'full' : `part${partParam}`,
+          submittedAt: new Date().toISOString(),
+          timeSpent: formatTime(timeSpent),
+          correct: correctCount,
+          wrong: wrongCount,
+          skipped: skipCount,
+          total: totalQuestions,
+          partScores: [
+            isFullTest || partParam === '1' ? { label: 'Part 1', correct: part1Results.filter(r => r.isCorrect).length, total: part1Results.length } : null,
+            isFullTest || partParam === '2' ? { label: 'Part 2', correct: part2Results.filter(r => r.isCorrect).length, total: part2Results.length } : null,
+            isFullTest || partParam === '3' ? { label: 'Part 3', correct: part3Results.filter(r => r.isCorrect).length, total: part3Results.length } : null,
+            isFullTest || partParam === '4' ? { label: 'Part 4', correct: part4Results.filter(r => r.isCorrect).length, total: part4Results.length } : null,
+          ],
+          reviewUrl: `/listening/result?testId=${actualTestId}&isFull=${isFullTest}${partParam ? `&part=${partParam}` : ''}&historyId=${newHistoryId}`
+        });
+      }
     }
 
-  }, [isFullTest, partParam]);
+  }, [isFullTest, partParam, historyIdParam, testIdParam]);
 
   if (!results) return null;
 
