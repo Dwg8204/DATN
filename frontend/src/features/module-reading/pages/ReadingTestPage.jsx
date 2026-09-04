@@ -12,6 +12,7 @@ import Part3OpinionMatch from '../components/test-engine/parts/Part3OpinionMatch
 import Part4MatchHeading from '../components/test-engine/parts/Part4MatchHeading';
 
 import styles from './ReadingTestPage.module.css';
+import {loadReadingTest} from '../services/readingTestRepository';
 
 export default function ReadingTestPage() {
   const { testId } = useParams();
@@ -30,11 +31,12 @@ export default function ReadingTestPage() {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     const fetchTestData = async () => {
       try {
-        const data = await import('../services/mockData/testData.json');
-        setTimeout(() => {
-          setTestData(data.default || data);
+        const data = await loadReadingTest(testId);
+        if (cancelled) return;
+          setTestData(data);
           setIsStarted(true);
           
           let initialPart = 1;
@@ -45,7 +47,6 @@ export default function ReadingTestPage() {
           
           setCurrentPart(initialPart);
           setLoading(false);
-        }, 400);
       } catch (error) {
         console.error("Failed to load test data", error);
         setLoading(false);
@@ -55,6 +56,7 @@ export default function ReadingTestPage() {
     fetchTestData();
 
     return () => {
+      cancelled = true;
       setIsStarted(false);
     };
   }, [testId, setTestData, setIsStarted, setCurrentPart, mode]);
@@ -81,6 +83,7 @@ export default function ReadingTestPage() {
     const timeLeft = getReadingRemainingSeconds();
 
     const sessionData = {
+      testSnapshot: testData,
       testId: testId || 'apt-r-001',
       answers: answers,
       timeSpent: duration - timeLeft,

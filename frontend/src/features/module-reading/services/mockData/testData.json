@@ -53,8 +53,7 @@
       { "id": "h4", "text": "The Ongoing Nuclear Debate", "correctParagraph": "para4" },
       { "id": "h5", "text": "How Households Can Save Energy", "correctParagraph": "para5" },
       { "id": "h6", "text": "The Rise of Electric Transport", "correctParagraph": "para6" },
-      { "id": "h7", "text": "Experimental Tech of the Future", "correctParagraph": "para7" },
-      { "id": "h8", "text": "The History of Steam Power" }
+      { "id": "h7", "text": "Experimental Tech of the Future", "correctParagraph": "para7" }
     ]
   }
 }

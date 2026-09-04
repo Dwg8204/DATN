@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { calculateScore } from '../services/gradingService';
 import styles from './ReadingResultPage.module.css';
+import {loadReadingTest} from '../services/readingTestRepository';
 
 function formatTestingTime(seconds) {
   if (seconds === undefined || seconds === null) return '00:32:15';
@@ -59,8 +60,7 @@ const ReadingResultPage = () => {
 
         const sessionData = JSON.parse(sessionDataString);
         
-        const testDataModule = await import('../services/mockData/testData.json');
-        const testData = testDataModule.default || testDataModule;
+        const testData = sessionData.testSnapshot || await loadReadingTest(sessionData.testId);
 
         const gradedResults = calculateScore(sessionData.answers, testData, sessionData.mode || 'full');
         setResults({ 
