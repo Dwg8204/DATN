@@ -33,7 +33,7 @@ export function saveStoredWritingTest(test) {
     id: test.id || `writing-${Date.now()}`,
     name: test.details?.title || 'Untitled Writing Test',
     component: 'Writing',
-    section: normalizedTest.mode === 'full' ? 'Full Writing' : `Part ${normalizedTest.mode.replace('part', '')}`,
+    section: normalizedTest.mode === 'full' ? 'Full Test' : `Part ${normalizedTest.mode.replace('part', '')}`,
     status: 'Done',
     dateAdded: test.dateAdded || new Date().toISOString(),
     attempts: test.attempts || 0,

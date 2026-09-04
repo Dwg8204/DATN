@@ -3,6 +3,7 @@ import { ChevronRight, Edit3, Eye, House, Search, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import StatusBadge from '../components/StatusBadge';
 import { AdminConfirmDialog, AdminToast } from '../components/AdminFeedback';
+import AdminBreadcrumb from '../components/AdminBreadcrumb';
 import { ADMIN_TESTS } from '../data/adminMockData';
 import { deleteStoredWritingTest, getStoredWritingTests } from '../writing/data/writingTestStorage';
 import { deleteStoredGrammarTest, getStoredGrammarTests } from '../grammar/data/grammarTestStorage';
@@ -13,10 +14,10 @@ import { filterTests, formatAdminDate, paginate } from '../utils/testManagerHelp
 import styles from './TestManagerPage.module.css';
 import './TestManagerResponsive.css';
 
-const writingSections = ['Part 1', 'Part 2', 'Part 3', 'Part 4', 'Full Writing'];
+const writingSections = ['Part 1', 'Part 2', 'Part 3', 'Part 4', 'Full Test'];
 const grammarSections = ['Part 1', 'Part 2', 'Full Test'];
-const components = ['Full', 'Reading', 'Listening', 'Writing', 'Grammar & Vocab', 'Speaking'];
-const sectionToMode = (section) => section === 'Full Writing' || section === 'Full Test' ? 'full' : `part${section.match(/\d/)?.[0] || '1'}`;
+const components = ['Reading', 'Listening', 'Writing', 'Grammar & Vocab', 'Speaking'];
+const sectionToMode = (section) => section === 'Full Test' ? 'full' : `part${section.match(/\d/)?.[0] || '1'}`;
 
 function useMobileManager() {
   const [mobile, setMobile] = useState(() => window.matchMedia('(max-width: 700px)').matches);
@@ -40,7 +41,7 @@ export default function TestManagerPage() {
   useEffect(() => { const refresh=()=>setStoredReadingTests(getStoredReadingTests());window.addEventListener('reading-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('reading-tests-updated',refresh);window.removeEventListener('storage',refresh)}; }, []);
   useEffect(() => { const refresh=()=>setStoredListeningTests(getStoredListeningTests());window.addEventListener('listening-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('listening-tests-updated',refresh);window.removeEventListener('storage',refresh)}; }, []);
   useEffect(() => { const refresh=()=>setStoredSpeakingTests(getStoredSpeakingTests());window.addEventListener('speaking-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('speaking-tests-updated',refresh);window.removeEventListener('storage',refresh)}; }, []);
-  const [filters, setFilters] = useState({ query: '', component: 'Writing', section: 'Full Writing', status: 'All' });
+  const [filters, setFilters] = useState({ query: '', component: components[0], section: 'Full Test', status: 'All' });
   const [page, setPage] = useState(1);
   const [confirmTest, setConfirmTest] = useState(null);
   const [toast, setToast] = useState('');
@@ -60,7 +61,7 @@ export default function TestManagerPage() {
   const pageSize = isMobile ? 5 : 10;
   const pagination = paginate(filtered, page, pageSize);
   const sections = filters.component === 'Grammar & Vocab' ? grammarSections : ['Reading','Listening','Speaking'].includes(filters.component) ? ['Part 1','Part 2','Part 3','Part 4','Full Test'] : writingSections;
-  const setFilter = (name, value) => { setFilters((current) => ({ ...current, [name]: value, ...(name === 'component' ? { section: ['Grammar & Vocab','Reading','Listening','Speaking'].includes(value) ? 'Full Test' : value === 'Writing' ? 'Full Writing' : 'All' } : {}) })); setPage(1); };
+  const setFilter = (name, value) => { setFilters((current) => ({ ...current, [name]: value, ...(name === 'component' ? { section: 'Full Test' } : {}) })); setPage(1); };
   const addTest = () => navigate(`/admin/tests/new/${filters.component === 'Reading' ? 'reading' : filters.component === 'Listening' ? 'listening' : filters.component === 'Speaking' ? 'speaking' : filters.component === 'Grammar & Vocab' ? 'grammar' : 'writing'}?mode=${filters.section==='All'?'full':sectionToMode(filters.section)}`);
   const remove = () => {
     if (!confirmTest) return;
@@ -82,7 +83,7 @@ export default function TestManagerPage() {
   const to = Math.min(pagination.page * pageSize, filtered.length);
 
   return <div className={styles.page}><AdminToast message={toast} onClose={() => setToast('')}/><AdminConfirmDialog open={Boolean(confirmTest)} title={`Delete ${confirmTest?.component || ''} test?`} message={confirmTest ? `“${confirmTest.name}” will be permanently removed from this browser. This action cannot be undone.` : ''} onCancel={() => setConfirmTest(null)} onConfirm={remove}/>
-    <div className={styles.crumb}><b>Test Management</b><ChevronRight /><b>Admin</b></div>
+    <AdminBreadcrumb />
     <nav className={styles.components}>{components.map((component) => <button className={filters.component === component ? styles.activeComponent : ''} onClick={() => setFilter('component', component)} key={component}>{component}</button>)}</nav>
     <section className={styles.card}>
       <header>
