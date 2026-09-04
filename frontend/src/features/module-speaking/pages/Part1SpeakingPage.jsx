@@ -4,7 +4,7 @@ import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MockAudioRecorder from '../../../components/shared/MockAudioRecorder/MockAudioRecorder';
-import { PART1_QUESTIONS } from '../data/part1SpeakingMockData';
+import { getSpeakingTestParts } from '../services/speakingTestRepository';
 import { saveSpeakingPartAnswers } from '../utils/speakingSessionStorage';
 import styles from './Part1SpeakingPage.module.css';
 
@@ -16,6 +16,7 @@ export default function Part1SpeakingPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  const PART1_QUESTIONS = getSpeakingTestParts(testId).part1.questions;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState({});

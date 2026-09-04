@@ -4,11 +4,8 @@ import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MockAudioRecorder from '../../../components/shared/MockAudioRecorder/MockAudioRecorder';
-import { PART3_QUESTIONS } from '../data/part3SpeakingMockData';
+import { getSpeakingTestParts } from '../services/speakingTestRepository';
 import { saveSpeakingPartAnswers } from '../utils/speakingSessionStorage';
-import { resizeImage } from '../../../utils/resizeImage';
-import picture1 from '../assets/picture.webp';
-import picture2 from '../assets/picture2.webp';
 import styles from './Part3SpeakingPage.module.css';
 
 const QUESTION_VISIBLE_DURATION = 10000;
@@ -19,6 +16,9 @@ export default function Part3SpeakingPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  const partData = getSpeakingTestParts(testId).part3;
+  const PART3_QUESTIONS = partData.questions;
+  const [picture1, picture2] = partData.imageUrls;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState({});
@@ -35,46 +35,6 @@ export default function Part3SpeakingPage() {
   const timerRef = useRef(null);
   const hideQuestionRef = useRef(null);
   const countdownRef = useRef(null);
-  const imagesRowRef = useRef(null);
-
-  const [resizedPic1, setResizedPic1] = useState(picture1);
-  const [resizedPic2, setResizedPic2] = useState(picture2);
-
-  useEffect(() => {
-    let isMounted = true;
-    
-    const handleResizeImg = async () => {
-      if (!imagesRowRef.current) return;
-      const totalWidth = imagesRowRef.current.offsetWidth;
-      const height = imagesRowRef.current.offsetHeight;
-      if (totalWidth === 0 || height === 0) return;
-      
-      const widthPerImage = (totalWidth - 12) / 2;
-      
-      try {
-        const [blob1, blob2] = await Promise.all([
-          resizeImage(picture1, widthPerImage, height),
-          resizeImage(picture2, widthPerImage, height)
-        ]);
-        if (isMounted) {
-          setResizedPic1(URL.createObjectURL(blob1));
-          setResizedPic2(URL.createObjectURL(blob2));
-        }
-      } catch (err) {
-        console.error("Failed to resize images:", err);
-      }
-    };
-
-    const timer = setTimeout(handleResizeImg, 100);
-    window.addEventListener('resize', handleResizeImg);
-    
-    return () => {
-      isMounted = false;
-      clearTimeout(timer);
-      window.removeEventListener('resize', handleResizeImg);
-    };
-  }, []);
-
   const totalPages = PART3_QUESTIONS.length;
   const currentQuestion = PART3_QUESTIONS[currentPage - 1];
 
@@ -205,9 +165,9 @@ export default function Part3SpeakingPage() {
               </div>
             </div>
 
-            <div className={styles.imagesRow} ref={imagesRowRef}>
-              <img src={resizedPic1} alt="Reference 1" className={styles.pictureImg} />
-              <img src={resizedPic2} alt="Reference 2" className={styles.pictureImg} />
+            <div className={styles.imagesRow}>
+              <img src={picture1} alt="Reference 1" className={styles.pictureImg} />
+              <img src={picture2} alt="Reference 2" className={styles.pictureImg} />
             </div>
           </div>
 
