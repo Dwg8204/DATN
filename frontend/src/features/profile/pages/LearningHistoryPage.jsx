@@ -1,18 +1,21 @@
+import Pagination from '../../../components/common/Pagination';
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { getHistoryEntries } from '../../../utils/historyStorage';
-import { ClipboardList, Calendar, Clock, FileText, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ClipboardList, Calendar, Clock, FileText, Search } from 'lucide-react';
 import styles from './LearningHistoryPage.module.css';
+import AnswerSelect from '../../../components/common/AnswerSelect';
 
 export default function LearningHistoryPage() {
   const [history, setHistory] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
   const [sortOrder, setSortOrder] = useState('desc');
   const [skillFilter, setSkillFilter] = useState('all');
   const [partFilter, setPartFilter] = useState('all');
   const [searchInput, setSearchInput] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     setHistory(getHistoryEntries());
@@ -20,25 +23,25 @@ export default function LearningHistoryPage() {
 
   const handleSortChange = (e) => {
     setSortOrder(e.target.value);
-    setCurrentPage(1);
+    setPage(1);
   };
   const handleSkillChange = (skill) => {
     setSkillFilter(skill);
     setPartFilter('all');
     setAppliedSearch('');
     setSearchInput('');
-    setCurrentPage(1);
+    setPage(1);
   };
   const handlePartChange = (part) => {
     setPartFilter(part);
     setAppliedSearch('');
     setSearchInput('');
-    setCurrentPage(1);
+    setPage(1);
   };
 
   const handleSearch = () => {
     setAppliedSearch(searchInput);
-    setCurrentPage(1);
+    setPage(1);
   };
 
   const handleKeyDown = (e) => {
@@ -81,9 +84,7 @@ export default function LearningHistoryPage() {
       return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
 
-  const ITEMS_PER_PAGE = 10;
-  const totalPages = Math.max(1, Math.ceil(filteredHistory.length / ITEMS_PER_PAGE));
-  const currentEntries = filteredHistory.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  useEffect(() => setPage(1), [skillFilter, partFilter, sortOrder]);
 
 
 
@@ -117,10 +118,7 @@ export default function LearningHistoryPage() {
 
             <div className={styles.filterRow}>
               <span className={styles.filterLabel}>Sort by:</span>
-              <select className={styles.select} value={sortOrder} onChange={handleSortChange}>
-                <option value="desc">Newest</option>
-                <option value="asc">Oldest</option>
-              </select>
+              <AnswerSelect className={styles.select} value={sortOrder} onChange={handleSortChange} options={[{value:'desc',label:'Newest first'},{value:'asc',label:'Oldest first'}]} ariaLabel="Sort test history"/>
             </div>
 
             <div className={styles.filterRow}>
@@ -176,7 +174,7 @@ export default function LearningHistoryPage() {
             </div>
           ) : (
             <div className={styles.historyList}>
-              {currentEntries.map(entry => (
+              {filteredHistory.slice((page - 1) * pageSize, page * pageSize).map(entry => (
                 <div key={entry.id} className={styles.card}>
                   <div className={styles.cardHeader}>
                     <div>
@@ -216,25 +214,9 @@ export default function LearningHistoryPage() {
                 </div>
               ))}
 
-              <div className={styles.pagination}>
-                <button
-                  className={styles.pageBtn}
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <span className={styles.pageInfo}>{currentPage} / {totalPages}</span>
-                <button
-                  className={styles.pageBtn}
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                >
-                  <ChevronRight size={20} />
-                </button>
-              </div>
             </div>
           )}
+          <Pagination page={page} totalItems={filteredHistory.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
         </div>
       </div>
     </div>

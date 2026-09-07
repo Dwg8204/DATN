@@ -1,3 +1,4 @@
+import Pagination from '../../../components/common/Pagination';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
@@ -54,6 +55,10 @@ const MOCK_TESTS = [
 export default function SpeakingTestListPage() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('part1');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
+  const [query, setQuery] = useState('');
+  useEffect(() => setPage(1), [activeTab, query]);
   const [completedTests, setCompletedTests] = useState({});
   const [adminTests, setAdminTests] = useState(getAdminSpeakingList);
 
@@ -79,7 +84,7 @@ export default function SpeakingTestListPage() {
     navigate(`/speaking/detail-result?testId=${test.id}&isFull=${isFull}${!isFull ? `&part=${partNum}` : ''}`);
   };
 
-  const filteredTests = [...adminTests, ...MOCK_TESTS].filter(test => test.tabId === activeTab);
+  const filteredTests = [...adminTests, ...MOCK_TESTS].filter(test => test.tabId === activeTab && test.title.toLowerCase().includes(query.trim().toLowerCase()));
 
   const testsToRender = filteredTests.map(test => {
     const comp = completedTests[test.id];
@@ -134,7 +139,7 @@ export default function SpeakingTestListPage() {
                   <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <input type="text" className={styles.searchInput} placeholder="Search by test name." />
+                <input type="text" className={styles.searchInput} placeholder="Search by test name." value={query} onChange={e => setQuery(e.target.value)} />
               </div>
             </div>
             <button className={styles.searchBtn}>
@@ -149,7 +154,7 @@ export default function SpeakingTestListPage() {
                   No tests available for this part yet.
                 </div>
               ) : (
-                testsToRender.map((test) => (
+                testsToRender.slice((page - 1) * pageSize, page * pageSize).map((test) => (
                   <div key={test.id} className={styles.testCard}>
                     <div className={styles.cardTop}>
                       <div className={styles.cardTitle}>{test.title}</div>
@@ -222,6 +227,7 @@ export default function SpeakingTestListPage() {
             </div>
           </div>
 
+          <Pagination page={page} totalItems={filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper} style={{ marginTop: '32px' }}>
             <CommentSection />
           </div>

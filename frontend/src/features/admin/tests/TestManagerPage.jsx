@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ChevronRight, Edit3, Eye, House, Search, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Pagination from '../../../components/common/Pagination';
 import StatusBadge from '../components/StatusBadge';
 import { AdminConfirmDialog, AdminToast } from '../components/AdminFeedback';
 import AdminBreadcrumb from '../components/AdminBreadcrumb';
@@ -58,7 +59,7 @@ export default function TestManagerPage() {
 
   const tests = useMemo(() => [...storedTests, ...storedGrammarTests, ...storedReadingTests, ...storedListeningTests, ...storedSpeakingTests, ...ADMIN_TESTS], [storedTests, storedGrammarTests, storedReadingTests, storedListeningTests, storedSpeakingTests]);
   const filtered = useMemo(() => filterTests(tests, filters), [tests, filters]);
-  const pageSize = isMobile ? 5 : 10;
+  const [pageSize, setPageSize] = useState(() => isMobile ? 5 : 10);
   const pagination = paginate(filtered, page, pageSize);
   const sections = filters.component === 'Grammar & Vocab' ? grammarSections : ['Reading','Listening','Speaking'].includes(filters.component) ? ['Part 1','Part 2','Part 3','Part 4','Full Test'] : writingSections;
   const setFilter = (name, value) => { setFilters((current) => ({ ...current, [name]: value, ...(name === 'component' ? { section: 'Full Test' } : {}) })); setPage(1); };
@@ -93,7 +94,7 @@ export default function TestManagerPage() {
       <div className={styles.scroll}><table><thead><tr><th><input type="checkbox" /></th><th>Name</th><th>Status</th><th>Date Added</th><th>Attempt</th><th>Questions Type</th><th /></tr></thead><tbody>{pagination.items.map((test) => <tr key={test.id}><td><input type="checkbox" /></td><td>{test.name}</td><td><StatusBadge status={test.status} /></td><td>{formatAdminDate(test.dateAdded)}</td><td>{test.attempts}</td><td><span className={styles.type}>{test.questionType}</span></td><td>{actions(test)}</td></tr>)}</tbody></table></div>
       <div className="mobileTestList">{pagination.items.map((test) => <article className="mobileTestCard" key={test.id}><header><div><small>{test.section}</small><h3>{test.name}</h3></div><StatusBadge status={test.status} /></header><dl><div><dt>Date added</dt><dd>{formatAdminDate(test.dateAdded)}</dd></div><div><dt>Attempts</dt><dd>{test.attempts}</dd></div><div><dt>Type</dt><dd>{test.questionType}</dd></div></dl>{actions(test)}</article>)}</div>
       {!pagination.items.length && <p className="mobileEmptyTests">No tests found.</p>}
-      <footer><nav>{Array.from({ length: pagination.totalPages }, (_, index) => index + 1).map((number) => <button className={number === pagination.page ? styles.current : ''} key={number} onClick={() => setPage(number)}>{number}</button>)}</nav><button className={styles.next} disabled={pagination.page >= pagination.totalPages} onClick={() => setPage((current) => Math.min(pagination.totalPages, current + 1))}>Next <ChevronRight /></button></footer>
+      <Pagination page={page} totalItems={filtered.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
     </section>
   </div>;
 }
