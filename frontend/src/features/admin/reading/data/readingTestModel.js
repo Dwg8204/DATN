@@ -24,6 +24,8 @@ export function createReadingDraft(mode = 'full') {
     },
     part1: {
       passage: '',
+      passageHtml: '',
+      passageVersion: 2,
       questions: Array.from({
         length: 5
       }, (_, i) => ({

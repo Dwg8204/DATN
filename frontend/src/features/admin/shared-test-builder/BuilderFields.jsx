@@ -2,14 +2,17 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { AdminToast } from '../components/AdminFeedback';
 import { countWords, withinTextLimit } from './textLimits';
 import styles from './BuilderFields.module.css';
+import AnswerSelect from '../../../components/common/AnswerSelect';
+import RichTextEditor from './RichTextEditor';
 
 export function Field({ label, value, onChange, multiline = false, maxWords = multiline ? 500 : 50, stacked = false, ...props }) {
   const ref = useRef(null);
   const [notice, setNotice] = useState('');
+  const useRichEditor = multiline && maxWords >= 20;
 
   useLayoutEffect(() => {
     const node = ref.current;
-    if (!multiline) return undefined;
+    if (!multiline || useRichEditor || !node) return undefined;
     const resize = () => {
       node.style.height = 'auto';
       node.style.height = `${node.scrollHeight + 2}px`;
@@ -24,7 +27,7 @@ export function Field({ label, value, onChange, multiline = false, maxWords = mu
     });
     observer.observe(node);
     return () => observer.disconnect();
-  }, [value, multiline]);
+  }, [value, multiline, useRichEditor]);
 
   const change = event => {
     const next = event.target.value;
@@ -35,6 +38,8 @@ export function Field({ label, value, onChange, multiline = false, maxWords = mu
     setNotice('');
     onChange(next);
   };
+
+  if (useRichEditor) return <RichTextEditor label={label} value={value} onChange={onChange} maxWords={maxWords} minHeight={props.rows && props.rows > 5 ? 220 : 145}/>;
 
   return <label className={styles.field} style={stacked ? { gridTemplateColumns: 'minmax(0, 1fr)' } : undefined}>
     <AdminToast message={notice} type="error" onClose={() => setNotice('')} />
@@ -49,10 +54,7 @@ export function Field({ label, value, onChange, multiline = false, maxWords = mu
 export function Choice({ label, value, onChange, options, placeholder = 'Select an answer' }) {
   return <label className={styles.field}>
     <span>{label}</span>
-    <select value={value} onChange={event => onChange(event.target.value)}>
-      <option value="">{placeholder}</option>
-      {options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-    </select>
+    <AnswerSelect value={value} onChange={event => onChange(event.target.value)} options={options} placeholder={placeholder} ariaLabel={label} />
   </label>;
 }
 

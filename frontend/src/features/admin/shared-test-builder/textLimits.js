@@ -1,4 +1,6 @@
-export const countWords = value => (value || '').trim().split(/\s+/u).filter(Boolean).length;
+import { countRichTextWords, richTextToPlainText } from '../../../components/common/richText.js';
+
+export const countWords = value => countRichTextWords(value);
 
 export const withinTextLimit = (value, maxWords) =>
-  countWords(value) <= maxWords && value.length <= maxWords * 40;
+  countWords(value) <= maxWords && richTextToPlainText(value).length <= maxWords * 40;

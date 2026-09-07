@@ -1,51 +1,33 @@
-import { Card, Choice, Field } from '../components/EditorFields';
 import styles from '../components/ReadingEditor.module.css';
-import { buildPassage, getPassageSegments } from '../utils/passageSegments';
+import { useRef } from 'react';
+import AnswerOptionsEditor from '../../shared-test-builder/AnswerOptionsEditor';
+import CollapsibleGroup, { CollapsibleToolbar } from '../../shared-test-builder/CollapsibleGroup';
+import PassageComposer from '../components/PassageComposer';
 
 export default function GapFillingEditor({ value, onChange }) {
-  const segments = getPassageSegments(value.passage);
-  const updateQuestion = (index, patch) => onChange({
-    ...value,
-    questions: value.questions.map((question, questionIndex) => questionIndex === index ? { ...question, ...patch } : question),
-  });
-  const updateSegment = (index, text) => {
-    const next = segments.map((segment, segmentIndex) => segmentIndex === index ? text : segment);
-    onChange({ ...value, passage: buildPassage(next) });
+  const scopeRef = useRef(null);
+  const updateQuestion = (index, patch) => onChange({ ...value, questions: value.questions.map((question, current) => current === index ? { ...question, ...patch } : question) });
+  const createGapAnswer = (position, selectedText) => {
+    if (!selectedText) return;
+    const index = value.questions.findIndex(question => question.position === position);
+    if (index < 0) return;
+    const question = value.questions[index];
+    if (question.options.some(Boolean)) return;
+    updateQuestion(index, { options: [selectedText, '', ''], answer: selectedText });
   };
-
+  const clearGapAnswer = position => {
+    const index = value.questions.findIndex(question => question.position === position);
+    if (index >= 0) updateQuestion(index, { options: ['', '', ''], answer: '' });
+  };
   return <>
-    <div className={styles.editorHelp}>
-      <strong>Build the passage around five gaps</strong>
-      <p>Write the text in natural sections. AptiMate inserts and numbers each answer gap automatically.</p>
+    <div className={styles.editorHelp}><strong>Build one complete passage</strong><p>Format the text naturally and insert exactly five gaps. Gap numbers are maintained automatically.</p></div>
+    <PassageComposer value={value} onChange={onChange} onGapCreated={createGapAnswer} onGapRemoved={clearGapAnswer}/>
+    <h2>Answer options</h2>
+    <div ref={scopeRef}>
+      <CollapsibleToolbar scopeRef={scopeRef}/>
+      {value.questions.map((question, index) => <CollapsibleGroup key={question.id} title={`Gap ${question.position}`} summary={question.options.filter(Boolean).join(' · ') || 'Three answer options required'} status={question.options.every(Boolean) && question.answer ? 'Complete' : 'Incomplete'} defaultOpen={index === 0}>
+        <AnswerOptionsEditor options={question.options} answer={question.answer} onOptionsChange={options => updateQuestion(index, { options })} onAnswerChange={answer => updateQuestion(index, { answer })} explanation={question.explanation} onExplanationChange={explanation => updateQuestion(index, { explanation })}/>
+      </CollapsibleGroup>)}
     </div>
-    {segments.map((segment, index) => <div className={styles.passageSegment} key={index}>
-      <Field
-        label={index === 0 ? 'Opening text — before Gap 1' : index === 5 ? 'Ending text — after Gap 5' : `Text between Gap ${index} and Gap ${index + 1}`}
-        multiline
-        maxWords={150}
-        value={segment}
-        onChange={text => updateSegment(index, text)}
-      />
-      {index < 5 && <div className={styles.gapDivider}><span>Gap {index + 1}</span></div>}
-    </div>)}
-    <h2 className={styles.sectionTitle}>Answer options</h2>
-    {value.questions.map((question, index) => <Card key={question.id} title={`Gap ${index + 1}`}>
-      {question.options.map((option, optionIndex) => <Field
-        key={optionIndex}
-        label={`Option ${String.fromCharCode(65 + optionIndex)}`}
-        maxWords={50}
-        value={option}
-        onChange={text => updateQuestion(index, {
-          options: question.options.map((current, currentIndex) => currentIndex === optionIndex ? text : current),
-          answer: question.answer === option ? text : question.answer,
-        })}
-      />)}
-      <Choice
-        label="Correct answer"
-        value={question.answer}
-        onChange={answer => updateQuestion(index, { answer })}
-        options={question.options.filter(Boolean).map(text => ({ value: text, label: text }))}
-      />
-    </Card>)}
   </>;
 }
