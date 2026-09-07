@@ -7,6 +7,7 @@ import MockAudioRecorder from '../../../components/shared/MockAudioRecorder/Mock
 import { getSpeakingTestParts } from '../services/speakingTestRepository';
 import { saveSpeakingPartAnswers } from '../utils/speakingSessionStorage';
 import styles from './Part4SpeakingPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 const INITIAL_DURATION = 10; // 10 seconds
 const THINKING_DURATION = 60; // 60 seconds
@@ -128,7 +129,7 @@ export default function Part4SpeakingPage() {
                   <div className={styles.questionNumberBox}>
                     <span className={styles.questionNumber}>{idx + 1}</span>
                   </div>
-                  <div className={styles.questionText}>{q.text}</div>
+                  <RichTextContent className={styles.questionText} value={q.text}/>
                 </div>
               ))}
             </div>

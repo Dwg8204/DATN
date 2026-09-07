@@ -1,4 +1,5 @@
-const required = (value) => Boolean(String(value || '').trim());
+import { hasRichTextContent } from '../../../../components/common/richText.js';
+const required = hasRichTextContent;
 
 export function validateWritingDetails(details) {
   const errors = {};

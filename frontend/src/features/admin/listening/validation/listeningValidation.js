@@ -1,4 +1,6 @@
-const text = value => typeof value === 'string' && value.trim();
+import { validateExplanations } from '../../shared-test-builder/explanationValidation.js';
+import { richTextToPlainText } from '../../../../components/common/richText.js';
+const text = value => richTextToPlainText(value).trim();
 const normalized = value => String(value || '').trim().toLocaleLowerCase();
 const unique = values => new Set(values.map(normalized)).size === values.length;
 const validAudio = value => text(value) && /^(https?:\/\/|blob:|data:audio\/)/i.test(value.trim());
@@ -15,6 +17,8 @@ const mcqError = question => {
 };
 
 export function validateListeningPart(number, part = {}) {
+  const explanationError = validateExplanations(part);
+  if (explanationError) return [explanationError];
   if (number === 1) {
     if (!Array.isArray(part.questions) || part.questions.length !== 13) return ['Part 1 must contain exactly 13 questions.'];
     const ids = part.questions.map(question => question.id);

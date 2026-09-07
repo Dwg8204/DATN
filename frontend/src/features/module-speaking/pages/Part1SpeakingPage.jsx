@@ -7,6 +7,7 @@ import MockAudioRecorder from '../../../components/shared/MockAudioRecorder/Mock
 import { getSpeakingTestParts } from '../services/speakingTestRepository';
 import { saveSpeakingPartAnswers } from '../utils/speakingSessionStorage';
 import styles from './Part1SpeakingPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 const QUESTION_VISIBLE_DURATION = 10000; // 10 seconds
 const MAX_RECORD_TIME = 30; // seconds
@@ -160,7 +161,7 @@ export default function Part1SpeakingPage() {
               <span className={styles.questionNumber}>{currentQuestion.id}</span>
             </div>
             {showQuestionText ? (
-              <div className={styles.questionText}>{currentQuestion.text}</div>
+              <RichTextContent className={styles.questionText} value={currentQuestion.text}/>
             ) : (
               <button className={styles.showQuestionBtn} onClick={handleShowQuestion}>
                 Show question

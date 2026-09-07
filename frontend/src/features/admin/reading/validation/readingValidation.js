@@ -1,6 +1,10 @@
+import { validateExplanations } from '../../shared-test-builder/explanationValidation.js';
 import { withinTextLimit } from '../utils/textLimits.js';
-const filled = value => typeof value === 'string' && value.trim().length > 0;
+import { hasRichTextContent } from '../../../../components/common/richText.js';
+const filled = hasRichTextContent;
 export function validateReadingPart(number, part) {
+  const explanationError = validateExplanations(part);
+  if (explanationError) return [explanationError];
   const errors = [];
   const limit = (value, words, label) => {
     if (!withinTextLimit(value || '', words)) errors.push(`${label}: maximum ${words} words. Please shorten the text.`);

@@ -12,6 +12,7 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
+import RichTextContent from '../../../../../components/common/RichTextContent';
 
 const DraggableSentence = ({ id, sentence, isSelected, onSelect }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -33,7 +34,7 @@ const DraggableSentence = ({ id, sentence, isSelected, onSelect }) => {
         isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300'
       }`}
     >
-      <span className="text-sm font-medium text-gray-800 flex-1">{sentence.content}</span>
+      <RichTextContent className="text-sm font-medium text-gray-800 flex-1" value={sentence.content}/>
       <GripVertical className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" />
     </div>
   );
@@ -87,7 +88,7 @@ const DroppableGap = ({
           isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-black'
         }`}
       >
-        <span className="text-sm font-semibold text-black flex-1">{droppedSentence.content}</span>
+        <RichTextContent className="text-sm font-semibold text-black flex-1" value={droppedSentence.content}/>
       </div>
     );
   }
@@ -178,7 +179,7 @@ const Part2TextCohesion = ({ data }) => {
             <div className="flex-1 w-full space-y-2">
               {/* The opening sentence is fixed and is not a draggable answer. */}
               <div className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 min-h-[60px] w-full flex items-center shadow-inner my-3">
-                <span className="text-sm font-medium text-gray-800">{openingSentence?.content}</span>
+                <RichTextContent className="text-sm font-medium text-gray-800" value={openingSentence?.content}/>
               </div>
               
               {/* Droppable gaps */}
@@ -229,7 +230,7 @@ const Part2TextCohesion = ({ data }) => {
       <DragOverlay>
         {activeSentence ? (
           <div className="bg-white border-2 border-blue-400 shadow-xl rounded-lg p-4 flex items-center opacity-90 scale-105 cursor-grabbing min-h-[60px] w-[min(400px,calc(100vw-32px))]">
-            <span className="text-sm font-medium text-gray-900 flex-1">{activeSentence.content}</span>
+            <RichTextContent className="text-sm font-medium text-gray-900 flex-1" value={activeSentence.content}/>
             <GripVertical className="w-4 h-4 text-blue-500 ml-2 flex-shrink-0" />
           </div>
         ) : null}

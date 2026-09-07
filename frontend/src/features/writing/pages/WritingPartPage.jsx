@@ -8,6 +8,7 @@ import { WRITING_TASKS } from '../data/writingTasks';
 import { getAdminWritingTask } from '../utils/adminWritingTestAdapter';
 import { finishWritingSession, getWritingAnswers, saveWritingAnswers, startWritingSession } from '../utils/writingSessionStorage';
 import styles from './WritingPartPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 const partOrder = ['part1', 'part2', 'part3', 'part4'];
 
@@ -49,7 +50,7 @@ export default function WritingPartPage() {
             const value = answers[index] || '';
             return (
               <article className={styles.taskCard} key={question}>
-                <label htmlFor={`writing-${part}-${index}`}><span className={styles.number}>{index + 1}</span><span>{question}</span></label>
+                <label htmlFor={`writing-${part}-${index}`}><span className={styles.number}>{index + 1}</span><RichTextContent value={question}/></label>
                 {task.type === 'short' ? (
                   <input id={`writing-${part}-${index}`} value={value} onChange={(event) => setAnswers((current) => ({ ...current, [index]: event.target.value }))} placeholder="Type your answer" />
                 ) : (

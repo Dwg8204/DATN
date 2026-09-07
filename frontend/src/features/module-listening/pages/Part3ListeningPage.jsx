@@ -8,6 +8,7 @@ import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import styles from './Part3ListeningPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 export default function Part3ListeningPage() {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ export default function Part3ListeningPage() {
 
                   return (
                     <div key={stmt.id} className={styles.matchItem}>
-                      <span className={styles.statementText}>{stmt.text}</span>
+                      <RichTextContent className={styles.statementText} value={stmt.text}/>
 
                       <div className={styles.dropdownContainer}>
                         <AnswerSelect

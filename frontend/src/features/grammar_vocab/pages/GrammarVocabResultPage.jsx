@@ -1,7 +1,8 @@
+import { getAdminGrammarPart } from '../utils/adminGrammarTestAdapter';
 import { useMemo, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { PART1_QUESTIONS } from '../data/part1MockData';
-import { PART2_WORD_SETS } from '../data/part2MockData';
+import { PART1_QUESTIONS as MOCK_QUESTIONS } from '../data/part1MockData';
+import { PART2_WORD_SETS as MOCK_SETS } from '../data/part2MockData';
 import { getAllGrammarVocabAnswers, getGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
 import { saveHistoryEntry } from '../../../utils/historyStorage';
 import styles from './GrammarVocabResultPage.module.css';
@@ -68,6 +69,8 @@ export default function GrammarVocabResultPage() {
       if (stored) return JSON.parse(stored);
     }
 
+    const PART1_QUESTIONS = getAdminGrammarPart(testId, 'part1') || MOCK_QUESTIONS;
+    const PART2_WORD_SETS = getAdminGrammarPart(testId, 'part2') || MOCK_SETS;
     const answers = getAllGrammarVocabAnswers();
     const { startTime } = getGrammarVocabSession();
     const part1 = PART1_QUESTIONS.map((question) => {
@@ -114,11 +117,13 @@ export default function GrammarVocabResultPage() {
       wrong: questions.length - correct - skipped,
       percentage: questions.length ? Math.round((correct / questions.length) * 100) : 0,
       duration: formatDuration(startTime),
+      testSnapshot: { part1: PART1_QUESTIONS, part2: PART2_WORD_SETS },
       rawAnswers: answers
     };
-  }, [isFullTest, selectedPart, historyIdParam]);
+  }, [isFullTest, selectedPart, historyIdParam, testId]);
 
   const historySaved = useRef(false);
+  const reviewHistoryId = useRef(historyIdParam);
 
   useEffect(() => {
     if (historyIdParam) return;
@@ -127,6 +132,7 @@ export default function GrammarVocabResultPage() {
       const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
       localStorage.setItem(`history_data_${newHistoryId}`, JSON.stringify(result));
+      reviewHistoryId.current = newHistoryId;
 
       saveHistoryEntry({
         id: newHistoryId,
@@ -223,7 +229,7 @@ export default function GrammarVocabResultPage() {
         <div className={styles.actions}>
           <button
             className={styles.primaryButton}
-            onClick={() => navigate(`/grammar-vocab/result-detail?testId=${testId}&isFull=${isFullTest}&part=${selectedPart}`)}
+            onClick={() => navigate(`/grammar-vocab/result-detail?testId=${testId}&isFull=${isFullTest}&part=${selectedPart}${reviewHistoryId.current ? `&historyId=${reviewHistoryId.current}` : ''}`)}
           >
             View detail result
           </button>

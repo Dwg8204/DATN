@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import AnswerSelect from '../../../../../components/common/AnswerSelect';
 import { ReadingTestContext } from '../../../context/ReadingTestContext';
 import styles from './Part4MatchHeading.module.css';
+import RichTextContent from '../../../../../components/common/RichTextContent';
 
 const Part4MatchHeading = ({ data }) => {
   const { answers, handleAnswerChange } = useContext(ReadingTestContext);
@@ -27,7 +28,7 @@ const Part4MatchHeading = ({ data }) => {
                     ariaLabel={`Heading for paragraph ${index + 1}`}
                   />
                 </div>
-                <p className={styles.paragraphText}>{paragraph.content}</p>
+                <RichTextContent className={styles.paragraphText} value={paragraph.content}/>
               </article>
             ))}
           </div>

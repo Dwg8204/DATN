@@ -1,4 +1,6 @@
-const text = (value) => String(value ?? '').trim();
+import { validateExplanations } from '../../shared-test-builder/explanationValidation.js';
+import { richTextToPlainText } from '../../../../components/common/richText.js';
+const text = value => richTextToPlainText(value).trim();
 const normalized = (value) => text(value).toLocaleLowerCase();
 const hasDuplicates = (values) => new Set(values.map(normalized)).size !== values.length;
 const LETTERS = 'ABCDEFGHIJ'.split('');
@@ -13,6 +15,8 @@ export function validateGrammarDetails(details = {}) {
 }
 
 export function validateGrammarPart1(part = {}) {
+  const explanationError = validateExplanations(part);
+  if (explanationError) return [explanationError];
   const errors = [];
   const questions = Array.isArray(part.questions) ? part.questions : [];
   if (questions.length !== 25) errors.push('Part 1 must contain exactly 25 questions.');
@@ -40,6 +44,8 @@ export function validateGrammarPart1(part = {}) {
 }
 
 export function validateGrammarPart2(part = {}) {
+  const explanationError = validateExplanations(part);
+  if (explanationError) return [explanationError];
   const errors = [];
   const sets = Array.isArray(part.sets) ? part.sets : [];
   if (sets.length !== 5) errors.push('Part 2 must contain exactly 5 vocabulary sets.');

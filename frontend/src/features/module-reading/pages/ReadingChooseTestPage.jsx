@@ -1,3 +1,4 @@
+import Pagination from '../../../components/common/Pagination';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
@@ -20,6 +21,9 @@ export default function ReadingChooseTestPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('part1');
   const [searchQuery, setSearchQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
+  useEffect(() => setPage(1), [activeTab, searchQuery]);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,7 +40,7 @@ export default function ReadingChooseTestPage() {
         if (!cancelled) setLoading(false);
       }
     };
-    
+
     fetchTests();
     return () => { cancelled = true; };
   }, []);
@@ -49,7 +53,7 @@ export default function ReadingChooseTestPage() {
     // Filter by type: Full test or Dễ lẻ (Parts)
     const isFull = activeTab === 'full';
     const matchesTab = test.mode ? test.mode === activeTab : isFull ? (test.type === 'full') : (test.type === 'dễ lẻ');
-    
+
     // Filter by search query
     if (searchQuery.trim() === '') return matchesTab;
     return matchesTab && test.title.toLowerCase().includes(searchQuery.toLowerCase());
@@ -93,9 +97,9 @@ export default function ReadingChooseTestPage() {
                   <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <input 
-                  type="text" 
-                  className={styles.searchInput} 
+                <input
+                  type="text"
+                  className={styles.searchInput}
                   placeholder="Search by test name."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -119,10 +123,10 @@ export default function ReadingChooseTestPage() {
                   No tests available for this search/part yet.
                 </div>
               ) : (
-                filteredTests.map((test, index) => {
+                filteredTests.slice((page - 1) * pageSize, page * pageSize).map((test, index) => {
                   // Simulate status based on mock index (Completed or Not Started)
-                  const isCompleted = index === 0 && activeTab !== 'full'; 
-                  
+                  const isCompleted = page === 1 && index === 0 && activeTab !== 'full';
+
                   return (
                     <div key={test.id} className={styles.testCard}>
                       <div className={styles.cardTop}>
@@ -131,7 +135,7 @@ export default function ReadingChooseTestPage() {
                           <div className={styles.cardImageWrapper}>
                             <img className={styles.cardImage} src={test.thumbnail} alt={test.title} />
                           </div>
-                          
+
                           {isCompleted ? (
                             <div className={styles.cardDetails}>
                               <div className={styles.cardDesc}>Aptis Practice Tests<br />Reading skill</div>
@@ -166,7 +170,7 @@ export default function ReadingChooseTestPage() {
 
                       <div className={styles.cardActions}>
                         {isCompleted && (
-                          <button 
+                          <button
                             className={styles.reviewBtn}
                             onClick={() => navigate(`/reading/review/sess-mock`)}
                           >
@@ -202,6 +206,7 @@ export default function ReadingChooseTestPage() {
             </div>
           </div>
 
+          <Pagination page={page} totalItems={filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper} style={{ marginTop: '32px' }}>
             <CommentSection />
           </div>
