@@ -15,6 +15,7 @@ import ProfilePage from '../features/profile/pages/ProfilePage';
 import ProfileEmptyPage from '../features/profile/pages/ProfileEmptyPage';
 import LearningHistoryPage from '../features/profile/pages/LearningHistoryPage';
 import ChangePasswordPage from '../features/profile/pages/ChangePasswordPage';
+import DashboardPage from '../features/profile/pages/DashboardPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingMainRoutes, writingTestRoutes } from '../features/writing/writingRoutes';
 import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
@@ -70,6 +71,10 @@ export const appRoutes = [
       {
         path: 'profile/change-password',
         element: <ChangePasswordPage />,
+      },
+      {
+        path: 'profile/dashboard',
+        element: <DashboardPage />,
       },
       {
         path: 'grammar-vocab/overview',

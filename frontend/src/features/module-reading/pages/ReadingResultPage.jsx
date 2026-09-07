@@ -5,6 +5,14 @@ import { updateHistoryEntry } from '../../../utils/historyStorage';
 import styles from './ReadingResultPage.module.css';
 import {loadReadingTest} from '../services/readingTestRepository';
 
+function getCefrLevel(percentage) {
+  if (percentage >= 90) return 'C1';
+  if (percentage >= 75) return 'B2';
+  if (percentage >= 55) return 'B1';
+  if (percentage >= 35) return 'A2';
+  return 'A1';
+}
+
 function formatTestingTime(seconds) {
   if (seconds === undefined || seconds === null) return '00:32:15';
   const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
@@ -132,6 +140,7 @@ const ReadingResultPage = () => {
         wrong,
         skipped,
         total: questions.length,
+        cefrLevel: getCefrLevel(percentage),
         timeSpent: formatTestingTime(results.timeSpent),
         partScores: [
           results.mode === 'full' || results.mode === 'part1' ? { label: 'Part 1', correct: results.part1.score, total: results.part1.total } : null,

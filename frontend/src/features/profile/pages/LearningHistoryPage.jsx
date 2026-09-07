@@ -31,57 +31,7 @@ export default function LearningHistoryPage() {
       return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
 
-  const getSkillColor = (percentage) => {
-    if (percentage >= 75) return '#43B75D';
-    if (percentage >= 40) return '#F5A623';
-    return '#DA1E21';
-  };
 
-  const renderCardBody = (entry) => {
-    if (entry.skill === 'listening' || entry.skill === 'reading' || entry.skill === 'grammar') {
-      return (
-        <div className={styles.cardBody}>
-          <div className={styles.scoreRow}>
-            <span className={styles.correct}>✅ {entry.correct} đúng</span>
-            <span className={styles.wrong}>❌ {entry.wrong} sai</span>
-            <span className={styles.skipped}>— {entry.skipped} chưa làm</span>
-            <span className={styles.total}>/ {entry.total} câu</span>
-          </div>
-          <div className={styles.partScores}>
-            {entry.partScores.map((part, idx) => (
-              <div key={idx} className={`${styles.partScoreBox} ${!part ? styles.disabled : ''}`}>
-                <div className={styles.partLabel}>{part ? part.label : `Part ${idx + 1}`}</div>
-                <div className={styles.partValue}>{part ? `${part.correct}/${part.total}` : '—'}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    if (entry.skill === 'speaking' || entry.skill === 'writing') {
-      return (
-        <div className={styles.cardBody}>
-          <div className={styles.criteriaGrid}>
-            {entry.criteria.map((c, idx) => (
-              <div key={idx} className={styles.criteriaItem}>
-                <div className={styles.criteriaLabel}>{c.label}</div>
-                <div className={styles.progressWrap}>
-                  <div 
-                    className={styles.progressBar} 
-                    style={{ width: `${c.score}%`, backgroundColor: getSkillColor(c.score) }}
-                  ></div>
-                </div>
-                <div className={styles.progressValue}>{c.score}%</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
-
-    return null;
-  };
 
   return (
     <div className={styles.page}>
@@ -178,15 +128,13 @@ export default function LearningHistoryPage() {
                         )}
                       </div>
                     </div>
-                  </div>
 
-                  {renderCardBody(entry)}
-
-                  <div className={styles.cardFooter}>
-                    <Link to={entry.reviewUrl} className={styles.reviewBtn}>
-                      <FileText size={16} />
-                      Review Result
-                    </Link>
+                    <div className={styles.cardAction}>
+                      <Link to={entry.reviewUrl} className={styles.reviewBtn}>
+                        <FileText size={16} />
+                        Review Result
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}

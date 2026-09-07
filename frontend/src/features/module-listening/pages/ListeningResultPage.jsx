@@ -184,6 +184,7 @@ export default function ListeningResultPage() {
           mode: isFullTest ? 'full' : `part${partParam}`,
           submittedAt: new Date().toISOString(),
           timeSpent: formatTime(timeSpent),
+          cefrLevel: cefrLevel,
           correct: correctCount,
           wrong: wrongCount,
           skipped: skipCount,
