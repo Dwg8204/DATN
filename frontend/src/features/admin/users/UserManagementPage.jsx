@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Edit3, LockKeyhole, Plus, Search, Trash2 } from 'lucide-react';
+import { Eye, Edit3, LockKeyhole, Plus, Search, Trash2 } from 'lucide-react';
 import { AdminConfirmDialog, AdminToast } from '../components/AdminFeedback';
 import { formatAdminDate, paginate } from '../utils/testManagerHelpers';
+import Modal from '../../../components/common/Modal';
+import Pagination from '../../../components/common/Pagination';
 import UserEditorDialog from './components/UserEditorDialog';
 import { deleteManagedUser, getManagedUsers, saveManagedUser } from './data/userManagementStorage';
 import { validateManagedUser } from './validation/userValidation';
@@ -12,7 +14,7 @@ const roles = [
   { id: 'user', label: 'User' },
   { id: 'teacher', label: 'Teacher' },
 ];
-const emptyUser = (role) => ({ id: '', role, name: '', email: '', status: 'Active', specialization: '' });
+const emptyUser = (role) => ({ id: '', role, name: '', email: '', status: 'Active', password: '', confirmPassword: '' });
 
 function Avatar({ name }) {
   return <span className={styles.avatar}>{name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase()}</span>;
@@ -24,48 +26,61 @@ export default function UserManagementPage() {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [editor, setEditor] = useState(null);
+  const [detail, setDetail] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [confirmRole, setConfirmRole] = useState(false);
   const [editorError, setEditorError] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [toast, setToast] = useState('');
   const filtered = useMemo(() => users.filter((user) => user.role === role && `${user.name} ${user.email}`.toLowerCase().includes(query.trim().toLowerCase())), [users, role, query]);
-  const pagination = paginate(filtered, page, 5);
+  const [pageSize, setPageSize] = useState(5);
+  const pagination = paginate(filtered, page, pageSize);
   const changeRole = (nextRole) => { setRole(nextRole); setQuery(''); setPage(1); };
-  const save = () => {
-    const original = editor.id ? users.find((user) => user.id === editor.id) : null;
-    const allowedPromotion = !original || original.role === editor.role || (original.role === 'user' && editor.role === 'teacher') || (original.role === 'teacher' && editor.role === 'admin');
-    if (!allowedPromotion) return setEditorError('This role change is not permitted.');
+  const save = async () => {
+    if (busy) return;
     const error = validateManagedUser(editor, users);
     if (error) return setEditorError(error);
-    const existed = Boolean(editor.id);
-    saveManagedUser({ ...editor, name: editor.name.trim(), email: editor.email.trim() });
-    setUsers(getManagedUsers()); setEditor(null); setEditorError('');
-    setToast(existed ? 'Account updated successfully.' : 'Account created successfully.');
+    if (editor.id && !confirmRole) {
+      if (users.find(u => u.id === editor.id)?.role === editor.role) return setEditorError('Choose the new role before saving.');
+      setConfirmRole(true); return;
+    }
+    setBusy(true);
+    try {
+      await saveManagedUser(editor);
+      setUsers(getManagedUsers()); setEditor(null); setEditorError('');
+      setToast(editor.id ? 'Account role updated successfully.' : 'Account created successfully.');
+    } catch (error) { setEditorError(error.message || 'Unable to save account.'); }
+    finally { setBusy(false); setConfirmRole(false); }
   };
   const remove = () => {
-    if (deleteManagedUser(deleteTarget.id)) { setUsers(getManagedUsers()); setToast('Account deleted successfully.'); }
+    try { if (deleteManagedUser(deleteTarget.id)) { setUsers(getManagedUsers()); setToast('Account deleted successfully.'); } } catch { setEditorError('Unable to delete account.'); }
     setDeleteTarget(null);
   };
   const actions = (user) => {
     const locked = user.role === 'admin';
     return <div className={styles.actions}>
+      <button title="View details" aria-label={`View ${user.name}`} onClick={() => setDetail(user)}><Eye /></button>
       <button disabled={locked} title={locked ? 'Admin accounts cannot be edited' : 'Edit'} aria-label={`Edit ${user.name}`} onClick={() => { setEditor({ ...user }); setEditorError(''); }}>{locked ? <LockKeyhole /> : <Edit3 />}</button>
       <button disabled={locked} title={locked ? 'Admin accounts cannot be deleted' : 'Delete'} aria-label={`Delete ${user.name}`} onClick={() => setDeleteTarget(user)}><Trash2 /></button>
     </div>;
   };
   return <div className={styles.page}>
+    <AdminToast message={editor && !confirmRole ? '' : editorError} type="error" onClose={() => setEditorError('')} />
+    {detail && <Modal title="Account details" onClose={() => setDetail(null)}><dl>{[['Full name',detail.name],['Email',detail.email],['Role',detail.role],['Status',detail.status],['Date added',formatAdminDate(detail.joinedAt)]].map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></Modal>}
+    <AdminConfirmDialog open={confirmRole} title="Confirm role change?" message={editor ? `Promote ${editor.name} to ${editor.role}? This changes their account permissions.` : ''} confirmLabel="Confirm" onCancel={() => setConfirmRole(false)} onConfirm={save} />
     <AdminToast message={toast} onClose={() => setToast('')} />
     <AdminConfirmDialog open={Boolean(deleteTarget)} title="Delete this account?" message={deleteTarget ? `“${deleteTarget.name}” will permanently lose access to AptiMate. This action cannot be undone.` : ''} onCancel={() => setDeleteTarget(null)} onConfirm={remove} />
-    <UserEditorDialog user={editor} error={editorError} onChange={(field, value) => { setEditor((current) => ({ ...current, [field]: value })); setEditorError(''); }} onCancel={() => { setEditor(null); setEditorError(''); }} onSave={save} />
+    <UserEditorDialog user={confirmRole ? null : editor} error={editorError} onClearError={() => setEditorError('')} busy={busy} originalRole={users.find(u => u.id === editor?.id)?.role} onChange={(field, value) => { setEditor((current) => ({ ...current, [field]: value })); setEditorError(''); }} onCancel={() => { if (!busy) { setEditor(null); setEditorError(''); } }} onSave={save} />
     <header className={styles.toolbar}>
       <nav className={styles.components} aria-label="Account type">{roles.map((item) => <button className={role === item.id ? styles.activeComponent : ''} onClick={() => changeRole(item.id)} key={item.id}>{item.label}</button>)}</nav>
       <div className={styles.tools}><label><Search /><input value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} placeholder="Search people" /></label><button className={styles.add} onClick={() => { setEditor(emptyUser(role)); setEditorError(''); }}><Plus />Add {role}</button></div>
     </header>
     <section className={styles.panel}>
       <header><div><h2>Team members</h2><span>{filtered.length} {filtered.length === 1 ? 'account' : 'accounts'}</span></div></header>
-      <div className={styles.tableWrap}><table><thead><tr><th>Name</th>{role === 'teacher' && <th>Specialization</th>}<th className={styles.alignRight}>Status</th><th className={styles.alignRight}>Date added</th><th className={styles.actionColumn}>Actions</th></tr></thead><tbody>{pagination.items.map((user) => <tr key={user.id}><td><div className={styles.person}><Avatar name={user.name} /><span><b>{user.name}</b><small>{user.email}</small></span></div></td>{role === 'teacher' && <td>{user.specialization}</td>}<td className={styles.alignRight}><span className={`${styles.status} ${user.status === 'Active' ? styles.activeStatus : ''}`}>{user.status}</span></td><td className={styles.alignRight}>{formatAdminDate(user.joinedAt)}</td><td className={styles.actionColumn}>{actions(user)}</td></tr>)}</tbody></table></div>
-      <div className={styles.mobileList}>{pagination.items.map((user) => <article key={user.id}><header><div className={styles.person}><Avatar name={user.name} /><span><b>{user.name}</b><small>{user.email}</small></span></div><span className={`${styles.status} ${user.status === 'Active' ? styles.activeStatus : ''}`}>{user.status}</span></header><dl>{role === 'teacher' && <div><dt>Specialization</dt><dd>{user.specialization}</dd></div>}<div><dt>Date added</dt><dd>{formatAdminDate(user.joinedAt)}</dd></div><div><dt>Role</dt><dd>{roles.find((item) => item.id === user.role)?.label}</dd></div></dl>{actions(user)}</article>)}</div>
+      <div className={styles.tableWrap}><table><thead><tr><th>Name</th><th className={styles.alignRight}>Status</th><th className={styles.alignRight}>Date added</th><th className={styles.actionColumn}>Actions</th></tr></thead><tbody>{pagination.items.map((user) => <tr key={user.id}><td><div className={styles.person}><Avatar name={user.name} /><span><b>{user.name}</b><small>{user.email}</small></span></div></td><td className={styles.alignRight}><span className={`${styles.status} ${user.status === 'Active' ? styles.activeStatus : ''}`}>{user.status}</span></td><td className={styles.alignRight}>{formatAdminDate(user.joinedAt)}</td><td className={styles.actionColumn}>{actions(user)}</td></tr>)}</tbody></table></div>
+      <div className={styles.mobileList}>{pagination.items.map((user) => <article key={user.id}><header><div className={styles.person}><Avatar name={user.name} /><span><b>{user.name}</b><small>{user.email}</small></span></div><span className={`${styles.status} ${user.status === 'Active' ? styles.activeStatus : ''}`}>{user.status}</span></header><dl><div><dt>Date added</dt><dd>{formatAdminDate(user.joinedAt)}</dd></div><div><dt>Role</dt><dd>{roles.find((item) => item.id === user.role)?.label}</dd></div></dl>{actions(user)}</article>)}</div>
       {!pagination.items.length && <p className={styles.empty}>No accounts found.</p>}
-      <footer><button disabled={pagination.page === 1} onClick={() => setPage((current) => Math.max(1, current - 1))}>Previous</button><span>Page {pagination.page} of {pagination.totalPages}</span><button disabled={pagination.page === pagination.totalPages} onClick={() => setPage((current) => Math.min(pagination.totalPages, current + 1))}>Next</button></footer>
+      <Pagination page={page} totalItems={filtered.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
     </section>
   </div>;
 }

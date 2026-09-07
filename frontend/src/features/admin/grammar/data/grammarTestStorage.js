@@ -1,4 +1,4 @@
-import { normalizeGrammarTest } from './grammarTestData';
+import { normalizeGrammarTest } from './grammarTestData.js';
 
 const KEY = 'aptimate-admin-grammar-tests';
 export function getStoredGrammarTests(){try{const tests=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(tests)?tests.map(normalizeGrammarTest):[]}catch{return[]}}

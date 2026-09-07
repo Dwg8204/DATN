@@ -1,3 +1,5 @@
+import { validatePassword } from '../utils/passwordValidation';
+import { getManagedUsers } from '../../admin/users/data/userManagementStorage';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from '../components/PasswordInput';
@@ -24,13 +26,14 @@ export default function SignupPage() {
       return;
     }
     
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+    const passwordError = validatePassword(password, confirmPassword);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
 
     const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
-    if (existingUsers.some(u => u.email === email)) {
+    if ([...existingUsers, ...getManagedUsers()].some(u => u.email.toLowerCase() === email.trim().toLowerCase())) {
       setError('Email already in use.');
       return;
     }

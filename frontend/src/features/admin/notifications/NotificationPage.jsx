@@ -1,10 +1,12 @@
 import { useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight, Eye, Paperclip, Send, X } from 'lucide-react';
+import { Eye, Paperclip, Send, X } from 'lucide-react';
 import { AdminToast } from '../components/AdminFeedback';
+import Pagination from '../../../components/common/Pagination';
+import AnswerSelect from '../../../components/common/AnswerSelect';
 import styles from './NotificationPage.module.css';
 
 const STORAGE_KEY = 'aptimate.admin.notifications';
-const PAGE_SIZE = 8;
+
 
 const initialNotifications = [
   { id: 1, date: '2026-07-15T07:30', content: 'Hey Lee! We’re thrilled to have you on board. Start your first practice test today.', target: 'Student', type: 'Push notification' },
@@ -39,12 +41,12 @@ export default function NotificationPage() {
   const [form, setForm] = useState(emptyForm);
   const [notifications, setNotifications] = useState(loadNotifications);
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(8);
   const [preview, setPreview] = useState(false);
   const [toast, setToast] = useState('');
   const [error, setError] = useState('');
   const fileRef = useRef(null);
-  const pageCount = Math.max(1, Math.ceil(notifications.length / PAGE_SIZE));
-  const visibleNotifications = useMemo(() => notifications.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [notifications, page]);
+  const visibleNotifications = useMemo(() => notifications.slice((page - 1) * pageSize, page * pageSize), [notifications, page, pageSize]);
 
   const update = (field, value) => setForm((current) => ({ ...current, [field]: value }));
   const validate = () => {
@@ -85,9 +87,7 @@ export default function NotificationPage() {
           <header><h3>Create a new notification</h3><p>Choose an audience and delivery method.</p></header>
 
           <label className={styles.field}>Target
-            <select value={form.target} onChange={(event) => update('target', event.target.value)}>
-              <option>Everyone</option><option>Student</option><option>Teacher</option>
-            </select>
+            <AnswerSelect value={form.target} onChange={(event) => update('target', event.target.value)} options={['Everyone','Student','Teacher']} ariaLabel="Target audience"/>
           </label>
 
           <fieldset className={styles.types}>
@@ -119,11 +119,7 @@ export default function NotificationPage() {
               <tbody>{visibleNotifications.map((item) => <tr key={item.id}><td>{formatDate(item.date)}</td><td title={item.content}>{item.content}</td><td><span className={`${styles.target} ${styles[item.target.toLowerCase()]}`}>{item.target}</span></td><td>{item.type}</td></tr>)}</tbody>
             </table>
           </div>
-          <footer className={styles.pagination}>
-            <button disabled={page === 1} onClick={() => setPage((current) => current - 1)} aria-label="Previous page"><ChevronLeft /></button>
-            {Array.from({ length: pageCount }, (_, index) => index + 1).map((number) => <button className={number === page ? styles.currentPage : ''} key={number} onClick={() => setPage(number)}>{number}</button>)}
-            <button disabled={page === pageCount} onClick={() => setPage((current) => current + 1)} aria-label="Next page"><ChevronRight /></button>
-          </footer>
+          <Pagination page={page} totalItems={notifications.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
         </section>
       </section>
 
@@ -137,4 +133,3 @@ export default function NotificationPage() {
     </div>
   );
 }
-

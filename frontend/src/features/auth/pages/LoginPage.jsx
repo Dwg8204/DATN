@@ -1,3 +1,4 @@
+import { authenticateManagedUser, getManagedUsers } from '../../admin/users/data/userManagementStorage';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from '../components/PasswordInput';
@@ -11,9 +12,11 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    if (busy) return;
     setError('');
 
     if (!email || !password) {
@@ -21,8 +24,11 @@ export default function LoginPage() {
       return;
     }
 
+    setBusy(true);
+    try {
     const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
-    const user = existingUsers.find(u => u.email === email && u.password === password);
+    const managedExists = getManagedUsers().some(u => u.email.toLowerCase() === email.trim().toLowerCase());
+    const user = managedExists ? await authenticateManagedUser(email, password) : existingUsers.find(u => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password);
 
     if (!user) {
       setError('Invalid email or password.');
@@ -34,6 +40,8 @@ export default function LoginPage() {
     
     login({ accessToken: 'mock-token-' + Date.now(), profile });
     navigate('/');
+    } catch { setError('Unable to log in. Please try again.'); }
+    finally { setBusy(false); }
   };
   return (
     <div className={styles.wrapper}>
@@ -68,7 +76,7 @@ export default function LoginPage() {
                 </Link>
               </div>
             </div>
-            <button type="submit" className={styles.submitBtn}>
+            <button type="submit" disabled={busy} className={styles.submitBtn}>
               <span className={styles.submitBtnText}>LOG IN</span>
             </button>
           </div>

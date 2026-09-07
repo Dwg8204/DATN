@@ -1,10 +1,13 @@
+import AnswerExplanation from '../../../components/common/AnswerExplanation';
+import { getAdminGrammarPart } from '../utils/adminGrammarTestAdapter';
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
-import { PART1_QUESTIONS } from '../data/part1MockData';
-import { PART2_WORD_SETS } from '../data/part2MockData';
+import { PART1_QUESTIONS as MOCK_QUESTIONS } from '../data/part1MockData';
+import { PART2_WORD_SETS as MOCK_SETS } from '../data/part2MockData';
 import { getAllGrammarVocabAnswers } from '../utils/grammarVocabSessionStorage';
 import styles from './GrammarVocabResultDetailPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 const PART1_ITEMS_PER_PAGE = 3;
 
@@ -18,7 +21,7 @@ function StatusBadge({ status }) {
   return <span className={`${styles.statusBadge} ${styles[status]}`}>{labels[status]}</span>;
 }
 
-function Part1Review({ questions, answers, expandedId, onExplain }) {
+function Part1Review({ questions, answers }) {
   return (
     <div className={styles.part1List}>
       {questions.map((question) => {
@@ -29,7 +32,7 @@ function Part1Review({ questions, answers, expandedId, onExplain }) {
           <article className={styles.questionCard} key={question.id}>
             <div className={styles.questionHeading}>
               <span className={styles.questionNumber}>{question.id}</span>
-              <p>{question.text}</p>
+              <RichTextContent value={question.text}/>
               <StatusBadge status={status} />
             </div>
             <div className={styles.part1Options}>
@@ -39,23 +42,17 @@ function Part1Review({ questions, answers, expandedId, onExplain }) {
                 return (
                   <div
                     className={`${styles.optionRow} ${isCorrectAnswer ? styles.correctOption : ''} ${isUserAnswer && !isCorrectAnswer ? styles.wrongOption : ''}`}
-                    key={option}
+                    key={index}
+                    aria-label={`${option}${isCorrectAnswer ? ', correct' : isUserAnswer ? ', selected, incorrect' : ''}`}
                   >
                     <span className={styles.optionLetter}>{String.fromCharCode(65 + index)}</span>
                     <span>{option}</span>
-                    {isUserAnswer && <small>Your answer</small>}
+
                   </div>
                 );
               })}
             </div>
-            <button className={styles.explainButton} onClick={() => onExplain(question.id)}>
-              {expandedId === question.id ? 'Hide explanation' : 'Explain'}
-            </button>
-            {expandedId === question.id && (
-              <div className={styles.explanation}>
-                Option {String.fromCharCode(65 + question.correctAnswer)} is correct because it completes the sentence with the expected grammar structure. Review the full sentence and compare the form of each option.
-              </div>
-            )}
+            <AnswerExplanation text={question.explanation} />
           </article>
         );
       })}
@@ -63,7 +60,7 @@ function Part1Review({ questions, answers, expandedId, onExplain }) {
   );
 }
 
-function Part2Review({ wordSet, answers, expandedId, onExplain }) {
+function Part2Review({ wordSet, answers }) {
   return (
     <div className={styles.part2Layout}>
       <div className={styles.matchingList}>
@@ -81,15 +78,10 @@ function Part2Review({ wordSet, answers, expandedId, onExplain }) {
                   {selectedOption ? `${selectedOption.label}. ${selectedOption.text}` : 'No answer'}
                 </div>
                 <StatusBadge status={status} />
-                <button className={styles.explainButton} onClick={() => onExplain(target.id)}>
-                  {expandedId === target.id ? 'Hide' : 'Explain'}
-                </button>
+
               </div>
-              {expandedId === target.id && (
-                <div className={styles.explanation}>
-                  “{target.word}” has the same or a very similar meaning as “{correctOption?.text}”. The correct answer is {correctOption?.label}.
-                </div>
-              )}
+              {status !== 'correct' && <div className={styles.correctField} aria-label="Correct answer">{correctOption?.label}. {correctOption?.text}</div>}
+              <AnswerExplanation text={target.explanation} />
             </article>
           );
         })}
@@ -108,11 +100,14 @@ function Part2Review({ wordSet, answers, expandedId, onExplain }) {
 export default function GrammarVocabResultDetailPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  let history = null;
+  try { history = JSON.parse(localStorage.getItem(`history_data_${searchParams.get('historyId')}`)); } catch { /* Legacy history may not have a snapshot. */ }
+  const PART1_QUESTIONS = history?.testSnapshot?.part1 || getAdminGrammarPart(searchParams.get('testId'), 'part1') || MOCK_QUESTIONS;
+  const PART2_WORD_SETS = history?.testSnapshot?.part2 || getAdminGrammarPart(searchParams.get('testId'), 'part2') || MOCK_SETS;
   const isFullTest = searchParams.get('isFull') === 'true';
   const requestedPart = searchParams.get('part') === '2' ? 'part2' : 'part1';
   const [activePart, setActivePart] = useState(isFullTest ? 'part1' : requestedPart);
   const [currentPage, setCurrentPage] = useState(1);
-  const [expandedId, setExpandedId] = useState(null);
   const historyIdParam = searchParams.get('historyId');
   const answers = useMemo(() => {
     if (historyIdParam) {
@@ -143,11 +138,9 @@ export default function GrammarVocabResultDetailPage() {
   const changePart = (part) => {
     setActivePart(part);
     setCurrentPage(1);
-    setExpandedId(null);
   };
 
   const handlePrevious = () => {
-    setExpandedId(null);
     if (currentPage > 1) {
       setCurrentPage((page) => page - 1);
     } else if (isFullTest && activePart === 'part2') {
@@ -157,7 +150,6 @@ export default function GrammarVocabResultDetailPage() {
   };
 
   const handleNext = () => {
-    setExpandedId(null);
     if (currentPage < totalPages) {
       setCurrentPage((page) => page + 1);
     } else if (isFullTest && activePart === 'part1') {
@@ -173,7 +165,6 @@ export default function GrammarVocabResultDetailPage() {
       const setIndex = PART2_WORD_SETS.findIndex((set) => set.targetWords.some(({ id }) => id === questionId));
       setCurrentPage(setIndex + 1);
     }
-    setExpandedId(null);
   };
 
   return (
@@ -187,7 +178,7 @@ export default function GrammarVocabResultDetailPage() {
         )}
 
         <div className={styles.sectionHeader}>
-          <strong>{isPart1 ? `Questions ${startIndex + 1}-${Math.min(startIndex + PART1_ITEMS_PER_PAGE, PART1_QUESTIONS.length)}` : `Questions ${visibleWordSet.questionRange}`}</strong>
+          <strong>{isPart1 ? `Questions ${startIndex + 1}-${Math.min(startIndex + PART1_ITEMS_PER_PAGE, PART1_QUESTIONS.length)}` : `Questions ${visibleWordSet.questionRange || `${visibleWordSet.targetWords[0].id}–${visibleWordSet.targetWords.at(-1).id}`}`}</strong>
           <span>{isPart1 ? 'Choose the correct letter, A, B or C.' : visibleWordSet.instruction}</span>
         </div>
 
@@ -195,15 +186,11 @@ export default function GrammarVocabResultDetailPage() {
           <Part1Review
             questions={visiblePart1Questions}
             answers={answers.part1}
-            expandedId={expandedId}
-            onExplain={(id) => setExpandedId((current) => current === id ? null : id)}
           />
         ) : (
           <Part2Review
             wordSet={visibleWordSet}
             answers={answers.part2}
-            expandedId={expandedId}
-            onExplain={(id) => setExpandedId((current) => current === id ? null : id)}
           />
         )}
       </main>

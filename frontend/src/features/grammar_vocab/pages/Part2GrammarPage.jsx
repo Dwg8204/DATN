@@ -8,6 +8,7 @@ import { PART2_WORD_SETS } from '../data/part2MockData';
 import { getAdminGrammarPart } from '../utils/adminGrammarTestAdapter';
 import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
 import styles from './Part2GrammarPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 export default function Part2GrammarPage() {
   const { skill = 'grammar-vocab' } = useParams(); 
@@ -91,7 +92,7 @@ export default function Part2GrammarPage() {
         {currentSets.map((wordSet) => (
           <div key={wordSet.setId} className={styles.wordSetBlock}>
             <InstructionBlock title={`Questions ${wordSet.questionRange}`}>
-              {wordSet.instruction}
+              <RichTextContent value={wordSet.instruction}/>
             </InstructionBlock>
 
             <div className={styles.matchingArea}>

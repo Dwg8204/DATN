@@ -8,6 +8,7 @@ import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MultipleChoice from '../../../components/common/MultipleChoice';
 import styles from './Part4ListeningPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 export default function Part4ListeningPage() {
   const navigate = useNavigate();
@@ -89,7 +90,7 @@ export default function Part4ListeningPage() {
           <div className={styles.questionSection}>
             <div className={styles.questionItem}>
                 <div className={styles.multipleChoiceGroup} style={{ marginBottom: '40px' }}>
-                  <div className={styles.questionContext} style={{ marginBottom: '16px', fontWeight: 'bold' }}>{currentMainQ.context}</div>
+                  <RichTextContent className={styles.questionContext} value={currentMainQ.context}/>
                   
                   {currentMainQ.subQuestions.map((q) => (
                     <div key={q.id} style={{ marginBottom: '24px' }}>

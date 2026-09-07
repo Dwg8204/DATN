@@ -1,3 +1,4 @@
+import AnswerExplanation from '../../../components/common/AnswerExplanation';
 import React, { useState, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -5,6 +6,7 @@ import { getAllAnswers } from '../utils/listeningSessionStorage';
 import { getListeningTestParts } from '../services/listeningTestRepository';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import styles from './ListeningDetailResultPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 function getStatus(answer, correctAnswer) {
   if (answer === undefined || answer === null) return 'skipped';
@@ -22,22 +24,21 @@ export default function ListeningDetailResultPage() {
   const testId = searchParams.get('testId') || '1';
   const initialPart = parseInt(searchParams.get('part'), 10) || 1;
   const isFullTest = searchParams.get('isFull') === 'true';
-  const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = useMemo(() => getListeningTestParts(testId), [testId]);
+  const historyId = searchParams.get('historyId');
+  const history = useMemo(() => { try { return JSON.parse(localStorage.getItem(`history_data_${historyId}`)); } catch { return null; } }, [historyId]);
+  const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = useMemo(() => history?.testSnapshot || getListeningTestParts(testId), [testId, history]);
 
   const [activePart, setActivePart] = useState(initialPart);
   const [currentPage, setCurrentPage] = useState(1);
-  const [expandedId, setExpandedId] = useState(null);
-  
-  const allAnswers = useMemo(() => getAllAnswers() || {}, []);
+
+  const allAnswers = useMemo(() => history?.allAnswers ? { part1: history.allAnswers.p1Raw, part2: history.allAnswers.p2Raw, part3: history.allAnswers.p3Raw, part4: history.allAnswers.p4Raw } : getAllAnswers() || {}, [history]);
 
   const changePart = (partNum) => {
     setActivePart(partNum);
     setCurrentPage(1);
-    setExpandedId(null);
   };
 
   const handleNext = () => {
-    setExpandedId(null);
     if (activePart === 1 && currentPage < PART1_QUESTIONS.length) {
       setCurrentPage(prev => prev + 1);
     } else if (activePart === 4 && currentPage < PART4_QUESTIONS.length) {
@@ -48,7 +49,6 @@ export default function ListeningDetailResultPage() {
   };
 
   const handlePrev = () => {
-    setExpandedId(null);
     if (activePart === 1 && currentPage > 1) {
       setCurrentPage(prev => prev - 1);
     } else if (activePart === 4 && currentPage > 1) {
@@ -72,7 +72,6 @@ export default function ListeningDetailResultPage() {
         setCurrentPage(mainIdx + 1);
       }
     }
-    setExpandedId(null);
   };
 
   const renderPart1 = () => {
@@ -83,19 +82,19 @@ export default function ListeningDetailResultPage() {
 
     return (
       <div className={styles.contentRow}>
-        <div className={styles.scriptBox}>
+        {question.script && <div className={styles.scriptBox}>
           <div className={styles.scriptTitle}>Script</div>
           <div className={styles.scriptText}>{question.script}</div>
-        </div>
-        
+        </div>}
+
         <div className={styles.qaBox}>
           <article className={styles.questionCard}>
             <div className={styles.questionHeading}>
               <span className={styles.questionNumber}>{question.id}</span>
-              <p>{question.text}</p>
+              <RichTextContent value={question.text}/>
               <StatusBadge status={status} />
             </div>
-            
+
             <div className={styles.optionsList}>
               {question.options.map((opt, idx) => {
                 const isUserAnswer = userAnswer === idx;
@@ -103,24 +102,18 @@ export default function ListeningDetailResultPage() {
                 return (
                   <div
                     key={idx}
+                    aria-label={`${opt}${isCorrectAnswer ? ', correct' : isUserAnswer ? ', selected, incorrect' : ''}`}
                     className={`${styles.optionRow} ${isCorrectAnswer ? styles.correctOption : ''} ${isUserAnswer && !isCorrectAnswer ? styles.wrongOption : ''}`}
                   >
                     <span className={styles.optionLetter}>{String.fromCharCode(65 + idx)}</span>
                     <span>{opt}</span>
-                    {isUserAnswer && <small>Your answer</small>}
+
                   </div>
                 );
               })}
             </div>
-            
-            <button className={styles.explainButton} onClick={() => setExpandedId(expandedId === question.id ? null : question.id)}>
-              {expandedId === question.id ? 'Hide explanation' : 'Explain'}
-            </button>
-            {expandedId === question.id && (
-              <div className={styles.explanation}>
-                Option {String.fromCharCode(65 + question.answer)} is correct because it directly matches the information given in the transcript.
-              </div>
-            )}
+
+            <AnswerExplanation text={question.explanation} />
           </article>
         </div>
       </div>
@@ -131,15 +124,15 @@ export default function ListeningDetailResultPage() {
     const rawAnswers = allAnswers.part2 || {};
     return (
       <div className={styles.contentRow}>
-        <div className={styles.scriptBox}>
+        {PART2_DATA.scripts?.length && <div className={styles.scriptBox}>
           <div className={styles.scriptTitle}>Script</div>
           <div className={styles.scriptText}>
-            {PART2_DATA.scripts.map((script, i) => (
+            {(PART2_DATA.scripts || []).map((script, i) => (
               <div key={i} style={{ marginBottom: '16px' }}>{script}</div>
             ))}
           </div>
-        </div>
-        
+        </div>}
+
         <div className={styles.qaBox}>
           <div className={styles.matchingList}>
             {PART2_DATA.speakers.map((speaker, idx) => {
@@ -156,19 +149,10 @@ export default function ListeningDetailResultPage() {
                     </div>
                     <StatusBadge status={status} />
                   </div>
-                  
-                  <div style={{ fontSize: '14px', color: '#555', marginTop: '4px' }}>
-                    Correct answer: <strong>{correctAnswerText}</strong>
-                  </div>
 
-                  <button className={styles.explainButton} onClick={() => setExpandedId(expandedId === speaker ? null : speaker)}>
-                    {expandedId === speaker ? 'Hide' : 'Explain'}
-                  </button>
-                  {expandedId === speaker && (
-                    <div className={styles.explanation}>
-                      {speaker}'s statement matches "{correctAnswerText}" based on the keywords used in their transcript.
-                    </div>
-                  )}
+                  {status !== 'correct' && <div className={styles.correctField} aria-label="Correct answer"><strong>{correctAnswerText}</strong></div>}
+
+                  <AnswerExplanation text={PART2_DATA.explanations?.[`speaker-${idx}`]} />
                 </article>
               );
             })}
@@ -182,11 +166,11 @@ export default function ListeningDetailResultPage() {
     const rawAnswers = allAnswers.part3 || {};
     return (
       <div className={styles.contentRow}>
-        <div className={styles.scriptBox}>
+        {PART3_DATA.script && <div className={styles.scriptBox}>
           <div className={styles.scriptTitle}>Script</div>
           <div className={styles.scriptText}>{PART3_DATA.script}</div>
-        </div>
-        
+        </div>}
+
         <div className={styles.qaBox}>
           <div className={styles.matchingList}>
             {PART3_DATA.statements.map((stmt) => {
@@ -203,19 +187,10 @@ export default function ListeningDetailResultPage() {
                     </div>
                     <StatusBadge status={status} />
                   </div>
-                  
-                  <div style={{ fontSize: '14px', color: '#555', marginTop: '4px' }}>
-                    Correct answer: <strong>{correctAnswerText}</strong>
-                  </div>
 
-                  <button className={styles.explainButton} onClick={() => setExpandedId(expandedId === stmt.id ? null : stmt.id)}>
-                    {expandedId === stmt.id ? 'Hide' : 'Explain'}
-                  </button>
-                  {expandedId === stmt.id && (
-                    <div className={styles.explanation}>
-                      The correct answer is {correctAnswerText} because this opinion was clearly expressed in the dialogue.
-                    </div>
-                  )}
+                  {status !== 'correct' && <div className={styles.correctField} aria-label="Correct answer"><strong>{correctAnswerText}</strong></div>}
+
+                  <AnswerExplanation text={stmt.explanation} />
                 </article>
               );
             })}
@@ -231,11 +206,11 @@ export default function ListeningDetailResultPage() {
 
     return (
       <div className={styles.contentRow}>
-        <div className={styles.scriptBox}>
+        {mainQ.script && <div className={styles.scriptBox}>
           <div className={styles.scriptTitle}>Script (Question {mainQ.id})</div>
           <div className={styles.scriptText}>{mainQ.script}</div>
-        </div>
-        
+        </div>}
+
         <div className={styles.qaBox}>
           {mainQ.subQuestions.map((question) => {
             const userAnswer = rawAnswers[String(question.id)];
@@ -245,10 +220,10 @@ export default function ListeningDetailResultPage() {
               <article key={question.id} className={styles.questionCard}>
                 <div className={styles.questionHeading}>
                   <span className={styles.questionNumber} style={{ width: 'fit-content', padding: '0 8px' }}>{question.id}</span>
-                  <p>{question.text}</p>
+                  <RichTextContent value={question.text}/>
                   <StatusBadge status={status} />
                 </div>
-                
+
                 <div className={styles.optionsList}>
                   {question.options.map((opt, idx) => {
                     const isUserAnswer = userAnswer === idx;
@@ -256,24 +231,18 @@ export default function ListeningDetailResultPage() {
                     return (
                       <div
                         key={idx}
+                        aria-label={`${opt}${isCorrectAnswer ? ', correct' : isUserAnswer ? ', selected, incorrect' : ''}`}
                         className={`${styles.optionRow} ${isCorrectAnswer ? styles.correctOption : ''} ${isUserAnswer && !isCorrectAnswer ? styles.wrongOption : ''}`}
                       >
                           <span className={styles.optionLetter}>{String.fromCharCode(65 + idx)}</span>
                           <span>{opt}</span>
-                        {isUserAnswer && <small>Your answer</small>}
+
                       </div>
                     );
                   })}
                 </div>
-                
-                <button className={styles.explainButton} onClick={() => setExpandedId(expandedId === question.id ? null : question.id)}>
-                  {expandedId === question.id ? 'Hide explanation' : 'Explain'}
-                </button>
-                {expandedId === question.id && (
-                  <div className={styles.explanation}>
-                    Option {String.fromCharCode(65 + question.answer)} is correct based on the speaker's exact words in the transcript.
-                  </div>
-                )}
+
+                <AnswerExplanation text={question.explanation} />
               </article>
             );
           })}
@@ -338,12 +307,12 @@ export default function ListeningDetailResultPage() {
 
   return (
     <div className={styles.page}>
-      
+
       <main className={styles.content}>
         {isFullTest && (
           <div className={styles.partTabs}>
             {[1, 2, 3, 4].map(num => (
-              <button 
+              <button
                 key={num}
                 className={activePart === num ? styles.activeTab : ''}
                 onClick={() => changePart(num)}

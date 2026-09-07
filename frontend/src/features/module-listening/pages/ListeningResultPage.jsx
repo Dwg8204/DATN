@@ -43,6 +43,7 @@ export default function ListeningResultPage() {
   const historyIdParam = searchParams.get('historyId');
   const testIdParam = searchParams.get('testId');
   const historySaved = useRef(false);
+  const reviewHistoryId = useRef(historyIdParam);
 
   const [results, setResults] = useState(null);
 
@@ -51,7 +52,10 @@ export default function ListeningResultPage() {
     let timeSpent = 0;
     const { startTime, testId } = getTestMeta();
     const actualTestId = testIdParam || testId || '1';
-    const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = getListeningTestParts(actualTestId);
+    let historySnapshot;
+    try { historySnapshot = JSON.parse(localStorage.getItem(`history_data_${historyIdParam}`))?.testSnapshot; } catch { /* Legacy history */ }
+    const testSnapshot = historySnapshot || getListeningTestParts(actualTestId);
+    const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = testSnapshot;
 
     if (historyIdParam) {
       const stored = localStorage.getItem(`history_data_${historyIdParam}`);
@@ -173,9 +177,11 @@ export default function ListeningResultPage() {
 
         localStorage.setItem(`history_data_${newHistoryId}`, JSON.stringify({
           allAnswers: { p1Raw, p2Raw, p3Raw, p4Raw },
+          testSnapshot,
           timeSpent: timeSpent
         }));
 
+        reviewHistoryId.current = newHistoryId;
         saveHistoryEntry({
           id: newHistoryId,
           skill: 'listening',
@@ -372,7 +378,7 @@ export default function ListeningResultPage() {
           <button
             className={`${styles.tryAgainBtn} ${styles.detailBtn || ''}`}
             style={{ backgroundColor: '#da1e21', borderColor: '#da1e21' }}
-            onClick={() => navigate(`/listening/detail-result?testId=${searchParams.get('testId') || '1'}&isFull=${isFullTest}${!isFullTest ? `&part=${partParam}` : ''}`)}
+            onClick={() => navigate(`/listening/detail-result?testId=${searchParams.get('testId') || '1'}&isFull=${isFullTest}${!isFullTest ? `&part=${partParam}` : ''}${reviewHistoryId.current ? `&historyId=${reviewHistoryId.current}` : ''}`)}
           >
             View detail result
           </button>

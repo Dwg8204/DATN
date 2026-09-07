@@ -11,7 +11,7 @@
 .questionHeading p { margin: 0; font-size: 16px; line-height: 28px; }
 .questionNumber { width: 30px; height: 30px; display: grid; place-items: center; border: 2px solid #0095ff; border-radius: 5px; background: #e6f4ff; font-weight: 700; }
 .part1Options { display: flex; flex-direction: column; gap: 8px; padding-left: 44px; }
-.optionRow { min-height: 40px; padding: 6px 12px; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; border: 1px solid transparent; border-radius: 6px; }
+.optionRow { min-height: 40px; padding: 6px 12px; display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 12px; border: 1px solid transparent; border-radius: 6px; }
 .optionLetter { font-weight: 700; }
 .optionRow small { padding: 3px 9px; border-radius: 999px; background: rgba(0,0,0,.06); line-height: 18px; white-space: nowrap; }
 .correctOption { border-color: #43b75d; background: #edf9f0; }
@@ -50,7 +50,7 @@
   .questionNumber { width: 26px; height: 26px; box-sizing: border-box; font-size: 13px; }
   .questionHeading .statusBadge { grid-column: 3; width: fit-content; min-width: 58px; }
   .part1Options { padding-left: 0; gap: 6px; }
-  .optionRow { min-height: 38px; padding: 7px 9px; grid-template-columns: 22px minmax(0, 1fr) auto; gap: 8px; font-size: 13px; line-height: 20px; }
+  .optionRow { min-height: 38px; padding: 7px 9px; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 13px; line-height: 20px; }
   .optionRow small { grid-column: 3; justify-self: end; width: auto; max-width: 100%; padding: 2px 7px; font-size: 9px; line-height: 16px; }
   .statusBadge { min-width: 72px; padding: 3px 9px; font-size: 11px; }
   .questionCard > .explainButton, .questionCard > .explanation { margin-left: 0; }
@@ -66,3 +66,5 @@
   .optionBank h2 { font-size: 16px; }
   .optionBank > div { grid-template-columns: 22px minmax(0, 1fr); gap: 10px; font-size: 13px; line-height: 20px; }
 }
+.matchingItem > .correctField { margin-top: 10px; padding: 10px 12px; border: 1px solid #43b75d; border-radius: 6px; overflow-wrap: anywhere; }
+.optionRow > span { min-width: 0; overflow-wrap: anywhere; }

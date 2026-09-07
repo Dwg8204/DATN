@@ -1,3 +1,5 @@
+import Pagination from '../../../components/common/Pagination';
+import AnswerSelect from '../../../components/common/AnswerSelect';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Check, ChevronLeft, ChevronRight, Heart, Lightbulb, Plus, Search, RotateCcw, Shuffle, Volume2, X } from 'lucide-react';
@@ -104,7 +106,7 @@ export default function DictationPage() {
 
   const currentProgress = progress[exercise.id];
   const currentCard = DICTATION_FLASHCARDS[cardIndex];
-  const itemsPerPage = 4;
+  const [itemsPerPage, setItemsPerPage] = useState(4);
   const notebookItems = notebookTab === 'sentences'
     ? [...DICTATION_EXERCISES.map((item) => ({ ...item, word: item.title, meaning: item.transcript, type: `${item.level} · ${item.topic}` })), ...customSentences]
     : [...DICTATION_FLASHCARDS, ...customWords].filter((item) => notebookTab === 'lookup' || savedWords.includes(item.id));
@@ -204,7 +206,7 @@ export default function DictationPage() {
           <div className={styles.player}>
             <button className={styles.playButton} onClick={speak} aria-label="Play sentence"><Volume2 className={isSpeaking ? styles.pulse : ''} /></button>
             <div><strong>{isSpeaking ? 'Playing sentence…' : 'Ready to listen'}</strong><span>{exercise.accent === 'en-GB' ? 'British English' : 'American English'}</span></div>
-            <label>Speed<select value={rate} onChange={(event) => setRate(Number(event.target.value))}><option value="0.7">0.7×</option><option value="0.85">0.85×</option><option value="1">1×</option><option value="1.15">1.15×</option></select></label>
+            <label>Speed<AnswerSelect value={rate} onChange={(event) => setRate(Number(event.target.value))} options={[{value:.7,label:'0.7×'},{value:.85,label:'0.85×'},{value:1,label:'1×'},{value:1.15,label:'1.15×'}]} ariaLabel="Playback speed"/></label>
           </div>
 
           <label className={styles.answerLabel} htmlFor="dictation-answer">Type what you hear</label>
@@ -303,11 +305,7 @@ export default function DictationPage() {
                 </article>
               )) : <div className={styles.emptyNotebook}><Search size={34} /><h3>No matching items</h3><p>Try another keyword or save more words from the lookup tab.</p></div>}
 
-              {notebookPageCount > 1 && <nav className={styles.notebookPagination} aria-label="Notebook pages">
-                <button disabled={notebookPage === 1} onClick={() => setNotebookPage((page) => page - 1)}><ChevronLeft size={17} /></button>
-                {Array.from({ length: notebookPageCount }, (_, index) => <button key={index + 1} className={notebookPage === index + 1 ? styles.currentPage : ''} onClick={() => setNotebookPage(index + 1)}>{index + 1}</button>)}
-                <button disabled={notebookPage === notebookPageCount} onClick={() => setNotebookPage((page) => page + 1)}><ChevronRight size={17} /></button>
-              </nav>}
+              <Pagination page={notebookPage} totalItems={filteredNotebookItems.length} pageSize={itemsPerPage} onPageChange={setNotebookPage} onPageSizeChange={setItemsPerPage} />
             </section>
 
             <aside className={styles.notebookStats}>
@@ -326,7 +324,7 @@ export default function DictationPage() {
                 <button type="button" className={createType === 'sentence' ? styles.selectedType : ''} onClick={() => { setCreateType('sentence'); setNewItem((item) => ({ ...item, type: 'Custom sentence' })); }}>Sentence</button>
               </div>
               <label>{createType === 'word' ? 'English word' : 'Title'}<input autoFocus required value={newItem.word} onChange={(event) => setNewItem({ ...newItem, word: event.target.value })} placeholder={createType === 'word' ? 'e.g. achievement' : 'e.g. My travel sentence'} /></label>
-              {createType === 'word' && <div className={styles.formRow}><label>Pronunciation<input value={newItem.pronunciation} onChange={(event) => setNewItem({ ...newItem, pronunciation: event.target.value })} placeholder="/əˈtʃiːvmənt/" /></label><label>Word type<select value={newItem.type} onChange={(event) => setNewItem({ ...newItem, type: event.target.value })}><option>noun</option><option>verb</option><option>adjective</option><option>adverb</option><option>phrase</option></select></label></div>}
+              {createType === 'word' && <div className={styles.formRow}><label>Pronunciation<input value={newItem.pronunciation} onChange={(event) => setNewItem({ ...newItem, pronunciation: event.target.value })} placeholder="/əˈtʃiːvmənt/" /></label><label>Word type<AnswerSelect value={newItem.type} onChange={(event) => setNewItem({ ...newItem, type: event.target.value })} options={['noun','verb','adjective','adverb','phrase']} ariaLabel="Word type"/></label></div>}
               <label>{createType === 'word' ? 'Vietnamese meaning' : 'English sentence'}<textarea required rows="3" value={newItem.meaning} onChange={(event) => setNewItem({ ...newItem, meaning: event.target.value })} placeholder={createType === 'word' ? 'Nhập nghĩa tiếng Việt…' : 'Enter the sentence you want to practise…'} /></label>
               {createType === 'word' && <label>Example sentence<input value={newItem.example} onChange={(event) => setNewItem({ ...newItem, example: event.target.value })} placeholder="Use the word in a sentence…" /></label>}
               <div className={styles.modalActions}><button type="button" onClick={() => setShowCreateForm(false)}>Cancel</button><button type="submit"><Plus size={17} /> Create {createType}</button></div>

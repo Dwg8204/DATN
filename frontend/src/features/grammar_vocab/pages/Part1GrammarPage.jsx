@@ -8,6 +8,7 @@ import { PART1_QUESTIONS as MOCK_QUESTIONS } from '../data/part1MockData';
 import { getAdminGrammarPart } from '../utils/adminGrammarTestAdapter';
 import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
 import styles from './Part1GrammarPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 
 
@@ -105,7 +106,7 @@ export default function Part1GrammarPage() {
                 <div className={styles.questionNumberBox}>
                   <span className={styles.questionNumber}>{q.id}</span>
                 </div>
-                <div className={styles.questionText}>{q.text}</div>
+                <RichTextContent className={styles.questionText} value={q.text}/>
               </div>
               <MultipleChoice
                 name={`grammar-question-${q.id}`}

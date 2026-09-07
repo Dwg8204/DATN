@@ -1,10 +1,11 @@
 const KEY = 'aptimate-admin-reading-tests';
 export const READING_TESTS_EVENT = 'reading-tests-updated';
 export function normalizeReadingTest(test) {
-  if (!test?.part4?.headings || test.part4.headings.length <= 7) return test;
+  const normalizedPart1 = test?.part1 ? { passageHtml: '', passageVersion: 1, ...test.part1 } : test?.part1;
+  if (!test?.part4?.headings || test.part4.headings.length <= 7) return { ...test, part1: normalizedPart1 };
   const assigned = test.part4.headings.filter(heading => heading.correctParagraph).slice(0, 7);
   const headings = assigned.length === 7 ? assigned : test.part4.headings.slice(0, 7);
-  return { ...test, part4: { ...test.part4, headings } };
+  return { ...test, part1: normalizedPart1, part4: { ...test.part4, headings } };
 }
 export function getStoredReadingTests() {
   try {

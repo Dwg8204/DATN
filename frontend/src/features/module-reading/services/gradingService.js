@@ -29,7 +29,7 @@ export const calculateScore = (answers, testData, mode = 'full') => {
         userAnswer: userAnswer || '(No answer)',
         correctAnswer: q.answer,
         isCorrect,
-        explanation: `The correct word for gap [${q.position}] is "${q.answer}".` // Mock AI explanation
+        explanation: q.explanation || ''
       });
     });
   }
@@ -50,7 +50,7 @@ export const calculateScore = (answers, testData, mode = 'full') => {
         userAnswer: userPosition ? `Position ${userPosition}` : '(No answer)',
         correctAnswer: `Position ${s.correctPosition}`,
         isCorrect,
-        explanation: `The sentence "${s.content}" fits best in gap [${s.correctPosition}].`
+        explanation: s.explanation || ''
       });
     });
   }
@@ -69,7 +69,7 @@ export const calculateScore = (answers, testData, mode = 'full') => {
         userAnswer: userAnswer || '(No answer)',
         correctAnswer: q.answer,
         isCorrect,
-        explanation: `${q.answer} mentioned this in the text.`
+        explanation: q.explanation || ''
       });
     });
   }
@@ -91,7 +91,7 @@ export const calculateScore = (answers, testData, mode = 'full') => {
           userAnswer: userHeadingId ? (testData.part4.headings.find(h => h.id === userHeadingId)?.text || userHeadingId) : '(No answer)',
           correctAnswer: correctHeading.text,
           isCorrect,
-          explanation: `The paragraph ${p.label || p.id} fits best with the heading "${correctHeading.text}".`
+          explanation: correctHeading.explanation || ''
         });
       }
     });

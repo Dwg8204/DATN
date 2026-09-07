@@ -1,8 +1,10 @@
+import AnswerExplanation from '../../../components/common/AnswerExplanation';
 import { ArrowLeft, Edit3 } from 'lucide-react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminToast } from '../components/AdminFeedback';
 import { getStoredGrammarTest } from './data/grammarTestStorage';
 import styles from './GrammarTestPreviewPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 export default function GrammarTestPreviewPage() {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ export default function GrammarTestPreviewPage() {
       <div><span>GRAMMAR & VOCABULARY PREVIEW</span><h1>{test.details.title}</h1><p>{modeLabel}</p></div>
       <button className={styles.edit} onClick={() => navigate(`/admin/tests/grammar/${test.id}/edit`)}><Edit3 />Edit test</button>
     </header>
-    {parts.includes(1) && <section><h2>Part 1 · Grammar</h2><p>{test.parts[1].instruction}</p><div className={styles.questions}>{test.parts[1].questions.map((question, index) => <article key={question.id}><b>{index + 1}. {question.text}</b>{question.options.map((option, optionIndex) => <span className={optionIndex === question.correctAnswer ? styles.correct : ''} key={optionIndex}>{String.fromCharCode(65 + optionIndex)}. {option}</span>)}</article>)}</div></section>}
-    {parts.includes(2) && <section><h2>Part 2 · Vocabulary</h2>{test.parts[2].sets.map((set, index) => <article className={styles.set} key={set.setId}><h3>Questions {26 + index * 5}–{30 + index * 5}</h3><p>{set.instruction}</p><div>{set.targetWords.map(target => <span key={target.id}><b>{target.word}</b> = {target.correctAnswer}. {set.options.find(option => option.label === target.correctAnswer)?.text}</span>)}</div></article>)}</section>}
+    {parts.includes(1) && <section><h2>Part 1 · Grammar</h2><RichTextContent value={test.parts[1].instruction}/><div className={styles.questions}>{test.parts[1].questions.map((question, index) => <article key={question.id}><div><b>{index + 1}. </b><RichTextContent value={question.text}/></div>{question.options.map((option, optionIndex) => <span className={optionIndex === question.correctAnswer ? styles.correct : ''} key={optionIndex}>{String.fromCharCode(65 + optionIndex)}. {option}</span>)}<AnswerExplanation text={question.explanation} /></article>)}</div></section>}
+    {parts.includes(2) && <section><h2>Part 2 · Vocabulary</h2>{test.parts[2].sets.map((set, index) => <article className={styles.set} key={set.setId}><h3>Questions {26 + index * 5}–{30 + index * 5}</h3><RichTextContent value={set.instruction}/><div>{set.targetWords.map(target => <div key={target.id}><b>{target.word}</b> = {target.correctAnswer}. {set.options.find(option => option.label === target.correctAnswer)?.text}<AnswerExplanation text={target.explanation} /></div>)}</div></article>)}</section>}
   </div>;
 }

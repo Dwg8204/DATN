@@ -1,3 +1,4 @@
+import Pagination from '../components/common/Pagination';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CommentSection from '../components/shared/CommentSection/CommentSection';
@@ -52,6 +53,10 @@ export default function TestListPage() {
   const { skill } = useParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('part1');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
+  const [query, setQuery] = useState('');
+  useEffect(() => setPage(1), [activeTab, skill, query]);
   const [adminWritingTests, setAdminWritingTests] = useState(() => skill === 'writing' ? getAdminWritingListItems() : []);
   const [adminGrammarTests, setAdminGrammarTests] = useState(() => skill === 'grammar-vocab' ? getAdminGrammarListItems() : []);
 
@@ -80,7 +85,7 @@ export default function TestListPage() {
 
   const currentConfig = getConfig();
   const tests = skill === 'writing' ? [...adminWritingTests, ...(currentConfig.tests || [])] : skill === 'grammar-vocab' ? [...adminGrammarTests, ...(currentConfig.tests || [])] : currentConfig.tests || MOCK_TESTS;
-  const filteredTests = tests.filter((test) => !test.tabId || test.tabId === activeTab);
+  const filteredTests = tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
 
   // Helper to format skill name nicely
   const formatSkillName = (skillStr) => {
@@ -145,7 +150,7 @@ export default function TestListPage() {
                   <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <input type="text" className={styles.searchInput} placeholder="Search by test name." />
+                <input type="text" className={styles.searchInput} placeholder="Search by test name." value={query} onChange={e => setQuery(e.target.value)} />
               </div>
             </div>
             <button className={styles.searchBtn}>
@@ -155,7 +160,7 @@ export default function TestListPage() {
 
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
-              {filteredTests.map((test) => (
+              {filteredTests.slice((page - 1) * pageSize, page * pageSize).map((test) => (
                 <div key={test.id} className={styles.testCard}>
                   <div className={styles.cardTop}>
                     <div className={styles.cardTitle}>{test.title}</div>
@@ -220,6 +225,7 @@ export default function TestListPage() {
             </div>
           </div>
           
+          <Pagination page={page} totalItems={filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper}>
             <CommentSection />
           </div>
