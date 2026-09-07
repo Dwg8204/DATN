@@ -104,7 +104,7 @@
 .cardHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 
 .cardTitleWrap {
@@ -255,10 +255,6 @@
   color: var(--text-primary);
 }
 
-.cardFooter {
-  display: flex;
-  justify-content: flex-end;
-}
 
 .reviewBtn {
   display: flex;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { UserCircle, Bell, History, LogOut } from 'lucide-react';
+import { UserCircle, Bell, History, LogOut, LayoutDashboard } from 'lucide-react';
 import styles from './ProfileSidebar.module.css';
 
 export default function ProfileSidebar({ activeTab }) {
@@ -40,6 +40,14 @@ export default function ProfileSidebar({ activeTab }) {
         >
           <Bell size={20} style={{ marginRight: '16px' }} />
           <span>Notifications</span>
+        </button>
+
+        <button 
+          className={`${styles.navItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
+          onClick={() => navigate('/profile/dashboard')}
+        >
+          <LayoutDashboard size={20} style={{ marginRight: '16px' }} />
+          <span>Dashboard</span>
         </button>
         
         <button 

@@ -6,6 +6,14 @@ import { getAllGrammarVocabAnswers, getGrammarVocabSession } from '../utils/gram
 import { saveHistoryEntry } from '../../../utils/historyStorage';
 import styles from './GrammarVocabResultPage.module.css';
 
+function getCefrLevel(percentage) {
+  if (percentage >= 90) return 'C1';
+  if (percentage >= 75) return 'B2';
+  if (percentage >= 55) return 'B1';
+  if (percentage >= 35) return 'A2';
+  return 'A1';
+}
+
 function formatDuration(startTime) {
   const seconds = startTime ? Math.max(0, Math.floor((Date.now() - startTime) / 1000)) : 0;
   const hours = Math.floor(seconds / 3600).toString().padStart(2, '0');
@@ -128,6 +136,7 @@ export default function GrammarVocabResultPage() {
         mode: isFullTest ? 'full' : `part${selectedPart}`,
         submittedAt: new Date().toISOString(),
         timeSpent: result.duration,
+        cefrLevel: getCefrLevel(result.percentage),
         correct: result.correct,
         wrong: result.wrong,
         skipped: result.skipped,
@@ -136,7 +145,7 @@ export default function GrammarVocabResultPage() {
           isFullTest || selectedPart === '1' ? { label: 'Part 1 (Grammar)', correct: result.groupStats.find(g => g.label === 'Grammar')?.correct || 0, total: result.groupStats.find(g => g.label === 'Grammar')?.total || 0 } : null,
           isFullTest || selectedPart === '2' ? { label: 'Part 2 (Vocabulary)', correct: result.groupStats.find(g => g.label.startsWith('Vocabulary'))?.correct || 0, total: result.groupStats.find(g => g.label.startsWith('Vocabulary'))?.total || 0 } : null,
         ],
-        reviewUrl: `/grammar-vocab/result-detail?testId=${testId}&isFull=${isFullTest}&part=${selectedPart}&historyId=${newHistoryId}`
+        reviewUrl: `/grammar-vocab/result?testId=${testId}&isFull=${isFullTest}&part=${selectedPart}&historyId=${newHistoryId}`
       });
     }
   }, [result, testId, isFullTest, selectedPart, historyIdParam]);
