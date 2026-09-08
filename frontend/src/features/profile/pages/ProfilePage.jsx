@@ -4,6 +4,8 @@ import ProfileSidebar from '../components/ProfileSidebar';
 import { useAuth } from '../../../context/AuthContext';
 import { Key, Plus, Target } from 'lucide-react';
 import ConfirmModal from '../../../components/common/ConfirmModal';
+import { calcGoalProgress } from '../../../utils/dashboardUtils';
+import { getHistoryEntries } from '../../../utils/historyStorage';
 import styles from './ProfilePage.module.css';
 
 export default function ProfilePage() {
@@ -27,6 +29,10 @@ export default function ProfilePage() {
   const [tempGoalBand, setTempGoalBand] = useState(goalConfig.targetBand || 'B2');
   const [tempGoalTests, setTempGoalTests] = useState(goalConfig.targetTests || 47);
   const [tempGoalDays, setTempGoalDays] = useState(goalConfig.durationDays || 30);
+  const [showGoalForm, setShowGoalForm] = useState(false);
+
+  const historyEntries = getHistoryEntries();
+  const goalProgress = goalConfig.active ? calcGoalProgress(goalConfig, historyEntries) : null;
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -69,6 +75,7 @@ export default function ProfilePage() {
     };
     setGoalConfig(newConfig);
     localStorage.setItem('aptimate.dashboard_goal', JSON.stringify(newConfig));
+    setShowGoalForm(false);
     alert('Learning goal saved successfully!');
   };
 
@@ -156,10 +163,46 @@ export default function ProfilePage() {
               </button>
             </div>
             
-            <div className={styles.sectionDivider}></div>
-            <h3 className={styles.sectionTitle}>Learning Goal Tracker</h3>
-            
-            <div className={styles.goalSettings}>
+            <div className={`${styles.mobileGoalSummary} ${styles.desktopHidden}`}>
+              {goalConfig.active && goalProgress && (
+                <div className={styles.mobileGoalGrid}>
+                  <div className={styles.goalTile}>
+                    <div className={styles.goalTileTitle}>Target</div>
+                    <div className={styles.goalTileValuePrimary}>Band {goalConfig.targetBand}</div>
+                  </div>
+                  <div className={styles.goalTile}>
+                    <div className={styles.goalTileTitle}>Current (Est.)</div>
+                    <div className={styles.goalTileValue}>Band {goalProgress.currentEstBand}</div>
+                  </div>
+                  <div className={styles.goalTile}>
+                    <div className={styles.goalTileTitle}>Completed</div>
+                    <div className={styles.goalTileValue}>
+                      {goalProgress.completedTests} <span className={styles.goalTileUnit}>tests</span>
+                    </div>
+                  </div>
+                  <div className={styles.goalTile}>
+                    <div className={styles.goalTileTitle}>Learning Time</div>
+                    <div className={styles.goalTileValue}>
+                      {goalProgress.totalHours} <span className={styles.goalTileUnit}>hours</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <button 
+                type="button" 
+                className={styles.mobileSetGoalBtn}
+                onClick={() => setShowGoalForm(!showGoalForm)}
+              >
+                {goalConfig.active ? 'Change Goal' : 'Set Learning Goal'}
+              </button>
+            </div>
+
+            <div className={`${styles.goalTrackerContainer} ${!showGoalForm ? styles.mobileHiddenForm : ''}`}>
+              <div className={styles.sectionDivider}></div>
+              <h3 className={styles.sectionTitle}>Learning Goal Tracker</h3>
+              
+              <div className={styles.goalSettings}>
               <div className={styles.goalInputGroup}>
                 <label className={styles.label}>Target Band</label>
                 <select className={styles.input} value={tempGoalBand} onChange={e => setTempGoalBand(e.target.value)}>
@@ -183,7 +226,7 @@ export default function ProfilePage() {
             <div className={styles.actions} style={{ marginTop: '16px', marginBottom: '32px' }}>
               <button 
                 type="button" 
-                className={styles.changePasswordBtn} 
+                className={`${styles.changePasswordBtn} ${styles.desktopOnlyBtn}`} 
                 onClick={handleDeactivateGoal}
               >
                 <Target size={16} style={{ marginRight: '8px' }} />
@@ -193,6 +236,7 @@ export default function ProfilePage() {
               <button type="button" className={styles.saveBtn} onClick={handleSaveGoal}>
                 Save Goal
               </button>
+            </div>
             </div>
           </form>
 

@@ -124,45 +124,49 @@ export default function LearningHistoryPage() {
 
             <div className={styles.filterRow}>
               <span className={styles.filterLabel}>Skill:</span>
-              {['all', 'listening', 'reading', 'writing', 'speaking', 'grammar'].map(skill => (
-                <button
-                  key={skill}
-                  className={`${styles.filterBtn} ${skillFilter === skill && !appliedSearch ? styles.active : ''}`}
-                  onClick={() => handleSkillChange(skill)}
-                >
-                  {skill.charAt(0).toUpperCase() + skill.slice(1)}
-                  {skill !== 'all' && skillCounts[skill] !== undefined && (
-                    <span className={styles.filterCount}>({skillCounts[skill]})</span>
-                  )}
-                </button>
-              ))}
+              <div className={styles.filterBtnGroup}>
+                {['all', 'listening', 'reading', 'writing', 'speaking', 'grammar'].map(skill => (
+                  <button
+                    key={skill}
+                    className={`${styles.filterBtn} ${skillFilter === skill && !appliedSearch ? styles.active : ''}`}
+                    onClick={() => handleSkillChange(skill)}
+                  >
+                    {skill.charAt(0).toUpperCase() + skill.slice(1)}
+                    {skill !== 'all' && skillCounts[skill] !== undefined && (
+                      <span className={styles.filterCount}>({skillCounts[skill]})</span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {skillFilter !== 'all' && (
               <div className={styles.filterRow}>
                 <span className={styles.filterLabel}>Part:</span>
-                {['all', 'full', 'part1', 'part2', 'part3', 'part4'].map(part => {
-                  // Grammar only has part 1 and 2
-                  if (skillFilter === 'grammar' && (part === 'part3' || part === 'part4')) return null;
+                <div className={styles.filterBtnGroup}>
+                  {['all', 'full', 'part1', 'part2', 'part3', 'part4'].map(part => {
+                    // Grammar only has part 1 and 2
+                    if (skillFilter === 'grammar' && (part === 'part3' || part === 'part4')) return null;
 
-                  let label = part;
-                  if (part === 'all') label = 'All Parts';
-                  if (part === 'full') label = 'Full Test';
-                  if (part.startsWith('part')) label = part.replace('part', 'Part ');
+                    let label = part;
+                    if (part === 'all') label = 'All Parts';
+                    if (part === 'full') label = 'Full Test';
+                    if (part.startsWith('part')) label = part.replace('part', 'Part ');
 
-                  return (
-                    <button
-                      key={part}
-                      className={`${styles.filterBtn} ${partFilter === part && !appliedSearch ? styles.active : ''}`}
-                      onClick={() => handlePartChange(part)}
-                    >
-                      {label}
-                      {part !== 'all' && partCounts[part] !== undefined && (
-                        <span className={styles.filterCount}>({partCounts[part]})</span>
-                      )}
-                    </button>
-                  );
-                })}
+                    return (
+                      <button
+                        key={part}
+                        className={`${styles.filterBtn} ${partFilter === part && !appliedSearch ? styles.active : ''}`}
+                        onClick={() => handlePartChange(part)}
+                      >
+                        {label}
+                        {part !== 'all' && partCounts[part] !== undefined && (
+                          <span className={styles.filterCount}>({partCounts[part]})</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>

@@ -92,10 +92,10 @@ export default function DashboardPage() {
           <div className={styles.headerBanner}>
             <div className={styles.titleArea}>
               <div className={styles.titleRow}>
-                <h1 className={styles.title}>Tổng quan học tập</h1>
-                <span className={styles.badge}>Kỳ thi Aptis ESOL</span>
+                <h1 className={styles.title}>Learning Overview</h1>
+                <span className={styles.badge}>Aptis ESOL Exam</span>
               </div>
-              <p className={styles.subtitle}>Theo dõi chỉ số hiệu suất, điểm trung bình và lộ trình bứt phá band điểm Aptis.</p>
+              <p className={styles.subtitle}>Track performance metrics, average scores, and your path to target Aptis bands.</p>
             </div>
             <div className={styles.headerActions}>
             </div>
@@ -107,11 +107,11 @@ export default function DashboardPage() {
                 <ClipboardList size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Tổng số đề đã làm</div>
+                <div className={styles.kpiLabel}>Total Tests Completed</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue}>{totalTests}</span>
                 </div>
-                <div className={styles.kpiDesc}>Tổng số bài đã hoàn thành</div>
+                <div className={styles.kpiDesc}>Overall finished tests</div>
               </div>
             </div>
 
@@ -120,7 +120,7 @@ export default function DashboardPage() {
                 <Target size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Điểm trung bình (Criteria)</div>
+                <div className={styles.kpiLabel}>Average Score (Criteria)</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue}>{avgCriteriaScore}%</span>
                 </div>
@@ -135,11 +135,11 @@ export default function DashboardPage() {
                 <Trophy size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Band điểm trung bình (Avg Band)</div>
+                <div className={styles.kpiLabel}>Average Band (Avg Band)</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue} style={{ color: '#059669' }}>{avgBand}</span>
                 </div>
-                <div className={styles.kpiDesc}>Dựa trên lịch sử bài thi</div>
+                <div className={styles.kpiDesc}>Based on test history</div>
               </div>
             </div>
 
@@ -148,11 +148,11 @@ export default function DashboardPage() {
                 <Clock size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Chuỗi ngày học liên tục (Streak)</div>
+                <div className={styles.kpiLabel}>Learning Streak</div>
                 <div className={styles.kpiValueRow}>
-                  <span className={styles.kpiValue}>{streak} ngày</span>
+                  <span className={styles.kpiValue}>{streak} days</span>
                 </div>
-                <div className={styles.kpiDesc}>Kỷ lục cao nhất hiện tại</div>
+                <div className={styles.kpiDesc}>Current active streak</div>
               </div>
             </div>
 
@@ -161,7 +161,7 @@ export default function DashboardPage() {
                 <CheckCircle size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Kỹ năng tốt nhất (Best Skill)</div>
+                <div className={styles.kpiLabel}>Best Skill</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue} style={{ fontSize: '20px', color: '#581c87' }}>{bestSkill.name}</span>
                   {bestSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#6b21a8', background: '#f3e8ff', padding: '2px 8px', borderRadius: '6px' }}>Band {bestSkill.band}</span>}
@@ -174,7 +174,7 @@ export default function DashboardPage() {
                 <AlertTriangle size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Cần cải thiện (Weakest Skill)</div>
+                <div className={styles.kpiLabel}>Needs Improvement (Weakest Skill)</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue} style={{ fontSize: '20px', color: '#431407' }}>{weakSkill.name}</span>
                   {weakSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#9a3412', background: '#ffedd5', padding: '2px 8px', borderRadius: '6px' }}>Band {weakSkill.band}</span>}
@@ -184,84 +184,89 @@ export default function DashboardPage() {
           </div>
 
           <div className={styles.filterBar}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-              <div className={styles.pillRow} style={{ flex: 1 }}>
-                <span className={styles.pillLabel}>Kỹ năng:</span>
+            <div className={styles.filterRow}>
+              <span className={styles.filterLabel}>Skill:</span>
+              <div className={styles.filterBtnGroup}>
                 <button 
-                  className={`${styles.skillPill} ${skillFilter === 'all' ? styles.active : ''}`}
+                  className={`${styles.filterBtn} ${skillFilter === 'all' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('all'); setPartFilter('all'); }}
                 >
-                  Tất cả ({skillCounts.all})
+                  All ({skillCounts.all})
                 </button>
                 <button 
-                  className={`${styles.skillPill} ${skillFilter === 'listening' ? styles.active : ''}`}
+                  className={`${styles.filterBtn} ${skillFilter === 'listening' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('listening'); setPartFilter('all'); }}
                 >
                   Listening ({skillCounts.listening})
                 </button>
                 <button 
-                  className={`${styles.skillPill} ${skillFilter === 'reading' ? styles.active : ''}`}
+                  className={`${styles.filterBtn} ${skillFilter === 'reading' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('reading'); setPartFilter('all'); }}
                 >
                   Reading ({skillCounts.reading})
                 </button>
                 <button 
-                  className={`${styles.skillPill} ${skillFilter === 'writing' ? styles.active : ''}`}
+                  className={`${styles.filterBtn} ${skillFilter === 'writing' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('writing'); setPartFilter('all'); }}
                 >
                   Writing ({skillCounts.writing})
                 </button>
                 <button 
-                  className={`${styles.skillPill} ${skillFilter === 'speaking' ? styles.active : ''}`}
+                  className={`${styles.filterBtn} ${skillFilter === 'speaking' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('speaking'); setPartFilter('all'); }}
                 >
                   Speaking ({skillCounts.speaking})
                 </button>
                 <button 
-                  className={`${styles.skillPill} ${skillFilter === 'grammar' ? styles.active : ''}`}
+                  className={`${styles.filterBtn} ${skillFilter === 'grammar' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('grammar'); setPartFilter('all'); }}
                 >
                   Grammar & Vocab ({skillCounts.grammar})
                 </button>
               </div>
+            </div>
 
-              <div className={styles.selectWrap} style={{ width: '220px', flexShrink: 0 }}>
+            {skillFilter !== 'all' && (
+              <div className={styles.filterRow}>
+                <span className={styles.filterLabel}>Part:</span>
+                <div className={styles.filterBtnGroup}>
+                  {['all', 'full', 'part1', 'part2', 'part3', 'part4'].map(part => {
+                    if (skillFilter === 'grammar' && (part === 'part3' || part === 'part4')) return null;
+
+                    let label = part;
+                    if (part === 'all') label = 'All';
+                    if (part === 'full') label = 'Full Test';
+                    if (part.startsWith('part')) label = part.replace('part', 'Part ');
+
+                    return (
+                      <button
+                        key={part}
+                        className={`${styles.filterBtn} ${partFilter === part ? styles.active : ''}`}
+                        onClick={() => setPartFilter(part)}
+                      >
+                        {label}
+                        {part !== 'all' && partCounts[part] !== undefined && (
+                          ` (${partCounts[part]})`
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className={styles.filterRow}>
+              <span className={styles.filterLabel}>Time:</span>
+              <div className={styles.selectWrap}>
                 <select className={styles.filterSelect} value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
-                  <option value="all">Thời gian: Toàn bộ (All Time)</option>
-                  <option value="7">7 ngày gần đây</option>
-                  <option value="30">30 ngày gần đây</option>
-                  <option value="90">Quý này</option>
+                  <option value="all">Time: All Time</option>
+                  <option value="7">Last 7 days</option>
+                  <option value="30">Last 30 days</option>
+                  <option value="90">This Quarter</option>
                 </select>
                 <svg className={styles.selectArrow} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
               </div>
             </div>
-            
-            {skillFilter !== 'all' && (
-              <div className={styles.pillRow} style={{ marginTop: '12px' }}>
-                <span className={styles.pillLabel}>Phần thi:</span>
-                {['all', 'full', 'part1', 'part2', 'part3', 'part4'].map(part => {
-                  if (skillFilter === 'grammar' && (part === 'part3' || part === 'part4')) return null;
-
-                  let label = part;
-                  if (part === 'all') label = 'Tất cả';
-                  if (part === 'full') label = 'Full Test';
-                  if (part.startsWith('part')) label = part.replace('part', 'Part ');
-
-                  return (
-                    <button
-                      key={part}
-                      className={`${styles.skillPill} ${partFilter === part ? styles.active : ''}`}
-                      onClick={() => setPartFilter(part)}
-                    >
-                      {label}
-                      {part !== 'all' && partCounts[part] !== undefined && (
-                        ` (${partCounts[part]})`
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
           </div>
 
           <div className={styles.chartsSection}>
