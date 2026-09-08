@@ -292,6 +292,10 @@
     font-size: 12px;
   }
 
+  .userDropdown {
+    display: none !important;
+  }
+
   .mobileNav {
     position: fixed;
     z-index: 1001;

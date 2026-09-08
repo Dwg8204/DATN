@@ -121,7 +121,14 @@ export default function Header() {
         <UserNotifications />
         {isAuthenticated ? (
           <div className={styles.userMenuContainer}>
-            <div className={styles.userProfileBtn}>
+            <div 
+              className={styles.userProfileBtn}
+              onClick={() => {
+                if (window.innerWidth <= 700) {
+                  navigate('/profile');
+                }
+              }}
+            >
               <img src={user?.avatar || 'https://placehold.co/32x32'} alt="User" className={styles.userAvatar} />
               <span className={styles.userName}>{user?.name}</span>
               <ChevronDown className={styles.navIcon} aria-hidden="true" />
