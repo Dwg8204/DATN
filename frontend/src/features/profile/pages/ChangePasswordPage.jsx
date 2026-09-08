@@ -3,6 +3,7 @@ import ProfileSidebar from '../components/ProfileSidebar';
 import styles from './ChangePasswordPage.module.css';
 import PasswordInput from '../../auth/components/PasswordInput';
 import { useAuth } from '../../../context/AuthContext';
+import ConfirmModal from '../../../components/common/ConfirmModal';
 
 export default function ChangePasswordPage() {
   const { user } = useAuth();
@@ -10,8 +11,9 @@ export default function ChangePasswordPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  const handleSave = (e) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
     setError('');
 
@@ -24,7 +26,11 @@ export default function ChangePasswordPage() {
       setError('New passwords do not match.');
       return;
     }
+    
+    setShowConfirm(true);
+  };
 
+  const executeSave = () => {
     try {
       const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
       const userIndex = existingUsers.findIndex(u => u.email === user.email);
@@ -44,6 +50,7 @@ export default function ChangePasswordPage() {
       existingUsers[userIndex].password = newPassword;
       localStorage.setItem('aptimate.mock_users', JSON.stringify(existingUsers));
 
+      setShowConfirm(false);
       alert('Password changed successfully!');
       setCurrentPassword('');
       setNewPassword('');
@@ -51,6 +58,7 @@ export default function ChangePasswordPage() {
     } catch (e) {
       setError('An error occurred while updating the password.');
       console.error(e);
+      setShowConfirm(false);
     }
   };
 
@@ -62,7 +70,7 @@ export default function ChangePasswordPage() {
         <div className={styles.content}>
           <h1 className={styles.title}>Change password</h1>
           
-          <form className={styles.form} onSubmit={handleSave}>
+          <form className={styles.form} onSubmit={handleFormSubmit}>
             {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
             
             <div className={styles.inputCol}>
@@ -98,6 +106,15 @@ export default function ChangePasswordPage() {
               </button>
             </div>
           </form>
+
+          {showConfirm && (
+            <ConfirmModal 
+              title="Change Password"
+              message="Are you sure you want to change your password?"
+              onConfirm={executeSave}
+              onCancel={() => setShowConfirm(false)}
+            />
+          )}
         </div>
       </div>
     </div>
