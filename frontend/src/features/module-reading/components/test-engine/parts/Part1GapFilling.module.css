@@ -1,0 +1,70 @@
+.part {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+}
+
+.passageWrap {
+  flex: 1;
+  padding: 8px;
+}
+
+.passage {
+  width: 100%;
+  max-width: 760px;
+  color: #30343b;
+  font-size: 14px;
+  line-height: 2;
+  overflow-wrap: break-word;
+}
+
+.passageText {
+  white-space: pre-wrap;
+}
+
+.answerGap {
+  display: inline-flex;
+  width: 180px;
+  max-width: calc(100% - 8px);
+  align-items: center;
+  margin: 4px 8px;
+  vertical-align: middle;
+}
+
+.answerSelect {
+  width: 100%;
+}
+
+@media (max-width: 700px) {
+  .passageWrap {
+    padding: 0;
+  }
+
+  .passage {
+    max-width: none;
+    font-size: 16px;
+    line-height: 1.9;
+  }
+
+  .answerGap {
+    width: 145px;
+    margin: 3px 5px;
+  }
+
+  .answerSelect > button {
+    min-height: 34px;
+    padding: 4px 9px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
+
+@media (max-width: 380px) {
+  .passage {
+    font-size: 15px;
+  }
+
+  .answerGap {
+    width: 132px;
+  }
+}

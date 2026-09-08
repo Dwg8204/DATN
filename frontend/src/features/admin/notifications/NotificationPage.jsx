@@ -15,7 +15,7 @@ const initialNotifications = [
   { id: 4, date: '2026-03-09T08:15', content: 'Your weekly learning report is now available.', target: 'Everyone', type: 'Email' },
   { id: 5, date: '2025-11-12T14:00', content: 'Your Reading practice streak has reached seven days. Keep it going!', target: 'Student', type: 'Push notification' },
   { id: 6, date: '2025-12-28T16:45', content: 'New student submissions are waiting for feedback.', target: 'Teacher', type: 'Email' },
-  { id: 7, date: '2025-10-14T11:20', content: 'Explore our latest Aptis preparation resources.', target: 'Everyone', type: 'Banner' },
+  { id: 7, date: '2025-10-14T11:20', content: 'Explore our latest Aptis preparation resources.', target: 'Everyone', type: 'Push notification' },
   { id: 8, date: '2025-07-24T13:10', content: 'Your assigned Speaking assessments have been updated.', target: 'Teacher', type: 'Push notification' },
   { id: 9, date: '2025-12-21T08:00', content: 'Holiday study challenge: complete three lessons this week.', target: 'Everyone', type: 'Email' },
 ];
@@ -23,7 +23,7 @@ const initialNotifications = [
 function loadNotifications() {
   try {
     const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]');
-    return [...saved, ...initialNotifications];
+    return [...saved.filter((item) => item.type !== 'Banner'), ...initialNotifications];
   } catch {
     return initialNotifications;
   }
@@ -33,8 +33,13 @@ const formatDate = (value) => new Intl.DateTimeFormat('en-US', {
   month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
 }).format(new Date(value));
 
+const toLocalDateTimeMinute = (date = new Date()) => {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return localDate.toISOString().slice(0, 16);
+};
+
 const emptyForm = () => ({
-  target: 'Everyone', type: 'Push notification', date: new Date(Date.now() + 3600000).toISOString().slice(0, 16), content: '', fileName: '',
+  target: 'Everyone', type: 'Push notification', date: toLocalDateTimeMinute(), content: '', fileName: '',
 });
 
 export default function NotificationPage() {
@@ -43,6 +48,7 @@ export default function NotificationPage() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(8);
   const [preview, setPreview] = useState(false);
+  const [selectedNotification, setSelectedNotification] = useState(null);
   const [toast, setToast] = useState('');
   const [error, setError] = useState('');
   const fileRef = useRef(null);
@@ -52,6 +58,9 @@ export default function NotificationPage() {
   const validate = () => {
     if (!form.content.trim()) return 'Please enter notification content.';
     if (!form.date) return 'Please select a delivery date and time.';
+    const currentMinute = new Date();
+    currentMinute.setSeconds(0, 0);
+    if (new Date(form.date) < currentMinute) return 'Please select the current time or a future time.';
     return '';
   };
   const showPreview = () => {
@@ -78,9 +87,6 @@ export default function NotificationPage() {
   return (
     <div className={styles.page}>
       <AdminToast message={toast} onClose={() => setToast('')} />
-      <div className={styles.heading}>
-        <div><span>Communication centre</span><h2>Notifications</h2><p>Create announcements and review messages sent to AptiMate users.</p></div>
-      </div>
 
       <section className={styles.workspace}>
         <form className={styles.composer} onSubmit={(event) => { event.preventDefault(); sendNotification(); }}>
@@ -92,11 +98,17 @@ export default function NotificationPage() {
 
           <fieldset className={styles.types}>
             <legend>Notification type</legend>
-            {['Push notification', 'Email', 'Banner'].map((type) => <label key={type}><input type="radio" name="notificationType" checked={form.type === type} onChange={() => update('type', type)} /><span>{type}</span></label>)}
+            {['Push notification', 'Email'].map((type) => <label key={type}><input type="radio" name="notificationType" checked={form.type === type} onChange={() => update('type', type)} /><span>{type}</span></label>)}
           </fieldset>
 
           <label className={styles.field}>Date &amp; time
-            <input type="datetime-local" value={form.date} onChange={(event) => update('date', event.target.value)} />
+            <input
+              type="datetime-local"
+              min={toLocalDateTimeMinute()}
+              step="60"
+              value={form.date}
+              onChange={(event) => { update('date', event.target.value); setError(''); }}
+            />
           </label>
 
           <label className={styles.field}>Content
@@ -115,8 +127,14 @@ export default function NotificationPage() {
           <header><div><h3>Notification history</h3><p>{notifications.length} messages</p></div></header>
           <div className={styles.tableScroll}>
             <table>
-              <thead><tr><th>Date &amp; time</th><th>Content</th><th>Target</th><th>Type</th></tr></thead>
-              <tbody>{visibleNotifications.map((item) => <tr key={item.id}><td>{formatDate(item.date)}</td><td title={item.content}>{item.content}</td><td><span className={`${styles.target} ${styles[item.target.toLowerCase()]}`}>{item.target}</span></td><td>{item.type}</td></tr>)}</tbody>
+              <thead><tr><th>Date &amp; time</th><th>Content</th><th>Target</th><th>Type</th><th><span className={styles.visuallyHidden}>Actions</span></th></tr></thead>
+              <tbody>{visibleNotifications.map((item) => <tr key={item.id}>
+                <td>{formatDate(item.date)}</td>
+                <td><span className={styles.contentPreview} title={item.content}>{item.content}</span></td>
+                <td><span className={`${styles.target} ${styles[item.target.toLowerCase()]}`}>{item.target}</span></td>
+                <td>{item.type}</td>
+                <td><button type="button" className={styles.viewButton} onClick={() => setSelectedNotification(item)} aria-label={`View notification sent on ${formatDate(item.date)}`} title="View details"><Eye /></button></td>
+              </tr>)}</tbody>
             </table>
           </div>
           <Pagination page={page} totalItems={notifications.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
@@ -129,6 +147,17 @@ export default function NotificationPage() {
         <p>{form.content}</p>
         {form.fileName && <div className={styles.previewFile}><Paperclip />{form.fileName}</div>}
         <footer><button onClick={() => setPreview(false)}>Back to edit</button><button onClick={sendNotification}><Send />Confirm &amp; send</button></footer>
+      </section></div>}
+
+      {selectedNotification && <div className={styles.backdrop} onMouseDown={() => setSelectedNotification(null)}><section className={styles.previewModal} role="dialog" aria-modal="true" aria-labelledby="notification-detail-title" onMouseDown={(event) => event.stopPropagation()}>
+        <header><div><span>Notification details</span><h3 id="notification-detail-title">{selectedNotification.type}</h3></div><button type="button" onClick={() => setSelectedNotification(null)} aria-label="Close notification details"><X /></button></header>
+        <dl className={styles.detailMeta}>
+          <div><dt>Target</dt><dd><span className={`${styles.target} ${styles[selectedNotification.target.toLowerCase()]}`}>{selectedNotification.target}</span></dd></div>
+          <div><dt>Date &amp; time</dt><dd>{formatDate(selectedNotification.date)}</dd></div>
+        </dl>
+        <div className={styles.detailContent}><strong>Content</strong><p>{selectedNotification.content}</p></div>
+        {selectedNotification.fileName && <div className={styles.previewFile}><Paperclip />{selectedNotification.fileName}</div>}
+        <footer><button type="button" onClick={() => setSelectedNotification(null)}>Close</button></footer>
       </section></div>}
     </div>
   );

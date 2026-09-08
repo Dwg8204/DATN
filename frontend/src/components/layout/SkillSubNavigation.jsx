@@ -44,11 +44,22 @@ const skillNavigation = [
       { label: 'Speaking Test', to: '/speaking/tests' },
     ],
   },
+  {
+    pathPrefix: '/dictation',
+    label: 'Dictation',
+    items: [
+      { label: 'Dictation Practice', to: '/dictation', mode: 'dictation' },
+      { label: 'Flashcard', to: '/dictation?mode=flashcard', mode: 'flashcard' },
+      { label: 'Vocabulary Notebook', to: '/dictation?mode=notebook', mode: 'notebook' },
+    ],
+  },
 ];
 
 export default function SkillSubNavigation() {
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const navigation = skillNavigation.find(({ pathPrefix }) => pathname.startsWith(pathPrefix));
+  const requestedMode = new URLSearchParams(search).get('mode');
+  const dictationMode = ['flashcard', 'notebook'].includes(requestedMode) ? requestedMode : 'dictation';
 
   if (!navigation) return null;
 
@@ -59,7 +70,7 @@ export default function SkillSubNavigation() {
           key={item.to}
           to={item.to}
           end={item.to === '/reading'}
-          className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
+          className={({ isActive }) => `${styles.link} ${navigation.pathPrefix === '/dictation' ? dictationMode === item.mode ? styles.active : '' : isActive ? styles.active : ''}`}
         >
           {item.label}
         </NavLink>
