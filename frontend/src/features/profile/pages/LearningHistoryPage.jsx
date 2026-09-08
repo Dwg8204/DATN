@@ -1,6 +1,6 @@
 import Pagination from '../../../components/common/Pagination';
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { getHistoryEntries } from '../../../utils/historyStorage';
 import { ClipboardList, Calendar, Clock, FileText, Search } from 'lucide-react';
@@ -16,6 +16,7 @@ export default function LearningHistoryPage() {
   const [partFilter, setPartFilter] = useState('all');
   const [searchInput, setSearchInput] = useState('');
   const [appliedSearch, setAppliedSearch] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     setHistory(getHistoryEntries());
@@ -86,7 +87,7 @@ export default function LearningHistoryPage() {
 
   useEffect(() => setPage(1), [skillFilter, partFilter, sortOrder]);
 
-
+  const currentEntries = filteredHistory.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className={styles.page}>
@@ -174,8 +175,8 @@ export default function LearningHistoryPage() {
             </div>
           ) : (
             <div className={styles.historyList}>
-              {filteredHistory.slice((page - 1) * pageSize, page * pageSize).map(entry => (
-                <div key={entry.id} className={styles.card}>
+              {currentEntries.map(entry => (
+                <div key={entry.id} className={`${styles.card} ${styles.clickableCard}`} onClick={() => navigate(entry.reviewUrl)}>
                   <div className={styles.cardHeader}>
                     <div>
                       <div className={styles.cardTitleWrap}>

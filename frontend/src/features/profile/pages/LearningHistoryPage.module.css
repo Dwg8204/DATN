@@ -1,6 +1,8 @@
 .page {
   background: var(--bg-primary);
-  min-height: calc(100vh - 72px);
+  min-height: 100vh;
+  margin-top: -40px;
+  margin-bottom: -40px;
   padding: 40px 20px;
 }
 
@@ -16,7 +18,7 @@
   background: white;
   border-radius: 16px;
   padding: 32px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .header {
@@ -121,11 +123,30 @@
   text-transform: uppercase;
 }
 
-.skillBadge.listening { background: #fee2e2; color: #dc2626; }
-.skillBadge.reading { background: #dbeafe; color: #2563eb; }
-.skillBadge.writing { background: #ffedd5; color: #ea580c; }
-.skillBadge.speaking { background: #f3e8ff; color: #9333ea; }
-.skillBadge.grammar { background: #e0e7ff; color: #4f46e5; }
+.skillBadge.listening {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.skillBadge.reading {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.skillBadge.writing {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.skillBadge.speaking {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.skillBadge.grammar {
+  background: #e3ffe0;
+  color: #0e9930;
+}
 
 .testName {
   font-size: 18px;
@@ -178,9 +199,17 @@
   margin-bottom: 16px;
 }
 
-.correct { color: #43B75D; }
-.wrong { color: #DA1E21; }
-.skipped { color: #686868; }
+.correct {
+  color: #43B75D;
+}
+
+.wrong {
+  color: #DA1E21;
+}
+
+.skipped {
+  color: #686868;
+}
 
 .partScores {
   display: flex;
@@ -335,9 +364,17 @@
 }
 
 @keyframes pulseBtn {
-  0% { box-shadow: 0 0 0 0 rgba(189, 31, 54, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(189, 31, 54, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(189, 31, 54, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(189, 31, 54, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 6px rgba(189, 31, 54, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(189, 31, 54, 0);
+  }
 }
 
 .searchBtn:hover {

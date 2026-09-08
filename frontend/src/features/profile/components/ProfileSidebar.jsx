@@ -1,17 +1,25 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { UserCircle, Bell, History, LogOut, LayoutDashboard } from 'lucide-react';
+import { calcGoalProgress } from '../../../utils/dashboardUtils';
+import { getHistoryEntries } from '../../../utils/historyStorage';
 import styles from './ProfileSidebar.module.css';
 
 export default function ProfileSidebar({ activeTab }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
+
+  const historyEntries = getHistoryEntries();
+  const savedConfig = localStorage.getItem('aptimate.dashboard_goal');
+  const goalConfig = savedConfig ? JSON.parse(savedConfig) : { active: false };
+  const goalProgress = goalConfig.active ? calcGoalProgress(goalConfig, historyEntries) : null;
 
   return (
     <div className={styles.sidebar}>
@@ -22,6 +30,35 @@ export default function ProfileSidebar({ activeTab }) {
           <div className={styles.email}>{user?.email || 'email@example.com'}</div>
         </div>
       </div>
+      
+      {goalConfig.active && goalProgress ? (
+        <div className={styles.goalGrid}>
+          <div className={styles.goalTile}>
+            <div className={styles.goalTileTitle}>Mục tiêu</div>
+            <div className={styles.goalTileValuePrimary}>Band {goalConfig.targetBand}</div>
+          </div>
+          <div className={styles.goalTile}>
+            <div className={styles.goalTileTitle}>Hiện tại (Est.)</div>
+            <div className={styles.goalTileValue}>Band {goalProgress.currentEstBand}</div>
+          </div>
+          <div className={styles.goalTile}>
+            <div className={styles.goalTileTitle}>Đã hoàn thành</div>
+            <div className={styles.goalTileValue}>
+              {goalProgress.completedTests} <span className={styles.goalTileUnit}>đề</span>
+            </div>
+          </div>
+          <div className={styles.goalTile}>
+            <div className={styles.goalTileTitle}>Thời gian học</div>
+            <div className={styles.goalTileValue}>
+              {goalProgress.totalHours} <span className={styles.goalTileUnit}>giờ</span>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <button className={styles.btnSetGoal} onClick={() => navigate('/profile')}>
+        {goalConfig.active ? 'Thay đổi mục tiêu' : 'Đặt mục tiêu học tập'}
+      </button>
       
       <div className={styles.divider}></div>
       

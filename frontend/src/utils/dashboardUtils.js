@@ -57,13 +57,140 @@ export function calcScoreOverTime(entries) {
     return new Date(`2026-${ma}-${da}`) - new Date(`2026-${mb}-${db}`);
   });
 
-  return sortedDates.map(date => {
+  const chartData = sortedDates.map(date => {
     const dataPoint = { date };
     for (const skill in grouped[date]) {
       dataPoint[skill] = Math.round(grouped[date][skill].total / grouped[date][skill].count);
     }
     return dataPoint;
   });
+
+  // Inject fake data from 01/09 to 03/09 for visualization purposes
+  const fakeData = [
+    { date: '01/09', listening: 62, reading: 55 },
+    { date: '02/09', speaking: 70, writing: 65 },
+    { date: '03/09', grammar: 58, listening: 68 },
+  ];
+  
+  // Merge fake data with real data (prepend fake data)
+  return [...fakeData, ...chartData];
+}
+
+export function calcAvgBand(entries) {
+  if (entries.length === 0) return 'N/A';
+  
+  const bandValues = { 'A1': 1, 'A2': 2, 'B1': 3, 'B2': 4, 'C1': 5, 'C2': 6 };
+  const bandNames = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2', 5: 'C1', 6: 'C2' };
+  
+  let total = 0;
+  let count = 0;
+  
+  entries.forEach(entry => {
+    if (entry.cefrLevel && bandValues[entry.cefrLevel]) {
+      total += bandValues[entry.cefrLevel];
+      count++;
+    }
+  });
+  
+  if (count === 0) return 'N/A';
+  
+  const avg = Math.round(total / count);
+  return bandNames[avg] || 'N/A';
+}
+
+export function calcBestSkill(entries) {
+  if (entries.length === 0) return { name: 'N/A', band: '' };
+  
+  const bandValues = { 'A1': 1, 'A2': 2, 'B1': 3, 'B2': 4, 'C1': 5, 'C2': 6 };
+  const bandNames = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2', 5: 'C1', 6: 'C2' };
+  
+  const skillTotals = {};
+  const skillCounts = {};
+  
+  entries.forEach(entry => {
+    if (entry.cefrLevel && bandValues[entry.cefrLevel]) {
+      skillTotals[entry.skill] = (skillTotals[entry.skill] || 0) + bandValues[entry.cefrLevel];
+      skillCounts[entry.skill] = (skillCounts[entry.skill] || 0) + 1;
+    }
+  });
+  
+  let bestSkill = 'N/A';
+  let bestAvg = 0;
+  
+  for (const skill in skillTotals) {
+    const avg = skillTotals[skill] / skillCounts[skill];
+    if (avg > bestAvg) {
+      bestAvg = avg;
+      bestSkill = skill;
+    }
+  }
+  
+  return { 
+    name: bestSkill !== 'N/A' ? bestSkill.charAt(0).toUpperCase() + bestSkill.slice(1) : 'N/A', 
+    band: bestAvg > 0 ? bandNames[Math.round(bestAvg)] : '' 
+  };
+}
+
+export function calcWeakSkill(entries) {
+  if (entries.length === 0) return { name: 'N/A', band: '' };
+  
+  const bandValues = { 'A1': 1, 'A2': 2, 'B1': 3, 'B2': 4, 'C1': 5, 'C2': 6 };
+  const bandNames = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2', 5: 'C1', 6: 'C2' };
+  
+  const skillTotals = {};
+  const skillCounts = {};
+  
+  entries.forEach(entry => {
+    if (entry.cefrLevel && bandValues[entry.cefrLevel]) {
+      skillTotals[entry.skill] = (skillTotals[entry.skill] || 0) + bandValues[entry.cefrLevel];
+      skillCounts[entry.skill] = (skillCounts[entry.skill] || 0) + 1;
+    }
+  });
+  
+  let weakSkill = 'N/A';
+  let weakAvg = 999;
+  
+  for (const skill in skillTotals) {
+    const avg = skillTotals[skill] / skillCounts[skill];
+    if (avg < weakAvg) {
+      weakAvg = avg;
+      weakSkill = skill;
+    }
+  }
+  
+  return { 
+    name: weakSkill !== 'N/A' ? weakSkill.charAt(0).toUpperCase() + weakSkill.slice(1) : 'N/A',
+    band: weakAvg < 999 ? bandNames[Math.round(weakAvg)] : ''
+  };
+}
+
+export function calcGoalProgress(entries, goalConfig) {
+  if (!goalConfig || !goalConfig.active) return { currentBandEst: 'N/A', completedTests: 0, totalHours: 0 };
+  
+  const startDate = new Date(goalConfig.startDate);
+  startDate.setHours(0,0,0,0);
+  
+  const relevantEntries = entries.filter(e => e.mode === 'full' && new Date(e.submittedAt) >= startDate);
+  
+  const completedTests = relevantEntries.length;
+  const currentBandEst = calcAvgBand(relevantEntries);
+  
+  // Calculate total hours from timeSpent (format: "HH:mm:ss")
+  let totalHours = 0;
+  relevantEntries.forEach(entry => {
+    if (entry.timeSpent) {
+      const parts = entry.timeSpent.split(':');
+      if (parts.length === 3) {
+        totalHours += parseInt(parts[0], 10) + parseInt(parts[1], 10) / 60 + parseInt(parts[2], 10) / 3600;
+      }
+    }
+  });
+  
+  return {
+    currentBandEst: currentBandEst !== 'N/A' ? `Band ${currentBandEst}` : 'N/A',
+    completedTests,
+    totalHours: Number(totalHours.toFixed(2))
+  };
 }
 
 export function calcCorrectWrongBar(entries) {

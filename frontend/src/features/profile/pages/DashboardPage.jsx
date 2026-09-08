@@ -4,17 +4,18 @@ import { getHistoryEntries } from '../../../utils/historyStorage';
 import { 
   getFilteredEntries, 
   calcSkillDistribution, 
-  calcScoreOverTime, 
-  calcCorrectWrongBar, 
+  calcScoreOverTime,
   calcStreak,
-  calcGoalChartData
+  calcAvgBand,
+  calcBestSkill,
+  calcWeakSkill,
+  calcGoalProgress
 } from '../../../utils/dashboardUtils';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell,
-  BarChart, Bar,
-  ComposedChart
+  PieChart, Pie, Cell
 } from 'recharts';
+import { ClipboardList, Target, Trophy, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
 import styles from './DashboardPage.module.css';
 
 const SKILL_COLORS = {
@@ -30,15 +31,6 @@ export default function DashboardPage() {
   const [skillFilter, setSkillFilter] = useState('all');
   const [partFilter, setPartFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all'); // all, 7, 30, 90
-  
-  // Goal state
-  const [goalConfig, setGoalConfig] = useState(() => {
-    const saved = localStorage.getItem('aptimate.dashboard_goal');
-    return saved ? JSON.parse(saved) : { active: false, startDate: new Date().toISOString(), durationDays: 30, targetPerSkill: 2 };
-  });
-
-  const [tempGoalTarget, setTempGoalTarget] = useState(goalConfig.targetPerSkill);
-  const [tempGoalDays, setTempGoalDays] = useState(goalConfig.durationDays);
 
   useEffect(() => {
     setEntries(getHistoryEntries());
@@ -48,24 +40,15 @@ export default function DashboardPage() {
     return getFilteredEntries(entries, { skill: skillFilter, part: partFilter, dateRange: dateFilter });
   }, [entries, skillFilter, partFilter, dateFilter]);
 
-  // Derived stats
-  const totalTests = filteredEntries.length;
+  // Derived stats (overall, independent of filters except when specified)
+  const totalTests = entries.length;
   const streak = calcStreak(entries);
-  
-  const mostActiveSkill = useMemo(() => {
-    const dist = calcSkillDistribution(filteredEntries);
-    if (dist.length === 0) return 'N/A';
-    return dist.sort((a, b) => b.value - a.value)[0].name;
-  }, [filteredEntries]);
+  const avgBand = calcAvgBand(entries);
+  const bestSkill = calcBestSkill(entries);
+  const weakSkill = calcWeakSkill(entries);
 
-  // Two separate averages
-  const mcqEntries = filteredEntries.filter(e => ['listening', 'reading', 'grammar'].includes(e.skill));
-  const criteriaEntries = filteredEntries.filter(e => ['speaking', 'writing'].includes(e.skill));
-
-  const avgMcqAccuracy = mcqEntries.length > 0 
-    ? Math.round(mcqEntries.reduce((sum, e) => sum + (e.total > 0 ? (e.correct / e.total) * 100 : 0), 0) / mcqEntries.length)
-    : 0;
-
+  // Criteria average
+  const criteriaEntries = entries.filter(e => ['speaking', 'writing'].includes(e.skill));
   const avgCriteriaScore = criteriaEntries.length > 0
     ? Math.round(criteriaEntries.reduce((sum, e) => {
         const avg = e.criteria?.reduce((s, c) => s + c.score, 0) / (e.criteria?.length || 1) || 0;
@@ -73,28 +56,32 @@ export default function DashboardPage() {
       }, 0) / criteriaEntries.length)
     : 0;
 
-  // Chart data
+  // Chart data (uses filters)
   const scoreOverTimeData = useMemo(() => calcScoreOverTime(filteredEntries), [filteredEntries]);
-  const skillDistData = useMemo(() => calcSkillDistribution(filteredEntries), [filteredEntries]);
-  const correctWrongData = useMemo(() => calcCorrectWrongBar(filteredEntries), [filteredEntries]);
-  const goalChartData = useMemo(() => calcGoalChartData(entries, goalConfig), [entries, goalConfig]);
+  
+  // Skill dist always shows all skills, ignores skill/part filter, but respects date filter
+  const dateFilteredOnly = useMemo(() => {
+    return getFilteredEntries(entries, { skill: 'all', part: 'all', dateRange: dateFilter });
+  }, [entries, dateFilter]);
+  const skillDistData = useMemo(() => calcSkillDistribution(dateFilteredOnly), [dateFilteredOnly]);
 
-  const handleSaveGoal = () => {
-    const newConfig = {
-      active: true,
-      startDate: new Date().toISOString(),
-      durationDays: Number(tempGoalDays),
-      targetPerSkill: Number(tempGoalTarget)
-    };
-    setGoalConfig(newConfig);
-    localStorage.setItem('aptimate.dashboard_goal', JSON.stringify(newConfig));
-  };
+  // Calculate how many entries for each skill to show in pill badges
+  const skillCounts = useMemo(() => {
+    const counts = { all: entries.length, listening: 0, reading: 0, writing: 0, speaking: 0, grammar: 0 };
+    entries.forEach(e => {
+      if (counts[e.skill] !== undefined) counts[e.skill]++;
+    });
+    return counts;
+  }, [entries]);
 
-  const handleDeactivateGoal = () => {
-    const newConfig = { ...goalConfig, active: false };
-    setGoalConfig(newConfig);
-    localStorage.setItem('aptimate.dashboard_goal', JSON.stringify(newConfig));
-  };
+  const partCounts = useMemo(() => {
+    const counts = {};
+    const relevantHistory = skillFilter === 'all' ? entries : entries.filter(e => e.skill === skillFilter);
+    relevantHistory.forEach(entry => {
+      counts[entry.mode] = (counts[entry.mode] || 0) + 1;
+    });
+    return counts;
+  }, [entries, skillFilter]);
 
   return (
     <div className={styles.page}>
@@ -102,65 +89,183 @@ export default function DashboardPage() {
         <ProfileSidebar activeTab="dashboard" />
         
         <div className={styles.content}>
-          <h1 className={styles.title}>Dashboard</h1>
+          <div className={styles.headerBanner}>
+            <div className={styles.titleArea}>
+              <div className={styles.titleRow}>
+                <h1 className={styles.title}>Tổng quan học tập</h1>
+                <span className={styles.badge}>Kỳ thi Aptis ESOL</span>
+              </div>
+              <p className={styles.subtitle}>Theo dõi chỉ số hiệu suất, điểm trung bình và lộ trình bứt phá band điểm Aptis.</p>
+            </div>
+            <div className={styles.headerActions}>
+            </div>
+          </div>
 
-          <div className={styles.filters}>
-            <div className={styles.filterGroup}>
-              <label>Skill:</label>
-              <select className={styles.select} value={skillFilter} onChange={(e) => { setSkillFilter(e.target.value); setPartFilter('all'); }}>
-                <option value="all">All Skills</option>
-                <option value="listening">Listening</option>
-                <option value="reading">Reading</option>
-                <option value="writing">Writing</option>
-                <option value="speaking">Speaking</option>
-                <option value="grammar">Grammar & Vocab</option>
-              </select>
+          <div className={styles.kpiGrid}>
+            <div className={styles.kpiCard}>
+              <div className={styles.kpiIcon} style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #e0f2fe' }}>
+                <ClipboardList size={24} />
+              </div>
+              <div className={styles.kpiInfo}>
+                <div className={styles.kpiLabel}>Tổng số đề đã làm</div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValue}>{totalTests}</span>
+                </div>
+                <div className={styles.kpiDesc}>Tổng số bài đã hoàn thành</div>
+              </div>
+            </div>
+
+            <div className={styles.kpiCard}>
+              <div className={styles.kpiIcon} style={{ background: '#fffbeb', color: '#d97706', border: '1px solid #fef3c7' }}>
+                <Target size={24} />
+              </div>
+              <div className={styles.kpiInfo}>
+                <div className={styles.kpiLabel}>Điểm trung bình (Criteria)</div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValue}>{avgCriteriaScore}%</span>
+                </div>
+                <div className={styles.kpiProgressBar}>
+                  <div className={styles.kpiProgressFill} style={{ width: `${avgCriteriaScore}%`, background: '#f59e0b' }}></div>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.kpiCard}>
+              <div className={styles.kpiIcon} style={{ background: '#ecfdf5', color: '#059669', border: '1px solid #d1fae5' }}>
+                <Trophy size={24} />
+              </div>
+              <div className={styles.kpiInfo}>
+                <div className={styles.kpiLabel}>Band điểm trung bình (Avg Band)</div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValue} style={{ color: '#059669' }}>{avgBand}</span>
+                </div>
+                <div className={styles.kpiDesc}>Dựa trên lịch sử bài thi</div>
+              </div>
+            </div>
+
+            <div className={styles.kpiCard}>
+              <div className={styles.kpiIcon} style={{ background: '#fff1f2', color: '#e11d48', border: '1px solid #ffe4e6' }}>
+                <Clock size={24} />
+              </div>
+              <div className={styles.kpiInfo}>
+                <div className={styles.kpiLabel}>Chuỗi ngày học liên tục (Streak)</div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValue}>{streak} ngày</span>
+                </div>
+                <div className={styles.kpiDesc}>Kỷ lục cao nhất hiện tại</div>
+              </div>
+            </div>
+
+            <div className={styles.kpiCard}>
+              <div className={styles.kpiIcon} style={{ background: '#faf5ff', color: '#7e22ce', border: '1px solid #f3e8ff' }}>
+                <CheckCircle size={24} />
+              </div>
+              <div className={styles.kpiInfo}>
+                <div className={styles.kpiLabel}>Kỹ năng tốt nhất (Best Skill)</div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValue} style={{ fontSize: '20px', color: '#581c87' }}>{bestSkill.name}</span>
+                  {bestSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#6b21a8', background: '#f3e8ff', padding: '2px 8px', borderRadius: '6px' }}>Band {bestSkill.band}</span>}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.kpiCard}>
+              <div className={styles.kpiIcon} style={{ background: '#fff7ed', color: '#ea580c', border: '1px solid #ffedd5' }}>
+                <AlertTriangle size={24} />
+              </div>
+              <div className={styles.kpiInfo}>
+                <div className={styles.kpiLabel}>Cần cải thiện (Weakest Skill)</div>
+                <div className={styles.kpiValueRow}>
+                  <span className={styles.kpiValue} style={{ fontSize: '20px', color: '#431407' }}>{weakSkill.name}</span>
+                  {weakSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#9a3412', background: '#ffedd5', padding: '2px 8px', borderRadius: '6px' }}>Band {weakSkill.band}</span>}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.filterBar}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+              <div className={styles.pillRow} style={{ flex: 1 }}>
+                <span className={styles.pillLabel}>Kỹ năng:</span>
+                <button 
+                  className={`${styles.skillPill} ${skillFilter === 'all' ? styles.active : ''}`}
+                  onClick={() => { setSkillFilter('all'); setPartFilter('all'); }}
+                >
+                  Tất cả ({skillCounts.all})
+                </button>
+                <button 
+                  className={`${styles.skillPill} ${skillFilter === 'listening' ? styles.active : ''}`}
+                  onClick={() => { setSkillFilter('listening'); setPartFilter('all'); }}
+                >
+                  Listening ({skillCounts.listening})
+                </button>
+                <button 
+                  className={`${styles.skillPill} ${skillFilter === 'reading' ? styles.active : ''}`}
+                  onClick={() => { setSkillFilter('reading'); setPartFilter('all'); }}
+                >
+                  Reading ({skillCounts.reading})
+                </button>
+                <button 
+                  className={`${styles.skillPill} ${skillFilter === 'writing' ? styles.active : ''}`}
+                  onClick={() => { setSkillFilter('writing'); setPartFilter('all'); }}
+                >
+                  Writing ({skillCounts.writing})
+                </button>
+                <button 
+                  className={`${styles.skillPill} ${skillFilter === 'speaking' ? styles.active : ''}`}
+                  onClick={() => { setSkillFilter('speaking'); setPartFilter('all'); }}
+                >
+                  Speaking ({skillCounts.speaking})
+                </button>
+                <button 
+                  className={`${styles.skillPill} ${skillFilter === 'grammar' ? styles.active : ''}`}
+                  onClick={() => { setSkillFilter('grammar'); setPartFilter('all'); }}
+                >
+                  Grammar & Vocab ({skillCounts.grammar})
+                </button>
+              </div>
+
+              <div className={styles.selectWrap} style={{ width: '220px', flexShrink: 0 }}>
+                <select className={styles.filterSelect} value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
+                  <option value="all">Thời gian: Toàn bộ (All Time)</option>
+                  <option value="7">7 ngày gần đây</option>
+                  <option value="30">30 ngày gần đây</option>
+                  <option value="90">Quý này</option>
+                </select>
+                <svg className={styles.selectArrow} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+              </div>
             </div>
             
-            <div className={styles.filterGroup}>
-              <label>Part:</label>
-              <select className={styles.select} value={partFilter} onChange={(e) => setPartFilter(e.target.value)}>
-                <option value="all">All Parts</option>
-                <option value="full">Full Test</option>
-                <option value="part1">Part 1</option>
-                <option value="part2">Part 2</option>
-                <option value="part3">Part 3</option>
-                <option value="part4">Part 4</option>
-              </select>
-            </div>
+            {skillFilter !== 'all' && (
+              <div className={styles.pillRow} style={{ marginTop: '12px' }}>
+                <span className={styles.pillLabel}>Phần thi:</span>
+                {['all', 'full', 'part1', 'part2', 'part3', 'part4'].map(part => {
+                  if (skillFilter === 'grammar' && (part === 'part3' || part === 'part4')) return null;
 
-            <div className={styles.filterGroup}>
-              <label>Date Range:</label>
-              <select className={styles.select} value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
-                <option value="all">All Time</option>
-                <option value="7">Last 7 Days</option>
-                <option value="30">Last 30 Days</option>
-                <option value="90">Last 90 Days</option>
-              </select>
-            </div>
+                  let label = part;
+                  if (part === 'all') label = 'Tất cả';
+                  if (part === 'full') label = 'Full Test';
+                  if (part.startsWith('part')) label = part.replace('part', 'Part ');
+
+                  return (
+                    <button
+                      key={part}
+                      className={`${styles.skillPill} ${partFilter === part ? styles.active : ''}`}
+                      onClick={() => setPartFilter(part)}
+                    >
+                      {label}
+                      {part !== 'all' && partCounts[part] !== undefined && (
+                        ` (${partCounts[part]})`
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          <div className={styles.summaryCards}>
-            <div className={styles.card}>
-              <span className={styles.cardTitle}>Total Tests</span>
-              <span className={styles.cardValue}>{totalTests}</span>
-            </div>
-            <div className={styles.card}>
-              <span className={styles.cardTitle}>Avg Accuracy (MCQ)</span>
-              <span className={styles.cardValue}>{avgMcqAccuracy}%</span>
-            </div>
-            <div className={styles.card}>
-              <span className={styles.cardTitle}>Avg Score (Criteria)</span>
-              <span className={styles.cardValue}>{avgCriteriaScore}%</span>
-            </div>
-            <div className={styles.card}>
-              <span className={styles.cardTitle}>Best Streak</span>
-              <span className={styles.cardValue}>{streak} days</span>
-            </div>
-          </div>
-
-          <div className={styles.chartsGrid}>
-            <div className={`${styles.chartContainer} ${styles.fullWidthChart}`}>
+          <div className={styles.chartsSection}>
+            <div className={styles.chartContainerFull}>
               <h3>Score Over Time</h3>
               <div className={styles.chartWrapper}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -171,14 +276,14 @@ export default function DashboardPage() {
                     <Tooltip />
                     <Legend />
                     {Object.keys(SKILL_COLORS).map(skill => (
-                      <Line key={skill} type="monotone" dataKey={skill} stroke={SKILL_COLORS[skill]} activeDot={{ r: 8 }} connectNulls />
+                      <Line key={skill} type="monotone" dataKey={skill} stroke={SKILL_COLORS[skill]} strokeWidth={2} activeDot={{ r: 8 }} connectNulls />
                     ))}
                   </LineChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            <div className={styles.chartContainer}>
+            <div className={styles.chartContainerFull}>
               <h3>Skill Distribution</h3>
               <div className={styles.chartWrapper}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -194,76 +299,8 @@ export default function DashboardPage() {
                 </ResponsiveContainer>
               </div>
             </div>
-
-            <div className={styles.chartContainer}>
-              <h3>Correct/Wrong/Skipped (MCQ)</h3>
-              <div className={styles.chartWrapper}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={correctWrongData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" tick={{fontSize: 10}} />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="correct" stackId="a" fill="#43B75D" />
-                    <Bar dataKey="wrong" stackId="a" fill="#DA1E21" />
-                    <Bar dataKey="skipped" stackId="a" fill="#aaa" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
           </div>
 
-          <div className={styles.goalSection}>
-            <div className={styles.goalHeader}>
-              <h3>Learning Goal Tracker</h3>
-              {goalConfig.active ? (
-                <button className={styles.btnSecondary} onClick={handleDeactivateGoal}>Deactivate Goal</button>
-              ) : null}
-            </div>
-
-            {!goalConfig.active ? (
-              <div>
-                <p style={{marginBottom: 16}}>Set a goal to practice full tests for each skill over a specific number of days.</p>
-                <div className={styles.goalSettings}>
-                  <span>Target: </span>
-                  <input type="number" min="1" value={tempGoalTarget} onChange={(e) => setTempGoalTarget(e.target.value)} />
-                  <span> full tests per skill in </span>
-                  <input type="number" min="1" value={tempGoalDays} onChange={(e) => setTempGoalDays(e.target.value)} />
-                  <span> days.</span>
-                  <button className={styles.btnPrimary} onClick={handleSaveGoal}>Activate</button>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <p style={{marginBottom: 16}}>
-                  Goal Active: {goalConfig.targetPerSkill} full tests per skill over {goalConfig.durationDays} days.
-                </p>
-                <div className={styles.chartWrapper} style={{height: 400}}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={goalChartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis yAxisId="left" label={{ value: 'Tests Today', angle: -90, position: 'insideLeft' }} />
-                      <YAxis yAxisId="right" orientation="right" domain={[0, 'dataMax + 1']} label={{ value: 'Last Activity (Tests)', angle: 90, position: 'insideRight' }} />
-                      <Tooltip />
-                      <Legend />
-                      
-                      {/* Bars for daily count */}
-                      {Object.keys(SKILL_COLORS).map(skill => (
-                        <Bar key={`${skill}_bar`} yAxisId="left" dataKey={`${skill}_bar`} stackId="a" fill={SKILL_COLORS[skill]} name={`${skill} (Today)`} />
-                      ))}
-
-                      {/* Lines for last activity */}
-                      {Object.keys(SKILL_COLORS).map(skill => (
-                        <Line key={`${skill}_line`} yAxisId="right" type="stepAfter" dataKey={`${skill}_line`} stroke={SKILL_COLORS[skill]} strokeWidth={3} name={`${skill} (Trend)`} connectNulls />
-                      ))}
-                    </ComposedChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </div>

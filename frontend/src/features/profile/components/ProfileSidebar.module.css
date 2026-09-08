@@ -38,10 +38,71 @@
 }
 
 .divider {
-  width: 100%;
   height: 1px;
-  background-color: rgba(0,0,0,0.2);
-  margin: 12px 0 38px 0;
+  background-color: #f1f5f9;
+  margin: 16px 0;
+}
+
+.goalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.goalTile {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #f1f5f9;
+  text-align: left;
+}
+
+.goalTileTitle {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.goalTileValuePrimary {
+  font-size: 14px;
+  font-weight: 800;
+  color: #bd1f36;
+}
+
+.goalTileValue {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.goalTileUnit {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  font-family: sans-serif;
+}
+
+.btnSetGoal {
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+  background-color: #bd1f36;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btnSetGoal:hover {
+  background-color: #a11a2e;
 }
 
 .navMenu {
