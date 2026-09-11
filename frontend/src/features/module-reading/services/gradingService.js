@@ -1,3 +1,10 @@
+import { hasRichTextContent } from '../../../components/common/richText';
+
+const withFallbackExplanation = (explanation, fallback) => {
+  if (hasRichTextContent(explanation)) return explanation;
+  return fallback;
+};
+
 export const calculateScore = (answers, testData, mode = 'full') => {
   let totalScore = 0;
   let totalQuestions = 0;
@@ -29,7 +36,10 @@ export const calculateScore = (answers, testData, mode = 'full') => {
         userAnswer: userAnswer || '(No answer)',
         correctAnswer: q.answer,
         isCorrect,
-        explanation: q.explanation || ''
+        explanation: withFallbackExplanation(
+          q.explanation,
+          `“${q.answer}” is the correct answer because it best completes gap ${q.position} in both meaning and grammar. Read the full sentence with this option to confirm that it fits the surrounding context.`
+        )
       });
     });
   }
@@ -50,7 +60,10 @@ export const calculateScore = (answers, testData, mode = 'full') => {
         userAnswer: userPosition ? `Position ${userPosition}` : '(No answer)',
         correctAnswer: `Position ${s.correctPosition}`,
         isCorrect,
-        explanation: s.explanation || ''
+        explanation: withFallbackExplanation(
+          s.explanation,
+          `This sentence belongs in position ${s.correctPosition}. Its references and linking words connect logically with the ideas immediately before and after that position.`
+        )
       });
     });
   }
@@ -69,7 +82,10 @@ export const calculateScore = (answers, testData, mode = 'full') => {
         userAnswer: userAnswer || '(No answer)',
         correctAnswer: q.answer,
         isCorrect,
-        explanation: q.explanation || ''
+        explanation: withFallbackExplanation(
+          q.explanation,
+          `The correct answer is ${q.answer}. The information associated with ${q.answer} in the passage directly matches the statement in this question.`
+        )
       });
     });
   }
@@ -91,7 +107,10 @@ export const calculateScore = (answers, testData, mode = 'full') => {
           userAnswer: userHeadingId ? (testData.part4.headings.find(h => h.id === userHeadingId)?.text || userHeadingId) : '(No answer)',
           correctAnswer: correctHeading.text,
           isCorrect,
-          explanation: correctHeading.explanation || ''
+          explanation: withFallbackExplanation(
+            correctHeading.explanation,
+            `“${correctHeading.text}” is the correct heading because it summarizes the main idea of ${p.label || p.id}, while the other headings focus on different topics.`
+          )
         });
       }
     });
