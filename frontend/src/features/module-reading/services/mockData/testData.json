@@ -4,35 +4,35 @@
   "part1": {
     "passage": "Dear Jane, \n\nI am writing to tell you about my new apartment. I moved in last week and I am really [1] it so far. The rooms are all very [2] and there is a lot of natural light. \n\nMy favorite spot is the balcony, where I can [3] my coffee in the morning. The neighborhood is also very [4] with many shops and parks nearby. I am so [5] to have found this place.\n\nI hope you can visit me soon!\n\nBest,\nTom",
     "questions": [
-      { "id": "p1-q1", "position": 1, "options": ["enjoying", "disliking", "ignoring"], "answer": "enjoying" },
-      { "id": "p1-q2", "position": 2, "options": ["small", "spacious", "dirty"], "answer": "spacious" },
-      { "id": "p1-q3", "position": 3, "options": ["drink", "spill", "sell"], "answer": "drink" },
-      { "id": "p1-q4", "position": 4, "options": ["noisy", "convenient", "crowded"], "answer": "convenient" },
-      { "id": "p1-q5", "position": 5, "options": ["sad", "lucky", "angry"], "answer": "lucky" }
+      { "id": "p1-q1", "position": 1, "options": ["enjoying", "disliking", "ignoring"], "answer": "enjoying", "explanation": "The phrase ‘enjoying it so far’ expresses Tom’s positive experience in the new apartment. The rest of the letter also describes the apartment positively." },
+      { "id": "p1-q2", "position": 2, "options": ["small", "spacious", "dirty"], "answer": "spacious", "explanation": "‘Spacious’ fits the positive description and connects naturally with the mention of plenty of natural light." },
+      { "id": "p1-q3", "position": 3, "options": ["drink", "spill", "sell"], "answer": "drink", "explanation": "We normally use the collocation ‘drink my coffee’. ‘Spill’ and ‘sell’ do not match the relaxing morning context." },
+      { "id": "p1-q4", "position": 4, "options": ["noisy", "convenient", "crowded"], "answer": "convenient", "explanation": "Having many shops and parks nearby makes a neighbourhood convenient because useful places are easy to reach." },
+      { "id": "p1-q5", "position": 5, "options": ["sad", "lucky", "angry"], "answer": "lucky", "explanation": "Tom is pleased with the apartment, so ‘lucky’ correctly expresses how fortunate he feels to have found it." }
     ]
   },
   "part2": {
     "title": "A History of the Potato",
     "sentences": [
       { "id": "s1", "content": "The potato was first cultivated by humans in the Andes region of South America.", "correctPosition": 1 },
-      { "id": "s2", "content": "It was grown by indigenous farmers for thousands of years before the arrival of Europeans.", "correctPosition": 2 },
-      { "id": "s3", "content": "In the late 16th century, Spanish explorers introduced the vegetable to Europe.", "correctPosition": 3 },
-      { "id": "s4", "content": "Initially, many Europeans were suspicious of the strange underground tuber.", "correctPosition": 4 },
-      { "id": "s5", "content": "However, it soon became a staple food crop across the continent due to its high nutritional value.", "correctPosition": 5 },
-      { "id": "s6", "content": "Today, it is the world's fourth-largest food crop after maize, wheat, and rice.", "correctPosition": 6 }
+      { "id": "s2", "content": "It was grown by indigenous farmers for thousands of years before the arrival of Europeans.", "correctPosition": 2, "explanation": "‘It’ refers back to the potato in the opening sentence, and this sentence continues the early South American history." },
+      { "id": "s3", "content": "In the late 16th century, Spanish explorers introduced the vegetable to Europe.", "correctPosition": 3, "explanation": "After its cultivation in South America, the next chronological event is the potato’s introduction to Europe." },
+      { "id": "s4", "content": "Initially, many Europeans were suspicious of the strange underground tuber.", "correctPosition": 4, "explanation": "‘Initially’ describes the first European reaction, so it follows the sentence explaining when the potato arrived in Europe." },
+      { "id": "s5", "content": "However, it soon became a staple food crop across the continent due to its high nutritional value.", "correctPosition": 5, "explanation": "‘However’ contrasts the initial suspicion with the potato’s later acceptance as an important food crop." },
+      { "id": "s6", "content": "Today, it is the world's fourth-largest food crop after maize, wheat, and rice.", "correctPosition": 6, "explanation": "‘Today’ signals the final stage of the timeline and summarizes the potato’s present global importance." }
     ]
   },
   "part3": {
     "passage": "Four people share their opinions on social media use:\n\nAlice: I use social media mainly to keep in touch with my childhood friends. It's a great tool for maintaining long-distance relationships, though I try to limit my screen time to an hour a day.\n\nBob: I find social media very distracting. I had to delete my accounts because I was spending hours scrolling instead of studying or sleeping. I feel much healthier now.\n\nCharlie: I use social media to promote my freelance photography business. It has helped me reach a global audience and find new clients that I wouldn't have met otherwise.\n\nDavid: I don't post much, but I use social media as a news source. It allows me to follow journalists and experts to get real-time updates on global events.",
     "speakers": ["Alice", "Bob", "Charlie", "David"],
     "questions": [
-      { "id": "p3-q1", "statement": "Who deleted their accounts to stay focused?", "answer": "Bob" },
-      { "id": "p3-q2", "statement": "Who uses social media primarily to connect with old friends?", "answer": "Alice" },
-      { "id": "p3-q3", "statement": "Who leverages social media for professional marketing?", "answer": "Charlie" },
-      { "id": "p3-q4", "statement": "Who treats social media as a platform for current affairs?", "answer": "David" },
-      { "id": "p3-q5", "statement": "Who consciously restricts their daily usage time?", "answer": "Alice" },
-      { "id": "p3-q6", "statement": "Who experienced a positive impact on their well-being after quitting?", "answer": "Bob" },
-      { "id": "p3-q7", "statement": "Who values the global reach the platform provides for their work?", "answer": "Charlie" }
+      { "id": "p3-q1", "statement": "Who deleted their accounts to stay focused?", "answer": "Bob", "explanation": "Bob says social media distracted him from studying and sleeping, so he deleted his accounts." },
+      { "id": "p3-q2", "statement": "Who uses social media primarily to connect with old friends?", "answer": "Alice", "explanation": "Alice explicitly says she mainly uses social media to keep in touch with childhood friends." },
+      { "id": "p3-q3", "statement": "Who leverages social media for professional marketing?", "answer": "Charlie", "explanation": "Charlie uses social media to promote his freelance photography business and find clients." },
+      { "id": "p3-q4", "statement": "Who treats social media as a platform for current affairs?", "answer": "David", "explanation": "David follows journalists and experts to receive real-time news updates." },
+      { "id": "p3-q5", "statement": "Who consciously restricts their daily usage time?", "answer": "Alice", "explanation": "Alice states that she limits her screen time to one hour a day." },
+      { "id": "p3-q6", "statement": "Who experienced a positive impact on their well-being after quitting?", "answer": "Bob", "explanation": "After deleting his accounts, Bob says that he feels much healthier." },
+      { "id": "p3-q7", "statement": "Who values the global reach the platform provides for their work?", "answer": "Charlie", "explanation": "Charlie values how social media helps his photography reach a global audience." }
     ]
   },
   "part4": {
@@ -47,13 +47,13 @@
       { "id": "para7", "label": "Paragraph G", "content": "The future of energy may also lie in emerging technologies like green hydrogen and nuclear fusion. Although these technologies are currently in the experimental or early adoption phase, they offer the promise of limitless, zero-emission energy. Scientists are working to solve the immense engineering challenges involved." }
     ],
     "headings": [
-      { "id": "h1", "text": "The Role of Battery Storage", "correctParagraph": "para3" },
-      { "id": "h2", "text": "Environmental and Economic Benefits", "correctParagraph": "para1" },
-      { "id": "h3", "text": "Challenges of Moving Away from Fossil Fuels", "correctParagraph": "para2" },
-      { "id": "h4", "text": "The Ongoing Nuclear Debate", "correctParagraph": "para4" },
-      { "id": "h5", "text": "How Households Can Save Energy", "correctParagraph": "para5" },
-      { "id": "h6", "text": "The Rise of Electric Transport", "correctParagraph": "para6" },
-      { "id": "h7", "text": "Experimental Tech of the Future", "correctParagraph": "para7" }
+      { "id": "h1", "text": "The Role of Battery Storage", "correctParagraph": "para3", "explanation": "Paragraph C focuses on storing surplus renewable power and releasing it when wind or sunlight is unavailable." },
+      { "id": "h2", "text": "Environmental and Economic Benefits", "correctParagraph": "para1", "explanation": "Paragraph A highlights both lower carbon emissions and the creation of millions of jobs." },
+      { "id": "h3", "text": "Challenges of Moving Away from Fossil Fuels", "correctParagraph": "para2", "explanation": "Paragraph B describes the cost, grid upgrades and reliability concerns involved in replacing fossil fuels." },
+      { "id": "h4", "text": "The Ongoing Nuclear Debate", "correctParagraph": "para4", "explanation": "Paragraph D balances nuclear power’s low emissions against waste and safety concerns." },
+      { "id": "h5", "text": "How Households Can Save Energy", "correctParagraph": "para5", "explanation": "Paragraph E lists individual actions such as turning off lights, adding insulation and using efficient appliances." },
+      { "id": "h6", "text": "The Rise of Electric Transport", "correctParagraph": "para6", "explanation": "Paragraph F discusses electric vehicles, improved battery range and expanding charging infrastructure." },
+      { "id": "h7", "text": "Experimental Tech of the Future", "correctParagraph": "para7", "explanation": "Paragraph G looks ahead to emerging green hydrogen and nuclear fusion technologies." }
     ]
   }
 }

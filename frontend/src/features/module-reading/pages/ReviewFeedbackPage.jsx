@@ -120,9 +120,9 @@ const ReviewFeedbackPage = () => {
           <div className="flex flex-col gap-2 pl-0 md:pl-11">
             {options.map((option) => (
               <div
-                key={option.label}
+                key={option.key || option.label || option.text}
                 aria-label={`${option.text}${option.isCorrect ? ', correct' : option.isUser ? ', selected, incorrect' : ''}`}
-                className={`grid min-h-10 grid-cols-[28px_minmax(0,1fr)]  items-center gap-2 sm:gap-3 rounded-md border px-3 py-1.5 ${
+                className={`grid min-h-10 ${option.hideLabel ? 'grid-cols-1' : 'grid-cols-[28px_minmax(0,1fr)]'} items-center gap-2 sm:gap-3 rounded-md border px-3 py-1.5 ${
                   option.isCorrect
                     ? 'border-[#43B75D] bg-[#EDF9F0]'
                     : option.isUser
@@ -130,7 +130,7 @@ const ReviewFeedbackPage = () => {
                       : 'border-transparent'
                 }`}
               >
-                <span className="font-bold">{option.label}</span>
+                {!option.hideLabel && <span className="font-bold">{option.label}</span>}
                 <span>{option.text}</span>
 
 
@@ -202,7 +202,8 @@ const ReviewFeedbackPage = () => {
               title: question.statement,
               detail,
               options: testData.part3.speakers.map((speaker) => ({
-                label: speaker,
+                key: speaker,
+                hideLabel: true,
                 text: speaker,
                 isCorrect: speaker === question.answer,
                 isUser: speaker === detail?.userAnswer,
