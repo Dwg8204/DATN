@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Bell, BellRing, CheckCheck, Clock3, Mail, Trash2, X } from 'lucide-react';
+import { Bell, BellRing, CheckCheck, Clock3, Download, Eye, Mail, Paperclip, Trash2, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
 import {
@@ -21,6 +21,7 @@ export default function NotificationsPage() {
       ? getAvailableUserNotifications().find((item) => String(item.id) === requestedId) || null
       : null;
   });
+  const [previewAttachment, setPreviewAttachment] = useState(null);
 
   const available = useMemo(
     () => notifications.filter((item) => !notificationState.deleted.includes(String(item.id))),
@@ -96,7 +97,29 @@ export default function NotificationsPage() {
           <h2 id="notification-detail-title">{selected.type === 'Email' ? 'Email notification' : 'Learning notification'}</h2>
           <p className={styles.fullMessage}>{selected.content}</p>
           <dl><div><dt>Date &amp; time</dt><dd>{formatNotificationDate(selected.date)}</dd></div><div><dt>Type</dt><dd>{selected.type}</dd></div><div><dt>Sent to</dt><dd>{selected.target}</dd></div></dl>
+          {selected.fileName && <div className={styles.attachment}>
+            <Paperclip />
+            <div><strong>{selected.fileName}</strong>{selected.fileSize > 0 && <small>{selected.fileSize < 1048576 ? `${(selected.fileSize / 1024).toFixed(1)} KB` : `${(selected.fileSize / 1048576).toFixed(1)} MB`}</small>}</div>
+            {selected.fileData ? <div className={styles.attachmentActions}>
+              <button type="button" onClick={() => setPreviewAttachment(selected)}><Eye />Preview</button>
+              <a href={selected.fileData} download={selected.fileName}><Download />Download</a>
+            </div> : <span className={styles.fileUnavailable}>File unavailable</span>}
+          </div>}
           <button className={styles.done} onClick={() => setSelected(null)}>Done</button>
+        </section>
+      </div>}
+
+      {previewAttachment && <div className={styles.fileOverlay} onMouseDown={(event) => { if (event.target === event.currentTarget) setPreviewAttachment(null); }}>
+        <section className={styles.fileModal} role="dialog" aria-modal="true" aria-labelledby="user-file-preview-title">
+          <header><div><span>ATTACHMENT PREVIEW</span><h2 id="user-file-preview-title">{previewAttachment.fileName}</h2></div><button type="button" onClick={() => setPreviewAttachment(null)} aria-label="Close file preview"><X /></button></header>
+          <div className={styles.fileViewer}>
+            {previewAttachment.fileType?.startsWith('image/') && <img src={previewAttachment.fileData} alt={previewAttachment.fileName} />}
+            {(previewAttachment.fileType === 'application/pdf' || previewAttachment.fileType?.startsWith('text/')) && <iframe src={previewAttachment.fileData} title={previewAttachment.fileName} />}
+            {previewAttachment.fileType?.startsWith('audio/') && <audio src={previewAttachment.fileData} controls />}
+            {previewAttachment.fileType?.startsWith('video/') && <video src={previewAttachment.fileData} controls />}
+            {!previewAttachment.fileType?.startsWith('image/') && previewAttachment.fileType !== 'application/pdf' && !previewAttachment.fileType?.startsWith('text/') && !previewAttachment.fileType?.startsWith('audio/') && !previewAttachment.fileType?.startsWith('video/') && <div className={styles.unsupported}><Paperclip /><strong>This file cannot be previewed in the browser.</strong><p>Download it to open with a compatible application.</p></div>}
+          </div>
+          <footer><button type="button" onClick={() => setPreviewAttachment(null)}>Close</button><a href={previewAttachment.fileData} download={previewAttachment.fileName}><Download />Download file</a></footer>
         </section>
       </div>}
     </div>

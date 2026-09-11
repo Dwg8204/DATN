@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Bell, BellRing, CheckCheck, Trash2 } from 'lucide-react';
+import { Bell, BellRing, CheckCheck, Paperclip, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getAvailableUserNotifications, getUserNotificationState, saveUserNotificationState } from '../../utils/notificationStorage';
 import styles from './UserNotifications.module.css';
@@ -63,7 +63,7 @@ export default function UserNotifications() {
           const unread = !state.read.includes(String(item.id));
           return <article className={`${styles.item} ${unread ? styles.unread : ''}`} key={item.id} onClick={() => viewDetail(item)} role="button" tabIndex={0} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); viewDetail(item); } }}>
             <div className={styles.icon}>{item.type === 'Email' ? <BellRing /> : <Bell />}</div>
-            <div className={styles.message}><p>{item.content}</p><span>{relativeTime(item.date)} · {item.type}</span></div>
+            <div className={styles.message}><p>{item.content}</p><span>{relativeTime(item.date)} · {item.type}{item.fileData && <> · <Paperclip aria-hidden="true" /> Attachment</>}</span></div>
             <div className={styles.itemActions}>{unread && <i aria-label="Unread" />}<button onClick={(event) => { event.stopPropagation(); remove(item.id); }} title="Remove notification"><Trash2 /></button></div>
           </article>;
         }) : <div className={styles.empty}><Bell /><h3>You’re all caught up</h3><p>No {filter === 'unread' ? 'unread ' : ''}notifications to show.</p></div>}
