@@ -1,11 +1,12 @@
 import { useMemo, useRef, useState } from 'react';
-import { Eye, Paperclip, Send, X } from 'lucide-react';
+import { Download, Eye, Paperclip, Send, X } from 'lucide-react';
 import { AdminToast } from '../components/AdminFeedback';
 import Pagination from '../../../components/common/Pagination';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import styles from './NotificationPage.module.css';
 
 const STORAGE_KEY = 'aptimate.admin.notifications';
+const MAX_ATTACHMENT_SIZE = 2 * 1024 * 1024;
 
 
 const initialNotifications = [
@@ -38,9 +39,27 @@ const toLocalDateTimeMinute = (date = new Date()) => {
   return localDate.toISOString().slice(0, 16);
 };
 
+const nextAvailableMinute = () => toLocalDateTimeMinute(new Date(Date.now() + 60000));
+
 const emptyForm = () => ({
-  target: 'Everyone', type: 'Push notification', date: toLocalDateTimeMinute(), content: '', fileName: '',
+  target: 'Everyone', type: 'Push notification', deliveryMode: 'now', date: nextAvailableMinute(), content: '', fileName: '', fileType: '', fileSize: 0, fileData: '',
 });
+
+const formatFileSize = (bytes = 0) => bytes < 1024 ? `${bytes} B` : bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+function AttachmentLink({ notification, onPreview }) {
+  if (!notification.fileName) return null;
+  return <div className={styles.previewFile}>
+    <Paperclip />
+    <div><strong>{notification.fileName}</strong>{notification.fileSize > 0 && <small>{formatFileSize(notification.fileSize)}</small>}</div>
+    {notification.fileData
+      ? <div className={styles.fileActions}>
+          <button type="button" onClick={() => onPreview(notification)} title={`Preview ${notification.fileName}`}><Eye />Preview</button>
+          <a href={notification.fileData} download={notification.fileName} title={`Download ${notification.fileName}`}><Download />Download</a>
+        </div>
+      : <span className={styles.unavailableFile}>File data unavailable</span>}
+  </div>;
+}
 
 export default function NotificationPage() {
   const [form, setForm] = useState(emptyForm);
@@ -49,19 +68,46 @@ export default function NotificationPage() {
   const [pageSize, setPageSize] = useState(8);
   const [preview, setPreview] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
+  const [previewAttachment, setPreviewAttachment] = useState(null);
   const [toast, setToast] = useState('');
   const [error, setError] = useState('');
+  const [readingFile, setReadingFile] = useState(false);
   const fileRef = useRef(null);
   const visibleNotifications = useMemo(() => notifications.slice((page - 1) * pageSize, page * pageSize), [notifications, page, pageSize]);
 
   const update = (field, value) => setForm((current) => ({ ...current, [field]: value }));
   const validate = () => {
+    if (readingFile) return 'Please wait for the attachment to finish loading.';
     if (!form.content.trim()) return 'Please enter notification content.';
-    if (!form.date) return 'Please select a delivery date and time.';
-    const currentMinute = new Date();
-    currentMinute.setSeconds(0, 0);
-    if (new Date(form.date) < currentMinute) return 'Please select the current time or a future time.';
+    if (form.deliveryMode === 'scheduled') {
+      if (!form.date) return 'Please select a delivery date and time.';
+      if (new Date(form.date).getTime() <= Date.now()) return 'Scheduled notifications must be set for a future time.';
+    }
     return '';
+  };
+  const selectFile = (file) => {
+    if (!file) {
+      setForm((current) => ({ ...current, fileName: '', fileType: '', fileSize: 0, fileData: '' }));
+      return;
+    }
+    if (file.size > MAX_ATTACHMENT_SIZE) {
+      setError('Attachment must be 2 MB or smaller.');
+      if (fileRef.current) fileRef.current.value = '';
+      return;
+    }
+    setReadingFile(true);
+    setError('');
+    const reader = new FileReader();
+    reader.onload = () => {
+      setForm((current) => ({ ...current, fileName: file.name, fileType: file.type, fileSize: file.size, fileData: String(reader.result || '') }));
+      setReadingFile(false);
+    };
+    reader.onerror = () => {
+      setError('The selected file could not be read. Please choose another file.');
+      setReadingFile(false);
+      if (fileRef.current) fileRef.current.value = '';
+    };
+    reader.readAsDataURL(file);
   };
   const showPreview = () => {
     const message = validate();
@@ -72,15 +118,20 @@ export default function NotificationPage() {
   const sendNotification = () => {
     const message = validate();
     if (message) { setError(message); return; }
-    const created = { ...form, id: Date.now() };
+    const created = { ...form, date: form.deliveryMode === 'now' ? new Date().toISOString() : form.date, id: Date.now() };
     const saved = [created, ...notifications.filter((item) => !initialNotifications.some((initial) => initial.id === item.id))];
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    } catch {
+      setError('The attachment could not be saved because browser storage is full. Please use a smaller file.');
+      return;
+    }
     setNotifications((current) => [created, ...current]);
     setForm(emptyForm());
     setPage(1);
     setPreview(false);
     setError('');
-    setToast('Notification scheduled successfully.');
+    setToast(form.deliveryMode === 'now' ? 'Notification sent successfully.' : 'Notification scheduled successfully.');
     if (fileRef.current) fileRef.current.value = '';
   };
 
@@ -101,15 +152,23 @@ export default function NotificationPage() {
             {['Push notification', 'Email'].map((type) => <label key={type}><input type="radio" name="notificationType" checked={form.type === type} onChange={() => update('type', type)} /><span>{type}</span></label>)}
           </fieldset>
 
-          <label className={styles.field}>Date &amp; time
-            <input
-              type="datetime-local"
-              min={toLocalDateTimeMinute()}
-              step="60"
-              value={form.date}
-              onChange={(event) => { update('date', event.target.value); setError(''); }}
-            />
-          </label>
+          <fieldset className={styles.deliveryOptions}>
+            <legend>Delivery time</legend>
+            <div>
+              <label className={form.deliveryMode === 'now' ? styles.selectedDelivery : ''}>
+                <input type="radio" name="deliveryMode" checked={form.deliveryMode === 'now'} onChange={() => { update('deliveryMode', 'now'); setError(''); }} />
+                <span><strong>Send immediately</strong><small>Deliver as soon as you confirm.</small></span>
+              </label>
+              <label className={form.deliveryMode === 'scheduled' ? styles.selectedDelivery : ''}>
+                <input type="radio" name="deliveryMode" checked={form.deliveryMode === 'scheduled'} onChange={() => { setForm((current) => ({ ...current, deliveryMode: 'scheduled', date: new Date(current.date).getTime() > Date.now() ? current.date : nextAvailableMinute() })); setError(''); }} />
+                <span><strong>Schedule for later</strong><small>Choose a future delivery time.</small></span>
+              </label>
+            </div>
+          </fieldset>
+
+          {form.deliveryMode === 'scheduled' && <label className={styles.field}>Scheduled date &amp; time
+            <input type="datetime-local" min={nextAvailableMinute()} step="60" value={form.date} onChange={(event) => { update('date', event.target.value); setError(''); }} />
+          </label>}
 
           <label className={styles.field}>Content
             <textarea rows="7" maxLength="500" value={form.content} onChange={(event) => { update('content', event.target.value); setError(''); }} placeholder="Write the message here" />
@@ -118,7 +177,7 @@ export default function NotificationPage() {
           {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.composerFooter}>
-            <label className={styles.attachment}><Paperclip /><span>{form.fileName || 'Attach files'}</span><input ref={fileRef} type="file" onChange={(event) => update('fileName', event.target.files?.[0]?.name || '')} /></label>
+            <label className={styles.attachment}><Paperclip /><span>{readingFile ? 'Loading file…' : form.fileName || 'Attach files (max 2 MB)'}</span><input ref={fileRef} type="file" onChange={(event) => selectFile(event.target.files?.[0])} /></label>
             <div><button type="button" className={styles.previewButton} onClick={showPreview}><Eye />Preview</button><button type="submit" className={styles.sendButton}><Send />Send</button></div>
           </div>
         </form>
@@ -143,9 +202,9 @@ export default function NotificationPage() {
 
       {preview && <div className={styles.backdrop} onMouseDown={() => setPreview(false)}><section className={styles.previewModal} role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}>
         <header><div><span>Notification preview</span><h3>{form.type}</h3></div><button onClick={() => setPreview(false)} aria-label="Close preview"><X /></button></header>
-        <div className={styles.previewAudience}>To: <strong>{form.target}</strong> · {formatDate(form.date)}</div>
+        <div className={styles.previewAudience}>To: <strong>{form.target}</strong> · {form.deliveryMode === 'now' ? 'Send immediately' : formatDate(form.date)}</div>
         <p>{form.content}</p>
-        {form.fileName && <div className={styles.previewFile}><Paperclip />{form.fileName}</div>}
+        <AttachmentLink notification={form} onPreview={setPreviewAttachment} />
         <footer><button onClick={() => setPreview(false)}>Back to edit</button><button onClick={sendNotification}><Send />Confirm &amp; send</button></footer>
       </section></div>}
 
@@ -156,9 +215,30 @@ export default function NotificationPage() {
           <div><dt>Date &amp; time</dt><dd>{formatDate(selectedNotification.date)}</dd></div>
         </dl>
         <div className={styles.detailContent}><strong>Content</strong><p>{selectedNotification.content}</p></div>
-        {selectedNotification.fileName && <div className={styles.previewFile}><Paperclip />{selectedNotification.fileName}</div>}
+        <AttachmentLink notification={selectedNotification} onPreview={setPreviewAttachment} />
         <footer><button type="button" onClick={() => setSelectedNotification(null)}>Close</button></footer>
       </section></div>}
+
+      {previewAttachment && <div className={styles.fileBackdrop} onMouseDown={() => setPreviewAttachment(null)}>
+        <section className={styles.filePreviewModal} role="dialog" aria-modal="true" aria-labelledby="file-preview-title" onMouseDown={(event) => event.stopPropagation()}>
+          <header>
+            <div><span>Attachment preview</span><h3 id="file-preview-title">{previewAttachment.fileName}</h3></div>
+            <button type="button" onClick={() => setPreviewAttachment(null)} aria-label="Close file preview"><X /></button>
+          </header>
+          <div className={styles.fileViewer}>
+            {previewAttachment.fileType?.startsWith('image/') && <img src={previewAttachment.fileData} alt={previewAttachment.fileName} />}
+            {previewAttachment.fileType === 'application/pdf' && <iframe src={previewAttachment.fileData} title={previewAttachment.fileName} />}
+            {previewAttachment.fileType?.startsWith('text/') && <iframe src={previewAttachment.fileData} title={previewAttachment.fileName} />}
+            {previewAttachment.fileType?.startsWith('audio/') && <audio src={previewAttachment.fileData} controls />}
+            {previewAttachment.fileType?.startsWith('video/') && <video src={previewAttachment.fileData} controls />}
+            {!previewAttachment.fileType?.startsWith('image/') && previewAttachment.fileType !== 'application/pdf' && !previewAttachment.fileType?.startsWith('text/') && !previewAttachment.fileType?.startsWith('audio/') && !previewAttachment.fileType?.startsWith('video/') && <div className={styles.unsupportedPreview}><Paperclip /><strong>Preview is not available for this file type.</strong><span>You can download the file and open it with a compatible application.</span></div>}
+          </div>
+          <footer>
+            <button type="button" onClick={() => setPreviewAttachment(null)}>Close</button>
+            <a href={previewAttachment.fileData} download={previewAttachment.fileName}><Download />Download file</a>
+          </footer>
+        </section>
+      </div>}
     </div>
   );
 }
