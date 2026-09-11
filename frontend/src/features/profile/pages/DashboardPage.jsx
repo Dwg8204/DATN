@@ -11,11 +11,8 @@ import {
   calcWeakSkill,
   calcGoalProgress
 } from '../../../utils/dashboardUtils';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-  PieChart, Pie, Cell
-} from 'recharts';
-import { ClipboardList, Target, Trophy, AlertTriangle, Clock, CheckCircle } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { TotalTestsIcon, AvgScoreIcon, AvgBandIcon, StreakIcon, BestSkillIcon, WeakSkillIcon } from '../components/DashboardIcons';
 import styles from './DashboardPage.module.css';
 
 const SKILL_COLORS = {
@@ -57,7 +54,7 @@ export default function DashboardPage() {
     : 0;
 
   // Chart data (uses filters)
-  const scoreOverTimeData = useMemo(() => calcScoreOverTime(filteredEntries), [filteredEntries]);
+  const scoreOverTimeData = useMemo(() => calcScoreOverTime(filteredEntries, skillFilter), [filteredEntries, skillFilter]);
 
   // Skill dist always shows all skills, ignores skill/part filter, but respects date filter
   const dateFilteredOnly = useMemo(() => {
@@ -102,25 +99,25 @@ export default function DashboardPage() {
           </div>
 
           <div className={styles.kpiGrid}>
-            <div className={styles.kpiCard}>
-              <div className={styles.kpiIcon} style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #e0f2fe' }}>
-                <ClipboardList size={24} />
+            <div className={styles.kpiCard} style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #e0f2fe', boxShadow: '0 4px 12px rgba(2, 132, 199, 0.15)' }}>
+              <div className={styles.kpiIcon} style={{ background: 'rgba(2, 132, 199, 0.15)' }}>
+                <TotalTestsIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Total Tests Completed</div>
+                <div className={styles.kpiLabel} style={{ color: '#0284c7', opacity: 0.85 }}>Total Tests Completed</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue}>{totalTests}</span>
                 </div>
-                <div className={styles.kpiDesc}>Overall finished tests</div>
+                <div className={styles.kpiDesc} style={{ color: '#0284c7', opacity: 0.7 }}>Overall finished tests</div>
               </div>
             </div>
 
-            <div className={styles.kpiCard}>
-              <div className={styles.kpiIcon} style={{ background: '#fffbeb', color: '#d97706', border: '1px solid #fef3c7' }}>
-                <Target size={24} />
+            <div className={styles.kpiCard} style={{ background: '#fffbeb', color: '#d97706', border: '1px solid #fef3c7', boxShadow: '0 4px 12px rgba(217, 119, 6, 0.15)' }}>
+              <div className={styles.kpiIcon} style={{ background: 'rgba(217, 119, 6, 0.15)' }}>
+                <AvgScoreIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Average Score (Criteria)</div>
+                <div className={styles.kpiLabel} style={{ color: '#d97706', opacity: 0.85 }}>Average Score (Criteria)</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue}>{avgCriteriaScore}%</span>
                 </div>
@@ -130,54 +127,54 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className={styles.kpiCard}>
-              <div className={styles.kpiIcon} style={{ background: '#ecfdf5', color: '#059669', border: '1px solid #d1fae5' }}>
-                <Trophy size={24} />
+            <div className={styles.kpiCard} style={{ background: '#ecfdf5', color: '#059669', border: '1px solid #d1fae5', boxShadow: '0 4px 12px rgba(5, 150, 105, 0.15)' }}>
+              <div className={styles.kpiIcon} style={{ background: 'rgba(5, 150, 105, 0.15)' }}>
+                <AvgBandIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Average Band (Avg Band)</div>
+                <div className={styles.kpiLabel} style={{ color: '#059669', opacity: 0.85 }}>Average Band (Avg Band)</div>
                 <div className={styles.kpiValueRow}>
-                  <span className={styles.kpiValue} style={{ color: '#059669' }}>{avgBand}</span>
+                  <span className={styles.kpiValue}>{avgBand}</span>
                 </div>
-                <div className={styles.kpiDesc}>Based on test history</div>
+                <div className={styles.kpiDesc} style={{ color: '#059669', opacity: 0.7 }}>Based on test history</div>
               </div>
             </div>
 
-            <div className={styles.kpiCard}>
-              <div className={styles.kpiIcon} style={{ background: '#fff1f2', color: '#e11d48', border: '1px solid #ffe4e6' }}>
-                <Clock size={24} />
+            <div className={styles.kpiCard} style={{ background: '#fff1f2', color: '#e11d48', border: '1px solid #ffe4e6', boxShadow: '0 4px 12px rgba(225, 29, 72, 0.15)' }}>
+              <div className={styles.kpiIcon} style={{ background: 'rgba(225, 29, 72, 0.15)' }}>
+                <StreakIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Learning Streak</div>
+                <div className={styles.kpiLabel} style={{ color: '#e11d48', opacity: 0.85 }}>Learning Streak</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue}>{streak} days</span>
                 </div>
-                <div className={styles.kpiDesc}>Current active streak</div>
+                <div className={styles.kpiDesc} style={{ color: '#e11d48', opacity: 0.7 }}>Current active streak</div>
               </div>
             </div>
 
-            <div className={styles.kpiCard}>
-              <div className={styles.kpiIcon} style={{ background: '#faf5ff', color: '#7e22ce', border: '1px solid #f3e8ff' }}>
-                <CheckCircle size={24} />
+            <div className={styles.kpiCard} style={{ background: '#faf5ff', color: '#7e22ce', border: '1px solid #f3e8ff', boxShadow: '0 4px 12px rgba(126, 34, 206, 0.15)' }}>
+              <div className={styles.kpiIcon} style={{ background: 'rgba(126, 34, 206, 0.15)' }}>
+                <BestSkillIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Best Skill</div>
+                <div className={styles.kpiLabel} style={{ color: '#7e22ce', opacity: 0.85 }}>Best Skill</div>
                 <div className={styles.kpiValueRow}>
-                  <span className={styles.kpiValue} style={{ fontSize: '20px', color: '#581c87' }}>{bestSkill.name}</span>
-                  {bestSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#6b21a8', background: '#f3e8ff', padding: '2px 8px', borderRadius: '6px' }}>Band {bestSkill.band}</span>}
+                  <span className={styles.kpiValue}>{bestSkill.name}</span>
+                  {bestSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#6b21a8', background: 'rgba(126, 34, 206, 0.15)', padding: '2px 8px', borderRadius: '6px' }}>Band {bestSkill.band}</span>}
                 </div>
               </div>
             </div>
 
-            <div className={styles.kpiCard}>
-              <div className={styles.kpiIcon} style={{ background: '#fff7ed', color: '#ea580c', border: '1px solid #ffedd5' }}>
-                <AlertTriangle size={24} />
+            <div className={styles.kpiCard} style={{ background: '#fff7ed', color: '#ea580c', border: '1px solid #ffedd5', boxShadow: '0 4px 12px rgba(234, 88, 12, 0.15)' }}>
+              <div className={styles.kpiIcon} style={{ background: 'rgba(234, 88, 12, 0.15)' }}>
+                <WeakSkillIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel}>Needs Improvement (Weakest Skill)</div>
+                <div className={styles.kpiLabel} style={{ color: '#ea580c', opacity: 0.85 }}>Needs Improvement (Weakest Skill)</div>
                 <div className={styles.kpiValueRow}>
-                  <span className={styles.kpiValue} style={{ fontSize: '20px', color: '#431407' }}>{weakSkill.name}</span>
-                  {weakSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#9a3412', background: '#ffedd5', padding: '2px 8px', borderRadius: '6px' }}>Band {weakSkill.band}</span>}
+                  <span className={styles.kpiValue}>{weakSkill.name}</span>
+                  {weakSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#9a3412', background: 'rgba(234, 88, 12, 0.15)', padding: '2px 8px', borderRadius: '6px' }}>Band {weakSkill.band}</span>}
                 </div>
               </div>
             </div>
@@ -297,7 +294,7 @@ export default function DashboardPage() {
                     <YAxis domain={[0, 100]} />
                     <Tooltip />
                     <Legend />
-                    {Object.keys(SKILL_COLORS).map(skill => (
+                    {(skillFilter === 'all' ? Object.keys(SKILL_COLORS) : [skillFilter]).map(skill => (
                       <Line key={skill} type="monotone" dataKey={skill} stroke={SKILL_COLORS[skill]} strokeWidth={2} activeDot={{ r: 8 }} connectNulls />
                     ))}
                   </LineChart>

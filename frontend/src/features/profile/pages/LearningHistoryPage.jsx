@@ -96,14 +96,14 @@ export default function LearningHistoryPage() {
 
         <div className={styles.content}>
           <div className={styles.header}>
-            <h2>My Learning History</h2>
+            <h2>Learning History</h2>
           </div>
 
           <div className={styles.filters}>
             <div className={styles.searchSortRow}>
               <div className={styles.sortRow}>
                 <span className={styles.filterLabel}>Sort by:</span>
-                <AnswerSelect className={styles.select} value={sortOrder} onChange={handleSortChange} options={[{value:'desc',label:'Newest first'},{value:'asc',label:'Oldest first'}]} ariaLabel="Sort test history"/>
+                <AnswerSelect className={styles.select} value={sortOrder} onChange={handleSortChange} options={[{ value: 'desc', label: 'Newest first' }, { value: 'asc', label: 'Oldest first' }]} ariaLabel="Sort test history" />
               </div>
 
               <div className={styles.searchRow}>

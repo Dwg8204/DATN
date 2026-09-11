@@ -1,5 +1,6 @@
 export const ADMIN_NOTIFICATION_STORAGE_KEY = 'aptimate.admin.notifications';
 export const USER_NOTIFICATION_STATE_KEY = 'aptimate.user.notificationState';
+export const PERSONAL_NOTIFICATION_STORAGE_KEY = 'aptimate.user.personalNotifications';
 
 const defaultNotifications = [
   { id: 'welcome', date: new Date(Date.now() - 12 * 60000).toISOString(), content: 'Welcome to AptiMate! Start your first practice test and discover your current level.', target: 'Everyone', type: 'Push notification' },
@@ -13,8 +14,9 @@ export function readStoredJson(key, fallback) {
 
 export function getAvailableUserNotifications() {
   const adminNotifications = readStoredJson(ADMIN_NOTIFICATION_STORAGE_KEY, []);
+  const personalNotifications = readStoredJson(PERSONAL_NOTIFICATION_STORAGE_KEY, []);
   const now = Date.now();
-  return [...adminNotifications, ...defaultNotifications]
+  return [...adminNotifications, ...defaultNotifications, ...personalNotifications]
     .filter((item) => ['Everyone', 'Student'].includes(item.target) && new Date(item.date).getTime() <= now)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 }
@@ -30,4 +32,21 @@ export function saveUserNotificationState(state) {
 
 export function formatNotificationDate(value) {
   return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+}
+
+export function addPersonalNotification(content) {
+  const existing = readStoredJson(PERSONAL_NOTIFICATION_STORAGE_KEY, []);
+  const newNotif = {
+    id: 'personal_' + Date.now(),
+    date: new Date().toISOString(),
+    content,
+    target: 'Student',
+    type: 'System',
+  };
+  existing.push(newNotif);
+  window.localStorage.setItem(PERSONAL_NOTIFICATION_STORAGE_KEY, JSON.stringify(existing));
+  window.dispatchEvent(new CustomEvent('aptimate:notification-state-change'));
+  
+  // Also dispatch a specific event so the UI can pop it up if needed
+  window.dispatchEvent(new CustomEvent('aptimate:personal-notification', { detail: newNotif }));
 }

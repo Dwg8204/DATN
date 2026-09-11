@@ -4,8 +4,10 @@ import ProfileSidebar from '../components/ProfileSidebar';
 import { useAuth } from '../../../context/AuthContext';
 import { Key, Plus, Target } from 'lucide-react';
 import ConfirmModal from '../../../components/common/ConfirmModal';
+import ToastNotification from '../../../components/common/ToastNotification';
 import { calcGoalProgress } from '../../../utils/dashboardUtils';
 import { getHistoryEntries } from '../../../utils/historyStorage';
+import { addPersonalNotification } from '../../../utils/notificationStorage';
 import styles from './ProfilePage.module.css';
 
 export default function ProfilePage() {
@@ -19,6 +21,7 @@ export default function ProfilePage() {
   const [avatarBase64, setAvatarBase64] = useState(null);
 
   const [showConfirm, setShowConfirm] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   // Goal config
   const [goalConfig, setGoalConfig] = useState(() => {
@@ -62,6 +65,8 @@ export default function ProfilePage() {
     updateProfile(updates);
 
     setShowConfirm(false);
+    setToastMessage('Personal information saved successfully!');
+    addPersonalNotification('Personal information saved successfully!');
   };
 
   const handleSaveGoal = () => {
@@ -75,6 +80,8 @@ export default function ProfilePage() {
     setGoalConfig(newConfig);
     localStorage.setItem('aptimate.dashboard_goal', JSON.stringify(newConfig));
     setShowGoalForm(false);
+    setToastMessage('Learning goal saved successfully!');
+    addPersonalNotification('Learning goal saved successfully!');
   };
 
   const handleDeactivateGoal = () => {
@@ -221,16 +228,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className={styles.actions} style={{ marginTop: '16px', marginBottom: '32px' }}>
-              <button 
-                type="button" 
-                className={`${styles.changePasswordBtn} ${styles.desktopOnlyBtn}`} 
-                onClick={handleDeactivateGoal}
-              >
-                <Target size={16} style={{ marginRight: '8px' }} />
-                Change Goal
-              </button>
-              
+            <div className={styles.actions} style={{ marginTop: '16px', marginBottom: '32px', justifyContent: 'flex-end' }}>
               <button type="button" className={styles.saveBtn} onClick={handleSaveGoal}>
                 Save Goal
               </button>
@@ -246,6 +244,11 @@ export default function ProfilePage() {
               onCancel={() => setShowConfirm(false)}
             />
           )}
+
+          <ToastNotification 
+            message={toastMessage} 
+            onClose={() => setToastMessage('')} 
+          />
         </div>
       </div>
     </div>

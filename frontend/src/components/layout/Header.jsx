@@ -167,7 +167,7 @@ export default function Header() {
                 </button>
                 <button className={styles.dropdownItem} onClick={() => { navigate('/profile/history'); setIsUserMenuOpen(false); }}>
                   <History size={16} style={{ marginRight: '8px' }} />
-                  My Learning History
+                  Learning History
                 </button>
                 <button className={styles.dropdownItem} onClick={() => { logout(); setIsUserMenuOpen(false); navigate('/'); }}>
                   <LogOut size={16} style={{ marginRight: '8px' }} />
