@@ -100,26 +100,28 @@ export default function LearningHistoryPage() {
           </div>
 
           <div className={styles.filters}>
-            <div className={styles.searchRow}>
-              <input
-                type="text"
-                placeholder="Search by test name (e.g. Aptis Grammar...)"
-                className={styles.searchInput}
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <button
-                className={`${styles.searchBtn} ${searchInput !== appliedSearch ? styles.highlight : ''}`}
-                onClick={handleSearch}
-              >
-                <Search size={18} /> Search
-              </button>
-            </div>
+            <div className={styles.searchSortRow}>
+              <div className={styles.sortRow}>
+                <span className={styles.filterLabel}>Sort by:</span>
+                <AnswerSelect className={styles.select} value={sortOrder} onChange={handleSortChange} options={[{value:'desc',label:'Newest first'},{value:'asc',label:'Oldest first'}]} ariaLabel="Sort test history"/>
+              </div>
 
-            <div className={styles.filterRow}>
-              <span className={styles.filterLabel}>Sort by:</span>
-              <AnswerSelect className={styles.select} value={sortOrder} onChange={handleSortChange} options={[{value:'desc',label:'Newest first'},{value:'asc',label:'Oldest first'}]} ariaLabel="Sort test history"/>
+              <div className={styles.searchRow}>
+                <input
+                  type="text"
+                  placeholder="Search by test name (e.g. Aptis Grammar...)"
+                  className={styles.searchInput}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                <button
+                  className={`${styles.searchBtn} ${searchInput !== appliedSearch ? styles.highlight : ''}`}
+                  onClick={handleSearch}
+                >
+                  <Search size={18} /> Search
+                </button>
+              </div>
             </div>
 
             <div className={styles.filterRow}>

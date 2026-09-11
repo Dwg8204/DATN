@@ -26,7 +26,7 @@ export default function ChangePasswordPage() {
       setError('New passwords do not match.');
       return;
     }
-    
+
     setShowConfirm(true);
   };
 
@@ -41,7 +41,7 @@ export default function ChangePasswordPage() {
       }
 
       const currentUserRecord = existingUsers[userIndex];
-      
+
       if (currentUserRecord.password !== currentPassword) {
         setError('Current password is incorrect.');
         return;
@@ -66,40 +66,40 @@ export default function ChangePasswordPage() {
     <div className={styles.page}>
       <div className={styles.container}>
         <ProfileSidebar activeTab="password" />
-        
+
         <div className={styles.content}>
           <h1 className={styles.title}>Change password</h1>
-          
+
           <form className={styles.form} onSubmit={handleFormSubmit}>
             {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
-            
+
             <div className={styles.inputCol}>
               <label className={styles.label}>Current password</label>
-              <PasswordInput 
-                className={styles.input} 
-                value={currentPassword} 
-                onChange={e => setCurrentPassword(e.target.value)} 
+              <PasswordInput
+                className={styles.input}
+                value={currentPassword}
+                onChange={e => setCurrentPassword(e.target.value)}
               />
             </div>
-            
+
             <div className={styles.inputCol}>
               <label className={styles.label}>New password</label>
-              <PasswordInput 
-                className={styles.input} 
-                value={newPassword} 
-                onChange={e => setNewPassword(e.target.value)} 
+              <PasswordInput
+                className={styles.input}
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
               />
             </div>
-            
+
             <div className={styles.inputCol}>
               <label className={styles.label}>Confirm new password</label>
-              <PasswordInput 
-                className={styles.input} 
-                value={confirmPassword} 
-                onChange={e => setConfirmPassword(e.target.value)} 
+              <PasswordInput
+                className={styles.input}
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
               />
             </div>
-            
+
             <div className={styles.actions}>
               <button type="submit" className={styles.saveBtn}>
                 Save changes
@@ -108,7 +108,7 @@ export default function ChangePasswordPage() {
           </form>
 
           {showConfirm && (
-            <ConfirmModal 
+            <ConfirmModal
               title="Change Password"
               message="Are you sure you want to change your password?"
               onConfirm={executeSave}

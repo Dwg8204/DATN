@@ -62,7 +62,6 @@ export default function ProfilePage() {
     updateProfile(updates);
 
     setShowConfirm(false);
-    alert('Personal information saved successfully!');
   };
 
   const handleSaveGoal = () => {
@@ -76,7 +75,6 @@ export default function ProfilePage() {
     setGoalConfig(newConfig);
     localStorage.setItem('aptimate.dashboard_goal', JSON.stringify(newConfig));
     setShowGoalForm(false);
-    alert('Learning goal saved successfully!');
   };
 
   const handleDeactivateGoal = () => {
