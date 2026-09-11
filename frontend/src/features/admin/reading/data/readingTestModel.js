@@ -32,7 +32,8 @@ export function createReadingDraft(mode = 'full') {
         id: `p1-q${i + 1}`,
         position: i + 1,
         options: ['', '', ''],
-        answer: ''
+        answer: '',
+        explanation: ''
       }))
     },
     part2: {
@@ -42,7 +43,8 @@ export function createReadingDraft(mode = 'full') {
       }, (_, i) => ({
         id: `s${i + 1}`,
         content: '',
-        correctPosition: i + 1
+        correctPosition: i + 1,
+        explanation: ''
       }))
     },
     part3: {
@@ -54,7 +56,8 @@ export function createReadingDraft(mode = 'full') {
       }, (_, i) => ({
         id: `p3-q${i + 1}`,
         statement: '',
-        answer: ''
+        answer: '',
+        explanation: ''
       }))
     },
     part4: {
@@ -71,7 +74,8 @@ export function createReadingDraft(mode = 'full') {
       }, (_, i) => ({
         id: `h${i + 1}`,
         text: '',
-        correctParagraph: ''
+        correctParagraph: '',
+        explanation: ''
       }))
     }
   };
