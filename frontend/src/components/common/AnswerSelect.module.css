@@ -24,12 +24,34 @@
   transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
 }
 
-.select:hover { background-color: #f9f9f9; }
-.select:focus-visible { border-color: #0095ff; box-shadow: 0 0 0 3px rgba(0, 149, 255, 0.18); }
-.hasValue { background-color: #f3d5b5; }
-.correct { border-color: #43b75d; background-color: #edf9f0; }
-.incorrect { border: 2px solid #c82323; background-color: #fff0f1; }
-.select:disabled { color: #000; cursor: default; opacity: 1; }
+.select:hover {
+  background-color: #f9f9f9;
+}
+
+.select:focus-visible {
+  border-color: #0095ff;
+  box-shadow: 0 0 0 3px rgba(0, 149, 255, 0.18);
+}
+
+.hasValue {
+  background-color: #f3d5b5;
+}
+
+.correct {
+  border-color: #43b75d;
+  background-color: #edf9f0;
+}
+
+.incorrect {
+  border: 2px solid #c82323;
+  background-color: #fff0f1;
+}
+
+.select:disabled {
+  color: #000;
+  cursor: default;
+  opacity: 1;
+}
 
 .selectedText {
   min-width: 0;
@@ -39,7 +61,9 @@
   white-space: nowrap;
 }
 
-.placeholder { font-weight: 700; }
+.placeholder {
+  font-weight: 700;
+}
 
 .chevron {
   width: 8px;
@@ -51,7 +75,9 @@
   transition: transform 0.18s ease;
 }
 
-.chevronOpen { transform: translateY(2px) rotate(225deg); }
+.chevronOpen {
+  transform: translateY(2px) rotate(225deg);
+}
 
 .menu {
   position: absolute;
@@ -84,11 +110,30 @@
   cursor: pointer;
 }
 
-.option:last-child { border-bottom: 0; }
-.option:hover, .optionSelected { background: #a9deef; }
+.option:last-child {
+  border-bottom: 0;
+}
+
+.option:hover,
+.optionSelected {
+  background: #a9deef;
+}
 
 @media (max-width: 700px) {
-  .select { min-height: 42px; padding: 7px 10px; font-size: 13px; line-height: 20px; }
-  .menu { max-height: min(260px, 45vh); }
-  .option { padding: 8px 10px; font-size: 13px; line-height: 18px; }
+  .select {
+    min-height: 42px;
+    padding: 7px 10px;
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .menu {
+    max-height: min(260px, 45vh);
+  }
+
+  .option {
+    padding: 8px 10px;
+    font-size: 13px;
+    line-height: 18px;
+  }
 }

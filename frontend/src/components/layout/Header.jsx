@@ -1,5 +1,6 @@
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { AudioLines, BookOpen, ChevronDown, Headphones, Home, Languages, Mic, PenLine, User, LogOut } from 'lucide-react';
+import { AudioLines, BookOpen, ChevronDown, Headphones, Home, Languages, Mic, PenLine, User, LogOut, Bell, LayoutDashboard, History } from 'lucide-react';
 import styles from './Header.module.css';
 import { useAuth } from '../../context/AuthContext';
 import UserNotifications from './UserNotifications';
@@ -79,6 +80,21 @@ const navItems = [
 export default function Header() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuth();
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className={styles.header}>
@@ -120,12 +136,14 @@ export default function Header() {
       <div className={styles.headerActions}>
         <UserNotifications />
         {isAuthenticated ? (
-          <div className={styles.userMenuContainer}>
-            <div 
+          <div className={styles.userMenuContainer} ref={userMenuRef}>
+            <div
               className={styles.userProfileBtn}
               onClick={() => {
                 if (window.innerWidth <= 700) {
                   navigate('/profile');
+                } else {
+                  setIsUserMenuOpen(!isUserMenuOpen);
                 }
               }}
             >
@@ -133,16 +151,30 @@ export default function Header() {
               <span className={styles.userName}>{user?.name}</span>
               <ChevronDown className={styles.navIcon} aria-hidden="true" />
             </div>
-            <div className={styles.userDropdown}>
-              <button className={styles.dropdownItem} onClick={() => navigate('/profile')}>
-                <User size={16} style={{ marginRight: '8px' }} />
-                My Profile
-              </button>
-              <button className={styles.dropdownItem} onClick={() => { logout(); navigate('/'); }}>
-                <LogOut size={16} style={{ marginRight: '8px' }} />
-                Log out
-              </button>
-            </div>
+            {isUserMenuOpen && window.innerWidth > 700 && (
+              <div className={`${styles.userDropdown} ${styles.open}`}>
+                <button className={styles.dropdownItem} onClick={() => { navigate('/profile'); setIsUserMenuOpen(false); }}>
+                  <User size={16} style={{ marginRight: '8px' }} />
+                  My Profile
+                </button>
+                <button className={styles.dropdownItem} onClick={() => { navigate('/profile/notifications'); setIsUserMenuOpen(false); }}>
+                  <Bell size={16} style={{ marginRight: '8px' }} />
+                  Notifications
+                </button>
+                <button className={styles.dropdownItem} onClick={() => { navigate('/profile/dashboard'); setIsUserMenuOpen(false); }}>
+                  <LayoutDashboard size={16} style={{ marginRight: '8px' }} />
+                  Dashboard
+                </button>
+                <button className={styles.dropdownItem} onClick={() => { navigate('/profile/history'); setIsUserMenuOpen(false); }}>
+                  <History size={16} style={{ marginRight: '8px' }} />
+                  My Learning History
+                </button>
+                <button className={styles.dropdownItem} onClick={() => { logout(); setIsUserMenuOpen(false); navigate('/'); }}>
+                  <LogOut size={16} style={{ marginRight: '8px' }} />
+                  Log out
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <button className={styles.signInBtn} onClick={() => navigate('/login')}>

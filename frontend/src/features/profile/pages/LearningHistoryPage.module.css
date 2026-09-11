@@ -1,16 +1,18 @@
 .page {
-  background: var(--bg-primary);
+  background: #F8F9FA;
   min-height: 100vh;
   margin-top: -40px;
   margin-bottom: -40px;
-  padding: 40px 20px;
+  padding-bottom: 40px;
 }
 
 .container {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  display: flex;
+  padding: 80px 72px 80px;
   gap: 32px;
+  box-sizing: border-box;
+  display: flex;
 }
 
 .content {
@@ -330,12 +332,26 @@
   margin-left: 4px;
 }
 
+.searchSortRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+
 .searchRow {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 24px;
-  width: 100%;
+  flex: 7;
+}
+
+.sortRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 3;
 }
 
 .searchInput {
@@ -431,43 +447,54 @@
 @media (max-width: 900px) {
   .container {
     flex-direction: column;
-    padding: 24px 16px 64px;
+    padding: 64px 16px 64px;
     gap: 24px;
   }
+
   .cardHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
+
   .header {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
-  .searchRow, .filterRow {
+
+  .searchSortRow,
+  .searchRow,
+  .sortRow,
+  .filterRow {
     flex-direction: column;
     align-items: stretch;
   }
+
   .filterBtnGroup {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     width: 100%;
   }
+
   .cardTitleWrap {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
+
   .metaInfo {
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 12px;
   }
+
   .cardAction {
     width: 100%;
     margin-top: 16px;
   }
+
   .reviewBtn {
     width: 100%;
     justify-content: center;

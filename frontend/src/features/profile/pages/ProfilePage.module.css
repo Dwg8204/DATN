@@ -4,22 +4,26 @@
   min-height: 100vh;
   margin-top: -40px;
   margin-bottom: -40px;
-  background: #FFFFFF;
+  background: #F8F9FA;
 }
 
 .container {
   display: flex;
-  max-width: 1440px;
   width: 100%;
   margin: 0 auto;
-  padding: 40px 72px 80px;
-  gap: 134px;
+  padding: 80px 72px 80px;
+  gap: 32px;
+  box-sizing: border-box;
 }
 
 .content {
   flex: 1;
   display: flex;
   flex-direction: column;
+  background: white;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
 }
 
 .avatarSection {
@@ -85,6 +89,7 @@
   font-size: 16px;
   font-family: inherit;
   background: #FFFFFF;
+  box-sizing: border-box;
 }
 
 .textarea {
@@ -247,7 +252,7 @@
 @media (max-width: 900px) {
   .container {
     flex-direction: column;
-    padding: 24px 16px 64px;
+    padding: 64px 16px 64px;
     gap: 40px;
   }
   

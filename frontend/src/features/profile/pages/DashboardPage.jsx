@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { getHistoryEntries } from '../../../utils/historyStorage';
-import { 
-  getFilteredEntries, 
-  calcSkillDistribution, 
+import {
+  getFilteredEntries,
+  calcSkillDistribution,
   calcScoreOverTime,
   calcStreak,
   calcAvgBand,
@@ -11,7 +11,7 @@ import {
   calcWeakSkill,
   calcGoalProgress
 } from '../../../utils/dashboardUtils';
-import { 
+import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   PieChart, Pie, Cell
 } from 'recharts';
@@ -51,14 +51,14 @@ export default function DashboardPage() {
   const criteriaEntries = entries.filter(e => ['speaking', 'writing'].includes(e.skill));
   const avgCriteriaScore = criteriaEntries.length > 0
     ? Math.round(criteriaEntries.reduce((sum, e) => {
-        const avg = e.criteria?.reduce((s, c) => s + c.score, 0) / (e.criteria?.length || 1) || 0;
-        return sum + avg;
-      }, 0) / criteriaEntries.length)
+      const avg = e.criteria?.reduce((s, c) => s + c.score, 0) / (e.criteria?.length || 1) || 0;
+      return sum + avg;
+    }, 0) / criteriaEntries.length)
     : 0;
 
   // Chart data (uses filters)
   const scoreOverTimeData = useMemo(() => calcScoreOverTime(filteredEntries), [filteredEntries]);
-  
+
   // Skill dist always shows all skills, ignores skill/part filter, but respects date filter
   const dateFilteredOnly = useMemo(() => {
     return getFilteredEntries(entries, { skill: 'all', part: 'all', dateRange: dateFilter });
@@ -87,7 +87,7 @@ export default function DashboardPage() {
     <div className={styles.page}>
       <div className={styles.container}>
         <ProfileSidebar activeTab="dashboard" />
-        
+
         <div className={styles.content}>
           <div className={styles.headerBanner}>
             <div className={styles.titleArea}>
@@ -187,37 +187,37 @@ export default function DashboardPage() {
             <div className={styles.filterRow}>
               <span className={styles.filterLabel}>Skill:</span>
               <div className={styles.filterBtnGroup}>
-                <button 
+                <button
                   className={`${styles.filterBtn} ${skillFilter === 'all' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('all'); setPartFilter('all'); }}
                 >
-                  All ({skillCounts.all})
+                  All
                 </button>
-                <button 
+                <button
                   className={`${styles.filterBtn} ${skillFilter === 'listening' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('listening'); setPartFilter('all'); }}
                 >
                   Listening ({skillCounts.listening})
                 </button>
-                <button 
+                <button
                   className={`${styles.filterBtn} ${skillFilter === 'reading' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('reading'); setPartFilter('all'); }}
                 >
                   Reading ({skillCounts.reading})
                 </button>
-                <button 
+                <button
                   className={`${styles.filterBtn} ${skillFilter === 'writing' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('writing'); setPartFilter('all'); }}
                 >
                   Writing ({skillCounts.writing})
                 </button>
-                <button 
+                <button
                   className={`${styles.filterBtn} ${skillFilter === 'speaking' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('speaking'); setPartFilter('all'); }}
                 >
                   Speaking ({skillCounts.speaking})
                 </button>
-                <button 
+                <button
                   className={`${styles.filterBtn} ${skillFilter === 'grammar' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('grammar'); setPartFilter('all'); }}
                 >
@@ -257,14 +257,31 @@ export default function DashboardPage() {
 
             <div className={styles.filterRow}>
               <span className={styles.filterLabel}>Time:</span>
-              <div className={styles.selectWrap}>
-                <select className={styles.filterSelect} value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
-                  <option value="all">Time: All Time</option>
-                  <option value="7">Last 7 days</option>
-                  <option value="30">Last 30 days</option>
-                  <option value="90">This Quarter</option>
-                </select>
-                <svg className={styles.selectArrow} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
+              <div className={styles.filterBtnGroup}>
+                <button
+                  className={`${styles.filterBtn} ${dateFilter === 'all' ? styles.active : ''}`}
+                  onClick={() => setDateFilter('all')}
+                >
+                  All Time
+                </button>
+                <button
+                  className={`${styles.filterBtn} ${dateFilter === '7' ? styles.active : ''}`}
+                  onClick={() => setDateFilter('7')}
+                >
+                  Last 7 days
+                </button>
+                <button
+                  className={`${styles.filterBtn} ${dateFilter === '30' ? styles.active : ''}`}
+                  onClick={() => setDateFilter('30')}
+                >
+                  Last 30 days
+                </button>
+                <button
+                  className={`${styles.filterBtn} ${dateFilter === '90' ? styles.active : ''}`}
+                  onClick={() => setDateFilter('90')}
+                >
+                  This Quarter
+                </button>
               </div>
             </div>
           </div>

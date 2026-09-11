@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import { UserCircle, Bell, History, LogOut, LayoutDashboard } from 'lucide-react';
+import { UserCircle, Bell, History, LogOut, LayoutDashboard, Menu } from 'lucide-react';
 import { calcGoalProgress } from '../../../utils/dashboardUtils';
 import { getHistoryEntries } from '../../../utils/historyStorage';
 import styles from './ProfileSidebar.module.css';
@@ -10,6 +10,21 @@ export default function ProfileSidebar({ activeTab }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -23,6 +38,63 @@ export default function ProfileSidebar({ activeTab }) {
 
   return (
     <div className={styles.sidebar}>
+      <div className={styles.mobileHeader}>
+        <div className={styles.mobileTitle}>
+          {activeTab === 'info' || activeTab === 'password' ? 'Personal Information' :
+           activeTab === 'notifications' ? 'Notifications' :
+           activeTab === 'dashboard' ? 'Dashboard' :
+           activeTab === 'history' ? 'My Learning History' : ''}
+        </div>
+        
+        <div className={styles.mobileMenuContainer} ref={mobileMenuRef}>
+          <button 
+            className={styles.mobileMenuBtn} 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <Menu size={24} />
+          </button>
+          
+          <div className={`${styles.mobileDropdown} ${isMobileMenuOpen ? styles.open : ''}`}>
+            <button 
+              className={`${styles.dropdownItem} ${activeTab === 'info' || activeTab === 'password' ? styles.active : ''}`}
+              onClick={() => { navigate('/profile'); setIsMobileMenuOpen(false); }}
+            >
+              <UserCircle size={16} style={{ marginRight: '8px' }} />
+              Personal Information
+            </button>
+            
+            <button 
+              className={`${styles.dropdownItem} ${activeTab === 'notifications' ? styles.active : ''}`}
+              onClick={() => { navigate('/profile/notifications'); setIsMobileMenuOpen(false); }}
+            >
+              <Bell size={16} style={{ marginRight: '8px' }} />
+              Notifications
+            </button>
+
+            <button 
+              className={`${styles.dropdownItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
+              onClick={() => { navigate('/profile/dashboard'); setIsMobileMenuOpen(false); }}
+            >
+              <LayoutDashboard size={16} style={{ marginRight: '8px' }} />
+              Dashboard
+            </button>
+            
+            <button 
+              className={`${styles.dropdownItem} ${activeTab === 'history' ? styles.active : ''}`}
+              onClick={() => { navigate('/profile/history'); setIsMobileMenuOpen(false); }}
+            >
+              <History size={16} style={{ marginRight: '8px' }} />
+              My Learning History
+            </button>
+            
+            <button className={styles.dropdownItem} onClick={handleLogout}>
+              <LogOut size={16} style={{ marginRight: '8px' }} />
+              Log out
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className={`${styles.userInfo} ${styles.mobileHidden}`}>
         <img src={user?.avatar || 'https://placehold.co/74x74'} alt="Avatar" className={styles.avatar} />
         <div className={styles.userDetails}>
@@ -105,12 +177,6 @@ export default function ProfileSidebar({ activeTab }) {
         </button>
       </div>
 
-      <div className={styles.mobileTitle}>
-        {activeTab === 'info' || activeTab === 'password' ? 'Personal Information' :
-         activeTab === 'notifications' ? 'Notifications' :
-         activeTab === 'dashboard' ? 'Dashboard' :
-         activeTab === 'history' ? 'My Learning History' : ''}
-      </div>
     </div>
   );
 }

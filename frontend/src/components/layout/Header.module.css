@@ -172,7 +172,8 @@
 }
 
 .userDropdown {
-  display: none;
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: 100%;
   right: 0;
@@ -182,11 +183,6 @@
   min-width: 200px;
   border-radius: 8px;
   overflow: hidden;
-}
-
-.userMenuContainer:hover .userDropdown {
-  display: flex;
-  flex-direction: column;
 }
 
 .mobileNav {
