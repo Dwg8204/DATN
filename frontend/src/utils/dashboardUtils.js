@@ -28,7 +28,7 @@ export function calcSkillDistribution(entries) {
   return Object.entries(counts).map(([name, value]) => ({ name, value }));
 }
 
-export function calcScoreOverTime(entries) {
+export function calcScoreOverTime(entries, skillFilter = 'all') {
   // Group by date
   const grouped = {};
   entries.forEach(entry => {
@@ -60,17 +60,27 @@ export function calcScoreOverTime(entries) {
   const chartData = sortedDates.map(date => {
     const dataPoint = { date };
     for (const skill in grouped[date]) {
-      dataPoint[skill] = Math.round(grouped[date][skill].total / grouped[date][skill].count);
+      if (skillFilter === 'all' || skill === skillFilter) {
+        dataPoint[skill] = Math.round(grouped[date][skill].total / grouped[date][skill].count);
+      }
     }
     return dataPoint;
   });
 
   // Inject fake data from 01/09 to 03/09 for visualization purposes
-  const fakeData = [
+  let fakeData = [
     { date: '01/09', listening: 62, reading: 55 },
     { date: '02/09', speaking: 70, writing: 65 },
     { date: '03/09', grammar: 58, listening: 68 },
   ];
+
+  if (skillFilter !== 'all') {
+    fakeData = fakeData.map(item => {
+      const newItem = { date: item.date };
+      if (item[skillFilter] !== undefined) newItem[skillFilter] = item[skillFilter];
+      return newItem;
+    });
+  }
   
   // Merge fake data with real data (prepend fake data)
   return [...fakeData, ...chartData];

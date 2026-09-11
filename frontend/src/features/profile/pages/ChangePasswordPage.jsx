@@ -4,6 +4,8 @@ import styles from './ChangePasswordPage.module.css';
 import PasswordInput from '../../auth/components/PasswordInput';
 import { useAuth } from '../../../context/AuthContext';
 import ConfirmModal from '../../../components/common/ConfirmModal';
+import ToastNotification from '../../../components/common/ToastNotification';
+import { addPersonalNotification } from '../../../utils/notificationStorage';
 
 export default function ChangePasswordPage() {
   const { user } = useAuth();
@@ -12,6 +14,7 @@ export default function ChangePasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -51,7 +54,8 @@ export default function ChangePasswordPage() {
       localStorage.setItem('aptimate.mock_users', JSON.stringify(existingUsers));
 
       setShowConfirm(false);
-      alert('Password changed successfully!');
+      setToastMessage('Password changed successfully!');
+      addPersonalNotification('Password changed successfully!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
@@ -115,6 +119,11 @@ export default function ChangePasswordPage() {
               onCancel={() => setShowConfirm(false)}
             />
           )}
+
+          <ToastNotification 
+            message={toastMessage} 
+            onClose={() => setToastMessage('')} 
+          />
         </div>
       </div>
     </div>

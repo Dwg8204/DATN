@@ -40,30 +40,30 @@ export default function ProfileSidebar({ activeTab }) {
     <div className={styles.sidebar}>
       <div className={styles.mobileHeader}>
         <div className={styles.mobileTitle}>
-          {activeTab === 'info' || activeTab === 'password' ? 'Personal Information' :
-           activeTab === 'notifications' ? 'Notifications' :
-           activeTab === 'dashboard' ? 'Dashboard' :
-           activeTab === 'history' ? 'My Learning History' : ''}
+          {activeTab === 'info' || activeTab === 'password' ? 'My Profile' :
+            activeTab === 'notifications' ? 'Notifications' :
+              activeTab === 'dashboard' ? 'Dashboard' :
+                activeTab === 'history' ? 'Learning History' : ''}
         </div>
-        
+
         <div className={styles.mobileMenuContainer} ref={mobileMenuRef}>
-          <button 
-            className={styles.mobileMenuBtn} 
+          <button
+            className={styles.mobileMenuBtn}
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
             <Menu size={24} />
           </button>
-          
+
           <div className={`${styles.mobileDropdown} ${isMobileMenuOpen ? styles.open : ''}`}>
-            <button 
+            <button
               className={`${styles.dropdownItem} ${activeTab === 'info' || activeTab === 'password' ? styles.active : ''}`}
               onClick={() => { navigate('/profile'); setIsMobileMenuOpen(false); }}
             >
               <UserCircle size={16} style={{ marginRight: '8px' }} />
-              Personal Information
+              My Profile
             </button>
-            
-            <button 
+
+            <button
               className={`${styles.dropdownItem} ${activeTab === 'notifications' ? styles.active : ''}`}
               onClick={() => { navigate('/profile/notifications'); setIsMobileMenuOpen(false); }}
             >
@@ -71,22 +71,22 @@ export default function ProfileSidebar({ activeTab }) {
               Notifications
             </button>
 
-            <button 
+            <button
               className={`${styles.dropdownItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
               onClick={() => { navigate('/profile/dashboard'); setIsMobileMenuOpen(false); }}
             >
               <LayoutDashboard size={16} style={{ marginRight: '8px' }} />
               Dashboard
             </button>
-            
-            <button 
+
+            <button
               className={`${styles.dropdownItem} ${activeTab === 'history' ? styles.active : ''}`}
               onClick={() => { navigate('/profile/history'); setIsMobileMenuOpen(false); }}
             >
               <History size={16} style={{ marginRight: '8px' }} />
-              My Learning History
+              Learning History
             </button>
-            
+
             <button className={styles.dropdownItem} onClick={handleLogout}>
               <LogOut size={16} style={{ marginRight: '8px' }} />
               Log out
@@ -102,7 +102,7 @@ export default function ProfileSidebar({ activeTab }) {
           <div className={styles.email}>{user?.email || 'email@example.com'}</div>
         </div>
       </div>
-      
+
       {goalConfig.active && goalProgress ? (
         <div className={`${styles.goalGrid} ${styles.mobileHidden}`}>
           <div className={styles.goalTile}>
@@ -131,20 +131,20 @@ export default function ProfileSidebar({ activeTab }) {
       <button className={`${styles.btnSetGoal} ${styles.mobileHidden}`} onClick={() => navigate('/profile')}>
         {goalConfig.active ? 'Change Goal' : 'Set Learning Goal'}
       </button>
-      
+
       <div className={`${styles.divider} ${styles.mobileHidden}`}></div>
-      
+
       <div className={styles.navMenu}>
-        <button 
+        <button
           className={`${styles.navItem} ${activeTab === 'info' || activeTab === 'password' ? styles.active : ''}`}
           onClick={() => navigate('/profile')}
-          title="Personal Information"
+          title="My Profile"
         >
           <UserCircle size={20} className={styles.navIcon} />
-          <span className={styles.navText}>Personal Information</span>
+          <span className={styles.navText}>My Profile</span>
         </button>
-        
-        <button 
+
+        <button
           className={`${styles.navItem} ${activeTab === 'notifications' ? styles.active : ''}`}
           onClick={() => navigate('/profile/notifications')}
           title="Notifications"
@@ -153,7 +153,7 @@ export default function ProfileSidebar({ activeTab }) {
           <span className={styles.navText}>Notifications</span>
         </button>
 
-        <button 
+        <button
           className={`${styles.navItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
           onClick={() => navigate('/profile/dashboard')}
           title="Dashboard"
@@ -161,16 +161,16 @@ export default function ProfileSidebar({ activeTab }) {
           <LayoutDashboard size={20} className={styles.navIcon} />
           <span className={styles.navText}>Dashboard</span>
         </button>
-        
-        <button 
+
+        <button
           className={`${styles.navItem} ${activeTab === 'history' ? styles.active : ''}`}
           onClick={() => navigate('/profile/history')}
-          title="My Learning History"
+          title="Learning History"
         >
           <History size={20} className={styles.navIcon} />
-          <span className={styles.navText}>My Learning History</span>
+          <span className={styles.navText}>Learning History</span>
         </button>
-        
+
         <button className={styles.navItem} onClick={handleLogout} title="Log out">
           <LogOut size={20} className={styles.navIcon} />
           <span className={styles.navText}>Log out</span>
