@@ -18,7 +18,6 @@ import ChangePasswordPage from '../features/profile/pages/ChangePasswordPage';
 import DashboardPage from '../features/profile/pages/DashboardPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingMainRoutes, writingTestRoutes } from '../features/writing/writingRoutes';
-import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
 import { listeningMainRoutes, listeningTestRoutes } from '../features/module-listening/listeningRoutes';
 import { speakingMainRoutes, speakingTestRoutes } from '../features/module-speaking/speakingRoutes';
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
@@ -97,7 +96,6 @@ export const appRoutes = [
       ...readingMainRoutes,
       ...practiceRoutes,
       ...writingMainRoutes,
-      ...chatbotRoutes,
       ...dictationRoutes,
       {
         path: '*',
