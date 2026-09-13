@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    container_name: aptimate-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: aptimate
+      POSTGRES_USER: aptimate
+      POSTGRES_PASSWORD: aptimate
+    ports:
+      - "5433:5432"
+    volumes:
+      - aptimate_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aptimate -d aptimate"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  aptimate_postgres_data:
