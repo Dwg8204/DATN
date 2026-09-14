@@ -8,16 +8,144 @@ Modular monolith backend for the AptiMate learning platform. The application use
 - npm
 - Docker Desktop, or a PostgreSQL 17 server with `pgcrypto`, `citext` and `vector`
 
-## Local setup
+## Chạy dự án lần đầu
 
-1. Copy `.env.example` to `.env`.
-2. Start PostgreSQL: `docker compose up -d postgres`.
-3. Install packages: `npm install`.
-4. Apply migrations: `npm run db:migrate`.
-5. Seed fixed roles: `npm run db:seed`.
-6. Start the API: `npm run start:dev`.
+Mọi lệnh bên dưới được chạy trong thư mục `backend`.
 
-The API is available at `http://localhost:3000/api/v1`. Swagger is available at `http://localhost:3000/api/docs`.
+1. Cài dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Tạo file môi trường từ file mẫu:
+
+   PowerShell:
+
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+
+   macOS/Linux:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Kiểm tra và thay các secret phát triển trong `.env`. Không commit file `.env`.
+4. Khởi động PostgreSQL theo một trong hai cách ở phần tiếp theo.
+5. Tạo schema và dữ liệu nền:
+
+   ```bash
+   npm run db:migrate
+   npm run db:seed
+   ```
+
+6. Chạy API ở chế độ phát triển:
+
+   ```bash
+   npm run start:dev
+   ```
+
+API: `http://localhost:3000/api/v1`
+
+Swagger: `http://localhost:3000/api/docs`
+
+### Chạy PostgreSQL bằng Docker (khuyến nghị cho local)
+
+Docker sử dụng image PostgreSQL 17 có sẵn extension `pgvector`. Cổng máy host là `5433` để không xung đột với PostgreSQL mặc định ở cổng `5432`.
+
+```bash
+# Tạo và chạy PostgreSQL ở background
+docker compose up -d postgres
+
+# Kiểm tra trạng thái; chờ đến khi container báo healthy
+docker compose ps
+
+# Xem log database
+docker compose logs -f postgres
+
+# Dừng container nhưng vẫn giữ dữ liệu
+docker compose stop postgres
+
+# Chạy lại container đã dừng
+docker compose start postgres
+
+# Dừng và gỡ container/network, vẫn giữ volume dữ liệu
+docker compose down
+```
+
+Không chạy `docker compose down -v` nếu chưa chủ động muốn xóa toàn bộ database local.
+
+Thông tin kết nối Docker, cũng là thông tin dùng để đăng ký server trong pgAdmin 4:
+
+| Thuộc tính | Giá trị |
+| --- | --- |
+| Host | `127.0.0.1` |
+| Port | `5433` |
+| Maintenance database | `aptimate` |
+| Username | `aptimate` |
+| Password | `aptimate` |
+| SSL mode | `Prefer` hoặc `Disable` |
+
+Sau khi kết nối bằng pgAdmin 4, các bảng nằm tại `Databases > aptimate > Schemas > public > Tables`.
+
+### Dùng PostgreSQL cài trực tiếp trên máy
+
+PostgreSQL phải hỗ trợ các extension `pgcrypto`, `citext` và `vector`. Tạo database/user, sau đó sửa `DATABASE_URL` trong `.env`, ví dụ:
+
+```dotenv
+DATABASE_URL=postgresql://aptimate:your_password@localhost:5432/aptimate
+DB_SSL=false
+```
+
+Migration sẽ tự bật ba extension. Tài khoản kết nối cần quyền `CREATE EXTENSION` và quyền tạo schema/table trong database.
+
+## Migration và seed
+
+```bash
+# Xem migration nào đã/chưa chạy
+npm run db:migrate:status
+
+# Chạy toàn bộ migration còn thiếu
+npm run db:migrate
+
+# Hoàn tác migration gần nhất (cẩn thận vì có thể mất dữ liệu)
+npm run db:migrate:revert
+
+# Tạo migration mới sau khi thay đổi entity/schema
+npm run db:migrate:generate -- src/database/migrations/TenMigration
+
+# Tạo/cập nhật idempotent các role ADMIN, TEACHER, STUDENT
+npm run db:seed
+```
+
+Quy trình khi thêm thay đổi database:
+
+1. Không sửa migration đã được chia sẻ cho thành viên khác.
+2. Tạo migration mới và đặt tên mô tả đúng nghiệp vụ.
+3. Chạy `db:migrate:status`, `db:migrate`, rồi kiểm tra schema trên pgAdmin 4.
+4. Chạy `npm run typecheck`, `npm test` và `npm run build` trước khi commit.
+
+Để tạo lại database local hoàn toàn từ đầu, chỉ thực hiện khi chắc chắn không cần dữ liệu hiện có:
+
+```bash
+docker compose down -v
+docker compose up -d postgres
+npm run db:migrate
+npm run db:seed
+```
+
+## Chạy và kiểm tra ứng dụng
+
+```bash
+npm run start:dev     # watch mode
+npm run build         # build production
+npm run start:prod    # chạy bản đã build trong dist
+npm run lint
+npm run typecheck
+npm test
+```
 
 Health endpoints:
 
