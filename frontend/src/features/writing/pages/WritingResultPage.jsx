@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import WritingScoreRing from '../components/WritingScoreRing';
 import { getWritingAssessment, WRITING_PART_ORDER } from '../data/writingResultData';
 import { getWritingSession } from '../utils/writingSessionStorage';
-import { saveHistoryEntry } from '../../../utils/historyStorage';
+import { saveHistoryEntry, saveHistorySnapshot } from '../../../utils/historyStorage';
 import styles from './WritingResultPage.module.css';
 
 function duration(session) {
@@ -39,7 +39,7 @@ export default function WritingResultPage() {
     historySaved.current = true;
 
     const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem(`history_data_${newHistoryId}`, JSON.stringify(session));
+    if (!saveHistorySnapshot(newHistoryId, session)) return;
 
     saveHistoryEntry({
       id: newHistoryId,

@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PART1_QUESTIONS as MOCK_QUESTIONS } from '../data/part1MockData';
 import { PART2_WORD_SETS as MOCK_SETS } from '../data/part2MockData';
 import { getAllGrammarVocabAnswers, getGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
-import { saveHistoryEntry } from '../../../utils/historyStorage';
+import { saveHistoryEntry, saveHistorySnapshot } from '../../../utils/historyStorage';
 import styles from './GrammarVocabResultPage.module.css';
 
 function getCefrLevel(percentage) {
@@ -131,7 +131,7 @@ export default function GrammarVocabResultPage() {
       historySaved.current = true;
       const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-      localStorage.setItem(`history_data_${newHistoryId}`, JSON.stringify(result));
+      if (!saveHistorySnapshot(newHistoryId, result)) return;
       reviewHistoryId.current = newHistoryId;
 
       saveHistoryEntry({

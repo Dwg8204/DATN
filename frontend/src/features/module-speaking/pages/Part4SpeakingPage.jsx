@@ -94,7 +94,7 @@ export default function Part4SpeakingPage() {
   const handleSubmit = () => setShowSubmitModal(true);
 
   const handleConfirmSubmit = () => {
-    saveSpeakingPartAnswers('part4', answers);
+    if (!saveSpeakingPartAnswers('part4', answers)) return;
     setShowSubmitModal(false);
     navigate(`/speaking/result?testId=${testId}&isFull=${isFullTest}`);
   };
