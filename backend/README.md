@@ -56,8 +56,8 @@ Swagger: `http://localhost:3000/api/docs`
 Docker sử dụng image PostgreSQL 17 có sẵn extension `pgvector`. Cổng máy host là `5433` để không xung đột với PostgreSQL mặc định ở cổng `5432`.
 
 ```bash
-# Tạo và chạy PostgreSQL ở background
-docker compose up -d postgres
+# Tạo và chạy PostgreSQL cùng SMTP local ở background
+docker compose up -d postgres mailpit
 
 # Kiểm tra trạng thái; chờ đến khi container báo healthy
 docker compose ps
@@ -89,6 +89,14 @@ Thông tin kết nối Docker, cũng là thông tin dùng để đăng ký serve
 | SSL mode | `Prefer` hoặc `Disable` |
 
 Sau khi kết nối bằng pgAdmin 4, các bảng nằm tại `Databases > aptimate > Schemas > public > Tables`.
+
+### Kiểm thử email OTP bằng SMTP local
+
+Compose có dịch vụ Mailpit chạy SMTP ở `127.0.0.1:1025`. Với cấu hình mặc định trong `.env.example`, email quên mật khẩu được gửi tới Mailpit và có thể xem tại:
+
+`http://localhost:8025`
+
+Mailpit chỉ dùng cho phát triển, không gửi email ra Internet. Khi deploy, thay `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` và `SMTP_FROM` bằng thông tin SMTP thật. Với Gmail cần dùng App Password, không dùng trực tiếp mật khẩu tài khoản.
 
 ### Dùng PostgreSQL cài trực tiếp trên máy
 
@@ -145,6 +153,33 @@ npm run start:prod    # chạy bản đã build trong dist
 npm run lint
 npm run typecheck
 npm test
+```
+
+## Xác thực JWT và mật khẩu
+
+Module nằm tại `src/features/auth` và được chia thành `controllers`, `services`, `repositories`, `dto`, `guards`, `decorators`, `strategies` và `types`.
+
+| Method | Endpoint | Chức năng |
+| --- | --- | --- |
+| `POST` | `/api/v1/auth/register` | Đăng ký tài khoản học viên |
+| `POST` | `/api/v1/auth/login` | Đăng nhập và đặt access/refresh cookie `HttpOnly` |
+| `POST` | `/api/v1/auth/refresh` | Rotation refresh token và thay access cookie mới |
+| `POST` | `/api/v1/auth/logout` | Thu hồi phiên hiện tại |
+| `POST` | `/api/v1/auth/logout-all` | Thu hồi toàn bộ phiên của tài khoản |
+| `GET` | `/api/v1/auth/me` | Đọc người dùng hiện tại |
+| `POST` | `/api/v1/auth/forgot-password/request-otp` | Gửi OTP qua SMTP |
+| `POST` | `/api/v1/auth/forgot-password/verify-otp` | Xác minh OTP và cấp reset token ngắn hạn |
+| `POST` | `/api/v1/auth/forgot-password/reset` | Đặt lại mật khẩu bằng reset token |
+| `PATCH` | `/api/v1/auth/change-password` | Đổi mật khẩu khi đã đăng nhập |
+
+Access token, refresh token và reset token đều nằm trong cookie `HttpOnly`; frontend không lưu token trong `localStorage` và phải bật `withCredentials`. Access cookie chỉ được gửi tới API, refresh cookie chỉ được gửi tới nhóm endpoint auth, còn reset cookie chỉ được gửi tới luồng quên mật khẩu. Đặt lại hoặc đổi mật khẩu sẽ thu hồi toàn bộ refresh token cũ.
+
+Các endpoint gửi/kiểm tra OTP và đăng nhập có rate limit. OTP có thời hạn, giới hạn số lần nhập sai và chỉ được lưu dạng HMAC; refresh/reset token trong database cũng chỉ lưu dạng hash.
+
+Frontend mặc định kết nối `http://localhost:3000/api/v1`. Khi dùng URL khác, cấu hình:
+
+```dotenv
+VITE_API_BASE_URL=https://your-api.example.com/api/v1
 ```
 
 Health endpoints:
