@@ -15,6 +15,12 @@ export class MailService {
     this.transporter = config.get<boolean>('smtp.enabled', false) ? nodemailer.createTransport({
       host: config.getOrThrow<string>('smtp.host'), port: config.get<number>('smtp.port', 587),
       secure: config.get<boolean>('smtp.secure', false),
+      pool: true,
+      maxConnections: 2,
+      maxMessages: 100,
+      connectionTimeout: config.get<number>('smtp.connectionTimeoutMs', 5000),
+      greetingTimeout: config.get<number>('smtp.greetingTimeoutMs', 5000),
+      socketTimeout: config.get<number>('smtp.socketTimeoutMs', 10000),
       ...(user && password ? { auth: { user, pass: password } } : {}),
     }) : null;
   }

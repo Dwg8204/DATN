@@ -26,4 +26,15 @@ describe('MailService errors', () => {
     const service = new MailService(new ConfigService({ smtp: { enabled: false } }));
     expect(() => service.assertConfigured()).toThrow('Password reset emails are temporarily unavailable. Please try again later.');
   });
+
+  it('reuses SMTP connections and applies bounded connection timeouts', () => {
+    new MailService(new ConfigService({ smtp: {
+      enabled: true, host: 'smtp.example.com', port: 465, secure: true, from: 'test@example.com',
+      connectionTimeoutMs: 4000, greetingTimeoutMs: 4500, socketTimeoutMs: 9000,
+    } }));
+    expect(nodemailer.createTransport).toHaveBeenCalledWith(expect.objectContaining({
+      pool: true, maxConnections: 2, maxMessages: 100,
+      connectionTimeout: 4000, greetingTimeout: 4500, socketTimeout: 9000,
+    }));
+  });
 });

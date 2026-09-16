@@ -1,0 +1,24 @@
+.loading {
+  min-height: 55vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #a11d33;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.loading svg {
+  width: 22px;
+  height: 22px;
+  animation: guardSpin 0.8s linear infinite;
+}
+
+@keyframes guardSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading svg { animation-duration: 1.6s; }
+}

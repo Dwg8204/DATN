@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Auth.module.css';
 import { authApi, getApiError } from '../services/authApi';
@@ -48,13 +49,18 @@ export default function ForgotPasswordEmailPage() {
                   placeholder="abcxyz@gmail.com"
                   value={email}
                   onChange={event => setEmail(event.target.value)}
+                  disabled={busy}
                   required
                 />
               </div>
             </div>
-            <button type="submit" disabled={busy} className={styles.submitBtn}>
-              <span className={styles.submitBtnText}>SEND OTP</span>
+            <button type="submit" disabled={busy} aria-busy={busy} className={styles.submitBtn}>
+              <span className={styles.submitBtnText}>
+                {busy && <LoaderCircle className={styles.loadingIcon} aria-hidden="true" />}
+                {busy ? 'SENDING OTP...' : 'SEND OTP'}
+              </span>
             </button>
+            {busy && <p className={styles.loadingHint} role="status">Connecting to the email service. This may take a few seconds.</p>}
           </div>
         </form>
       </div>

@@ -32,7 +32,7 @@ Mọi lệnh bên dưới được chạy trong thư mục `backend`.
    cp .env.example .env
    ```
 
-3. Kiểm tra và thay các secret phát triển trong `.env`. Không commit file `.env`.
+3. Kiểm tra và thay các secret phát triển trong `.env`. Điền `ADMIN_SEED_EMAIL` và `ADMIN_SEED_PASSWORD` để tạo tài khoản Admin khởi tạo. Không commit file `.env`.
 4. Khởi động PostgreSQL theo một trong hai cách ở phần tiếp theo.
 5. Tạo schema và dữ liệu nền:
 
@@ -124,9 +124,13 @@ npm run db:migrate:revert
 # Tạo migration mới sau khi thay đổi entity/schema
 npm run db:migrate:generate -- src/database/migrations/TenMigration
 
-# Tạo/cập nhật idempotent các role ADMIN, TEACHER, STUDENT
+# Tạo/cập nhật role và tạo duy nhất một tài khoản Admin khởi tạo
 npm run db:seed
 ```
+
+Lệnh seed yêu cầu `ADMIN_SEED_EMAIL` và `ADMIN_SEED_PASSWORD` trong `.env`; hệ thống không cung cấp thông tin đăng nhập mặc định. Mật khẩu chỉ được dùng khi tạo Admin lần đầu, được băm bằng bcrypt và không được ghi ra log. `ADMIN_SEED_FIRST_NAME` và `ADMIN_SEED_LAST_NAME` có giá trị mặc định lần lượt là `System` và `Administrator`.
+
+Seed có thể chạy lại an toàn với cùng email Admin và sẽ không tạo bản ghi trùng hoặc đặt lại mật khẩu. Nếu database đã có Admin dùng email khác, có nhiều hơn một Admin, hoặc email cấu hình đang thuộc về Student/Teacher, seed sẽ dừng mà không tự nâng/hạ quyền hay sửa dữ liệu tài khoản. Việc tạo Admin là thao tác bootstrap trực tiếp vào database; API quản lý người dùng không được dùng để tạo Admin.
 
 Quy trình khi thêm thay đổi database:
 
@@ -174,7 +178,50 @@ Module nằm tại `src/features/auth` và được chia thành `controllers`, `
 
 Access token, refresh token và reset token đều nằm trong cookie `HttpOnly`; frontend không lưu token trong `localStorage` và phải bật `withCredentials`. Access cookie chỉ được gửi tới API, refresh cookie chỉ được gửi tới nhóm endpoint auth, còn reset cookie chỉ được gửi tới luồng quên mật khẩu. Đặt lại hoặc đổi mật khẩu sẽ thu hồi toàn bộ refresh token cũ.
 
+Tên cookie xác thực là `aptimate_access_token` và `aptimate_refresh_token`. Do có cờ `HttpOnly`, chúng không xuất hiện qua `document.cookie`; kiểm tra tại DevTools > Application > Cookies > `http://localhost:3000`, hoặc xem header `Set-Cookie` của request đăng nhập. Khi phát triển local, hãy mở frontend bằng `http://localhost:5173` thay vì trộn `localhost` với `127.0.0.1`, đồng thời giữ `VITE_API_BASE_URL=http://localhost:3000/api/v1` và `FRONTEND_ORIGIN=http://localhost:5173` để trình duyệt chấp nhận cookie.
+
 Các endpoint gửi/kiểm tra OTP và đăng nhập có rate limit. OTP có thời hạn, giới hạn số lần nhập sai và chỉ được lưu dạng HMAC; refresh/reset token trong database cũng chỉ lưu dạng hash.
+
+### Phân quyền theo vai trò
+
+Role lấy từ access token chỉ dùng để định danh nhanh; `JwtStrategy` luôn đọc lại tài khoản trong database trước khi gắn `request.user`. Frontend cũng chờ `/api/v1/auth/me` hoàn tất trước khi mở khu vực quản trị, nên role sửa thủ công trong `localStorage` không được dùng làm căn cứ cấp quyền.
+
+Ma trận quyền hiện tại:
+
+| Khu vực | STUDENT | TEACHER | ADMIN |
+| --- | --- | --- | --- |
+| Trang luyện thi và hồ sơ | Có | Có | Có |
+| Test Management | Không | Có | Có |
+| Admin Dashboard | Không | Không | Có |
+| User Management | Không | Không | Có |
+| Notification Management | Không | Không | Có |
+
+Mọi controller nghiệp vụ mới phải bảo vệ ở backend, không chỉ ẩn giao diện. Ví dụ:
+
+```ts
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('ADMIN', 'TEACHER')
+@Post('tests')
+createTest() {}
+```
+
+Các API quản lý người dùng chỉ khai báo `@Roles('ADMIN')`. `RolesGuard` trả `403 FORBIDDEN` khi tài khoản đã đăng nhập nhưng không đủ quyền; `JwtAuthGuard` trả `401` khi chưa có phiên hợp lệ.
+
+### Quản lý người dùng
+
+Các endpoint sau chỉ dành cho tài khoản `ADMIN`:
+
+| Method | Endpoint | Chức năng |
+| --- | --- | --- |
+| `GET` | `/api/v1/admin/users` | Tìm kiếm, lọc theo role/status và phân trang trên server |
+| `GET` | `/api/v1/admin/users/:id` | Xem chi tiết tài khoản |
+| `POST` | `/api/v1/admin/users` | Tạo duy nhất tài khoản Teacher |
+| `PATCH` | `/api/v1/admin/users/:id/role` | Chỉ nâng `STUDENT` thành `TEACHER` |
+| `DELETE` | `/api/v1/admin/users/:id` | Xóa mềm Student/Teacher và thu hồi phiên |
+
+API không có luồng tạo Admin hoặc nâng Teacher thành Admin. Tài khoản Admin khởi tạo chỉ được tạo trực tiếp bằng seed; tài khoản Admin không thể bị sửa role hoặc xóa qua API. Khi tạo Teacher, backend tự gán role `TEACHER` và trạng thái `ACTIVE`, đồng thời từ chối các trường `role`/`status` do client chèn thêm.
+
+SMTP dùng connection pool để tái sử dụng kết nối và có timeout cấu hình qua `SMTP_CONNECTION_TIMEOUT_MS`, `SMTP_GREETING_TIMEOUT_MS`, `SMTP_SOCKET_TIMEOUT_MS`. API chỉ xác nhận gửi OTP sau khi SMTP chấp nhận email; frontend hiển thị trạng thái loading trong thời gian này.
 
 Frontend mặc định kết nối `http://localhost:3000/api/v1`. Khi dùng URL khác, cấu hình:
 
@@ -200,7 +247,7 @@ The current baseline contains 33 business tables. It keeps `questions`, uses `te
 
 ## Module convention
 
-Each business module lives under `src/modules/<module-name>` and owns its controllers, services, DTOs, repositories and entities. Shared HTTP concerns live under `src/common`; migrations stay centralized under `src/database/migrations` so the team has one ordered schema history.
+Each business module lives under `src/features/<module-name>` and owns its controllers, services, DTOs, repositories and types. Shared HTTP concerns live under `src/common`; migrations stay centralized under `src/database/migrations` so the team has one ordered schema history.
 
 Controllers translate HTTP requests. Services own business rules and transaction boundaries. Repositories hold non-trivial persistence queries. DTOs validate untrusted input. Avoid adding empty directories until a module actually needs them.
 

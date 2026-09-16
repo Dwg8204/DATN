@@ -31,5 +31,8 @@ export default () => ({
     user: process.env.SMTP_USER,
     password: process.env.SMTP_PASSWORD,
     from: process.env.SMTP_FROM,
+    connectionTimeoutMs: Number(process.env.SMTP_CONNECTION_TIMEOUT_MS ?? 5000),
+    greetingTimeoutMs: Number(process.env.SMTP_GREETING_TIMEOUT_MS ?? 5000),
+    socketTimeoutMs: Number(process.env.SMTP_SOCKET_TIMEOUT_MS ?? 10000),
   },
 });

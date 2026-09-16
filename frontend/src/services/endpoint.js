@@ -10,6 +10,11 @@ export const API_ENDPOINTS = {
     resetPassword: '/auth/forgot-password/reset',
     changePassword: '/auth/change-password',
   },
+  adminUsers: {
+    list: '/admin/users',
+    detail: (id) => `/admin/users/${id}`,
+    role: (id) => `/admin/users/${id}/role`,
+  },
   practiceExam: {
     list: '/practice-exams',
     detail: (id) => `/practice-exams/${id}`,

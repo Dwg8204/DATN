@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import PasswordInput from '../components/PasswordInput';
 import styles from './Auth.module.css';
 import { useAuth } from '../../../context/AuthContext';
 import { authApi, getApiError } from '../services/authApi';
 import { useToast } from '../../../context/ToastContext';
 import { validateEmail } from '../utils/emailValidation';
+import { safeReturnPath } from '../utils/authorization';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { showError, dismissToast } = useToast();
   
   const [email, setEmail] = useState('');
@@ -31,7 +33,7 @@ export default function LoginPage() {
     try {
       const result = await authApi.login({ email: email.trim(), password });
       login(result);
-      navigate('/');
+      navigate(safeReturnPath(location.state?.from, result.profile?.role), { replace: true });
     } catch (requestError) { showError(getApiError(requestError, 'Unable to log in. Please try again.')); }
     finally { setBusy(false); }
   };

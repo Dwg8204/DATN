@@ -27,4 +27,7 @@ export const environmentSchema = Joi.object({
   SMTP_USER: Joi.string().allow('').optional(),
   SMTP_PASSWORD: Joi.string().allow('').optional(),
   SMTP_FROM: Joi.when('SMTP_ENABLED', { is: true, then: Joi.string().required(), otherwise: Joi.string().allow('') }),
+  SMTP_CONNECTION_TIMEOUT_MS: Joi.number().integer().min(1000).max(30000).default(5000),
+  SMTP_GREETING_TIMEOUT_MS: Joi.number().integer().min(1000).max(30000).default(5000),
+  SMTP_SOCKET_TIMEOUT_MS: Joi.number().integer().min(3000).max(60000).default(10000),
 }).unknown(true);

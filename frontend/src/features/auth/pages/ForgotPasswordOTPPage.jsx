@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Auth.module.css';
 import { authApi, getApiError } from '../services/authApi';
@@ -55,12 +56,16 @@ export default function ForgotPasswordOTPPage() {
                   maxLength={6}
                   value={otp}
                   onChange={event => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                  disabled={busy}
                   required
                 />
               </div>
             </div>
-            <button type="submit" disabled={busy || otp.length !== 6} className={styles.submitBtn}>
-              <span className={styles.submitBtnText}>VERIFY</span>
+            <button type="submit" disabled={busy || otp.length !== 6} aria-busy={busy} className={styles.submitBtn}>
+              <span className={styles.submitBtnText}>
+                {busy && <LoaderCircle className={styles.loadingIcon} aria-hidden="true" />}
+                {busy ? 'VERIFYING...' : 'VERIFY'}
+              </span>
             </button>
           </div>
         </form>
