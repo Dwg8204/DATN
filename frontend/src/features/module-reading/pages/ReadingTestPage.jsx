@@ -14,8 +14,11 @@ import Part4MatchHeading from '../components/test-engine/parts/Part4MatchHeading
 
 import styles from './ReadingTestPage.module.css';
 import {loadReadingTest} from '../services/readingTestRepository';
+import { useToast } from '../../../context/ToastContext';
+import DataLoadError from '../../../components/common/DataLoadError';
 
 export default function ReadingTestPage() {
+  const { showError } = useToast();
   const { testId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -29,11 +32,14 @@ export default function ReadingTestPage() {
   } = useContext(ReadingTestContext);
 
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     const fetchTestData = async () => {
+      setLoading(true);
+      setLoadError('');
       try {
         const data = await loadReadingTest(testId);
         if (cancelled) return;
@@ -48,8 +54,12 @@ export default function ReadingTestPage() {
           
           setCurrentPart(initialPart);
           setLoading(false);
-      } catch (error) {
-        console.error("Failed to load test data", error);
+      } catch {
+        if (cancelled) return;
+        const message = 'We could not load this Reading test. Please refresh the page and try again.';
+        setLoadError(message);
+        setIsStarted(false);
+        showError(message);
         setLoading(false);
       }
     };
@@ -60,10 +70,11 @@ export default function ReadingTestPage() {
       cancelled = true;
       setIsStarted(false);
     };
-  }, [testId, setTestData, setIsStarted, setCurrentPart, mode]);
+  }, [testId, setTestData, setIsStarted, setCurrentPart, mode, showError]);
 
   // Dynamic automatic timeout submission
   useEffect(() => {
+    if (loading || loadError || !testData) return;
     const checkTimer = setInterval(() => {
       const remaining = getReadingRemainingSeconds();
       if (remaining === 0) {
@@ -72,7 +83,7 @@ export default function ReadingTestPage() {
       }
     }, 1000);
     return () => clearInterval(checkTimer);
-  }, [answers, mode, testId]);
+  }, [answers, mode, testId, loading, loadError, testData]);
 
   const handleSubmit = () => {
     setShowSubmitModal(true);
@@ -93,7 +104,12 @@ export default function ReadingTestPage() {
       timestamp: new Date().toISOString(),
       historyId
     };
-    localStorage.setItem(fakeSessionId, JSON.stringify(sessionData));
+    try {
+      localStorage.setItem(fakeSessionId, JSON.stringify(sessionData));
+    } catch {
+      showError('Your answers could not be saved on this browser. Free some browser storage and submit again. Keep this page open to avoid losing your work.');
+      return;
+    }
 
     // Save draft history entry (missing correct/wrong scores)
     saveHistoryEntry({
@@ -226,6 +242,10 @@ export default function ReadingTestPage() {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#A11D33]"></div>
       </div>
     );
+  }
+
+  if (loadError || !testData) {
+    return <DataLoadError title="Reading test is unavailable" message={loadError || 'This test could not be found. Please return to the test list.'} />;
   }
 
   const { footerQuestions, currentQuestionIds, answeredIds } = getFooterData();

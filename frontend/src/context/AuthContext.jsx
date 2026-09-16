@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { authApi } from '../features/auth/services/authApi';
 
-const AUTH_STORAGE_KEY = 'aptimate.auth.token';
 const USER_STORAGE_KEY = 'aptimate.auth.user';
 
 const AuthContext = createContext(undefined);
@@ -28,20 +28,28 @@ function readUser() {
 }
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => readStorage(AUTH_STORAGE_KEY));
   const [user, setUser] = useState(() => readUser());
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  const authMutation = useRef(0);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    if (token) {
-      window.localStorage.setItem(AUTH_STORAGE_KEY, token);
-    } else {
-      window.localStorage.removeItem(AUTH_STORAGE_KEY);
-    }
-  }, [token]);
+    window.localStorage.removeItem('aptimate.auth.token');
+    let active = true;
+    const initialRevision = authMutation.current;
+    const clearSession = () => {
+      authMutation.current += 1;
+      if (active) { setUser(null); setIsAuthReady(true); }
+    };
+    window.addEventListener('aptimate:session-expired', clearSession);
+    authApi.me()
+      .then(profile => { if (active && authMutation.current === initialRevision) setUser(profile); })
+      .catch(() => { if (active && authMutation.current === initialRevision) setUser(null); })
+      .finally(() => { if (active) setIsAuthReady(true); });
+    return () => {
+      active = false;
+      window.removeEventListener('aptimate:session-expired', clearSession);
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -57,16 +65,19 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      token,
       user,
-      isAuthenticated: Boolean(token),
-      login: ({ accessToken, profile }) => {
-        setToken(accessToken);
+      isAuthReady,
+      isAuthenticated: isAuthReady && Boolean(user),
+      login: ({ profile }) => {
+        authMutation.current += 1;
         setUser(profile ?? null);
+        setIsAuthReady(true);
       },
       logout: () => {
-        setToken(null);
+        authMutation.current += 1;
+        void authApi.logout().catch(() => undefined);
         setUser(null);
+        setIsAuthReady(true);
       },
       updateProfile: (updates) => {
         if (!user) return;
@@ -86,7 +97,7 @@ export function AuthProvider({ children }) {
         }
       },
     }),
-    [token, user],
+    [isAuthReady, user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

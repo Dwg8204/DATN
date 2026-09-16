@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { Download, Eye, Paperclip, Send, X } from 'lucide-react';
-import { AdminToast } from '../components/AdminFeedback';
+import { useToast } from '../../../context/ToastContext';
 import Pagination from '../../../components/common/Pagination';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import styles from './NotificationPage.module.css';
@@ -62,6 +62,7 @@ function AttachmentLink({ notification, onPreview }) {
 }
 
 export default function NotificationPage() {
+  const { showError, showSuccess, dismissToast } = useToast();
   const [form, setForm] = useState(emptyForm);
   const [notifications, setNotifications] = useState(loadNotifications);
   const [page, setPage] = useState(1);
@@ -69,8 +70,6 @@ export default function NotificationPage() {
   const [preview, setPreview] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [previewAttachment, setPreviewAttachment] = useState(null);
-  const [toast, setToast] = useState('');
-  const [error, setError] = useState('');
   const [readingFile, setReadingFile] = useState(false);
   const fileRef = useRef(null);
   const visibleNotifications = useMemo(() => notifications.slice((page - 1) * pageSize, page * pageSize), [notifications, page, pageSize]);
@@ -81,7 +80,9 @@ export default function NotificationPage() {
     if (!form.content.trim()) return 'Please enter notification content.';
     if (form.deliveryMode === 'scheduled') {
       if (!form.date) return 'Please select a delivery date and time.';
-      if (new Date(form.date).getTime() <= Date.now()) return 'Scheduled notifications must be set for a future time.';
+      const deliveryTime = new Date(form.date).getTime();
+      if (!Number.isFinite(deliveryTime)) return 'Please select a valid delivery date and time.';
+      if (deliveryTime <= Date.now()) return 'Scheduled notifications must be set for a future time.';
     }
     return '';
   };
@@ -91,19 +92,19 @@ export default function NotificationPage() {
       return;
     }
     if (file.size > MAX_ATTACHMENT_SIZE) {
-      setError('Attachment must be 2 MB or smaller.');
+      showError('Attachment must be 2 MB or smaller.');
       if (fileRef.current) fileRef.current.value = '';
       return;
     }
     setReadingFile(true);
-    setError('');
+    dismissToast();
     const reader = new FileReader();
     reader.onload = () => {
       setForm((current) => ({ ...current, fileName: file.name, fileType: file.type, fileSize: file.size, fileData: String(reader.result || '') }));
       setReadingFile(false);
     };
     reader.onerror = () => {
-      setError('The selected file could not be read. Please choose another file.');
+      showError('The selected file could not be read. Please choose another file.');
       setReadingFile(false);
       if (fileRef.current) fileRef.current.value = '';
     };
@@ -111,36 +112,33 @@ export default function NotificationPage() {
   };
   const showPreview = () => {
     const message = validate();
-    if (message) { setError(message); return; }
-    setError('');
+    if (message) { showError(message); return; }
+    dismissToast();
     setPreview(true);
   };
   const sendNotification = () => {
     const message = validate();
-    if (message) { setError(message); return; }
+    if (message) { showError(message); return; }
     const created = { ...form, date: form.deliveryMode === 'now' ? new Date().toISOString() : form.date, id: Date.now() };
     const saved = [created, ...notifications.filter((item) => !initialNotifications.some((initial) => initial.id === item.id))];
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
     } catch {
-      setError('The attachment could not be saved because browser storage is full. Please use a smaller file.');
+      showError('The attachment could not be saved because browser storage is full. Please use a smaller file.');
       return;
     }
     setNotifications((current) => [created, ...current]);
     setForm(emptyForm());
     setPage(1);
     setPreview(false);
-    setError('');
-    setToast(form.deliveryMode === 'now' ? 'Notification sent successfully.' : 'Notification scheduled successfully.');
+    showSuccess(form.deliveryMode === 'now' ? 'Notification sent successfully.' : 'Notification scheduled successfully.');
     if (fileRef.current) fileRef.current.value = '';
   };
 
   return (
     <div className={styles.page}>
-      <AdminToast message={toast} onClose={() => setToast('')} />
-
       <section className={styles.workspace}>
-        <form className={styles.composer} onSubmit={(event) => { event.preventDefault(); sendNotification(); }}>
+        <form className={styles.composer} noValidate onSubmit={(event) => { event.preventDefault(); sendNotification(); }}>
           <header><h3>Create a new notification</h3><p>Choose an audience and delivery method.</p></header>
 
           <label className={styles.field}>Target
@@ -156,25 +154,24 @@ export default function NotificationPage() {
             <legend>Delivery time</legend>
             <div>
               <label className={form.deliveryMode === 'now' ? styles.selectedDelivery : ''}>
-                <input type="radio" name="deliveryMode" checked={form.deliveryMode === 'now'} onChange={() => { update('deliveryMode', 'now'); setError(''); }} />
+                <input type="radio" name="deliveryMode" checked={form.deliveryMode === 'now'} onChange={() => { update('deliveryMode', 'now'); dismissToast(); }} />
                 <span><strong>Send immediately</strong><small>Deliver as soon as you confirm.</small></span>
               </label>
               <label className={form.deliveryMode === 'scheduled' ? styles.selectedDelivery : ''}>
-                <input type="radio" name="deliveryMode" checked={form.deliveryMode === 'scheduled'} onChange={() => { setForm((current) => ({ ...current, deliveryMode: 'scheduled', date: new Date(current.date).getTime() > Date.now() ? current.date : nextAvailableMinute() })); setError(''); }} />
+                <input type="radio" name="deliveryMode" checked={form.deliveryMode === 'scheduled'} onChange={() => { setForm((current) => ({ ...current, deliveryMode: 'scheduled', date: new Date(current.date).getTime() > Date.now() ? current.date : nextAvailableMinute() })); dismissToast(); }} />
                 <span><strong>Schedule for later</strong><small>Choose a future delivery time.</small></span>
               </label>
             </div>
           </fieldset>
 
           {form.deliveryMode === 'scheduled' && <label className={styles.field}>Scheduled date &amp; time
-            <input type="datetime-local" min={nextAvailableMinute()} step="60" value={form.date} onChange={(event) => { update('date', event.target.value); setError(''); }} />
+            <input type="datetime-local" min={nextAvailableMinute()} step="60" value={form.date} onChange={(event) => { update('date', event.target.value); dismissToast(); }} />
           </label>}
 
           <label className={styles.field}>Content
-            <textarea rows="7" maxLength="500" value={form.content} onChange={(event) => { update('content', event.target.value); setError(''); }} placeholder="Write the message here" />
+            <textarea rows="7" maxLength="500" value={form.content} onChange={(event) => { update('content', event.target.value); dismissToast(); }} placeholder="Write the message here" />
             <small>{form.content.length}/500 characters</small>
           </label>
-          {error && <p className={styles.error}>{error}</p>}
 
           <div className={styles.composerFooter}>
             <label className={styles.attachment}><Paperclip /><span>{readingFile ? 'Loading file…' : form.fileName || 'Attach files (max 2 MB)'}</span><input ref={fileRef} type="file" onChange={(event) => selectFile(event.target.files?.[0])} /></label>

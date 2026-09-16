@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
 import styles from './ReadingChooseTestPage.module.css';
 import {getAdminReadingList} from '../services/readingTestRepository';
+import { useToast } from '../../../context/ToastContext';
+import DataLoadError from '../../../components/common/DataLoadError';
 
 const TABS = [
   { id: 'part1', label: 'Part 1' },
@@ -14,11 +16,13 @@ const TABS = [
 ];
 
 export default function ReadingChooseTestPage() {
+  const { showError } = useToast();
   const navigate = useNavigate();
   const [tests, setTests] = useState([]);
   const [adminTests,setAdminTests]=useState(getAdminReadingList);
   useEffect(()=>{const refresh=()=>setAdminTests(getAdminReadingList());window.addEventListener('reading-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('reading-tests-updated',refresh);window.removeEventListener('storage',refresh)}},[]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [activeTab, setActiveTab] = useState('part1');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
@@ -35,15 +39,19 @@ export default function ReadingChooseTestPage() {
           setTests(data.tests || []);
           setLoading(false);
         }
-      } catch (error) {
-        console.error("Failed to load tests", error);
-        if (!cancelled) setLoading(false);
+      } catch {
+        if (!cancelled) {
+          const message = 'We could not load the Reading tests. Please refresh the page and try again.';
+          setLoadError(message);
+          showError(message);
+          setLoading(false);
+        }
       }
     };
 
     fetchTests();
     return () => { cancelled = true; };
-  }, []);
+  }, [showError]);
 
   const handleDoTest = (testId) => {
     navigate(`/reading/introduction?testId=${testId}&mode=${activeTab}`);
@@ -89,6 +97,7 @@ export default function ReadingChooseTestPage() {
 
       <div className={styles.mainContent}>
         <div className={styles.testSection}>
+          {loadError && <DataLoadError title="Reading tests are unavailable" message={loadError} />}
           {/* Search Row */}
           <div className={styles.searchRow}>
             <div className={styles.searchInputContainer}>
@@ -118,7 +127,7 @@ export default function ReadingChooseTestPage() {
                 <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>
                   Loading tests...
                 </div>
-              ) : filteredTests.length === 0 ? (
+              ) : filteredTests.length === 0 && !loadError ? (
                 <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>
                   No tests available for this search/part yet.
                 </div>

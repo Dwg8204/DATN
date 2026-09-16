@@ -4,6 +4,7 @@ const validEnvironment = {
   FRONTEND_ORIGIN: 'http://localhost:5173',
   DATABASE_URL: 'postgresql://user:password@localhost:5432/aptimate',
   JWT_ACCESS_SECRET: 'a-secret-value-with-more-than-32-characters',
+  JWT_REFRESH_SECRET: 'a-different-refresh-secret-with-32-characters',
   JWT_ISSUER: 'aptimate-api',
   JWT_AUDIENCE: 'aptimate-web',
 };
@@ -23,6 +24,11 @@ describe('environment validation', () => {
 
   it('rejects a short JWT secret', () => {
     const result = environmentSchema.validate({ ...validEnvironment, JWT_ACCESS_SECRET: 'short' });
+    expect(result.error).toBeDefined();
+  });
+
+  it('requires SMTP settings when email delivery is enabled', () => {
+    const result = environmentSchema.validate({ ...validEnvironment, SMTP_ENABLED: true });
     expect(result.error).toBeDefined();
   });
 });

@@ -4,11 +4,11 @@ import { AlertTriangle } from 'lucide-react';
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -27,11 +27,6 @@ class ErrorBoundary extends React.Component {
             <p className="text-gray-600 mb-6">
               We encountered an unexpected error. Please try refreshing the page or go back to the homepage.
             </p>
-            <div className="bg-red-50 text-red-800 p-4 rounded text-left mb-6 overflow-auto text-sm">
-              <strong>Error:</strong> {this.state.error?.toString()}
-              <br/><br/>
-              <strong>Stack:</strong> {this.state.error?.stack}
-            </div>
             <div className="space-y-3">
               <button 
                 onClick={() => window.location.reload()}

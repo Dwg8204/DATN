@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getAllAnswers, getTestMeta, clearListeningSession, saveListeningResult } from '../utils/listeningSessionStorage';
 import { getListeningTestParts } from '../services/listeningTestRepository';
-import { saveHistoryEntry } from '../../../utils/historyStorage';
+import { saveHistoryEntry, saveHistorySnapshot } from '../../../utils/historyStorage';
 import styles from './ListeningResultPage.module.css';
 
 function getCefrLevel(percentage) {
@@ -175,11 +175,11 @@ export default function ListeningResultPage() {
         historySaved.current = true;
         const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-        localStorage.setItem(`history_data_${newHistoryId}`, JSON.stringify({
+        if (!saveHistorySnapshot(newHistoryId, {
           allAnswers: { p1Raw, p2Raw, p3Raw, p4Raw },
           testSnapshot,
           timeSpent: timeSpent
-        }));
+        })) return;
 
         reviewHistoryId.current = newHistoryId;
         saveHistoryEntry({

@@ -2,6 +2,9 @@ import { lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 import AdminLayout from './layout/AdminLayout';
 import AdminPlaceholderPage from './components/AdminPlaceholderPage';
+import RoleGuard from '../auth/components/RoleGuard';
+import { useAuth } from '../../context/AuthContext';
+import { getAdminLandingPath } from '../auth/utils/authorization';
 
 const AdminDashboardPage = lazy(() => import('./dashboard/AdminDashboardPage'));
 const TestManagerPage = lazy(() => import('./tests/TestManagerPage'));
@@ -28,14 +31,20 @@ const SpeakingTestDetailsPage = lazy(() => import('./speaking/SpeakingTestDetail
 const SpeakingPartEditorPage = lazy(() => import('./speaking/SpeakingPartEditorPage'));
 const SpeakingTestPreviewPage = lazy(() => import('./speaking/SpeakingTestPreviewPage'));
 const load = (element) => <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>{element}</Suspense>;
+const adminOnly = (element) => <RoleGuard allowedRoles={['ADMIN']}>{element}</RoleGuard>;
+
+function AdminHomeRedirect() {
+  const { user } = useAuth();
+  return <Navigate to={getAdminLandingPath(user?.role)} replace />;
+}
 
 export const adminRoutes = [
   {
     path: '/admin',
-    element: <AdminLayout />,
+    element: <RoleGuard allowedRoles={['ADMIN', 'TEACHER']}><AdminLayout /></RoleGuard>,
     children: [
-      { index: true, element: <Navigate to="dashboard" replace /> },
-      { path: 'dashboard', element: load(<AdminDashboardPage />) },
+      { index: true, element: <AdminHomeRedirect /> },
+      { path: 'dashboard', element: adminOnly(load(<AdminDashboardPage />)) },
       { path: 'tests', element: load(<TestManagerPage />) },
       { path: 'tests/reading/:testId/preview', element: load(<ReadingTestPreviewPage />) },
       { path: 'tests/listening/:testId/preview', element: load(<ListeningTestPreviewPage />) },
@@ -54,9 +63,9 @@ export const adminRoutes = [
       ] })),
       { path: 'tests/writing/:testId/preview', element: load(<WritingTestPreviewPage />) },
       { path: 'tests/grammar/:testId/preview', element: load(<GrammarTestPreviewPage />) },
-      { path: 'users', element: load(<UserManagementPage />) },
-      { path: 'feedback', element: <AdminPlaceholderPage title="Feedback" /> },
-      { path: 'notifications', element: load(<NotificationPage />) },
+      { path: 'users', element: adminOnly(load(<UserManagementPage />)) },
+      { path: 'feedback', element: adminOnly(<AdminPlaceholderPage title="Feedback" />) },
+      { path: 'notifications', element: adminOnly(load(<NotificationPage />)) },
       {
         path: 'tests/new/writing',
         element: load(<WritingBuilderLayout />),

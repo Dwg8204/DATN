@@ -1,20 +1,25 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { environmentSchema } from './config/env.validation';
 import { DatabaseModule } from './database/database.module';
-import { RequestContextMiddleware } from './common/middleware/request-context.middleware';
 import { HealthModule } from './modules/health/health.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from './features/auth/auth.module';
+import { AppController } from './app.controller';
+import { UsersModule } from './features/users/users.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, cache: true, load: [configuration], validationSchema: environmentSchema }),
     DatabaseModule,
+    ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 120 }]),
+    AuthModule,
+    UsersModule,
     HealthModule,
   ],
+  controllers: [AppController],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer): void {
-    consumer.apply(RequestContextMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}

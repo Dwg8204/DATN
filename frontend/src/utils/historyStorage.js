@@ -1,52 +1,67 @@
+import { toast } from '../services/toastStore.js';
+
 const HISTORY_KEY = 'aptimate.learning_history';
+let hasWriteFailure = false;
+
+function readHistory() {
+  const entries = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  if (!Array.isArray(entries)) throw new Error('Invalid history data');
+  return entries;
+}
+
+function writeHistory(operation) {
+  try {
+    operation();
+    hasWriteFailure = false;
+    return true;
+  } catch {
+    if (!hasWriteFailure) {
+      toast.error('Your result is still available on this page, but we could not save your learning history. Please allow browser storage or free up some space before leaving.');
+    }
+    hasWriteFailure = true;
+    return false;
+  }
+}
+
+export function saveHistorySnapshot(id, data) {
+  return writeHistory(() => localStorage.setItem(`history_data_${id}`, JSON.stringify(data)));
+}
 
 export function saveHistoryEntry(entry) {
-  try {
-    const existingStr = localStorage.getItem(HISTORY_KEY);
-    const existing = existingStr ? JSON.parse(existingStr) : [];
+  return writeHistory(() => {
+    const existing = readHistory();
     
     // Ensure we don't duplicate by ID if for some reason it's called twice
     const filtered = existing.filter(e => e.id !== entry.id);
     filtered.push(entry);
     
     localStorage.setItem(HISTORY_KEY, JSON.stringify(filtered));
-  } catch (error) {
-    console.error('Error saving history entry:', error);
-  }
+  });
 }
 
 export function updateHistoryEntry(id, updates) {
-  try {
-    const existingStr = localStorage.getItem(HISTORY_KEY);
-    const existing = existingStr ? JSON.parse(existingStr) : [];
+  return writeHistory(() => {
+    const existing = readHistory();
     
     const index = existing.findIndex(e => e.id === id);
     if (index !== -1) {
       existing[index] = { ...existing[index], ...updates };
       localStorage.setItem(HISTORY_KEY, JSON.stringify(existing));
     }
-  } catch (error) {
-    console.error('Error updating history entry:', error);
-  }
+  });
 }
 
 export function getHistoryEntries() {
   try {
-    const existingStr = localStorage.getItem(HISTORY_KEY);
-    const existing = existingStr ? JSON.parse(existingStr) : [];
+    const existing = readHistory();
     
     // Sort by submittedAt descending (newest first)
     return existing.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
-  } catch (error) {
-    console.error('Error getting history entries:', error);
+  } catch {
     return [];
   }
 }
 
 export function clearHistory() {
-  try {
-    localStorage.removeItem(HISTORY_KEY);
-  } catch (error) {
-    console.error('Error clearing history:', error);
-  }
+  return writeHistory(() => localStorage.removeItem(HISTORY_KEY));
 }
