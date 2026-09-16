@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { authApi } from '../features/auth/services/authApi';
 
-const AUTH_STORAGE_KEY = 'aptimate.auth.token';
 const USER_STORAGE_KEY = 'aptimate.auth.user';
 
 const AuthContext = createContext(undefined);
@@ -28,20 +28,21 @@ function readUser() {
 }
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => readStorage(AUTH_STORAGE_KEY));
   const [user, setUser] = useState(() => readUser());
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    if (token) {
-      window.localStorage.setItem(AUTH_STORAGE_KEY, token);
-    } else {
-      window.localStorage.removeItem(AUTH_STORAGE_KEY);
-    }
-  }, [token]);
+    window.localStorage.removeItem('aptimate.auth.token');
+    let active = true;
+    const clearSession = () => { if (active) setUser(null); };
+    window.addEventListener('aptimate:session-expired', clearSession);
+    authApi.me()
+      .then(profile => { if (active) setUser(profile); })
+      .catch(() => { if (active) setUser(null); });
+    return () => {
+      active = false;
+      window.removeEventListener('aptimate:session-expired', clearSession);
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -57,15 +58,13 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      token,
       user,
-      isAuthenticated: Boolean(token),
-      login: ({ accessToken, profile }) => {
-        setToken(accessToken);
+      isAuthenticated: Boolean(user),
+      login: ({ profile }) => {
         setUser(profile ?? null);
       },
       logout: () => {
-        setToken(null);
+        void authApi.logout().catch(() => undefined);
         setUser(null);
       },
       updateProfile: (updates) => {
@@ -86,7 +85,7 @@ export function AuthProvider({ children }) {
         }
       },
     }),
-    [token, user],
+    [user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

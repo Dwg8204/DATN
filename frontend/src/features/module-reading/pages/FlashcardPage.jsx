@@ -2,12 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, BrainCircuit, LayoutGrid, List, BookOpen } from 'lucide-react';
 import { FlashcardSkeleton } from '../../../components/common/SkeletonLoaders';
+import { useToast } from '../../../context/ToastContext';
+import DataLoadError from '../../../components/common/DataLoadError';
 
 const FlashcardPage = () => {
+  const { showError } = useToast();
   const navigate = useNavigate();
   
   const [vocabData, setVocabData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [viewMode, setViewMode] = useState('flashcard'); // 'flashcard' or 'list'
   const [cardMode, setCardMode] = useState('flashcard'); // 'flashcard' or 'nghia'
   const [filter, setFilter] = useState('all'); // 'all', 1, 2, 3
@@ -17,22 +21,26 @@ const FlashcardPage = () => {
   const [isFlipped, setIsFlipped] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     const fetchVocab = async () => {
       try {
         const dataModule = await import('../services/mockData/vocab.json');
         const data = dataModule.default || dataModule;
         
-        setTimeout(() => {
-          setVocabData(data.words || []);
-          setLoading(false);
-        }, 600); // 600ms delay to show skeleton
-      } catch (error) {
-        console.error("Failed to load vocabulary data", error);
+        if (cancelled) return;
+        setVocabData(data.words || []);
+        setLoading(false);
+      } catch {
+        if (cancelled) return;
+        const message = 'We could not load your flashcards. Please refresh the page and try again.';
+        setLoadError(message);
+        showError(message);
         setLoading(false);
       }
     };
     fetchVocab();
-  }, []);
+    return () => { cancelled = true; };
+  }, [showError]);
 
   // Filtered list
   const filteredVocab = vocabData.filter(word => {
@@ -89,6 +97,8 @@ const FlashcardPage = () => {
     );
   }
 
+
+  if (loadError) return <DataLoadError title="Flashcards are unavailable" message={loadError} />;
 
   return (
     <div className="min-h-screen bg-[#d9d9d9] flex flex-col pb-12">

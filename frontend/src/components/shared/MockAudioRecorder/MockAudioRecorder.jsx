@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Square, Camera, CameraOff } from 'lucide-react';
 import styles from './MockAudioRecorder.module.css';
-import cameraImg from '../../../features/module-speaking/assets/OIP.webp';
+import { useToast } from '../../../context/ToastContext';
 
 export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, maxTime, onStartRecord, onStopRecord, countdownBeforeStart = 0 }) {
+  const { showError } = useToast();
   const [cameraOn, setCameraOn] = useState(false);
   const [cameraPermission, setCameraPermission] = useState('pending'); // 'pending', 'granted', 'denied'
   const videoRef = useRef(null);
@@ -17,7 +18,7 @@ export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, m
     setCameraOn(false);
   };
 
-  const startCamera = async () => {
+  const startCamera = async (notify = false) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
       streamRef.current = stream;
@@ -27,9 +28,13 @@ export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, m
       setCameraPermission('granted');
       setCameraOn(true);
     } catch (err) {
-      console.error("Camera access denied or error:", err);
       setCameraPermission('denied');
       setCameraOn(false);
+      if (notify) {
+        showError(err.name === 'NotAllowedError'
+          ? 'Camera access was denied. Allow camera access in your browser settings and try again.'
+          : 'Unable to access the camera. Check that it is connected and not in use by another app.');
+      }
     }
   };
 
@@ -37,7 +42,7 @@ export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, m
     if (cameraOn) {
       stopCamera();
     } else {
-      startCamera();
+      startCamera(true);
     }
   };
 
@@ -71,14 +76,14 @@ export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, m
           />
         ) : (
           <div className={styles.cameraOff}>
-            Camera đang tắt
+            {cameraPermission === 'denied' ? 'Camera unavailable. Check your browser permissions.' : 'Camera is off'}
           </div>
         )}
         
         <button 
           className={`${styles.cameraToggleBtn} ${!cameraOn ? styles.cameraToggleBtnOff : ''}`}
           onClick={toggleCamera}
-          title={cameraOn ? "Tắt Camera" : "Bật Camera"}
+          title={cameraOn ? 'Turn camera off' : 'Turn camera on'}
         >
           {cameraOn ? <Camera size={16} /> : <CameraOff size={16} />}
         </button>

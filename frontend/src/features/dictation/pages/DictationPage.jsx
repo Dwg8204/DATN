@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { BookOpen, Check, ChevronLeft, ChevronRight, FolderOpen, Headphones, Heart, Lightbulb, Plus, Search, RotateCcw, Shuffle, Volume2, X } from 'lucide-react';
 import { DICTATION_EXERCISES, DICTATION_FLASHCARDS, DICTATION_TOPICS } from '../data/dictationExercises';
 import { loadDictationProgress, saveDictationAttempt } from '../utils/dictationStorage';
+import { useToast } from '../../../context/ToastContext';
 import styles from './DictationPage.module.css';
 
 const normalize = (value) => value.toLowerCase().replace(/[^a-z0-9'\s]/g, '').replace(/\s+/g, ' ').trim();
@@ -18,6 +19,7 @@ function compareAnswer(answer, transcript) {
 }
 
 export default function DictationPage() {
+  const { showError, dismissToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedMode = searchParams.get('mode');
   const mode = ['flashcard', 'notebook'].includes(requestedMode) ? requestedMode : 'dictation';
@@ -57,7 +59,6 @@ export default function DictationPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showTopicCreator, setShowTopicCreator] = useState(false);
   const [newTopicName, setNewTopicName] = useState('');
-  const [createError, setCreateError] = useState('');
   const [notebookNotice, setNotebookNotice] = useState('');
   const [createType, setCreateType] = useState('word');
   const [newItem, setNewItem] = useState({ word: '', pronunciation: '', type: 'noun', topic: DICTATION_TOPICS[0].name, meaning: '', example: '' });
@@ -194,7 +195,7 @@ export default function DictationPage() {
     setNewItem({ word: '', pronunciation: '', type: type === 'word' ? 'noun' : 'Custom sentence', topic: DICTATION_TOPICS[0].name, meaning: '', example: '' });
     setShowTopicCreator(false);
     setNewTopicName('');
-    setCreateError('');
+    dismissToast();
     setShowCreateForm(true);
   };
 
@@ -212,7 +213,7 @@ export default function DictationPage() {
       setNewItem((item) => ({ ...item, topic: topic.name }));
     }
     setNewTopicName('');
-    setCreateError('');
+    dismissToast();
     setShowTopicCreator(false);
   };
 
@@ -225,18 +226,19 @@ export default function DictationPage() {
     }
     setNewItem((item) => ({ ...item, topic: '' }));
     setNewTopicName('');
-    setCreateError('');
+    dismissToast();
     setShowTopicCreator(true);
   };
 
   const createNotebookItem = (event) => {
     event.preventDefault();
+    dismissToast();
     if (!newItem.topic) {
-      setCreateError('Please select an existing topic or add your new topic first.');
+      showError('Please select an existing topic or add your new topic first.');
       return;
     }
     if (!newItem.word.trim() || !newItem.meaning.trim()) {
-      setCreateError(createType === 'word' ? 'Please enter the word or phrase and its meaning.' : 'Please enter the title and practice sentence.');
+      showError(createType === 'word' ? 'Please enter the word or phrase and its meaning.' : 'Please enter the title and practice sentence.');
       return;
     }
     const item = {
@@ -266,7 +268,7 @@ export default function DictationPage() {
     setNotebookQuery('');
     setNotebookTopic(item.topic);
     setNotebookPage(1);
-    setCreateError('');
+    dismissToast();
     setShowCreateForm(false);
     setNotebookNotice(`${createType === 'word' ? 'Word or phrase' : 'Sentence'} saved to ${item.topic}.`);
   };
@@ -467,8 +469,7 @@ export default function DictationPage() {
                 <input value={newTopicName} onChange={(event) => setNewTopicName(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); addCustomTopic(); } }} maxLength="40" placeholder="Enter a topic name…" aria-label="New topic name" />
                 <button type="button" onClick={addCustomTopic} disabled={!newTopicName.trim()}>Add topic</button>
               </div>}
-              {createError && <p className={styles.createError} role="alert">{createError}</p>}
-              <label>{createType === 'word' ? 'Vietnamese meaning' : 'English sentence'}<textarea required rows="3" value={newItem.meaning} onChange={(event) => setNewItem({ ...newItem, meaning: event.target.value })} placeholder={createType === 'word' ? 'Nhập nghĩa tiếng Việt…' : 'Enter the sentence you want to practise…'} /></label>
+              <label>{createType === 'word' ? 'Vietnamese meaning' : 'English sentence'}<textarea required rows="3" value={newItem.meaning} onChange={(event) => setNewItem({ ...newItem, meaning: event.target.value })} placeholder={createType === 'word' ? 'Enter the Vietnamese meaning…' : 'Enter the sentence you want to practise…'} /></label>
               {createType === 'word' && <label>Example sentence<input value={newItem.example} onChange={(event) => setNewItem({ ...newItem, example: event.target.value })} placeholder="Use the word in a sentence…" /></label>}
               <div className={styles.modalActions}><button type="button" onClick={() => setShowCreateForm(false)}>Cancel</button><button type="submit"><Plus size={17} /> Create {createType}</button></div>
             </form>

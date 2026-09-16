@@ -1,7 +1,14 @@
 export const API_ENDPOINTS = {
   auth: {
     login: '/auth/login',
+    register: '/auth/register',
+    refresh: '/auth/refresh',
+    logout: '/auth/logout',
     me: '/auth/me',
+    requestPasswordOtp: '/auth/forgot-password/request-otp',
+    verifyPasswordOtp: '/auth/forgot-password/verify-otp',
+    resetPassword: '/auth/forgot-password/reset',
+    changePassword: '/auth/change-password',
   },
   practiceExam: {
     list: '/practice-exams',

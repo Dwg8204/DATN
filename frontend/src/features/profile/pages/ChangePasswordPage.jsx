@@ -4,65 +4,63 @@ import styles from './ChangePasswordPage.module.css';
 import PasswordInput from '../../auth/components/PasswordInput';
 import { useAuth } from '../../../context/AuthContext';
 import ConfirmModal from '../../../components/common/ConfirmModal';
-import ToastNotification from '../../../components/common/ToastNotification';
+import { useToast } from '../../../context/ToastContext';
 import { addPersonalNotification } from '../../../utils/notificationStorage';
+import { useNavigate } from 'react-router-dom';
+import { authApi, getApiError } from '../../auth/services/authApi';
+import { validatePassword } from '../../auth/utils/passwordValidation';
 
 export default function ChangePasswordPage() {
-  const { user } = useAuth();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const { showError, showSuccess, dismissToast } = useToast();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
-  const [toastMessage, setToastMessage] = useState('');
+  const [busy, setBusy] = useState(false);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    setError('');
+    if (busy) return;
+    dismissToast();
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError('Please fill in all fields.');
+      showError('Please fill in all fields.');
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      setError('New passwords do not match.');
+    const passwordError = validatePassword(newPassword, confirmPassword);
+    if (passwordError) {
+      showError(passwordError);
       return;
     }
 
     setShowConfirm(true);
   };
 
-  const executeSave = () => {
+  const executeSave = async () => {
+    if (busy) return;
+    setBusy(true);
     try {
-      const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
-      const userIndex = existingUsers.findIndex(u => u.email === user.email);
-
-      if (userIndex === -1) {
-        setError('User not found in local database.');
-        return;
-      }
-
-      const currentUserRecord = existingUsers[userIndex];
-
-      if (currentUserRecord.password !== currentPassword) {
-        setError('Current password is incorrect.');
-        return;
-      }
-
-      existingUsers[userIndex].password = newPassword;
-      localStorage.setItem('aptimate.mock_users', JSON.stringify(existingUsers));
-
+      await authApi.changePassword({ currentPassword, newPassword, confirmPassword });
       setShowConfirm(false);
-      setToastMessage('Password changed successfully!');
-      addPersonalNotification('Password changed successfully!');
+      showSuccess('Password changed successfully. Please sign in again.');
+      try {
+        addPersonalNotification('Password changed successfully.');
+      } catch {
+        // A full browser notification store must not turn a successful password change into an error.
+      }
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (e) {
-      setError('An error occurred while updating the password.');
-      console.error(e);
+      logout();
+      navigate('/login', { replace: true });
+    } catch (requestError) {
+      showError(getApiError(requestError, 'Unable to update your password. Please try again.'));
       setShowConfirm(false);
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -74,9 +72,7 @@ export default function ChangePasswordPage() {
         <div className={styles.content}>
           <h1 className={styles.title}>Change password</h1>
 
-          <form className={styles.form} onSubmit={handleFormSubmit}>
-            {error && <div style={{ color: 'red', textAlign: 'center' }}>{error}</div>}
-
+          <form className={styles.form} onSubmit={handleFormSubmit} noValidate>
             <div className={styles.inputCol}>
               <label className={styles.label}>Current password</label>
               <PasswordInput
@@ -105,7 +101,7 @@ export default function ChangePasswordPage() {
             </div>
 
             <div className={styles.actions}>
-              <button type="submit" className={styles.saveBtn}>
+              <button type="submit" disabled={busy} className={styles.saveBtn}>
                 Save changes
               </button>
             </div>
@@ -120,10 +116,6 @@ export default function ChangePasswordPage() {
             />
           )}
 
-          <ToastNotification 
-            message={toastMessage} 
-            onClose={() => setToastMessage('')} 
-          />
         </div>
       </div>
     </div>

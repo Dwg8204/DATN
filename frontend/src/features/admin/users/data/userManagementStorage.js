@@ -1,5 +1,6 @@
 import { makeCredential, checkCredential } from '../../../auth/utils/mockCredentials.js';
 import { validateManagedUser } from '../validation/userValidation.js';
+import { UserManagementError } from '../validation/userManagementErrors.js';
 const STORAGE_KEY = 'aptimate_admin_users';
 const seedUsers = [
   { id: 'admin-1', role: 'admin', name: 'Hung To', email: 'tongochung9308@gmail.com', status: 'Active', joinedAt: '2025-01-05' },
@@ -31,23 +32,23 @@ export async function saveManagedUser(input) {
   const users = getManagedUsers();
   const index = users.findIndex(item => item.id === input.id);
   if (input.id) {
-    if (index < 0) throw new Error('Account not found.');
+    if (index < 0) throw new UserManagementError('Account not found.');
     const original = users[index];
     const nextRole = original.role === 'user' ? 'teacher' : original.role === 'teacher' ? 'admin' : null;
-    if (!nextRole || input.role !== nextRole) throw new Error('Only User → Teacher or Teacher → Admin is permitted.');
+    if (!nextRole || input.role !== nextRole) throw new UserManagementError('Only User → Teacher or Teacher → Admin is permitted.');
     users[index] = { ...original, role: nextRole };
     persist(users);
     return users[index];
   }
   const error = validateManagedUser(input, users);
-  if (error) throw new Error(error);
+  if (error) throw new UserManagementError(error);
   const legacy = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
-  if (legacy.some(u => u.email.trim().toLowerCase() === input.email.trim().toLowerCase())) throw new Error('This email address is already in use.');
+  if (legacy.some(u => u.email.trim().toLowerCase() === input.email.trim().toLowerCase())) throw new UserManagementError('This email address is already in use.');
   const credential = await makeCredential(input.password);
   const user = { id: crypto.randomUUID(), name: input.name.trim(), email: input.email.trim().toLowerCase(), role: input.role, status: input.status === 'Inactive' ? 'Inactive' : 'Active', joinedAt: new Date().toISOString(), credential };
   const latest = getManagedUsers();
   const latestError = validateManagedUser(input, latest);
-  if (latestError) throw new Error(latestError);
+  if (latestError) throw new UserManagementError(latestError);
   persist([user, ...latest]);
   return user;
 }

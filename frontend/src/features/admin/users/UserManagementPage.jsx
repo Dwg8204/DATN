@@ -7,6 +7,7 @@ import Pagination from '../../../components/common/Pagination';
 import UserEditorDialog from './components/UserEditorDialog';
 import { deleteManagedUser, getManagedUsers, saveManagedUser } from './data/userManagementStorage';
 import { validateManagedUser } from './validation/userValidation';
+import { getUserManagementErrorMessage } from './validation/userManagementErrors';
 import styles from './UserManagementPage.module.css';
 
 const roles = [
@@ -49,7 +50,7 @@ export default function UserManagementPage() {
       await saveManagedUser(editor);
       setUsers(getManagedUsers()); setEditor(null); setEditorError('');
       setToast(editor.id ? 'Account role updated successfully.' : 'Account created successfully.');
-    } catch (error) { setEditorError(error.message || 'Unable to save account.'); }
+    } catch (error) { setEditorError(getUserManagementErrorMessage(error)); }
     finally { setBusy(false); setConfirmRole(false); }
   };
   const remove = () => {

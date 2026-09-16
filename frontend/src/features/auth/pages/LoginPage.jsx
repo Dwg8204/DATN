@@ -1,54 +1,45 @@
-import { authenticateManagedUser, getManagedUsers } from '../../admin/users/data/userManagementStorage';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from '../components/PasswordInput';
 import styles from './Auth.module.css';
 import { useAuth } from '../../../context/AuthContext';
+import { authApi, getApiError } from '../services/authApi';
+import { useToast } from '../../../context/ToastContext';
+import { validateEmail } from '../utils/emailValidation';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { showError, dismissToast } = useToast();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
     if (busy) return;
-    setError('');
+    dismissToast();
 
-    if (!email || !password) {
-      setError('Please fill in all fields.');
+    const validationError = validateEmail(email) || (!password && 'Please enter your password.');
+    if (validationError) {
+      showError(validationError);
       return;
     }
 
     setBusy(true);
     try {
-    const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
-    const managedExists = getManagedUsers().some(u => u.email.toLowerCase() === email.trim().toLowerCase());
-    const user = managedExists ? await authenticateManagedUser(email, password) : existingUsers.find(u => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password);
-
-    if (!user) {
-      setError('Invalid email or password.');
-      return;
-    }
-
-    // Exclude password from profile
-    const { password: _, ...profile } = user;
-    
-    login({ accessToken: 'mock-token-' + Date.now(), profile });
-    navigate('/');
-    } catch { setError('Unable to log in. Please try again.'); }
+      const result = await authApi.login({ email: email.trim(), password });
+      login(result);
+      navigate('/');
+    } catch (requestError) { showError(getApiError(requestError, 'Unable to log in. Please try again.')); }
     finally { setBusy(false); }
   };
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
         <span className={styles.title}>LOG IN TO YOUR ACCOUNT</span>
-        {error && <div style={{ color: 'red', marginBottom: '16px', textAlign: 'center' }}>{error}</div>}
-        <form className={styles.form} onSubmit={handleLogin}>
+        <form className={styles.form} onSubmit={handleLogin} noValidate>
           <div className={styles.formGroup}>
             <div className={styles.signupFormGroup}>
               <div className={styles.inputCol}>

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { validateManagedUser } from '../src/features/admin/users/validation/userValidation.js';
 import { getManagedUsers, saveManagedUser, deleteManagedUser, authenticateManagedUser } from '../src/features/admin/users/data/userManagementStorage.js';
+import { getUserManagementErrorMessage, UserManagementError } from '../src/features/admin/users/validation/userManagementErrors.js';
 
 const existing = [{ id: 'user-1', email: 'member@aptimate.com' }];
 const account = (extra = {}) => ({ id: '', role: 'user', name: 'New Member', email: 'new@example.test', status: 'Active', password: 'Demo-test-123', confirmPassword: 'Demo-test-123', ...extra });
@@ -64,4 +65,36 @@ test('inactive accounts cannot log in and concurrent creates retain both records
   assert.ok(getManagedUsers().some(u => u.id === first.id));
   assert.ok(getManagedUsers().some(u => u.id === second.id));
   assert.equal(await authenticateManagedUser(first.email, 'Demo-test-123'), null);
+});
+
+test('only trusted business errors expose their message to the account form', async () => {
+  resetStorage();
+  await assert.rejects(saveManagedUser(account({ name: '' })), error => {
+    assert.ok(error instanceof UserManagementError);
+    assert.equal(getUserManagementErrorMessage(error), 'Enter the user’s full name.');
+    return true;
+  });
+  const fallback = getUserManagementErrorMessage(new Error('internal details'));
+  assert.match(fallback, /Unable to save the account/);
+  assert.equal(getUserManagementErrorMessage(new SyntaxError('Unexpected token in JSON at position 0')), fallback);
+  assert.equal(getUserManagementErrorMessage(new DOMException('Quota exceeded for aptimate_admin_users', 'QuotaExceededError')), fallback);
+  assert.equal(getUserManagementErrorMessage({ name: 'UserManagementError', message: 'untrusted response' }), fallback);
+});
+
+test('storage failures do not become trusted validation errors', async () => {
+  const memory = resetStorage();
+  memory.set('aptimate.mock_users', '{broken');
+  await assert.rejects(saveManagedUser(account()), error => {
+    assert.ok(error instanceof SyntaxError);
+    assert.match(getUserManagementErrorMessage(error), /browser storage/);
+    return true;
+  });
+  resetStorage();
+  globalThis.localStorage.setItem = () => { throw new DOMException('raw storage failure', 'QuotaExceededError'); };
+  const user = getManagedUsers().find(item => item.role === 'user');
+  await assert.rejects(saveManagedUser({ ...user, role: 'teacher' }), error => {
+    assert.equal(error.name, 'QuotaExceededError');
+    assert.doesNotMatch(getUserManagementErrorMessage(error), /raw storage failure/);
+    return true;
+  });
 });

@@ -1,29 +1,41 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './AudioPlayer.module.css';
+import { useToast } from '../../../context/ToastContext';
 
 function formatTime(seconds) {
-  if (isNaN(seconds)) return '00:00';
+  if (!Number.isFinite(seconds)) return '00:00';
   const m = Math.floor(seconds / 60).toString().padStart(2, '0');
   const s = Math.floor(seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
 
 export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowSkip = true }) {
+  const { showError } = useToast();
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [playCount, setPlayCount] = useState(0);
   const [volume, setVolume] = useState(1);
+  const [audioError, setAudioError] = useState('');
 
   const isMaxPlaysReached = maxPlays !== undefined && maxPlays !== Infinity && playCount >= maxPlays;
+
+  useEffect(() => {
+    setAudioError('');
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setPlayCount(0);
+  }, [src]);
 
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const handleLoadedMetadata = () => {
-      setDuration(audio.duration);
+      setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
+      setAudioError('');
     };
 
     const handleTimeUpdate = () => {
@@ -55,6 +67,12 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
 
   const togglePlay = () => {
     if (isMaxPlaysReached) return;
+    if (!src) {
+      const message = 'This recording is unavailable. Please try another question or contact support.';
+      setAudioError(message);
+      showError(message);
+      return;
+    }
     
     if (isPlaying) {
       audioRef.current.pause();
@@ -62,8 +80,15 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
     } else {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
+        setAudioError('');
       }).catch(err => {
-        console.error("Audio playback failed:", err);
+        if (err.name === 'AbortError') return;
+        const message = err.name === 'NotAllowedError'
+          ? 'Your browser blocked audio playback. Allow audio for this site, then press Play again.'
+          : 'Unable to play this recording. Check your connection and try again.';
+        setIsPlaying(false);
+        setAudioError(message);
+        showError(message);
       });
     }
   };
@@ -99,7 +124,10 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
 
   return (
     <div className={compact ? styles.audioCompact : styles.audioMock}>
-      <audio ref={audioRef} src={src} preload="metadata" />
+      <audio ref={audioRef} src={src} preload="metadata" onError={() => {
+        setIsPlaying(false);
+        setAudioError('Unable to load this recording. Check your connection and try again.');
+      }} />
       
       {!compact && (
         <div className={styles.audioPlaceholder}>
@@ -180,6 +208,8 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
           </div>
         </div>
       </div>
+
+      {audioError && <p className={styles.audioError} role="status">{audioError}</p>}
       
       {isMaxPlaysReached && (
         <div className={styles.playWarning}>
