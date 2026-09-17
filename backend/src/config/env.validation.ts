@@ -30,4 +30,9 @@ export const environmentSchema = Joi.object({
   SMTP_CONNECTION_TIMEOUT_MS: Joi.number().integer().min(1000).max(30000).default(5000),
   SMTP_GREETING_TIMEOUT_MS: Joi.number().integer().min(1000).max(30000).default(5000),
   SMTP_SOCKET_TIMEOUT_MS: Joi.number().integer().min(3000).max(60000).default(10000),
+  CLOUDINARY_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+  CLOUDINARY_CLOUD_NAME: Joi.when('CLOUDINARY_ENABLED', { is: true, then: Joi.string().required(), otherwise: Joi.string().allow('') }),
+  CLOUDINARY_API_KEY: Joi.when('CLOUDINARY_ENABLED', { is: true, then: Joi.string().required(), otherwise: Joi.string().allow('') }),
+  CLOUDINARY_API_SECRET: Joi.when('CLOUDINARY_ENABLED', { is: true, then: Joi.string().required(), otherwise: Joi.string().allow('') }),
+  CLOUDINARY_FOLDER: Joi.string().pattern(/^[a-zA-Z0-9/_-]+$/).default('aptimate/test-covers'),
 }).unknown(true);
