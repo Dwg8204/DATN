@@ -9,6 +9,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './features/auth/auth.module';
 import { AppController } from './app.controller';
 import { UsersModule } from './features/users/users.module';
+import { GrammarTestsModule } from './features/grammar-tests/grammar-tests.module';
+import { MediaModule } from './features/media/media.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { UsersModule } from './features/users/users.module';
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 120 }]),
     AuthModule,
     UsersModule,
+    GrammarTestsModule,
+    MediaModule,
     HealthModule,
   ],
   controllers: [AppController],
