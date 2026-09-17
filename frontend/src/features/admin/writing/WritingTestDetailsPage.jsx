@@ -5,24 +5,34 @@ import AdminBreadcrumb from '../components/AdminBreadcrumb';
 import ImageField from '../shared-test-builder/ImageField';
 import { useWritingTestBuilder } from './context/WritingTestBuilderContext';
 import { WRITING_PART_META } from './data/writingBuilderInitialState';
-import { saveStoredWritingTest } from './data/writingTestStorage';
 import PartSummaryCard from './components/PartSummaryCard';
 import { validateWritingDetails, validateWritingTest } from './validation/writingTestValidation';
 import { useToast } from '../../../context/ToastContext';
 import { getFirstValidationError } from '../../../utils/validationErrors';
+import { getApiError } from '../../../services/apiError';
 import styles from './WritingTestDetailsPage.module.css';
+import { writingTestsApi } from './services/writingTestsApi';
 
 export default function WritingTestDetailsPage() {
   const navigate = useNavigate();
-  const { test, updateDetails, basePath } = useWritingTestBuilder();
+  const { test, updateDetails, basePath, saveDraft, replaceTest } = useWritingTestBuilder();
   const { showError, showSuccess, dismissToast } = useToast();
   const [confirmSave, setConfirmSave] = useState(false);
+  const [saving, setSaving] = useState(false);
   const visibleParts = test.mode === 'full' ? WRITING_PART_META : WRITING_PART_META.filter((part) => `part${part.number}` === test.mode);
 
-  const saveInformation = () => {
+  const saveInformation = async () => {
     const message = getFirstValidationError(validateWritingDetails(test.details));
     if (message) return showError(message);
-    showSuccess('Test information saved in the current draft.');
+    setSaving(true);
+    try {
+      await saveDraft();
+      showSuccess('Writing test draft saved.');
+    } catch (error) {
+      showError(getApiError(error, 'Unable to save this Writing test draft.'));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const validateBeforeSave = () => {
@@ -43,14 +53,20 @@ export default function WritingTestDetailsPage() {
     return true;
   };
 
-  const persistTest = () => {
+  const persistTest = async () => {
     setConfirmSave(false);
+    setSaving(true);
     try {
-      const saved = saveStoredWritingTest(test);
-      showSuccess(test.id ? 'Writing test updated successfully.' : 'Writing test created successfully.');
-      navigate(`/admin/tests/writing/${saved.id}/preview`);
-    } catch {
-      showError('Unable to save the test. Browser storage may be full. Please try a smaller cover image.');
+      const saved = await saveDraft(test);
+      replaceTest(saved);
+      const published = await writingTestsApi.publish(saved);
+      replaceTest(published);
+      showSuccess(test.id ? 'Writing test updated and published.' : 'Writing test created and published.');
+      navigate(`/admin/tests/writing/${published.id}/preview`);
+    } catch (error) {
+      showError(getApiError(error, 'Unable to save or publish this Writing test. Your draft is preserved when it was saved successfully.'));
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -65,9 +81,9 @@ export default function WritingTestDetailsPage() {
     <AdminBreadcrumb current={test.details.title || 'New test'} />
     <section className={styles.information}><h2>INFORMATION TEST</h2><div className={styles.infoGrid}><div className={styles.fields}>
       <label><b>Title:</b><input value={test.details.title} onChange={(event) => updateDetails('title', event.target.value)}/></label>
-      <ImageField label="Test cover" value={test.details.pictureUrl} onChange={(value) => updateDetails('pictureUrl', value)}/>
-      <button className={styles.saveInfo} onClick={saveInformation}>Save</button>
+      <ImageField label="Test cover" value={test.details.pictureUrl} onChange={(value) => updateDetails('pictureUrl', value)} uploadFile={writingTestsApi.uploadCover}/>
+      <button className={styles.saveInfo} onClick={saveInformation} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
     </div><aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>Not Started</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview"/> : <strong>AptiMate<br/><em>Writing</em></strong>}<button onClick={requestSave}>Preview</button></div></aside></div></section>
-    <section className={styles.content}><h2>CONTENT TEST</h2><div>{visibleParts.map((part) => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}`)}/>)}</div><button className={styles.saveAll} onClick={requestSave}>{test.id ? 'Update test & preview' : 'Save test & preview'}</button></section>
+    <section className={styles.content}><h2>CONTENT TEST</h2><div>{visibleParts.map((part) => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}`)}/>)}</div><button className={styles.saveAll} onClick={requestSave} disabled={saving}>{saving ? 'Saving…' : test.id ? 'Update test & preview' : 'Save test & preview'}</button></section>
   </div>;
 }
