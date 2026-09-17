@@ -1,8 +1,10 @@
 import AnswerExplanation from '../../../components/common/AnswerExplanation';
 import { ArrowLeft, Edit3 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { AdminToast } from '../components/AdminFeedback';
-import { getStoredGrammarTest } from './data/grammarTestStorage';
+import { grammarTestsApi } from './services/grammarTestsApi';
+import { getApiError } from '../../../services/apiError';
 import styles from './GrammarTestPreviewPage.module.css';
 import RichTextContent from '../../../components/common/RichTextContent';
 
@@ -10,8 +12,17 @@ export default function GrammarTestPreviewPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const { testId } = useParams();
-  const test = getStoredGrammarTest(testId);
-  if (!test) return <div>Test not found.</div>;
+  const [state, setState] = useState({ test: null, loading: true, error: '' });
+  useEffect(() => {
+    const controller = new AbortController();
+    grammarTestsApi.getAdmin(testId, controller.signal)
+      .then(test => setState({ test, loading: false, error: '' }))
+      .catch(error => { if (error.code !== 'ERR_CANCELED') setState({ test: null, loading: false, error: getApiError(error, 'Unable to load the preview.') }); });
+    return () => controller.abort();
+  }, [testId]);
+  if (state.loading) return <div style={{ padding: 32 }}>Loading preview…</div>;
+  if (!state.test) return <div style={{ padding: 32 }}>{state.error || 'Test not found.'}</div>;
+  const test = state.test;
   const parts = test.mode === 'full' ? [1, 2] : [Number(test.mode.replace('part', ''))];
   const modeLabel = test.mode === 'full' ? 'Full Test' : test.mode.replace('part', 'Part ');
 

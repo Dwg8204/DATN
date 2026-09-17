@@ -6,7 +6,9 @@ import styles from './TestListPage.module.css';
 import { GRAMMAR_VOCAB_CONFIG } from '../features/grammar_vocab/config/grammarVocabConfig';
 import { WRITING_CONFIG } from '../features/writing/config/writingConfig';
 import { getAdminWritingListItems } from '../features/writing/utils/adminWritingTestAdapter';
-import { getAdminGrammarListItems } from '../features/grammar_vocab/utils/adminGrammarTestAdapter';
+import { grammarTestsApi } from '../features/admin/grammar/services/grammarTestsApi';
+import { getApiError } from '../services/apiError';
+import { useToast } from '../context/ToastContext';
 
 // Fake data for tests
 const MOCK_TESTS = [
@@ -52,13 +54,14 @@ const MOCK_TESTS = [
 export default function TestListPage() {
   const { skill } = useParams();
   const navigate = useNavigate();
+  const { showError } = useToast();
   const [activeTab, setActiveTab] = useState('part1');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
   const [query, setQuery] = useState('');
   useEffect(() => setPage(1), [activeTab, skill, query]);
   const [adminWritingTests, setAdminWritingTests] = useState(() => skill === 'writing' ? getAdminWritingListItems() : []);
-  const [adminGrammarTests, setAdminGrammarTests] = useState(() => skill === 'grammar-vocab' ? getAdminGrammarListItems() : []);
+  const [grammarState, setGrammarState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
 
   useEffect(() => {
     if (skill !== 'writing') return undefined;
@@ -69,11 +72,30 @@ export default function TestListPage() {
   }, [skill]);
   useEffect(() => {
     if (skill !== 'grammar-vocab') return undefined;
-    const refresh = () => setAdminGrammarTests(getAdminGrammarListItems());
-    window.addEventListener('grammar-tests-updated', refresh);
-    window.addEventListener('storage', refresh);
-    return () => { window.removeEventListener('grammar-tests-updated', refresh); window.removeEventListener('storage', refresh); };
-  }, [skill]);
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setGrammarState(current => ({ ...current, loading: true, error: '' }));
+      grammarTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
+        .then(result => setGrammarState({
+          tests: (result.data ?? []).map(test => ({
+            ...test,
+            title: test.title || test.name,
+            desc: `${test.questionType}\nAptiMate published test`,
+            part: test.section,
+            tabId: test.mode,
+            status: 'Not Started',
+            apiManaged: true,
+          })),
+          totalItems: result.pagination?.totalItems ?? 0,
+          loading: false,
+          error: '',
+        }))
+        .catch(error => {
+          if (error.code !== 'ERR_CANCELED') setGrammarState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, 'Unable to load Grammar & Vocabulary tests.') });
+        });
+    }, query.trim() ? 300 : 0);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [activeTab, page, pageSize, query, skill]);
 
   // Helper to get config based on skill
   const getConfig = () => {
@@ -84,8 +106,8 @@ export default function TestListPage() {
   };
 
   const currentConfig = getConfig();
-  const tests = skill === 'writing' ? [...adminWritingTests, ...(currentConfig.tests || [])] : skill === 'grammar-vocab' ? [...adminGrammarTests, ...(currentConfig.tests || [])] : currentConfig.tests || MOCK_TESTS;
-  const filteredTests = tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
+  const tests = skill === 'writing' ? [...adminWritingTests, ...(currentConfig.tests || [])] : skill === 'grammar-vocab' ? grammarState.tests : currentConfig.tests || MOCK_TESTS;
+  const filteredTests = skill === 'grammar-vocab' ? tests : tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
 
   // Helper to format skill name nicely
   const formatSkillName = (skillStr) => {
@@ -98,6 +120,14 @@ export default function TestListPage() {
   const handleDoTest = (testId) => {
     // Navigate to the generic introduction page with testId and mode in query params
     navigate(`/${skill}/introduction?testId=${testId}&mode=${activeTab}`);
+  };
+
+  const startTest = test => {
+    if (test.apiManaged) {
+      showError('This published test is ready, but the secure attempt and grading API must be connected before learners can start it.');
+      return;
+    }
+    handleDoTest(test.id);
   };
 
   const handleReviewTest = (test) => {
@@ -160,7 +190,7 @@ export default function TestListPage() {
 
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
-              {filteredTests.slice((page - 1) * pageSize, page * pageSize).map((test) => (
+              {(skill === 'grammar-vocab' ? filteredTests : filteredTests.slice((page - 1) * pageSize, page * pageSize)).map((test) => (
                 <div key={test.id} className={styles.testCard}>
                   <div className={styles.cardTop}>
                     <div className={styles.cardTitle}>{test.title}</div>
@@ -202,7 +232,7 @@ export default function TestListPage() {
                         <span className={styles.reviewBtnText}>Review</span>
                       </button>
                     )}
-                    <button className={styles.doTestBtn} onClick={() => handleDoTest(test.id)}>
+                    <button className={styles.doTestBtn} onClick={() => startTest(test)}>
                       <span className={styles.doTestBtnText}>Do the test</span>
                     </button>
                   </div>
@@ -225,7 +255,9 @@ export default function TestListPage() {
             </div>
           </div>
           
-          <Pagination page={page} totalItems={filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          {skill === 'grammar-vocab' && grammarState.loading && <p>Loading tests…</p>}
+          {skill === 'grammar-vocab' && grammarState.error && <p>{grammarState.error}</p>}
+          <Pagination page={page} totalItems={skill === 'grammar-vocab' ? grammarState.totalItems : filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper}>
             <CommentSection />
           </div>
