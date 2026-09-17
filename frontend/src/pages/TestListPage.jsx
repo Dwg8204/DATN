@@ -5,8 +5,8 @@ import CommentSection from '../components/shared/CommentSection/CommentSection';
 import styles from './TestListPage.module.css';
 import { GRAMMAR_VOCAB_CONFIG } from '../features/grammar_vocab/config/grammarVocabConfig';
 import { WRITING_CONFIG } from '../features/writing/config/writingConfig';
-import { getAdminWritingListItems } from '../features/writing/utils/adminWritingTestAdapter';
 import { grammarTestsApi } from '../features/admin/grammar/services/grammarTestsApi';
+import { writingTestsApi } from '../features/admin/writing/services/writingTestsApi';
 import { getApiError } from '../services/apiError';
 import { useToast } from '../context/ToastContext';
 
@@ -60,16 +60,8 @@ export default function TestListPage() {
   const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
   const [query, setQuery] = useState('');
   useEffect(() => setPage(1), [activeTab, skill, query]);
-  const [adminWritingTests, setAdminWritingTests] = useState(() => skill === 'writing' ? getAdminWritingListItems() : []);
   const [grammarState, setGrammarState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
-
-  useEffect(() => {
-    if (skill !== 'writing') return undefined;
-    const refresh = () => setAdminWritingTests(getAdminWritingListItems());
-    window.addEventListener('writing-tests-updated', refresh);
-    window.addEventListener('storage', refresh);
-    return () => { window.removeEventListener('writing-tests-updated', refresh); window.removeEventListener('storage', refresh); };
-  }, [skill]);
+  const [writingState, setWritingState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
   useEffect(() => {
     if (skill !== 'grammar-vocab') return undefined;
     const controller = new AbortController();
@@ -97,6 +89,33 @@ export default function TestListPage() {
     return () => { window.clearTimeout(timer); controller.abort(); };
   }, [activeTab, page, pageSize, query, skill]);
 
+  useEffect(() => {
+    if (skill !== 'writing') return undefined;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setWritingState(current => ({ ...current, loading: true, error: '' }));
+      writingTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
+        .then(result => setWritingState({
+          tests: (result.data ?? []).map(test => ({
+            ...test,
+            title: test.title || test.name,
+            desc: `AptiMate Writing ${test.section} practice\nAptis writing task`,
+            part: test.section,
+            tabId: test.mode,
+            status: 'Not Started',
+            apiManaged: true,
+          })),
+          totalItems: result.pagination?.totalItems ?? 0,
+          loading: false,
+          error: '',
+        }))
+        .catch(error => {
+          if (error.code !== 'ERR_CANCELED') setWritingState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, 'Unable to load Writing tests.') });
+        });
+    }, query.trim() ? 300 : 0);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [activeTab, page, pageSize, query, skill]);
+
   // Helper to get config based on skill
   const getConfig = () => {
     if (skill === 'grammar-vocab') return GRAMMAR_VOCAB_CONFIG;
@@ -106,8 +125,8 @@ export default function TestListPage() {
   };
 
   const currentConfig = getConfig();
-  const tests = skill === 'writing' ? [...adminWritingTests, ...(currentConfig.tests || [])] : skill === 'grammar-vocab' ? grammarState.tests : currentConfig.tests || MOCK_TESTS;
-  const filteredTests = skill === 'grammar-vocab' ? tests : tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
+  const tests = skill === 'writing' ? writingState.tests : skill === 'grammar-vocab' ? grammarState.tests : currentConfig.tests || MOCK_TESTS;
+  const filteredTests = ['grammar-vocab', 'writing'].includes(skill) ? tests : tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
 
   // Helper to format skill name nicely
   const formatSkillName = (skillStr) => {
@@ -255,9 +274,10 @@ export default function TestListPage() {
             </div>
           </div>
           
-          {skill === 'grammar-vocab' && grammarState.loading && <p>Loading tests…</p>}
+          {['grammar-vocab', 'writing'].includes(skill) && (skill === 'grammar-vocab' ? grammarState.loading : writingState.loading) && <p>Loading tests…</p>}
           {skill === 'grammar-vocab' && grammarState.error && <p>{grammarState.error}</p>}
-          <Pagination page={page} totalItems={skill === 'grammar-vocab' ? grammarState.totalItems : filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          {skill === 'writing' && writingState.error && <p>{writingState.error}</p>}
+          <Pagination page={page} totalItems={skill === 'grammar-vocab' ? grammarState.totalItems : skill === 'writing' ? writingState.totalItems : filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper}>
             <CommentSection />
           </div>
