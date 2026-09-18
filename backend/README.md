@@ -229,6 +229,26 @@ Frontend mặc định kết nối `http://localhost:3000/api/v1`. Khi dùng URL
 VITE_API_BASE_URL=https://your-api.example.com/api/v1
 ```
 
+### Upload ảnh cover bằng Cloudinary
+
+Backend upload ảnh cover lên Cloudinary và chỉ lưu URL HTTPS trong trường `tests.cover`; dữ liệu ảnh base64 không được lưu vào PostgreSQL. Tạo tài khoản/Media Library trên Cloudinary rồi tự điền khóa thật vào `backend/.env`:
+
+```dotenv
+CLOUDINARY_ENABLED=true
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_FOLDER=aptimate/test-covers
+```
+
+Không commit `CLOUDINARY_API_SECRET`. Khi `CLOUDINARY_ENABLED=false`, các chức năng khác vẫn chạy nhưng API upload cover sẽ trả lỗi cấu hình rõ ràng. Endpoint `POST /api/v1/admin/media/test-covers` nhận trường multipart `file`, giới hạn 10 MB và chỉ chấp nhận JPEG, PNG, WebP hoặc GIF hợp lệ. Cloudinary tự giới hạn ảnh về tối đa 1600 × 1200 và tối ưu định dạng/chất lượng trước khi trả URL.
+
+### CRUD Grammar & Vocabulary
+
+Admin và Teacher sử dụng `/api/v1/admin/grammar-tests`; Teacher chỉ quản lý đề do mình tạo. Đề được lưu theo một aggregate gồm thông tin đề và toàn bộ câu hỏi của Part 1, Part 2 hoặc Full test. Lưu nháp cho phép nội dung chưa hoàn chỉnh; thao tác publish mới kiểm tra đủ 25 câu Grammar và 5 nhóm × 5 câu Vocabulary rồi tạo snapshot bất biến.
+
+Các API `/api/v1/grammar-tests` chỉ trả đề đã xuất bản. API chi tiết dành cho học viên loại bỏ hoàn toàn đáp án đúng và phần giải thích; các dữ liệu này chỉ được trả sau khi có luồng nộp/chấm bài được phân quyền riêng.
+
 Health endpoints:
 
 - `GET /api/v1/health/live`

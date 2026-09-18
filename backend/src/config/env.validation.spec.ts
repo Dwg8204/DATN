@@ -31,4 +31,16 @@ describe('environment validation', () => {
     const result = environmentSchema.validate({ ...validEnvironment, SMTP_ENABLED: true });
     expect(result.error).toBeDefined();
   });
+
+  it('requires Cloudinary credentials only when image uploads are enabled', () => {
+    expect(environmentSchema.validate({ ...validEnvironment, CLOUDINARY_ENABLED: false }).error).toBeUndefined();
+    expect(environmentSchema.validate({ ...validEnvironment, CLOUDINARY_ENABLED: true }).error).toBeDefined();
+    expect(environmentSchema.validate({
+      ...validEnvironment,
+      CLOUDINARY_ENABLED: true,
+      CLOUDINARY_CLOUD_NAME: 'aptimate-demo',
+      CLOUDINARY_API_KEY: 'key',
+      CLOUDINARY_API_SECRET: 'secret',
+    }).error).toBeUndefined();
+  });
 });

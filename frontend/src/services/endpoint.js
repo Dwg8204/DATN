@@ -15,6 +15,18 @@ export const API_ENDPOINTS = {
     detail: (id) => `/admin/users/${id}`,
     role: (id) => `/admin/users/${id}/role`,
   },
+  adminGrammarTests: {
+    list: '/admin/grammar-tests',
+    detail: (id) => `/admin/grammar-tests/${id}`,
+    publish: (id) => `/admin/grammar-tests/${id}/publish`,
+  },
+  grammarTests: {
+    list: '/grammar-tests',
+    detail: (id) => `/grammar-tests/${id}`,
+  },
+  adminMedia: {
+    testCovers: '/admin/media/test-covers',
+  },
   practiceExam: {
     list: '/practice-exams',
     detail: (id) => `/practice-exams/${id}`,

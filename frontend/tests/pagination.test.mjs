@@ -14,6 +14,7 @@ test('pagination supports arbitrary page sizes and clamps after deletion', () =>
 test('page input rejects fractions, negative, empty and out-of-range values', () => {
   for (const value of ['', '0', '-1', '1.5', '11', 'abc', 'Infinity']) assert.equal(isValidPageInput(value, 10), false);
   assert.equal(isValidPageInput('7', 10), true);
+  assert.equal(isValidPageInput('101', 100), false);
 });
 
 test('page numbers stay compact and include boundary and active pages', () => {
