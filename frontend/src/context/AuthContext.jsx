@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { authApi } from '../features/auth/services/authApi';
+import { profileApi } from '../features/profile/services/profileApi';
 
 const USER_STORAGE_KEY = 'aptimate.auth.user';
 
@@ -41,7 +42,7 @@ export function AuthProvider({ children }) {
       if (active) { setUser(null); setIsAuthReady(true); }
     };
     window.addEventListener('aptimate:session-expired', clearSession);
-    authApi.me()
+    profileApi.getProfile()
       .then(profile => { if (active && authMutation.current === initialRevision) setUser(profile); })
       .catch(() => { if (active && authMutation.current === initialRevision) setUser(null); })
       .finally(() => { if (active) setIsAuthReady(true); });
@@ -72,6 +73,9 @@ export function AuthProvider({ children }) {
         authMutation.current += 1;
         setUser(profile ?? null);
         setIsAuthReady(true);
+        if (profile) {
+          profileApi.getProfile().then(fullProfile => setUser(fullProfile)).catch(() => {});
+        }
       },
       logout: () => {
         authMutation.current += 1;
@@ -83,18 +87,6 @@ export function AuthProvider({ children }) {
         if (!user) return;
         const updatedUser = { ...user, ...updates };
         setUser(updatedUser);
-
-        // Update mock_users in localStorage
-        try {
-          const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
-          const userIndex = existingUsers.findIndex(u => u.email === user.email);
-          if (userIndex !== -1) {
-            existingUsers[userIndex] = { ...existingUsers[userIndex], ...updates };
-            localStorage.setItem('aptimate.mock_users', JSON.stringify(existingUsers));
-          }
-        } catch (e) {
-          console.error("Failed to update mock users in localStorage", e);
-        }
       },
     }),
     [isAuthReady, user],

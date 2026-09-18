@@ -35,4 +35,6 @@ export const environmentSchema = Joi.object({
   CLOUDINARY_API_KEY: Joi.when('CLOUDINARY_ENABLED', { is: true, then: Joi.string().required(), otherwise: Joi.string().allow('') }),
   CLOUDINARY_API_SECRET: Joi.when('CLOUDINARY_ENABLED', { is: true, then: Joi.string().required(), otherwise: Joi.string().allow('') }),
   CLOUDINARY_FOLDER: Joi.string().pattern(/^[a-zA-Z0-9/_-]+$/).default('aptimate/test-covers'),
+  CLOUDINARY_AVATAR_FOLDER: Joi.string().default('aptimate/avatars'),
+  UPLOAD_MAX_FILE_SIZE_BYTES: Joi.number().integer().min(1024).default(5242880),
 }).unknown(true);

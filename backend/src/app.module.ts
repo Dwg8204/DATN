@@ -12,6 +12,8 @@ import { UsersModule } from './features/users/users.module';
 import { GrammarTestsModule } from './features/grammar-tests/grammar-tests.module';
 import { MediaModule } from './features/media/media.module';
 import { WritingTestsModule } from './features/writing-tests/writing-tests.module';
+import { StorageModule } from './common/storage/storage.module';
+import { ProfileModule } from './features/profile/profile.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { WritingTestsModule } from './features/writing-tests/writing-tests.modul
     MediaModule,
     WritingTestsModule,
     HealthModule,
+    StorageModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

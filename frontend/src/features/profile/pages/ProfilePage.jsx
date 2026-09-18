@@ -8,20 +8,24 @@ import ToastNotification from '../../../components/common/ToastNotification';
 import { calcGoalProgress } from '../../../utils/dashboardUtils';
 import { getHistoryEntries } from '../../../utils/historyStorage';
 import { addPersonalNotification } from '../../../utils/notificationStorage';
+import { profileApi } from '../services/profileApi';
 import styles from './ProfilePage.module.css';
 
 export default function ProfilePage() {
   const { user, updateProfile } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const [firstName, setFirstName] = useState(user?.name ? user.name.split(' ')[0] : '');
-  const [lastName, setLastName] = useState(user?.name && user.name.split(' ').length > 1 ? user.name.split(' ').slice(1).join(' ') : '');
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [avatarBase64, setAvatarBase64] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
 
   // Goal config
   const [goalConfig, setGoalConfig] = useState(() => {
@@ -40,6 +44,7 @@ export default function ProfilePage() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarBase64(reader.result);
@@ -53,20 +58,54 @@ export default function ProfilePage() {
     setShowConfirm(true);
   };
 
-  const executeSave = () => {
-    const updates = {
-      name: `${firstName} ${lastName}`.trim(),
-      bio,
-      phone
-    };
-    if (avatarBase64) {
-      updates.avatar = avatarBase64;
-    }
-    updateProfile(updates);
-
+  const executeSave = async () => {
+    setIsSaving(true);
     setShowConfirm(false);
-    setToastMessage('Personal information saved successfully!');
-    addPersonalNotification('Personal information saved successfully!');
+    
+    // Validate empty names
+    if (!firstName.trim()) {
+      setToastType('error');
+      setToastMessage('First name cannot be empty');
+      setFirstName(user?.firstName || '');
+      setIsSaving(false);
+      return;
+    }
+    if (!lastName.trim()) {
+      setToastType('error');
+      setToastMessage('Last name cannot be empty');
+      setLastName(user?.lastName || '');
+      setIsSaving(false);
+      return;
+    }
+
+    try {
+      const updates = {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        bio,
+        phone
+      };
+      
+      await profileApi.updateProfile(updates);
+
+      if (avatarFile) {
+        await profileApi.uploadAvatar(avatarFile);
+      }
+
+      // Fetch the latest profile to ensure 100% sync with sidebar and header
+      const freshProfile = await profileApi.getProfile();
+      updateProfile(freshProfile);
+
+      setToastType('success');
+      setToastMessage('Personal information saved successfully!');
+      addPersonalNotification('Personal information saved successfully!');
+    } catch (error) {
+      console.error('Failed to save profile', error);
+      setToastType('error');
+      setToastMessage(error.response?.data?.message || 'Failed to save changes. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSaveGoal = () => {
@@ -97,7 +136,7 @@ export default function ProfilePage() {
         
         <div className={styles.content}>
           <div className={styles.avatarSection}>
-            <img src={avatarBase64 || user?.avatar || 'https://placehold.co/100x100'} alt="Large Avatar" className={styles.largeAvatar} />
+            <img src={avatarBase64 || user?.avatar?.url || user?.avatar || 'https://placehold.co/100x100'} alt="Large Avatar" className={styles.largeAvatar} />
             <input 
               type="file" 
               accept="image/*" 
@@ -163,8 +202,8 @@ export default function ProfilePage() {
                 Change password
               </button>
               
-              <button type="submit" className={styles.saveBtn}>
-                Save changes
+              <button type="submit" className={styles.saveBtn} disabled={isSaving}>
+                {isSaving ? 'Saving...' : 'Save changes'}
               </button>
             </div>
             
@@ -245,8 +284,18 @@ export default function ProfilePage() {
             />
           )}
 
+          {isSaving && (
+            <div className={styles.modalOverlay}>
+              <div className={styles.loadingModal}>
+                <div className={styles.spinner}></div>
+                <p className={styles.loadingText}>Automatically aligning...</p>
+              </div>
+            </div>
+          )}
+
           <ToastNotification 
             message={toastMessage} 
+            type={toastType}
             onClose={() => setToastMessage('')} 
           />
         </div>
