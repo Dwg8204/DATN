@@ -11,9 +11,9 @@
 .scriptText { font-size: 16px; line-height: 1.7; white-space: pre-wrap; }
 .qaBox { flex: 1; display: flex; flex-direction: column; gap: 24px; }
 .questionCard { position: relative; padding: 20px 24px; border: 1px solid #c8c8c8; border-radius: 10px; display: flex; flex-direction: column; gap: 16px; background: #FFFFFF; }
-.questionHeading { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: start; gap: 12px; }
+.questionHeading { display: grid; grid-template-columns: min-content minmax(0, 1fr) auto; align-items: start; gap: 12px; }
 .questionHeading p { margin: 0; font-size: 16px; line-height: 28px; font-weight: 700; }
-.questionNumber { width: 30px; height: 30px; display: grid; place-items: center; border: 2px solid #0095ff; border-radius: 5px; background: #e6f4ff; font-weight: 700; }
+.questionNumber { min-width: 30px; height: 30px; padding: 0 6px; display: inline-flex; align-items: center; justify-content: center; border: 2px solid #0095ff; border-radius: 5px; background: #e6f4ff; font-weight: 700; white-space: nowrap; box-sizing: border-box; }
 .optionsList { display: flex; flex-direction: column; gap: 8px; padding-left: 44px; }
 .optionRow { min-height: 40px; padding: 6px 12px; display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 12px; border: 1px solid transparent; border-radius: 6px; }
 .optionLetter { font-weight: 700; }
@@ -31,9 +31,12 @@
 .matchingList { display: flex; flex-direction: column; gap: 20px; }
 .matchingItem { padding: 20px 24px; border: 1px solid #c8c8c8; border-radius: 10px; display: flex; flex-direction: column; gap: 10px; background: #FFFBF5; }
 .matchingRow { display: grid; grid-template-columns: minmax(100px, auto) minmax(230px, 1fr) 84px; align-items: center; gap: 16px; }
+.matchingCol { display: flex; flex-direction: column; gap: 12px; }
+.matchingColHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .targetWord { font-size: 16px; font-weight: 700; }
-.answerField { min-height: 40px; padding: 8px 14px; border: 1px solid #000; border-radius: 4px; display: flex; align-items: center; font-weight: 600; }
-.correctField { border-color: #43b75d; background: #edf9f0; color: #237d36; }
+.answerColumn { display: flex; flex-direction: column; gap: 8px; }
+.answerField { min-height: 40px; padding: 8px 14px; border: 1px solid #000; border-radius: 4px; display: flex; align-items: center; font-weight: 600; overflow-wrap: anywhere; }
+.correctField { min-height: 40px; padding: 8px 14px; border: 1px solid #43b75d; border-radius: 4px; display: flex; align-items: center; background: #edf9f0; color: #237d36; font-weight: 600; overflow-wrap: anywhere; }
 .wrongField { border-color: #da1e21; background: #fff0f1; color: #b0182d; }
 .skippedField { border-color: #868686; color: #686868; }
 .audioBar { display: flex; align-items: center; gap: 40px; margin-top: 24px; padding: 20px; background: #FFF9F1; border-radius: 8px; border: 1px solid #c8c8c8; }
@@ -43,7 +46,6 @@
 .speedText { font-size: 16px; font-weight: 500; }
 @media (max-width: 1000px) { .content { padding-inline: 32px; } .contentRow { flex-direction: column; } }
 @media (max-width: 700px) { .content { padding: 24px 16px 40px; } .questionHeading { grid-template-columns: 32px 1fr; } .questionHeading .statusBadge { grid-column: 2; width: fit-content; } .optionsList { padding-left: 0; } .optionRow { min-height: 38px; padding: 7px 9px; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 13px; line-height: 20px; } .optionRow small { grid-column: 3; justify-self: end; margin-left: 0; width: auto; max-width: 100%; padding: 2px 7px; font-size: 9px; line-height: 16px; } .questionCard > .explainButton, .questionCard > .explanation { margin-left: 0; } .matchingRow { grid-template-columns: 1fr; } }
-.matchingItem > .correctField { margin-top: 10px; padding: 10px 12px; border: 1px solid #43b75d; border-radius: 6px; overflow-wrap: anywhere; }
 .optionRow > span { min-width: 0; overflow-wrap: anywhere; }
 .qaBox, .scriptBox { min-width: 0; overflow-wrap: anywhere; }
 @media (max-width: 700px) { .contentRow { flex-direction: column; } .scriptBox { min-height: 0; padding: 16px; } .questionCard { padding: 16px; } .partTabs { flex-wrap: wrap; gap: 8px; } .partTabs button { padding: 8px 12px; } }

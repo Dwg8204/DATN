@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
@@ -15,7 +15,21 @@ export default function Part3ListeningPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
-  const { part3: partData } = getListeningTestParts(testId);
+  const [partData, setPartData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getListeningTestParts(testId, controller.signal)
+      .then(data => {
+        setPartData(data.part3);
+        setLoading(false);
+      })
+      .catch(err => {
+        if (err.code !== 'ERR_CANCELED') console.error('Failed to load part 3', err);
+      });
+    return () => controller.abort();
+  }, [testId]);
 
   const [answers, setAnswers] = useState(() => {
     const allAnswers = JSON.parse(sessionStorage.getItem('listening_p3_answers') || '{}');
@@ -54,68 +68,76 @@ export default function Part3ListeningPage() {
   const submitLabel = isFullTest ? 'Next Part' : 'Submit';
 
   // Treat Part 3 as a single question (ID 15) in the footer.
-  const isAnswered = partData.statements.every((stmt) => answers[stmt.id]);
+  const isAnswered = partData ? partData.statements.every((stmt) => answers[stmt.id]) : false;
 
   return (
     <div className={styles.page}>
       <div className={styles.contentWrap}>
-        <div className={styles.headerBlock}>
-          <div className={styles.partTitle}>Part 3</div>
-          <div className={styles.skillTitle}>Listening Test</div>
-        </div>
+      {loading || !partData ? (
+        <div style={{ padding: '40px', textAlign: 'center' }}>Loading test...</div>
+      ) : (
+        <>
+          <div className={styles.headerBlock}>
+            <div className={styles.partTitle}>Part 3</div>
+            <div className={styles.skillTitle}>Listening Test</div>
+          </div>
 
-        <InstructionBlock title={`Question ${partData.id}`}>
-          {partData.context}
-        </InstructionBlock>
+          <InstructionBlock title={`Question ${partData.id}`}>
+            {partData.context}
+          </InstructionBlock>
 
-        <div className={styles.mainArea}>
-          <div className={styles.questionSection}>
-            <div className={styles.questionItem}>
-              <div className={styles.questionText}>{partData.subTitle}</div>
+          <div className={styles.mainArea}>
+            <div className={styles.questionSection}>
+              <div className={styles.questionItem}>
+                <div className={styles.questionText}>{partData.subTitle}</div>
 
-              <div className={styles.matchingList}>
-                {partData.statements.map((stmt) => {
-                  const selectedOption = answers[stmt.id];
+                <div className={styles.matchingList}>
+                  {partData.statements.map((stmt) => {
+                    const selectedOption = answers[stmt.id];
 
-                  return (
-                    <div key={stmt.id} className={styles.matchItem}>
-                      <RichTextContent className={styles.statementText} value={stmt.text}/>
+                    return (
+                      <div key={stmt.id} className={styles.matchItem}>
+                        <RichTextContent className={styles.statementText} value={stmt.text}/>
 
-                      <div className={styles.dropdownContainer}>
-                        <AnswerSelect
-                          value={selectedOption || ''}
-                          onChange={(event) => handleOptionSelect(stmt.id, event.target.value)}
-                          placeholder="Select opinion"
-                          ariaLabel={`Answer for statement ${stmt.id}`}
-                          options={partData.options.map((opt, i) => ({ value: opt, label: `${String.fromCharCode(65 + i)}. ${opt}` }))}
-                        />
+                        <div className={styles.dropdownContainer}>
+                          <AnswerSelect
+                            value={selectedOption || ''}
+                            onChange={(event) => handleOptionSelect(stmt.id, event.target.value)}
+                            placeholder="Select opinion"
+                            ariaLabel={`Answer for statement ${stmt.id}`}
+                            options={partData.options.map((opt, i) => ({ value: opt, label: `${String.fromCharCode(65 + i)}. ${opt}` }))}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className={styles.audioSection}>
-            <AudioPlayer src={partData.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
+            <div className={styles.audioSection}>
+              <AudioPlayer src={partData.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
+            </div>
           </div>
-        </div>
+        </>
+      )}
       </div>
 
-      <TestFooter
-        partLabel="Part 3"
-        questions={[{ id: 15 }]}
-        answeredIds={isAnswered ? ['15'] : []}
-        currentPageQuestionIds={[15]}
-        onQuestionClick={() => { }}
-        onPrevClick={() => navigate(`/listening/test/part2?testId=${testId}&isFull=${isFullTest}`)}
-        onNextClick={() => { }}
-        onSubmitClick={handleSubmit}
-        submitLabel={submitLabel}
-        hasPrev={isFullTest}
-        hasNext={false}
-      />
+      {!loading && partData && (
+        <TestFooter
+          partLabel="Part 3"
+          questions={[{ id: 15 }]}
+          answeredIds={isAnswered ? ['15'] : []}
+          currentPageQuestionIds={[15]}
+          onQuestionClick={() => { }}
+          onPrevClick={() => navigate(`/listening/test/part2?testId=${testId}&isFull=${isFullTest}`)}
+          onNextClick={() => { }}
+          onSubmitClick={handleSubmit}
+          submitLabel={submitLabel}
+          hasPrev={isFullTest}
+          hasNext={false}
+        />
+      )}
 
       <SubmitModal
         isOpen={showSubmitModal}

@@ -26,12 +26,12 @@ export default function ListeningPartEditorPage() {
   const save = () => {
     const next = validateListeningPart(number, test.parts[number]);
     setErrors(next);
-    if (!next.length) navigate(basePath);
+    if (!next.length) navigate(`${basePath}${!test.id && test.mode !== 'full' ? `?mode=${test.mode}` : ''}`);
     else revealFirstEditorError(next);
   };
   return <main className={styles.page}>
     <AdminValidationToast errors={errors} onClose={() => setErrors([])}/>
-    <EditorBackButton onClick={() => navigate(basePath)}/>
+    <EditorBackButton onClick={() => navigate(`${basePath}${!test.id && test.mode !== 'full' ? `?mode=${test.mode}` : ''}`)}/>
     <header className={styles.summary}><strong>Part {number} · {LISTENING_PARTS[number - 1].title}</strong><div>{LISTENING_PARTS[number - 1].summary}</div></header>
     <Suspense fallback={<p>Loading editor…</p>}><Editor value={test.parts[number]} onChange={value => updatePart(number, value)}/></Suspense>
     <div className={styles.actions}><button onClick={save}>Save change</button></div>

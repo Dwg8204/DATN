@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
@@ -15,7 +15,27 @@ export default function Part4ListeningPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
-  const { part4: questions } = getListeningTestParts(testId);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getListeningTestParts(testId, controller.signal)
+      .then(data => {
+        setQuestions(data.part4.map((q, qIdx) => ({
+          ...q,
+          subQuestions: q.subQuestions.map((sq, sqIdx) => ({
+            ...sq,
+            displayLabel: 16 + (qIdx * q.subQuestions.length) + sqIdx
+          }))
+        })));
+        setLoading(false);
+      })
+      .catch(err => {
+        if (err.code !== 'ERR_CANCELED') console.error('Failed to load part 4', err);
+      });
+    return () => controller.abort();
+  }, [testId]);
 
   const [answers, setAnswers] = useState(() => {
     const allAnswers = JSON.parse(sessionStorage.getItem('listening_p4_answers') || '{}');
@@ -50,8 +70,8 @@ export default function Part4ListeningPage() {
   };
 
   const currentMainQ = questions[currentMainIdx];
-  const allQuestionIds = questions.flatMap(q => q.subQuestions.map(sq => sq.id));
-  const currentPageIds = currentMainQ.subQuestions.map(sq => sq.id);
+  const allQuestionLabels = questions.flatMap(q => q.subQuestions?.map(sq => sq.displayLabel) || []);
+  const currentPageIds = currentMainQ ? currentMainQ.subQuestions.map(sq => sq.id) : [];
 
   const handleNext = () => {
     if (currentMainIdx < questions.length - 1) {
@@ -77,61 +97,69 @@ export default function Part4ListeningPage() {
   return (
     <div className={styles.page}>
       <div className={styles.contentWrap}>
-        <div className={styles.headerBlock}>
-          <div className={styles.partTitle}>Part 4</div>
-          <div className={styles.skillTitle}>Listening Test</div>
-        </div>
+      {loading || !questions.length ? (
+        <div style={{ padding: '40px', textAlign: 'center' }}>Loading test...</div>
+      ) : (
+        <>
+          <div className={styles.headerBlock}>
+            <div className={styles.partTitle}>Part 4</div>
+            <div className={styles.skillTitle}>Listening Test</div>
+          </div>
 
-        <InstructionBlock title={`Questions ${allQuestionIds.join(', ')}`}>
-          Listen and choose the correct answer to the question.
-        </InstructionBlock>
+          <InstructionBlock title={`Questions ${allQuestionLabels.join(', ')}`}>
+            Listen and choose the correct answer to the question.
+          </InstructionBlock>
 
-        <div className={styles.mainArea}>
-          <div className={styles.questionSection}>
-            <div className={styles.questionItem}>
-                <div className={styles.multipleChoiceGroup} style={{ marginBottom: '40px' }}>
-                  <RichTextContent className={styles.questionContext} value={currentMainQ.context}/>
-                  
-                  {currentMainQ.subQuestions.map((q) => (
-                    <div key={q.id} style={{ marginBottom: '24px' }}>
-                      <div className={styles.questionHeader}>
-                        <div className={styles.questionNumberBox}>
-                          <span className={styles.questionNumber}>{q.id}</span>
+          <div className={styles.mainArea}>
+            <div className={styles.questionSection}>
+              <div className={styles.questionItem}>
+                  <div className={styles.multipleChoiceGroup} style={{ marginBottom: '40px' }}>
+                    <RichTextContent className={styles.questionContext} value={currentMainQ.context}/>
+                    
+                    {currentMainQ.subQuestions.map((q) => (
+                      <div key={q.id} style={{ marginBottom: '24px' }}>
+                        <div className={styles.questionHeader}>
+                          <div className={styles.questionNumberBox}>
+                            <span className={styles.questionNumber}>{q.displayLabel}</span>
+                          </div>
+                          <div className={styles.questionSubText}>{q.text}</div>
                         </div>
-                        <div className={styles.questionSubText}>{q.text}</div>
+                        
+                        <MultipleChoice
+                          name={`listening-question-${q.id}`}
+                          options={q.options}
+                          value={answers[q.id]}
+                          onChange={(optionIndex) => handleOptionSelect(q.id, optionIndex)}
+                        />
                       </div>
-                      
-                      <MultipleChoice
-                        name={`listening-question-${q.id}`}
-                        options={q.options}
-                        value={answers[q.id]}
-                        onChange={(optionIndex) => handleOptionSelect(q.id, optionIndex)}
-                      />
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+              </div>
+            </div>
+
+            <div className={styles.audioSection}>
+              <AudioPlayer key={currentMainQ.id} src={currentMainQ.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
             </div>
           </div>
-
-          <div className={styles.audioSection}>
-            <AudioPlayer key={currentMainQ.id} src={currentMainQ.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
-          </div>
-        </div>
+        </>
+      )}
       </div>
 
-      <TestFooter 
-        partLabel="Part 4" 
-        questions={questions.flatMap(q => q.subQuestions)}
-        answeredIds={Object.keys(answers)}
-        currentPageQuestionIds={currentPageIds}
-        onQuestionClick={handleQuestionClick}
-        onPrevClick={handlePrev}
-        onNextClick={handleNext}
-        onSubmitClick={handleSubmit}
-        submitLabel="Submit"
-        hasPrev={currentMainIdx > 0 || isFullTest}
-        hasNext={currentMainIdx < questions.length - 1}
-      />
+      {!loading && questions.length > 0 && (
+        <TestFooter 
+          partLabel="Part 4" 
+          questions={questions.flatMap(q => q.subQuestions)}
+          answeredIds={Object.keys(answers)}
+          currentPageQuestionIds={currentPageIds}
+          onQuestionClick={handleQuestionClick}
+          onPrevClick={handlePrev}
+          onNextClick={handleNext}
+          onSubmitClick={handleSubmit}
+          submitLabel="Submit"
+          hasPrev={currentMainIdx > 0 || isFullTest}
+          hasNext={currentMainIdx < questions.length - 1}
+        />
+      )}
 
       <SubmitModal 
         isOpen={showSubmitModal} 

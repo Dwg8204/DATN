@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { getAllAnswers, getTestMeta, clearListeningSession, saveListeningResult } from '../utils/listeningSessionStorage';
 import { getListeningTestParts } from '../services/listeningTestRepository';
+import { listeningTestsApi } from '../../admin/listening/services/listeningTestsApi';
 import { saveHistoryEntry, saveHistorySnapshot } from '../../../utils/historyStorage';
 import styles from './ListeningResultPage.module.css';
 
@@ -48,164 +49,111 @@ export default function ListeningResultPage() {
   const [results, setResults] = useState(null);
 
   useEffect(() => {
-    let allAnswers;
-    let timeSpent = 0;
-    const { startTime, testId } = getTestMeta();
-    const actualTestId = testIdParam || testId || '1';
-    let historySnapshot;
-    try { historySnapshot = JSON.parse(localStorage.getItem(`history_data_${historyIdParam}`))?.testSnapshot; } catch { /* Legacy history */ }
-    const testSnapshot = historySnapshot || getListeningTestParts(actualTestId);
-    const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = testSnapshot;
+    async function loadResults() {
+      let timeSpent = 0;
+      const { startTime, testId, attemptId } = getTestMeta();
+      const actualTestId = testIdParam || testId || '1';
 
-    if (historyIdParam) {
-      const stored = localStorage.getItem(`history_data_${historyIdParam}`);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        allAnswers = parsed.allAnswers;
-        timeSpent = parsed.timeSpent;
+      if (historyIdParam) {
+        // Load from local storage for past attempts
+        const stored = localStorage.getItem(`history_data_${historyIdParam}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setResults(parsed.resultData);
+        }
+        return;
       }
-    }
 
-    if (!allAnswers) {
-      allAnswers = getAllAnswers();
+      const allAnswers = getAllAnswers();
       timeSpent = startTime ? Date.now() - startTime : 0;
-    }
 
-    // Process Part 1 (13 questions)
-    // NOTE: sessionStorage JSON.parse returns string keys, but q.id is a number.
-    // We must cast to Number when looking up: allAnswers.part1[q.id] → use String(q.id) as key.
-    const p1Raw = allAnswers.part1 || allAnswers.p1Raw || {}; // e.g. { "1": 0, "2": 2, ... }
-    const part1Results = PART1_QUESTIONS.map(q => {
-      const userAnswerIdx = p1Raw[String(q.id)]; // cast to string key
-      const isSkipped = userAnswerIdx === undefined || userAnswerIdx === null;
-      const userAnswerStr = !isSkipped ? String.fromCharCode(65 + Number(userAnswerIdx)) : null;
-      const isCorrect = !isSkipped && Number(userAnswerIdx) === q.answer;
-      return { id: q.id, userAnswer: userAnswerStr, isCorrect, isSkipped };
-    });
-
-    // Process Part 2 (4 speakers -> 4 answers)
-    // answers saved as { "0": "now enjoys science", "1": "...", ... }
-    const p2Raw = allAnswers.part2 || allAnswers.p2Raw || {};
-    const part2Results = PART2_DATA.speakers.map((speaker, idx) => {
-      const userAnswer = p2Raw[String(idx)];
-      const correctAnswer = PART2_DATA.answers[idx];
-      const isSkipped = !userAnswer;
-      return { id: `14.${idx + 1}`, userAnswer: userAnswer || null, isCorrect: !isSkipped && userAnswer === correctAnswer, isSkipped };
-    });
-
-    // Process Part 3 (4 statements -> 4 answers)
-    // answers saved as { "15a": "Both", "15b": "Man", ... } — keys are already strings, OK
-    const p3Raw = allAnswers.part3 || allAnswers.p3Raw || {};
-    const part3Results = PART3_DATA.statements.map(stmt => {
-      const userAnswer = p3Raw[stmt.id];
-      const correctAnswer = PART3_DATA.answers[stmt.id];
-      const isSkipped = !userAnswer;
-      return { id: stmt.id, userAnswer: userAnswer || null, isCorrect: !isSkipped && userAnswer === correctAnswer, isSkipped };
-    });
-
-    // Process Part 4 (2 questions)
-    // answers saved as { "16": 0, "17": 1, ... }
-    const p4Raw = allAnswers.part4 || allAnswers.p4Raw || {};
-    const part4Results = PART4_QUESTIONS.flatMap(mainQ =>
-      mainQ.subQuestions.map(sq => {
-        const userAnswerIdx = p4Raw[String(sq.id)];
-        const isSkipped = userAnswerIdx === undefined || userAnswerIdx === null;
-        const userAnswerStr = !isSkipped ? String.fromCharCode(65 + Number(userAnswerIdx)) : null;
-        const isCorrect = !isSkipped && Number(userAnswerIdx) === sq.answer;
-        return { id: sq.id, userAnswer: userAnswerStr, isCorrect, isSkipped };
-      })
-    );
-
-    let allResults = [];
-    if (isFullTest) {
-      allResults = [...part1Results, ...part2Results, ...part3Results, ...part4Results];
-    } else {
-      if (partParam === '1') allResults = part1Results;
-      if (partParam === '2') allResults = part2Results;
-      if (partParam === '3') allResults = part3Results;
-      if (partParam === '4') allResults = part4Results;
-    }
-
-    const totalQuestions = allResults.length;
-    const correctCount = allResults.filter(r => r.isCorrect).length;
-    const skipCount = allResults.filter(r => r.isSkipped).length;
-    const wrongCount = totalQuestions - correctCount - skipCount;
-    const percentage = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 0;
-    const cefrLevel = getCefrLevel(percentage);
-
-    const getPartStats = (partResults) => {
-      const total = partResults.length;
-      const correct = partResults.filter(r => r.isCorrect).length;
-      return total > 0 ? Math.round((correct / total) * 100) : 0;
-    };
-
-    const partStats = {
-      'Part 1': getPartStats(part1Results),
-      'Part 2': getPartStats(part2Results),
-      'Part 3': getPartStats(part3Results),
-      'Part 4': getPartStats(part4Results),
-    };
-
-    const resultData = {
-      part1Results,
-      part2Results,
-      part3Results,
-      part4Results,
-      totalCorrect: correctCount,
-      totalWrong: wrongCount,
-      totalSkip: skipCount,
-      percentage,
-      cefrLevel,
-      timeString: formatTime(timeSpent),
-      totalQuestions,
-      partStats
-    };
-
-    setResults(resultData);
-
-    if (!historyIdParam) {
-      saveListeningResult(actualTestId, isFullTest, partParam, {
-        accuracy: percentage,
-        cefrLevel,
-        timeString: formatTime(timeSpent),
-        allAnswers: { p1Raw, p2Raw, p3Raw, p4Raw },
-      });
-
-      if (!historySaved.current) {
-        historySaved.current = true;
-        const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
-        if (!saveHistorySnapshot(newHistoryId, {
-          allAnswers: { p1Raw, p2Raw, p3Raw, p4Raw },
-          testSnapshot,
-          timeSpent: timeSpent
-        })) return;
-
-        reviewHistoryId.current = newHistoryId;
-        saveHistoryEntry({
-          id: newHistoryId,
-          skill: 'listening',
-          testId: String(actualTestId),
-          testName: `Aptis Listening Test ${actualTestId}`,
-          mode: isFullTest ? 'full' : `part${partParam}`,
-          submittedAt: new Date().toISOString(),
-          timeSpent: formatTime(timeSpent),
-          cefrLevel: cefrLevel,
-          correct: correctCount,
-          wrong: wrongCount,
-          skipped: skipCount,
-          total: totalQuestions,
-          partScores: [
-            isFullTest || partParam === '1' ? { label: 'Part 1', correct: part1Results.filter(r => r.isCorrect).length, total: part1Results.length } : null,
-            isFullTest || partParam === '2' ? { label: 'Part 2', correct: part2Results.filter(r => r.isCorrect).length, total: part2Results.length } : null,
-            isFullTest || partParam === '3' ? { label: 'Part 3', correct: part3Results.filter(r => r.isCorrect).length, total: part3Results.length } : null,
-            isFullTest || partParam === '4' ? { label: 'Part 4', correct: part4Results.filter(r => r.isCorrect).length, total: part4Results.length } : null,
-          ],
-          reviewUrl: `/listening/result?testId=${actualTestId}&isFull=${isFullTest}${partParam ? `&part=${partParam}` : ''}&historyId=${newHistoryId}`
+      try {
+        const response = await listeningTestsApi.submitAttempt(actualTestId, attemptId, {
+          attemptId,
+          answers: allAnswers,
+          timeSpentMs: timeSpent
         });
+
+        const percentage = response.maxScore > 0 ? Math.round((response.score / response.maxScore) * 100) : 0;
+        
+        const getPartStats = (partResults) => {
+          if (!partResults || partResults.length === 0) return 0;
+          const total = partResults.length;
+          const correct = partResults.filter(r => r.isCorrect).length;
+          return total > 0 ? Math.round((correct / total) * 100) : 0;
+        };
+
+        const resultData = {
+          part1Results: response.partBreakdown.part1 || [],
+          part2Results: response.partBreakdown.part2 || [],
+          part3Results: response.partBreakdown.part3 || [],
+          part4Results: response.partBreakdown.part4 || [],
+          totalCorrect: response.totalCorrect,
+          totalWrong: response.totalWrong,
+          totalSkip: response.totalSkip,
+          percentage,
+          cefrLevel: response.estimatedCefr,
+          timeString: formatTime(timeSpent),
+          totalQuestions: response.totalCorrect + response.totalWrong + response.totalSkip,
+          partStats: {
+            'Part 1': getPartStats(response.partBreakdown.part1),
+            'Part 2': getPartStats(response.partBreakdown.part2),
+            'Part 3': getPartStats(response.partBreakdown.part3),
+            'Part 4': getPartStats(response.partBreakdown.part4),
+          }
+        };
+
+        setResults(resultData);
+        
+        // Save to local storage for detail view
+        saveListeningResult(actualTestId, isFullTest, partParam, {
+          accuracy: percentage,
+          cefrLevel: response.estimatedCefr,
+          timeString: formatTime(timeSpent),
+          allAnswers,
+          resultData
+        });
+
+        if (!historySaved.current) {
+          historySaved.current = true;
+          const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+          if (!saveHistorySnapshot(newHistoryId, {
+            allAnswers,
+            resultData,
+            timeSpent
+          })) return;
+
+          reviewHistoryId.current = newHistoryId;
+          const totalQ = resultData.totalQuestions;
+          saveHistoryEntry({
+            id: newHistoryId,
+            skill: 'listening',
+            testId: String(actualTestId),
+            testName: `Aptis Listening Test ${actualTestId}`,
+            mode: isFullTest ? 'full' : `part${partParam}`,
+            submittedAt: new Date().toISOString(),
+            timeSpent: formatTime(timeSpent),
+            cefrLevel: response.estimatedCefr,
+            correct: response.totalCorrect,
+            wrong: response.totalWrong,
+            skipped: response.totalSkip,
+            total: totalQ,
+            partScores: [
+              resultData.part1Results.length > 0 ? { label: 'Part 1', correct: resultData.part1Results.filter(r => r.isCorrect).length, total: resultData.part1Results.length } : null,
+              resultData.part2Results.length > 0 ? { label: 'Part 2', correct: resultData.part2Results.filter(r => r.isCorrect).length, total: resultData.part2Results.length } : null,
+              resultData.part3Results.length > 0 ? { label: 'Part 3', correct: resultData.part3Results.filter(r => r.isCorrect).length, total: resultData.part3Results.length } : null,
+              resultData.part4Results.length > 0 ? { label: 'Part 4', correct: resultData.part4Results.filter(r => r.isCorrect).length, total: resultData.part4Results.length } : null,
+            ],
+            reviewUrl: `/listening/result?testId=${actualTestId}&isFull=${isFullTest}${partParam ? `&part=${partParam}` : ''}&historyId=${newHistoryId}`
+          });
+        }
+      } catch (err) {
+        console.error('Submit failed', err);
       }
     }
-
+    
+    loadResults();
   }, [isFullTest, partParam, historyIdParam, testIdParam]);
 
   if (!results) return null;

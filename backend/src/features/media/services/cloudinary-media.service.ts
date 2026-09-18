@@ -58,6 +58,39 @@ export class CloudinaryMediaService {
     };
   }
 
+  async uploadAudio(file?: Express.Multer.File) {
+    if (!this.enabled) {
+      throw new ApplicationError(
+        'CLOUDINARY_NOT_CONFIGURED',
+        'Audio uploads are not configured. Add the Cloudinary settings to the backend environment.',
+        503,
+      );
+    }
+    if (!file?.buffer?.length) throw new ApplicationError('AUDIO_REQUIRED', 'Choose an audio file to upload.', 400);
+    if (!['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/webm', 'audio/mp4', 'audio/aac'].includes(file.mimetype)) {
+      throw new ApplicationError('INVALID_AUDIO', 'Only valid MP3, WAV, OGG, WEBM or AAC audio files are supported.', 415);
+    }
+
+    const result = await new Promise<UploadApiResponse>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream({
+        folder: this.folder,
+        resource_type: 'auto',
+        unique_filename: true,
+        overwrite: false,
+      }, (error, response) => error || !response ? reject(error ?? new Error('Cloudinary returned no result.')) : resolve(response));
+      stream.end(file.buffer);
+    }).catch(() => {
+      throw new ApplicationError('AUDIO_UPLOAD_FAILED', 'The audio could not be uploaded. Please try again.', 502);
+    });
+
+    return {
+      url: result.secure_url,
+      bytes: result.bytes,
+      format: result.format,
+      duration: result.duration,
+    };
+  }
+
   private hasValidSignature(buffer: Buffer, type: string): boolean {
     if (type === 'image/jpeg') return buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff;
     if (type === 'image/png') return buffer.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
