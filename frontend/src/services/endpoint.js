@@ -10,6 +10,10 @@ export const API_ENDPOINTS = {
     resetPassword: '/auth/forgot-password/reset',
     changePassword: '/auth/change-password',
   },
+  profile: {
+    me: '/profile/me',
+    avatar: '/profile/me/avatar',
+  },
   adminUsers: {
     list: '/admin/users',
     detail: (id) => `/admin/users/${id}`,

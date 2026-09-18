@@ -147,8 +147,8 @@ export default function Header() {
                 }
               }}
             >
-              <img src={user?.avatar || 'https://placehold.co/32x32'} alt="User" className={styles.userAvatar} />
-              <span className={styles.userName}>{user?.name}</span>
+              <img src={user?.avatar?.url || user?.avatar || 'https://placehold.co/32x32'} alt="User" className={styles.userAvatar} />
+              <span className={styles.userName}>{user?.fullName || user?.name || [user?.firstName, user?.lastName].filter(Boolean).join(' ')}</span>
               <ChevronDown className={styles.navIcon} aria-hidden="true" />
             </div>
             {isUserMenuOpen && window.innerWidth > 700 && (
