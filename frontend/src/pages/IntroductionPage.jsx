@@ -1,7 +1,9 @@
+import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
 import { startGrammarVocabSession } from '../features/grammar_vocab/utils/grammarVocabSessionStorage';
 import { startListeningSession } from '../features/module-listening/utils/listeningSessionStorage';
+import { listeningTestsApi } from '../features/admin/listening/services/listeningTestsApi';
 import { startReadingSession } from '../features/module-reading/utils/readingSessionStorage';
 import { startWritingSession } from '../features/writing/utils/writingSessionStorage';
 
@@ -101,10 +103,15 @@ export default function IntroductionPage({
   const finalInstructions = instructions || config.instructions;
   const finalInformation = information || config.information;
 
-  const handleStartTest = () => {
-    if (onStartTest) {
-      onStartTest();
-    } else if (skill) {
+  const [isStarting, setIsStarting] = React.useState(false);
+
+  const handleStartTest = async () => {
+    if (isStarting) return;
+    try {
+      setIsStarting(true);
+      if (onStartTest) {
+        onStartTest();
+      } else if (skill) {
       const testId = searchParams.get('testId') || '1';
 
       if (skill === 'grammar-vocab') {
@@ -115,7 +122,8 @@ export default function IntroductionPage({
           navigate(`/${skill}/test/${mode}${testId ? `?testId=${testId}` : ''}`);
         }
       } else if (skill === 'listening') {
-        startListeningSession(testId, mode, { force: true });
+        const { attemptId } = await listeningTestsApi.startAttempt(testId, mode);
+        startListeningSession(testId, attemptId, mode, { force: true });
         if (mode === 'full') {
           navigate(`/${skill}/test/part1${testId ? `?testId=${testId}&isFull=true` : '?isFull=true'}`);
         } else {
@@ -132,6 +140,12 @@ export default function IntroductionPage({
         const firstPart = mode === 'full' ? 'part1' : mode;
         navigate(`/speaking/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
       }
+      }
+    } catch (e) {
+      console.error('Failed to start test', e);
+      alert('Error starting test: ' + (e?.response?.data?.error?.message || e?.message || 'Unknown error'));
+    } finally {
+      setIsStarting(false);
     }
   };
 
@@ -177,8 +191,8 @@ export default function IntroductionPage({
         {/* Action */}
         <div className={styles.actionBlock}>
           <span className={styles.warning}>{warningText}</span>
-          <button className={styles.startBtn} onClick={handleStartTest}>
-            <span className={styles.startBtnText}>{startButtonText}</span>
+          <button className={styles.startBtn} onClick={handleStartTest} disabled={isStarting}>
+            <span className={styles.startBtnText}>{isStarting ? 'Starting...' : startButtonText}</span>
           </button>
         </div>
       </div>

@@ -56,7 +56,7 @@ export default function TestFooter({
                 `}
                 onClick={() => onQuestionClick && onQuestionClick(q.id)}
               >
-                <span className={styles.questionNodeText}>{q.id}</span>
+                <span className={styles.questionNodeText}>{q.displayLabel || q.id}</span>
               </div>
             );
           })}

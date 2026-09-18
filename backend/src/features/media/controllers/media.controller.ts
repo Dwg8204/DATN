@@ -22,4 +22,12 @@ export class MediaController {
   uploadTestCover(@UploadedFile() file?: Express.Multer.File) {
     return this.media.uploadTestCover(file);
   }
+
+  @Post('audio')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('file', { limits: { files: 1, fileSize: 20 * 1024 * 1024 } }))
+  uploadAudio(@UploadedFile() file?: Express.Multer.File) {
+    return this.media.uploadAudio(file);
+  }
 }

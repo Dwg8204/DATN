@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
 import { getCompletedListeningTests } from '../utils/listeningSessionStorage';
 import styles from './ListeningTestListPage.module.css';
-import { getAdminListeningList } from '../services/listeningTestRepository';
+import { listeningTestsApi } from '../../admin/listening/services/listeningTestsApi';
 
 const TABS = [
   { id: 'part1', label: 'Part 1' },
@@ -14,43 +14,7 @@ const TABS = [
   { id: 'full', label: 'Full test' },
 ];
 
-const MOCK_TESTS = [
-  {
-    id: 1,
-    title: 'Booking a Flight',
-    desc: 'Information recognition\nAptis Practice Tests',
-    part: 'Part 1',
-    tabId: 'part1',
-  },
-  {
-    id: 2,
-    title: 'People talking about their holidays',
-    desc: 'Information matching\nActual Tests',
-    part: 'Part 2',
-    tabId: 'part2',
-  },
-  {
-    id: 3,
-    title: 'A couple planning a weekend trip',
-    desc: 'Inference/discussion\nTrainer & Practice Tests+',
-    part: 'Part 3',
-    tabId: 'part3',
-  },
-  {
-    id: 4,
-    title: 'A lecture on climate change',
-    desc: 'Identifying opinions\nForecast Quarter 1/2026',
-    part: 'Part 4',
-    tabId: 'part4',
-  },
-  {
-    id: 5,
-    title: 'Full Listening Test - Practice Set 1',
-    desc: 'Complete Listening Test\nAll 4 Parts (17 questions)',
-    part: 'Full Listening Test',
-    tabId: 'full',
-  }
-];
+
 
 export default function ListeningTestListPage() {
   const navigate = useNavigate();
@@ -60,15 +24,30 @@ export default function ListeningTestListPage() {
   const [query, setQuery] = useState('');
   useEffect(() => setPage(1), [activeTab, query]);
   const [completedTests, setCompletedTests] = useState({});
-  const [adminTests, setAdminTests] = useState(getAdminListeningList);
+  const [adminTests, setAdminTests] = useState([]);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     setCompletedTests(getCompletedListeningTests());
-    const refresh = () => setAdminTests(getAdminListeningList());
-    window.addEventListener('listening-tests-updated', refresh);
-    window.addEventListener('storage', refresh);
-    return () => { window.removeEventListener('listening-tests-updated', refresh); window.removeEventListener('storage', refresh); };
-  }, []);
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      listeningTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
+        .then(result => {
+          setAdminTests(result.data.map(test => ({
+            id: test.id, title: test.title, desc: 'Listening practice test',
+            part: test.mode === 'full' ? 'Full Listening Test' : test.mode.replace('part', 'Part '),
+            tabId: test.mode, thumbnail: test.pictureUrl || 'https://placehold.co/157x79?text=Listening',
+            status: 'Not Started'
+          })));
+          setTotalItems(result.pagination.totalItems);
+        })
+        .catch(err => {
+          if (err.code !== 'ERR_CANCELED') console.error(err);
+        });
+    }, query ? 300 : 0);
+    
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [activeTab, query, page, pageSize]);
 
   const handleDoTestPart = (testId, partNum) => {
     navigate(`/listening/introduction?testId=${testId}&mode=part${partNum}`);
@@ -84,7 +63,7 @@ export default function ListeningTestListPage() {
     navigate(`/listening/detail-result?testId=${test.id}&isFull=${isFull}${!isFull ? `&part=${partNum}` : ''}`);
   };
 
-  const filteredTests = [...adminTests, ...MOCK_TESTS].filter(test => test.tabId === activeTab && test.title.toLowerCase().includes(query.trim().toLowerCase()));
+  const filteredTests = adminTests;
 
   const testsToRender = filteredTests.map(test => {
     const comp = completedTests[test.id];
@@ -154,7 +133,7 @@ export default function ListeningTestListPage() {
                   No tests available for this part yet.
                 </div>
               ) : (
-                testsToRender.slice((page - 1) * pageSize, page * pageSize).map((test) => (
+                testsToRender.map((test) => (
                   <div key={test.id} className={styles.testCard}>
                     <div className={styles.cardTop}>
                       <div className={styles.cardTitle}>{test.title}</div>
@@ -227,7 +206,7 @@ export default function ListeningTestListPage() {
             </div>
           </div>
 
-          <Pagination page={page} totalItems={filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          <Pagination page={page} totalItems={totalItems} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper} style={{ marginTop: '32px' }}>
             <CommentSection />
           </div>

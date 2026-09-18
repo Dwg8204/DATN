@@ -29,6 +29,11 @@ export const API_ENDPOINTS = {
     detail: (id) => `/admin/writing-tests/${id}`,
     publish: (id) => `/admin/writing-tests/${id}/publish`,
   },
+  adminListeningTests: {
+    list: '/admin/listening-tests',
+    detail: (id) => `/admin/listening-tests/${id}`,
+    publish: (id) => `/admin/listening-tests/${id}/publish`,
+  },
   grammarTests: {
     list: '/grammar-tests',
     detail: (id) => `/grammar-tests/${id}`,
@@ -37,8 +42,15 @@ export const API_ENDPOINTS = {
     list: '/writing-tests',
     detail: (id) => `/writing-tests/${id}`,
   },
+  listeningTests: {
+    list: '/listening-tests',
+    detail: (id) => `/listening-tests/${id}`,
+    startAttempt: (id) => `/listening-tests/${id}/attempts`,
+    submitAttempt: (id, attemptId) => `/listening-tests/${id}/attempts/${attemptId}/submit`,
+  },
   adminMedia: {
     testCovers: '/admin/media/test-covers',
+    audio: '/admin/media/audio',
   },
   practiceExam: {
     list: '/practice-exams',
