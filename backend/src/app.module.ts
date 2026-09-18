@@ -11,6 +11,7 @@ import { AppController } from './app.controller';
 import { UsersModule } from './features/users/users.module';
 import { GrammarTestsModule } from './features/grammar-tests/grammar-tests.module';
 import { MediaModule } from './features/media/media.module';
+import { WritingTestsModule } from './features/writing-tests/writing-tests.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { MediaModule } from './features/media/media.module';
     UsersModule,
     GrammarTestsModule,
     MediaModule,
+    WritingTestsModule,
     HealthModule,
   ],
   controllers: [AppController],

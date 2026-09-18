@@ -6,7 +6,6 @@ import StatusBadge from '../components/StatusBadge';
 import { AdminConfirmDialog, AdminToast } from '../components/AdminFeedback';
 import AdminBreadcrumb from '../components/AdminBreadcrumb';
 import { ADMIN_TESTS } from '../data/adminMockData';
-import { deleteStoredWritingTest, getStoredWritingTests } from '../writing/data/writingTestStorage';
 import { deleteStoredReadingTest, getStoredReadingTests } from '../reading/data/readingTestStorage';
 import { deleteStoredListeningTest, getStoredListeningTests } from '../listening/data/listeningTestStorage';
 import { deleteStoredSpeakingTest, getStoredSpeakingTests } from '../speaking/data/speakingTestStorage';
@@ -16,6 +15,8 @@ import './TestManagerResponsive.css';
 import useAdminGrammarTests from '../grammar/hooks/useAdminGrammarTests';
 import { grammarTestsApi } from '../grammar/services/grammarTestsApi';
 import { getApiError } from '../../../services/apiError';
+import useAdminWritingTests from '../writing/hooks/useAdminWritingTests';
+import { writingTestsApi } from '../writing/services/writingTestsApi';
 
 const writingSections = ['Part 1', 'Part 2', 'Part 3', 'Part 4', 'Full Test'];
 const grammarSections = ['Part 1', 'Part 2', 'Full Test'];
@@ -36,7 +37,6 @@ function useMobileManager() {
 export default function TestManagerPage() {
   const navigate = useNavigate();
   const isMobile = useMobileManager();
-  const [storedTests, setStoredTests] = useState(() => getStoredWritingTests());
   const [storedReadingTests, setStoredReadingTests] = useState(getStoredReadingTests);
   const [storedListeningTests, setStoredListeningTests] = useState(getStoredListeningTests);
   const [storedSpeakingTests, setStoredSpeakingTests] = useState(getStoredSpeakingTests);
@@ -48,14 +48,7 @@ export default function TestManagerPage() {
   const [confirmTest, setConfirmTest] = useState(null);
   const [toast, setToast] = useState(null);
 
-  useEffect(() => {
-    const refresh = () => setStoredTests(getStoredWritingTests());
-    window.addEventListener('writing-tests-updated', refresh);
-    window.addEventListener('storage', refresh);
-    return () => { window.removeEventListener('writing-tests-updated', refresh); window.removeEventListener('storage', refresh); };
-  }, []);
-
-  const tests = useMemo(() => [...storedTests, ...storedReadingTests, ...storedListeningTests, ...storedSpeakingTests, ...ADMIN_TESTS.filter(test => test.component !== 'Grammar & Vocab')], [storedTests, storedReadingTests, storedListeningTests, storedSpeakingTests]);
+  const tests = useMemo(() => [...storedReadingTests, ...storedListeningTests, ...storedSpeakingTests, ...ADMIN_TESTS.filter(test => test.component !== 'Grammar & Vocab')], [storedReadingTests, storedListeningTests, storedSpeakingTests]);
   const filtered = useMemo(() => filterTests(tests, filters), [tests, filters]);
   const [pageSize, setPageSize] = useState(() => isMobile ? 5 : 10);
   const pagination = paginate(filtered, page, pageSize);
@@ -64,9 +57,15 @@ export default function TestManagerPage() {
     enabled: filters.component === 'Grammar & Vocab', search: filters.query, mode: grammarMode,
     status: filters.status === 'All' ? undefined : filters.status.toUpperCase(), page, pageSize,
   });
+  const writingMode = filters.section === 'Full Test' ? 'full' : `part${filters.section.match(/\d/)?.[0] || '1'}`;
+  const writing = useAdminWritingTests({
+    enabled: filters.component === 'Writing', search: filters.query, mode: writingMode,
+    status: filters.status === 'All' ? undefined : filters.status.toUpperCase(), page, pageSize,
+  });
   const grammarActive = filters.component === 'Grammar & Vocab';
-  const visibleTests = grammarActive ? grammar.data : pagination.items;
-  const totalItems = grammarActive ? grammar.pagination.totalItems : filtered.length;
+  const writingActive = filters.component === 'Writing';
+  const visibleTests = grammarActive ? grammar.data : writingActive ? writing.data : pagination.items;
+  const totalItems = grammarActive ? grammar.pagination.totalItems : writingActive ? writing.pagination.totalItems : filtered.length;
   const sections = filters.component === 'Grammar & Vocab' ? grammarSections : ['Reading','Listening','Speaking'].includes(filters.component) ? ['Part 1','Part 2','Part 3','Part 4','Full Test'] : writingSections;
   const setFilter = (name, value) => { setFilters((current) => ({ ...current, [name]: value, ...(name === 'component' ? { section: 'Full Test' } : {}) })); setPage(1); };
   const addTest = () => navigate(`/admin/tests/new/${filters.component === 'Reading' ? 'reading' : filters.component === 'Listening' ? 'listening' : filters.component === 'Speaking' ? 'speaking' : filters.component === 'Grammar & Vocab' ? 'grammar' : 'writing'}?mode=${filters.section==='All'?'full':sectionToMode(filters.section)}`);
@@ -88,21 +87,35 @@ export default function TestManagerPage() {
         return;
       }
     }
-    else { deleteStoredWritingTest(confirmTest.id); setStoredTests(getStoredWritingTests()); }
+    else if (confirmTest.component === 'Writing') {
+      try {
+        await writingTestsApi.archive(confirmTest.id);
+        setToast({ type: 'success', message: `“${confirmTest.name}” was archived successfully.` });
+        setConfirmTest(null);
+        if (visibleTests.length === 1 && page > 1) setPage(current => current - 1); else writing.reload();
+        return;
+      } catch (error) {
+        setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') });
+        setConfirmTest(null);
+        return;
+      }
+    }
+    else { setToast({ type: 'error', message: 'This test cannot be deleted from the current view.' }); setConfirmTest(null); return; }
     setToast({ type: 'success', message: `“${confirmTest.name}” was deleted successfully.` });
     setConfirmTest(null);
   };
   const testBase = (test) => `/admin/tests/${test.component === 'Reading' ? 'reading' : test.component === 'Listening' ? 'listening' : test.component === 'Speaking' ? 'speaking' : test.component === 'Grammar & Vocab' ? 'grammar' : 'writing'}/${test.id}`;
-  const actions = (test) => (test.details || test.canEdit) ? <div className="mobileTestActions">
-    <button title="Preview" aria-label={`Preview ${test.name}`} onClick={() => navigate(`${testBase(test)}/preview`)}><Eye /></button>
-    <button title="Edit" aria-label={`Edit ${test.name}`} onClick={() => navigate(`${testBase(test)}/edit`)}><Edit3 /></button>
-    <button title="Delete" className="deleteAction" aria-label={`Delete ${test.name}`} onClick={() => setConfirmTest(test)}><Trash2 /></button>
+  const actions = (test) => (test.details || test.canEdit || test.canDelete) ? <div className="mobileTestActions">
+    {test.details && <button title="Preview" aria-label={`Preview ${test.name}`} onClick={() => navigate(`${testBase(test)}/preview`)}><Eye /></button>}
+    {test.canEdit !== false && <button title="Edit" aria-label={`Edit ${test.name}`} onClick={() => navigate(`${testBase(test)}/edit`)}><Edit3 /></button>}
+    {test.canDelete !== false && <button title={test.component === 'Writing' || test.component === 'Grammar & Vocab' ? 'Archive' : 'Delete'} className="deleteAction" aria-label={`Delete ${test.name}`} onClick={() => setConfirmTest(test)}><Trash2 /></button>}
   </div> : null;
-  const currentPage = grammarActive ? grammar.pagination.page : pagination.page;
+  const currentPage = grammarActive ? grammar.pagination.page : writingActive ? writing.pagination.page : pagination.page;
   const from = totalItems ? (currentPage - 1) * pageSize + 1 : 0;
   const to = Math.min(currentPage * pageSize, totalItems);
 
-  return <div className={styles.page}><AdminToast message={toast?.message} type={toast?.type} onClose={() => setToast(null)}/><AdminConfirmDialog open={Boolean(confirmTest)} title={`${confirmTest?.component === 'Grammar & Vocab' ? 'Archive' : 'Delete'} ${confirmTest?.component || ''} test?`} message={confirmTest ? confirmTest.component === 'Grammar & Vocab' ? `“${confirmTest.name}” will be hidden from learners while its existing attempt history is retained.` : `“${confirmTest.name}” will be permanently removed from this browser. This action cannot be undone.` : ''} onCancel={() => setConfirmTest(null)} onConfirm={remove}/>
+  const archiveSelected = ['Grammar & Vocab', 'Writing'].includes(confirmTest?.component);
+  return <div className={styles.page}><AdminToast message={toast?.message} type={toast?.type} onClose={() => setToast(null)}/><AdminConfirmDialog open={Boolean(confirmTest)} title={`${archiveSelected ? 'Archive' : 'Delete'} ${confirmTest?.component || ''} test?`} message={confirmTest ? archiveSelected ? `“${confirmTest.name}” will be hidden from learners while its existing attempt history is retained.` : `“${confirmTest.name}” will be permanently removed from this browser. This action cannot be undone.` : ''} onCancel={() => setConfirmTest(null)} onConfirm={remove}/>
     <AdminBreadcrumb />
     <nav className={styles.components}>{components.map((component) => <button className={filters.component === component ? styles.activeComponent : ''} onClick={() => setFilter('component', component)} key={component}>{component}</button>)}</nav>
     <section className={styles.card}>
@@ -114,7 +127,9 @@ export default function TestManagerPage() {
       <div className="mobileTestList">{visibleTests.map((test) => <article className="mobileTestCard" key={test.id}><header><div><small>{test.section}</small><h3>{test.name}</h3></div><StatusBadge status={test.status} /></header><dl><div><dt>Date added</dt><dd>{formatAdminDate(test.dateAdded)}</dd></div><div><dt>Attempts</dt><dd>{test.attempts}</dd></div><div><dt>Type</dt><dd>{test.questionType}</dd></div></dl>{actions(test)}</article>)}</div>
       {grammarActive && grammar.loading && <p className="mobileEmptyTests">Loading tests…</p>}
       {grammarActive && grammar.error && <p className="mobileEmptyTests">{grammar.error}</p>}
-      {!grammar.loading && !visibleTests.length && <p className="mobileEmptyTests">No tests found.</p>}
+      {writingActive && writing.loading && <p className="mobileEmptyTests">Loading tests…</p>}
+      {writingActive && writing.error && <p className="mobileEmptyTests">{writing.error}</p>}
+      {!grammar.loading && !writing.loading && !visibleTests.length && <p className="mobileEmptyTests">No tests found.</p>}
       <Pagination page={page} totalItems={totalItems} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
     </section>
   </div>;

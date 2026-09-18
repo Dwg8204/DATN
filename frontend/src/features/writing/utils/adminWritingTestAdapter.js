@@ -1,17 +1,4 @@
-import { getStoredWritingTest, getStoredWritingTests } from '../../admin/writing/data/writingTestStorage';
-
-export function getAdminWritingListItems() {
-  return getStoredWritingTests().map((test) => ({
-    id: test.id,
-    title: test.details.title,
-    desc: `${test.mode === 'full' ? 'Complete all four Aptis Writing tasks' : `Aptis Writing ${test.mode.replace('part', 'Part ')} practice`}\n${test.details.source}`,
-    part: test.mode === 'full' ? 'Full Test' : test.mode.replace('part', 'Part '),
-    tabId: test.mode,
-    status: 'Not Started',
-    pictureUrl: test.details.pictureUrl,
-    isAdminTest: true,
-  }));
-}
+import { getStoredWritingTest } from '../../admin/writing/data/writingTestStorage';
 
 export function getAdminWritingTask(testId, part) {
   const test = getStoredWritingTest(testId);
