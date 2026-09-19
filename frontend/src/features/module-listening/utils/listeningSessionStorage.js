@@ -4,6 +4,7 @@ const KEYS = {
   part3: 'listening_p3_answers',
   part4: 'listening_p4_answers',
   testId: 'listening_testId',
+  attemptId: 'listening_attemptId',
   startTime: 'listening_startTime',
 };
 
@@ -25,7 +26,7 @@ export function saveTestMeta(testId) {
   sessionStorage.setItem(KEYS.startTime, Date.now().toString());
 }
 
-export function startListeningSession(testId, mode, { force = false } = {}) {
+export function startListeningSession(testId, attemptId, mode, { force = false } = {}) {
   const currentTestId = sessionStorage.getItem(KEYS.testId);
   const currentMode = sessionStorage.getItem('listening_mode');
   const hasStartTime = sessionStorage.getItem(KEYS.startTime);
@@ -33,6 +34,7 @@ export function startListeningSession(testId, mode, { force = false } = {}) {
   if (force || currentTestId !== String(testId) || currentMode !== mode || !hasStartTime) {
     clearListeningSession();
     sessionStorage.setItem(KEYS.testId, String(testId));
+    sessionStorage.setItem(KEYS.attemptId, String(attemptId));
     sessionStorage.setItem('listening_mode', mode);
     sessionStorage.setItem(KEYS.startTime, Date.now().toString());
   }
@@ -41,6 +43,7 @@ export function startListeningSession(testId, mode, { force = false } = {}) {
 export function getTestMeta() {
   return {
     testId: sessionStorage.getItem(KEYS.testId),
+    attemptId: sessionStorage.getItem(KEYS.attemptId),
     startTime: parseInt(sessionStorage.getItem(KEYS.startTime) || '0'),
   };
 }

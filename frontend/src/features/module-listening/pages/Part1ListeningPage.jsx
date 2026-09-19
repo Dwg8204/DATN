@@ -14,7 +14,24 @@ export default function Part1ListeningPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
-  const { part1: questions } = getListeningTestParts(testId);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getListeningTestParts(testId, controller.signal)
+      .then(data => {
+        setQuestions(data.part1.map((q, idx) => ({ ...q, displayLabel: idx + 1 })));
+        setLoading(false);
+      })
+      .catch(err => {
+        if (err.code !== 'ERR_CANCELED') {
+          console.error('Failed to load part 1', err);
+          setLoading(false);
+        }
+      });
+    return () => controller.abort();
+  }, [testId]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState(() => {
@@ -73,55 +90,66 @@ export default function Part1ListeningPage() {
   return (
     <div className={styles.page}>
       <div className={styles.contentWrap}>
-        <div className={styles.headerBlock}>
-          <div className={styles.partTitle}>Part 1</div>
-          <div className={styles.skillTitle}>Listening Test</div>
-        </div>
+      {loading ? (
+        <div style={{ padding: '40px', textAlign: 'center' }}>Loading test...</div>
+      ) : (
+        <>
+          <div className={styles.headerBlock}>
+            <div className={styles.partTitle}>Part 1</div>
+            <div className={styles.skillTitle}>Listening Test</div>
+          </div>
 
-        <InstructionBlock title={`Question ${startIndex + 1} of ${questions.length}`}>
-          Listen to the recording and choose the correct answer (A, B or C) for each question.
-        </InstructionBlock>
+          <InstructionBlock title={`Question ${startIndex + 1} of ${questions.length}`}>
+            Listen to the recording and choose the correct answer (A, B or C) for each question.
+          </InstructionBlock>
 
-        <div className={styles.mainArea}>
-          <div className={styles.questionSection}>
-            {currentQuestions.map(q => (
-              <div key={q.id} className={styles.questionItem}>
-                <div className={styles.questionHeader}>
-                  <div className={styles.questionNumberBox}>
-                    <span className={styles.questionNumber}>{q.id}</span>
+          <div className={styles.mainArea}>
+            <div className={styles.questionSection}>
+              {currentQuestions.map((q, idx) => (
+                <div key={q.id} className={styles.questionItem}>
+                  <div className={styles.questionHeader}>
+                    <div className={styles.questionNumberBox}>
+                      <span className={styles.questionNumber}>{startIndex + idx + 1}</span>
+                    </div>
+                    <div className={styles.questionText}>{q.text}</div>
                   </div>
-                  <div className={styles.questionText}>{q.text}</div>
+                  <MultipleChoice
+                    name={`listening-question-${q.id}`}
+                    options={q.options}
+                    value={answers[q.id]}
+                    onChange={(optionIndex) => handleOptionSelect(q.id, optionIndex)}
+                  />
                 </div>
-                <MultipleChoice
-                  name={`listening-question-${q.id}`}
-                  options={q.options}
-                  value={answers[q.id]}
-                  onChange={(optionIndex) => handleOptionSelect(q.id, optionIndex)}
-                />
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          {/* Right Column: Audio Player */}
-          <div className={styles.audioSection}>
-            <AudioPlayer key={currentQuestions[0]?.id} src={currentQuestions[0]?.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
+            {/* Right Column: Audio Player */}
+            <div className={styles.audioSection}>
+              <AudioPlayer key={currentQuestions[0]?.id} src={currentQuestions[0]?.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
+            </div>
           </div>
-        </div>
+        </>
+      )}
       </div>
 
-      <TestFooter
-        partLabel="Part 1"
-        questions={questions}
-        answeredIds={Object.keys(answers)}
-        currentPageQuestionIds={currentPageQuestionIds}
-        onQuestionClick={(qId) => setCurrentPage(qId)}
-        onPrevClick={handlePrev}
-        onNextClick={handleNext}
-        onSubmitClick={handleSubmit}
-        submitLabel={submitLabel}
-        hasPrev={currentPage > 1}
-        hasNext={currentPage < totalPages}
-      />
+      {!loading && (
+        <TestFooter
+          partLabel="Part 1"
+          questions={questions}
+          answeredIds={Object.keys(answers)}
+          currentPageQuestionIds={currentPageQuestionIds}
+          onQuestionClick={(qId) => {
+            const idx = questions.findIndex(q => q.id === qId);
+            if (idx !== -1) setCurrentPage(Math.floor(idx / itemsPerPage) + 1);
+          }}
+          onPrevClick={handlePrev}
+          onNextClick={handleNext}
+          onSubmitClick={handleSubmit}
+          submitLabel={submitLabel}
+          hasPrev={currentPage > 1}
+          hasNext={currentPage < totalPages}
+        />
+      )}
 
       <SubmitModal
         isOpen={showSubmitModal}

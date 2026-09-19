@@ -41,5 +41,7 @@ export default () => ({
     apiKey: process.env.CLOUDINARY_API_KEY,
     apiSecret: process.env.CLOUDINARY_API_SECRET,
     folder: process.env.CLOUDINARY_FOLDER ?? 'aptimate/test-covers',
+    avatarFolder: process.env.CLOUDINARY_AVATAR_FOLDER ?? 'aptimate/avatars',
+    maxFileSizeBytes: Number(process.env.UPLOAD_MAX_FILE_SIZE_BYTES ?? 5_242_880),
   },
 });

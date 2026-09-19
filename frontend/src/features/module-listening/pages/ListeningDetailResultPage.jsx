@@ -2,8 +2,9 @@ import AnswerExplanation from '../../../components/common/AnswerExplanation';
 import React, { useState, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
-import { getAllAnswers } from '../utils/listeningSessionStorage';
+import { getAllAnswers, getListeningResult } from '../utils/listeningSessionStorage';
 import { getListeningTestParts } from '../services/listeningTestRepository';
+import { listeningTestsApi } from '../../admin/listening/services/listeningTestsApi';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import styles from './ListeningDetailResultPage.module.css';
 import RichTextContent from '../../../components/common/RichTextContent';
@@ -25,13 +26,75 @@ export default function ListeningDetailResultPage() {
   const initialPart = parseInt(searchParams.get('part'), 10) || 1;
   const isFullTest = searchParams.get('isFull') === 'true';
   const historyId = searchParams.get('historyId');
-  const history = useMemo(() => { try { return JSON.parse(localStorage.getItem(`history_data_${historyId}`)); } catch { return null; } }, [historyId]);
-  const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = useMemo(() => history?.testSnapshot || getListeningTestParts(testId), [testId, history]);
-
+  const history = useMemo(() => { 
+    try { 
+      if (historyId) {
+        const stored = localStorage.getItem(`history_data_${historyId}`);
+        if (stored) return JSON.parse(stored);
+      }
+      // Fallback to local storage if historyId is missing or not found
+      const fallbackResult = getListeningResult(testId);
+      if (fallbackResult) return fallbackResult;
+      
+      // Fallback to session storage for edge cases
+      const sessionResult = JSON.parse(sessionStorage.getItem(`listening_result_${testId}_${isFullTest ? 'full' : 'part' + initialPart}`));
+      if (sessionResult) return sessionResult;
+      return null;
+    } catch { 
+      return null; 
+    } 
+  }, [historyId, testId, isFullTest, initialPart]);
   const [activePart, setActivePart] = useState(initialPart);
   const [currentPage, setCurrentPage] = useState(1);
+  const [testSnapshot, setTestSnapshot] = useState(history?.testSnapshot || null);
+  const [loading, setLoading] = useState(!history?.testSnapshot);
 
-  const allAnswers = useMemo(() => history?.allAnswers ? { part1: history.allAnswers.p1Raw, part2: history.allAnswers.p2Raw, part3: history.allAnswers.p3Raw, part4: history.allAnswers.p4Raw } : getAllAnswers() || {}, [history]);
+  React.useEffect(() => {
+    if (!testSnapshot) {
+      const controller = new AbortController();
+      listeningTestsApi.getPublished(testId, controller.signal)
+        .then(data => {
+          const resultData = history?.resultData;
+          const getP1Answer = (id) => resultData?.part1Results?.find(r => r.qId === id)?.correctAnswer;
+          const getP2Answer = (id) => resultData?.part2Results?.find(r => r.qId === id)?.correctAnswer;
+          const getP3Answer = (id) => resultData?.part3Results?.find(r => r.qId === id)?.correctAnswer;
+          const getP4Answer = (id) => resultData?.part4Results?.find(r => r.qId === id)?.correctAnswer;
+
+          const snapshot = {
+            part1: data.parts[1]?.questions?.map((q, idx) => ({ ...q, answer: getP1Answer(q.id) ?? q.correctAnswer ?? q.answer, displayLabel: idx + 1 })) || [],
+            part2: data.parts[2] ? {
+              ...data.parts[2],
+              answers: data.parts[2].speakers.map((_, i) => getP2Answer(`14.${i + 1}`) ?? data.parts[2].answers?.[i])
+            } : { speakers: [], options: [], answers: [] },
+            part3: data.parts[3] ? {
+              ...data.parts[3],
+              answers: Object.fromEntries(data.parts[3].statements.map(statement => [statement.id, getP3Answer(statement.id) ?? statement.answer]))
+            } : { statements: [], answers: {} },
+            part4: data.parts[4]?.recordings?.map((recording, rIdx) => ({
+              ...recording,
+              subQuestions: recording.subQuestions.map((q, qIdx) => ({ 
+                ...q, 
+                answer: getP4Answer(q.id) ?? q.correctAnswer ?? q.answer,
+                displayLabel: 16 + (rIdx * recording.subQuestions.length) + qIdx
+              }))
+            })) || []
+          };
+          setTestSnapshot(snapshot);
+          setLoading(false);
+        })
+        .catch(err => {
+          if (err.code !== 'ERR_CANCELED') {
+            console.error(err);
+            setLoading(false);
+          }
+        });
+      return () => controller.abort();
+    }
+  }, [testId, testSnapshot]);
+
+  const { part1: PART1_QUESTIONS, part2: PART2_DATA, part3: PART3_DATA, part4: PART4_QUESTIONS } = testSnapshot || {};
+
+  const allAnswers = useMemo(() => history?.allAnswers ? { part1: history.allAnswers.p1Raw || history.allAnswers.part1, part2: history.allAnswers.p2Raw || history.allAnswers.part2, part3: history.allAnswers.p3Raw || history.allAnswers.part3, part4: history.allAnswers.p4Raw || history.allAnswers.part4 } : getAllAnswers() || {}, [history]);
 
   const changePart = (partNum) => {
     setActivePart(partNum);
@@ -90,7 +153,7 @@ export default function ListeningDetailResultPage() {
         <div className={styles.qaBox}>
           <article className={styles.questionCard}>
             <div className={styles.questionHeading}>
-              <span className={styles.questionNumber}>{question.id}</span>
+              <span className={styles.questionNumber}>{question.displayLabel || question.id}</span>
               <RichTextContent value={question.text}/>
               <StatusBadge status={status} />
             </div>
@@ -144,13 +207,14 @@ export default function ListeningDetailResultPage() {
                 <article key={idx} className={styles.matchingItem}>
                   <div className={styles.matchingRow}>
                     <span className={styles.targetWord}>{speaker} =</span>
-                    <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>
-                      {userAnswerText || 'Skipped'}
+                    <div className={styles.answerColumn}>
+                      <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>
+                        {userAnswerText || 'Skipped'}
+                      </div>
+                      {status !== 'correct' && <div className={styles.correctField} aria-label="Correct answer"><strong>{correctAnswerText}</strong></div>}
                     </div>
                     <StatusBadge status={status} />
                   </div>
-
-                  {status !== 'correct' && <div className={styles.correctField} aria-label="Correct answer"><strong>{correctAnswerText}</strong></div>}
 
                   <AnswerExplanation text={PART2_DATA.explanations?.[`speaker-${idx}`]} />
                 </article>
@@ -180,15 +244,18 @@ export default function ListeningDetailResultPage() {
 
               return (
                 <article key={stmt.id} className={styles.matchingItem}>
-                  <div className={styles.matchingRow}>
-                    <span className={styles.targetWord} style={{ fontWeight: 'normal' }}>{stmt.text}</span>
-                    <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>
-                      {userAnswerText || 'Skipped'}
+                  <div className={styles.matchingCol}>
+                    <div className={styles.matchingColHeader}>
+                      <RichTextContent value={stmt.text} className={styles.targetWord} style={{ fontWeight: 'normal', flex: 1 }} />
+                      <StatusBadge status={status} />
                     </div>
-                    <StatusBadge status={status} />
+                    <div className={styles.answerColumn}>
+                      <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>
+                        {userAnswerText || 'Skipped'}
+                      </div>
+                      {status !== 'correct' && <div className={styles.correctField} aria-label="Correct answer"><strong>{correctAnswerText}</strong></div>}
+                    </div>
                   </div>
-
-                  {status !== 'correct' && <div className={styles.correctField} aria-label="Correct answer"><strong>{correctAnswerText}</strong></div>}
 
                   <AnswerExplanation text={stmt.explanation} />
                 </article>
@@ -219,7 +286,7 @@ export default function ListeningDetailResultPage() {
             return (
               <article key={question.id} className={styles.questionCard}>
                 <div className={styles.questionHeading}>
-                  <span className={styles.questionNumber} style={{ width: 'fit-content', padding: '0 8px' }}>{question.id}</span>
+                  <span className={styles.questionNumber}>{question.displayLabel || question.id}</span>
                   <RichTextContent value={question.text}/>
                   <StatusBadge status={status} />
                 </div>
@@ -257,26 +324,34 @@ export default function ListeningDetailResultPage() {
   let answeredIds = [];
   let audioUrl = null;
 
+  if (loading) {
+    return (
+      <div className={styles.page}>
+        <div style={{ padding: '40px', textAlign: 'center' }}>Loading test details...</div>
+      </div>
+    );
+  }
+
   if (activePart === 1) {
-    footerQuestions = PART1_QUESTIONS.map(q => ({ id: q.id }));
-    currentQuestionIds = [footerQuestions[currentPage - 1].id];
+    footerQuestions = PART1_QUESTIONS?.map(q => ({ id: q.id, displayLabel: q.displayLabel || q.id })) || [];
+    currentQuestionIds = footerQuestions[currentPage - 1] ? [footerQuestions[currentPage - 1].id] : [];
     answeredIds = Object.keys(allAnswers.part1 || {});
-    audioUrl = PART1_QUESTIONS[currentPage - 1].audioUrl;
+    audioUrl = PART1_QUESTIONS?.[currentPage - 1]?.audioUrl;
   } else if (activePart === 2) {
-    footerQuestions = Array.from({ length: 4 }, (_, i) => ({ id: `14.${i + 1}` }));
+    footerQuestions = Array.from({ length: 4 }, (_, i) => ({ id: `14.${i + 1}`, displayLabel: `14.${i + 1}` }));
     currentQuestionIds = footerQuestions.map(q => q.id);
     answeredIds = Object.keys(allAnswers.part2 || {}).map(idx => `14.${parseInt(idx) + 1}`);
-    audioUrl = PART2_DATA.audioUrl;
+    audioUrl = PART2_DATA?.audioUrl;
   } else if (activePart === 3) {
-    footerQuestions = PART3_DATA.statements.map(s => ({ id: s.id }));
+    footerQuestions = PART3_DATA?.statements?.map((s, i) => ({ id: s.id, displayLabel: `15${String.fromCharCode(97 + i)}` })) || [];
     currentQuestionIds = footerQuestions.map(q => q.id);
     answeredIds = Object.keys(allAnswers.part3 || {});
-    audioUrl = PART3_DATA.audioUrl;
+    audioUrl = PART3_DATA?.audioUrl;
   } else if (activePart === 4) {
-    footerQuestions = PART4_QUESTIONS.flatMap(q => q.subQuestions.map(sq => ({ id: sq.id })));
-    currentQuestionIds = PART4_QUESTIONS[currentPage - 1].subQuestions.map(sq => sq.id);
+    footerQuestions = PART4_QUESTIONS?.flatMap(q => q.subQuestions.map(sq => ({ id: sq.id, displayLabel: sq.displayLabel || sq.id }))) || [];
+    currentQuestionIds = PART4_QUESTIONS?.[currentPage - 1]?.subQuestions?.map(sq => sq.id) || [];
     answeredIds = Object.keys(allAnswers.part4 || {});
-    audioUrl = PART4_QUESTIONS[currentPage - 1].audioUrl;
+    audioUrl = PART4_QUESTIONS?.[currentPage - 1]?.audioUrl;
   }
 
   const renderContent = () => {
@@ -295,7 +370,7 @@ export default function ListeningDetailResultPage() {
     }
     if (activePart === 2) return `Questions 14.1-14.4`;
     if (activePart === 3) return `Questions 15a-15d`;
-    if (activePart === 4) return `Question ${PART4_QUESTIONS[currentPage - 1].id}`;
+    if (activePart === 4 && PART4_QUESTIONS?.length > 0) return `Question ${PART4_QUESTIONS[currentPage - 1]?.id}`;
   };
 
   const getSectionSubtitle = () => {

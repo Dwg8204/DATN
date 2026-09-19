@@ -10,9 +10,12 @@ import { AuthModule } from './features/auth/auth.module';
 import { AppController } from './app.controller';
 import { UsersModule } from './features/users/users.module';
 import { GrammarTestsModule } from './features/grammar-tests/grammar-tests.module';
+import { ListeningTestsModule } from './features/listening-tests/listening-tests.module';
 import { MediaModule } from './features/media/media.module';
 import { WritingTestsModule } from './features/writing-tests/writing-tests.module';
 import { AdminDashboardModule } from './features/admin-dashboard/admin-dashboard.module';
+import { StorageModule } from './common/storage/storage.module';
+import { ProfileModule } from './features/profile/profile.module';
 
 @Module({
   imports: [
@@ -25,7 +28,10 @@ import { AdminDashboardModule } from './features/admin-dashboard/admin-dashboard
     MediaModule,
     WritingTestsModule,
     AdminDashboardModule,
+    ListeningTestsModule,
     HealthModule,
+    StorageModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
