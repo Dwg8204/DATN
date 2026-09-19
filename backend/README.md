@@ -243,6 +243,12 @@ CLOUDINARY_FOLDER=aptimate/test-covers
 
 Không commit `CLOUDINARY_API_SECRET`. Khi `CLOUDINARY_ENABLED=false`, các chức năng khác vẫn chạy nhưng API upload cover sẽ trả lỗi cấu hình rõ ràng. Endpoint `POST /api/v1/admin/media/test-covers` nhận trường multipart `file`, giới hạn 10 MB và chỉ chấp nhận JPEG, PNG, WebP hoặc GIF hợp lệ. Cloudinary tự giới hạn ảnh về tối đa 1600 × 1200 và tối ưu định dạng/chất lượng trước khi trả URL.
 
+### Admin Dashboard
+
+`GET /api/v1/admin/dashboard?period=12-months` chỉ dành cho Admin và trả hai chỉ số `activeLearners`, `newUsers` cùng chuỗi dữ liệu `testsCreated`, `testActivity` theo năm kỹ năng. Các giá trị `period` hợp lệ gồm `this-year`, `12-months`, `6-months`, `30-days`, `week` và `24-hours`. Dữ liệu được phân nhóm theo múi giờ `Asia/Bangkok` và cache 30 giây để giảm truy vấn tổng hợp lặp lại.
+
+Sau khi cập nhật code Dashboard, chạy `npm run db:migrate` để thêm các index thời gian phục vụ truy vấn thống kê.
+
 ### CRUD Grammar & Vocabulary
 
 Admin và Teacher sử dụng `/api/v1/admin/grammar-tests`; Teacher chỉ quản lý đề do mình tạo. Đề được lưu theo một aggregate gồm thông tin đề và toàn bộ câu hỏi của Part 1, Part 2 hoặc Full test. Lưu nháp cho phép nội dung chưa hoàn chỉnh; thao tác publish mới kiểm tra đủ 25 câu Grammar và 5 nhóm × 5 câu Vocabulary rồi tạo snapshot bất biến.

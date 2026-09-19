@@ -12,6 +12,7 @@ import { UsersModule } from './features/users/users.module';
 import { GrammarTestsModule } from './features/grammar-tests/grammar-tests.module';
 import { MediaModule } from './features/media/media.module';
 import { WritingTestsModule } from './features/writing-tests/writing-tests.module';
+import { AdminDashboardModule } from './features/admin-dashboard/admin-dashboard.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { WritingTestsModule } from './features/writing-tests/writing-tests.modul
     GrammarTestsModule,
     MediaModule,
     WritingTestsModule,
+    AdminDashboardModule,
     HealthModule,
   ],
   controllers: [AppController],
