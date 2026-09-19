@@ -40,6 +40,7 @@ export default function GrammarTestDetailsPage() {
     } finally { setBusy(false); }
   };
   const requestSave = () => {
+    if (busy) return;
     const message = getFirstValidationError(validateGrammarTest(test));
     if (message) return showError(message);
     dismissToast();
@@ -49,19 +50,24 @@ export default function GrammarTestDetailsPage() {
     setConfirm(false);
     if (busy) return;
     setBusy(true);
+    let draft;
     try {
-      const draft = await saveDraft();
+      draft = await saveDraft();
+      replaceTest(draft);
       const saved = await grammarTestsApi.publish(draft);
       showSuccess(test.id ? 'Grammar & Vocabulary test updated successfully.' : 'Grammar & Vocabulary test created successfully.');
       navigate(`/admin/tests/grammar/${saved.id}/preview`, { state: { toast: 'Test published successfully.' } });
-    } catch (error) { showError(getApiError(error, 'Unable to save the test.')); }
+    } catch (error) {
+      showError(getApiError(error, draft ? 'Draft saved, but publishing failed. You can retry without creating another test.' : 'Unable to save the test.'));
+      if (draft && !test.id) navigate(`/admin/tests/grammar/${draft.id}/edit`, { replace: true });
+    }
     finally { setBusy(false); }
   };
 
   return <div className={styles.page}>
     <AdminConfirmDialog open={confirm} title={test.id ? 'Save changes to this test?' : 'Create this test?'} message={test.id ? 'Your changes will replace the saved Grammar & Vocabulary test.' : 'The test will be saved and displayed in the Grammar & Vocabulary test list.'} confirmLabel={test.id ? 'Save changes' : 'Create test'} onCancel={() => setConfirm(false)} onConfirm={persist} />
     <AdminBreadcrumb current={test.details.title || 'New test'} />
-    <section className={styles.information}>
+    <section className={styles.information} inert={busy ? '' : undefined} aria-busy={busy}>
       <h2>INFORMATION TEST</h2>
       <div className={styles.infoGrid}>
         <div className={styles.fields}>
@@ -72,6 +78,6 @@ export default function GrammarTestDetailsPage() {
         <aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>Not Started</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview" /> : <strong>AptiMate<br /><em>Grammar</em></strong>}<button disabled={busy} onClick={requestSave}>Preview</button></div></aside>
       </div>
     </section>
-    <section className={styles.content}><h2>CONTENT TEST</h2><div>{visible.map(part => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}`)} />)}</div><button className={styles.saveAll} disabled={busy} onClick={requestSave}>{busy ? 'Saving…' : test.id ? 'Update test & preview' : 'Save test & preview'}</button></section>
+    <section className={styles.content} inert={busy ? '' : undefined}><h2>CONTENT TEST</h2><div>{visible.map(part => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}${test.id ? '' : `?mode=${test.mode}`}`)} />)}</div><button className={styles.saveAll} disabled={busy} onClick={requestSave}>{busy ? 'Saving…' : test.id ? 'Update test & preview' : 'Save test & preview'}</button></section>
   </div>;
 }

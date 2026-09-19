@@ -103,7 +103,7 @@ export class AuthController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiCookieAuth(ACCESS_COOKIE)
-  me(@CurrentUser() user: AuthUser): AuthUser { return user; }
+  me(@CurrentUser() user: AuthUser): Omit<AuthUser, 'authVersion'> { return this.publicProfile(user); }
 
   private metadata(request: Request) {
     return { userAgent: request.get('user-agent'), ipAddress: request.ip };
@@ -122,7 +122,14 @@ export class AuthController {
   }
 
   private authResponse(user: AuthUser, pair: TokenPair) {
-    return { expiresIn: pair.expiresIn, profile: user };
+    return { expiresIn: pair.expiresIn, profile: this.publicProfile(user) };
+  }
+
+  private publicProfile(user: AuthUser): Omit<AuthUser, 'authVersion'> {
+    return {
+      id: user.id, email: user.email, firstName: user.firstName,
+      lastName: user.lastName, role: user.role, status: user.status,
+    };
   }
 
   private setAuthCookies(response: Response, pair: TokenPair): void {

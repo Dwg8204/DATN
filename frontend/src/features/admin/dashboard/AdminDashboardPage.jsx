@@ -24,7 +24,7 @@ export default function AdminDashboardPage() {
   const { data, loading, error, retry } = useAdminDashboard(period);
 
   return (
-    <div className={styles.page}>
+    <div className={styles.page} aria-busy={loading}>
       <div className={styles.toolbar}>
         <DashboardPeriodFilter value={period} onChange={setPeriod} />
         {data && <span className={styles.updatedAt}>Updated {formatGeneratedAt(data.generatedAt)} (UTC+7)</span>}
@@ -41,7 +41,7 @@ export default function AdminDashboardPage() {
 
       {data ? (
         <>
-          {error && <div className={styles.refreshError} role="status">The latest refresh failed. Showing the previous data.</div>}
+          {error && <div className={styles.refreshError} role="status">The latest refresh failed. Showing the previous data. <button type="button" onClick={retry}>Try again</button></div>}
           <section className={styles.metricGrid}>
             <DashboardMetricCard id="learners" title="Active Learners" metric={data.metrics.activeLearners} />
             <DashboardMetricCard id="users" title="New Users" metric={data.metrics.newUsers} />

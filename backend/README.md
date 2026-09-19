@@ -157,6 +157,7 @@ npm run start:prod    # chạy bản đã build trong dist
 npm run lint
 npm run typecheck
 npm test
+npm run test:e2e  # cần PostgreSQL local đã migrate; chỉ kiểm tra đọc và HTTP validation
 ```
 
 ## Xác thực JWT và mật khẩu
@@ -176,7 +177,7 @@ Module nằm tại `src/features/auth` và được chia thành `controllers`, `
 | `POST` | `/api/v1/auth/forgot-password/reset` | Đặt lại mật khẩu bằng reset token |
 | `PATCH` | `/api/v1/auth/change-password` | Đổi mật khẩu khi đã đăng nhập |
 
-Access token, refresh token và reset token đều nằm trong cookie `HttpOnly`; frontend không lưu token trong `localStorage` và phải bật `withCredentials`. Access cookie chỉ được gửi tới API, refresh cookie chỉ được gửi tới nhóm endpoint auth, còn reset cookie chỉ được gửi tới luồng quên mật khẩu. Đặt lại hoặc đổi mật khẩu sẽ thu hồi toàn bộ refresh token cũ.
+Access token, refresh token và reset token đều nằm trong cookie `HttpOnly`; frontend không lưu token trong `localStorage` và phải bật `withCredentials`. Access cookie chỉ được gửi tới API, refresh cookie chỉ được gửi tới nhóm endpoint auth, còn reset cookie chỉ được gửi tới luồng quên mật khẩu. Đăng xuất thu hồi cả phiên; đặt lại hoặc đổi mật khẩu thu hồi toàn bộ phiên, kể cả access token đã cấp. Migration `TrackAuthSessions` thêm phiên bản xác thực nên người dùng có token tạo trước khi migrate cần đăng nhập lại.
 
 Tên cookie xác thực là `aptimate_access_token` và `aptimate_refresh_token`. Do có cờ `HttpOnly`, chúng không xuất hiện qua `document.cookie`; kiểm tra tại DevTools > Application > Cookies > `http://localhost:3000`, hoặc xem header `Set-Cookie` của request đăng nhập. Khi phát triển local, hãy mở frontend bằng `http://localhost:5173` thay vì trộn `localhost` với `127.0.0.1`, đồng thời giữ `VITE_API_BASE_URL=http://localhost:3000/api/v1` và `FRONTEND_ORIGIN=http://localhost:5173` để trình duyệt chấp nhận cookie.
 

@@ -23,9 +23,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: AccessTokenPayload): Promise<AuthUser> {
-    if (payload.type !== 'access') throw new ApplicationError('INVALID_TOKEN', 'The access token is invalid.', 401);
-    const user = await this.repository.findAuthUserById(payload.sub);
+    if (payload.type !== 'access' || !payload.family || !Number.isInteger(payload.version)) {
+      throw new ApplicationError('INVALID_TOKEN', 'The access token is invalid.', 401);
+    }
+    const user = await this.repository.findAuthUserById(payload.sub, payload.family);
     if (!user || user.status !== 'ACTIVE') throw new ApplicationError('ACCOUNT_UNAVAILABLE', 'The account is unavailable.', 401);
+    if (payload.version !== user.authVersion) throw new ApplicationError('INVALID_TOKEN', 'The session has expired. Please sign in again.', 401);
     return user;
   }
 }

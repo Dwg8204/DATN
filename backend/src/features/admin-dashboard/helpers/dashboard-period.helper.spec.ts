@@ -15,10 +15,15 @@ describe('dashboard period helper', () => {
     const range = dashboardRange('week', now);
     expect(range.start.toISOString()).toBe('2026-09-13T17:00:00.000Z');
     expect(dashboardBuckets(range)).toHaveLength(5);
+    expect(range.comparisonStart.toISOString()).toBe('2026-09-06T17:00:00.000Z');
+    expect(range.comparisonEnd.getTime() - range.comparisonStart.getTime())
+      .toBe(range.end.getTime() - range.start.getTime());
   });
 
-  it('returns exactly twenty-four hourly buckets', () => {
+  it('uses a full rolling twenty-four-hour range with partial edge buckets', () => {
     const range = dashboardRange('24-hours', now);
-    expect(dashboardBuckets(range)).toHaveLength(24);
+    expect(range.end.getTime() - range.start.getTime()).toBe(24 * 60 * 60 * 1000);
+    expect(range.comparisonEnd).toEqual(range.start);
+    expect(dashboardBuckets(range)).toHaveLength(25);
   });
 });

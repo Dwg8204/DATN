@@ -29,6 +29,16 @@ function startOfBangkokMonth(date: Date, monthOffset = 0): Date {
   return fromBangkokParts(local.getUTCFullYear(), local.getUTCMonth() + monthOffset, 1);
 }
 
+function shiftBangkokMonths(date: Date, months: number): Date {
+  const local = bangkokDate(date);
+  const first = new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth() + months, 1));
+  const lastDay = new Date(Date.UTC(first.getUTCFullYear(), first.getUTCMonth() + 1, 0)).getUTCDate();
+  return new Date(Date.UTC(
+    first.getUTCFullYear(), first.getUTCMonth(), Math.min(local.getUTCDate(), lastDay),
+    local.getUTCHours(), local.getUTCMinutes(), local.getUTCSeconds(), local.getUTCMilliseconds(),
+  ) - BANGKOK_OFFSET_MS);
+}
+
 export function dashboardRange(period: DashboardPeriod, now = new Date()): DashboardRange {
   const local = bangkokDate(now);
   let start: Date;
@@ -59,14 +69,19 @@ export function dashboardRange(period: DashboardPeriod, now = new Date()): Dashb
       break;
     }
     case '24-hours':
-      start = new Date(fromBangkokParts(
-        local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate(), local.getUTCHours(),
-      ).getTime() - 23 * 60 * 60 * 1000);
+      start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       bucket = 'hour';
       break;
   }
 
-  const duration = now.getTime() - start.getTime();
+  const monthShift = period === 'this-year' || period === '12-months' ? -12 : period === '6-months' ? -6 : 0;
+  const dayShift = period === '30-days' ? 30 : period === 'week' ? 7 : 1;
+  const comparisonStart = monthShift
+    ? shiftBangkokMonths(start, monthShift)
+    : new Date(start.getTime() - dayShift * 86_400_000);
+  const comparisonEnd = monthShift
+    ? shiftBangkokMonths(now, monthShift)
+    : new Date(now.getTime() - dayShift * 86_400_000);
   return {
     key: period,
     label: PERIOD_LABELS[period],
@@ -74,8 +89,8 @@ export function dashboardRange(period: DashboardPeriod, now = new Date()): Dashb
     bucket,
     start,
     end: now,
-    comparisonStart: new Date(start.getTime() - duration),
-    comparisonEnd: start,
+    comparisonStart,
+    comparisonEnd,
   };
 }
 

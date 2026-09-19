@@ -39,6 +39,28 @@ describe('WritingTestContentService', () => {
     expect(service.normalize(safeInput).parts[2]?.prompt).not.toContain('<script>');
   });
 
+  it('keeps paragraph boundaries and indentation when saving rich text', () => {
+    const input = draft();
+    input.parts[2]!.prompt = '<div>First paragraph</div><div>Second paragraph</div><blockquote>Indented text</blockquote>';
+    const saved = service.normalize(input);
+    expect(saved.parts[2]?.prompt).toBe(input.parts[2]!.prompt);
+    expect(() => service.assertPublishable(saved)).not.toThrow();
+  });
+
+  it('rejects empty HTML, malformed entries and text beyond the editor word limit', () => {
+    const empty = draft();
+    empty.parts[2]!.sampleAnswer = '<p>&nbsp;&#160;&#xA0;</p>';
+    expect(() => service.assertPublishable(service.normalize(empty))).toThrow('Part 2 sample answer is required');
+
+    const malformed = draft();
+    malformed.parts[1]!.questions[0] = { text: 'unexpected' } as unknown as string;
+    expect(() => service.normalize(malformed)).toThrow('entries must be text');
+
+    const tooLong = draft();
+    tooLong.parts[2]!.sampleAnswer = Array.from({ length: 81 }, () => 'word').join(' ');
+    expect(() => service.assertDraftShape(service.normalize(tooLong))).toThrow('80 words');
+  });
+
   it('does not expose sample answers in a learner-safe published payload', () => {
     const test = service.normalize(draft());
     const safe = service.learnerSafe({ ...test, id: 'test-id', status: 'PUBLISHED', version: 1 });

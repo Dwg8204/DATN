@@ -65,7 +65,9 @@ export default function WritingPartEditorPage() {
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const update = (field, value) => updatePart(partNumber, field, value);
+  const close = () => navigate(test.id ? basePath : `${basePath}?mode=${test.mode}`);
   const save = async () => {
+    if (saving) return;
     const nextErrors = validateWritingPart(partNumber, part);
     setErrors(nextErrors);
     if (hasValidationErrors(nextErrors)) return revealFirstEditorError(nextErrors);
@@ -83,7 +85,7 @@ export default function WritingPartEditorPage() {
   const props = { part, update };
   return <div className={styles.overlay}>
     <AdminValidationToast errors={errors} onClose={() => setErrors({})}/>
-    <main><EditorBackButton onClick={close}/><header><strong>Part {partNumber}</strong><span>{meta.title} ({meta.summary})</span></header>{partNumber === 1 && <Part1 {...props}/>} {partNumber === 2 && <Part2 {...props}/>} {partNumber === 3 && <Part3 {...props}/>} {partNumber === 4 && <Part4 {...props}/>}</main>
+    <main inert={saving ? '' : undefined} aria-busy={saving}><EditorBackButton onClick={close}/><header><strong>Part {partNumber}</strong><span>{meta.title} ({meta.summary})</span></header>{partNumber === 1 && <Part1 {...props}/>} {partNumber === 2 && <Part2 {...props}/>} {partNumber === 3 && <Part3 {...props}/>} {partNumber === 4 && <Part4 {...props}/>}</main>
     <button className={styles.save} onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save change'}</button>
   </div>;
 }
