@@ -15,6 +15,7 @@ export const API_ENDPOINTS = {
     detail: (id) => `/admin/users/${id}`,
     role: (id) => `/admin/users/${id}/role`,
   },
+  adminDashboard: '/admin/dashboard',
   adminGrammarTests: {
     list: '/admin/grammar-tests',
     detail: (id) => `/admin/grammar-tests/${id}`,
