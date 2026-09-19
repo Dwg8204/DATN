@@ -8,6 +8,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthModule } from './features/auth/auth.module';
 import { AppController } from './app.controller';
+import { SpeakingTestsModule } from './features/speaking-tests/speaking-tests.module';
 import { UsersModule } from './features/users/users.module';
 import { GrammarTestsModule } from './features/grammar-tests/grammar-tests.module';
 import { ListeningTestsModule } from './features/listening-tests/listening-tests.module';
@@ -16,7 +17,6 @@ import { WritingTestsModule } from './features/writing-tests/writing-tests.modul
 import { AdminDashboardModule } from './features/admin-dashboard/admin-dashboard.module';
 import { StorageModule } from './common/storage/storage.module';
 import { ProfileModule } from './features/profile/profile.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, cache: true, load: [configuration], validationSchema: environmentSchema }),
@@ -24,6 +24,7 @@ import { ProfileModule } from './features/profile/profile.module';
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 120 }]),
     AuthModule,
     UsersModule,
+    SpeakingTestsModule,
     GrammarTestsModule,
     MediaModule,
     WritingTestsModule,
