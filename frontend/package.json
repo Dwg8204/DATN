@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
+    "test": "node --test src/features/auth/utils/passwordValidation.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.5.2",
+    "oxlint": "^1.83.0",
     "tailwindcss": "^4.3.2",
     "vite": "^6.0.11"
   }

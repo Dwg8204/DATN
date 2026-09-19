@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { FilterXSS } from 'xss';
 import { ApplicationError } from '../../../common/errors/application.error';
+import { plainRichText, richTextWordCount, sanitizeRichText } from '../../../common/content/rich-text';
 import {
   GrammarCover,
   GrammarQuestion,
@@ -9,17 +9,6 @@ import {
 } from '../types/grammar-test.type';
 
 const LETTERS = 'ABCDEFGHIJ'.split('');
-const ALLOWED_TAGS = ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ul', 'ol', 'li'];
-const richTextFilter = new FilterXSS({
-  whiteList: Object.fromEntries(ALLOWED_TAGS.map(tag => [tag, []])),
-  stripIgnoreTag: true,
-  stripIgnoreTagBody: ['script', 'style', 'iframe', 'object'],
-});
-const plainTextFilter = new FilterXSS({
-  whiteList: {},
-  stripIgnoreTag: true,
-  stripIgnoreTagBody: ['script', 'style', 'iframe', 'object'],
-});
 
 @Injectable()
 export class GrammarTestContentService {
@@ -92,14 +81,15 @@ export class GrammarTestContentService {
   }
 
   private normalizePart1(part?: GrammarTestAggregate['parts'][1]): NonNullable<GrammarTestAggregate['parts'][1]> {
-    const questions = Array.isArray(part?.questions) ? part.questions.slice(0, 25) : [];
+    if (Array.isArray(part?.questions) && part.questions.length > 25) this.invalid('Part 1 must contain exactly 25 questions.');
+    const questions = Array.isArray(part?.questions) ? part.questions : [];
     return {
       instruction: this.rich(part?.instruction ?? ''),
       questions: questions.map((question, index) => ({
         id: index + 1,
         text: this.rich(question?.text ?? ''),
         options: Array.isArray(question?.options)
-          ? question.options.slice(0, 3).map(option => this.plain(option))
+          ? question.options.map(option => this.plain(option))
           : [],
         correctAnswer: Number.isInteger(question?.correctAnswer) ? question.correctAnswer : -1,
         ...(this.rich(question?.explanation ?? '') ? { explanation: this.rich(question?.explanation ?? '') } : {}),
@@ -108,18 +98,19 @@ export class GrammarTestContentService {
   }
 
   private normalizePart2(part?: GrammarTestAggregate['parts'][2]): NonNullable<GrammarTestAggregate['parts'][2]> {
-    const sets = Array.isArray(part?.sets) ? part.sets.slice(0, 5) : [];
+    if (Array.isArray(part?.sets) && part.sets.length > 5) this.invalid('Part 2 must contain exactly 5 vocabulary sets.');
+    const sets = Array.isArray(part?.sets) ? part.sets : [];
     return {
       sets: sets.map((set, setIndex) => ({
         setId: setIndex + 1,
         instruction: this.rich(set?.instruction ?? ''),
-        targetWords: (Array.isArray(set?.targetWords) ? set.targetWords.slice(0, 5) : []).map((target, targetIndex) => ({
+        targetWords: (Array.isArray(set?.targetWords) ? set.targetWords : []).map((target, targetIndex) => ({
           id: 26 + setIndex * 5 + targetIndex,
           word: this.plain(target?.word ?? ''),
           correctAnswer: this.plain(target?.correctAnswer ?? '').toUpperCase(),
           ...(this.rich(target?.explanation ?? '') ? { explanation: this.rich(target?.explanation ?? '') } : {}),
         })),
-        options: (Array.isArray(set?.options) ? set.options.slice(0, 10) : []).map((option, optionIndex) => ({
+        options: (Array.isArray(set?.options) ? set.options : []).map((option, optionIndex) => ({
           label: LETTERS[optionIndex],
           text: this.plain(option?.text ?? ''),
         })),
@@ -170,35 +161,34 @@ export class GrammarTestContentService {
   private assertExplanation(value: string | undefined, label: string): void {
     if (!value) return;
     const plain = this.plain(value);
-    if (plain.length > 12_000 || plain.split(/\s+/).filter(Boolean).length > 300) {
+    if (plain.length > 12_000 || richTextWordCount(value) > 300) {
       this.invalid(`${label}: explanation cannot exceed 300 words.`);
     }
   }
 
   private normalizeCover(cover?: GrammarCover | null, pictureUrl?: string): GrammarCover | null {
+    if (cover != null && (typeof cover !== 'object' || Array.isArray(cover))) this.invalid('Test cover must be an image URL.');
     const raw = cover?.url ?? pictureUrl ?? '';
     if (!raw) return null;
+    if (typeof raw !== 'string') this.invalid('Test cover must be an image URL.');
     let url: URL;
     try { url = new URL(raw); } catch { this.invalid('Upload the test cover before saving.'); }
-    if (url.protocol !== 'https:' || !url.hostname.endsWith('res.cloudinary.com')) {
+    if (url.protocol !== 'https:' || url.hostname !== 'res.cloudinary.com') {
       this.invalid('Test covers must be uploaded to Cloudinary.');
     }
-    return {
-      url: url.toString(),
-      ...(cover?.publicId ? { publicId: cover.publicId.slice(0, 255) } : {}),
-      ...(cover?.width ? { width: cover.width } : {}),
-      ...(cover?.height ? { height: cover.height } : {}),
-      ...(cover?.bytes ? { bytes: cover.bytes } : {}),
-      ...(cover?.format ? { format: cover.format.slice(0, 20) } : {}),
-    };
+    return { url: url.toString() };
   }
 
   private rich(value: unknown): string {
-    return richTextFilter.process(String(value ?? '')).trim();
+    if (value == null) return '';
+    if (typeof value !== 'string') this.invalid('Text content must be a string.');
+    return sanitizeRichText(value);
   }
 
   private plain(value: unknown): string {
-    return plainTextFilter.process(String(value ?? '')).replace(/\s+/g, ' ').trim();
+    if (value == null) return '';
+    if (typeof value !== 'string') this.invalid('Text content must be a string.');
+    return plainRichText(value);
   }
 
   private invalid(message: string): never {

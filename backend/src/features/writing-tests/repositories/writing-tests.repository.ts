@@ -11,6 +11,7 @@ type TestRow = {
   cover: { url?: string } | null; part_contents: { schemaVersion?: number; parts?: Record<string, { context?: string; instruction?: string }> };
   version: number; status: WritingTestStatus; published_snapshot_id: string | null; created_at: Date; updated_at: Date;
 };
+type SummaryRow = Pick<TestRow, 'id' | 'created_by' | 'title' | 'scope' | 'part_number' | 'cover' | 'version' | 'status' | 'created_at' | 'updated_at'>;
 type QuestionRow = {
   id: string; part_number: number; position: number; content: { prompt?: string; kind?: string };
   sample_answer: { text?: string } | null;
@@ -57,16 +58,17 @@ export class WritingTestsRepository {
     const limitIndex = values.length + 1;
     const offsetIndex = values.length + 2;
     const [rows, counts] = await Promise.all([
-      this.dataSource.query<Array<TestRow & { attempts: string }>>(
-        `WITH page AS (
-           SELECT t.id,t.created_by,t.title,t.scope,t.part_number,t.cover,t.version,t.status,t.published_snapshot_id,t.created_at,t.updated_at
+      this.dataSource.query<Array<SummaryRow & { attempts: string }>>(
+        `WITH page AS MATERIALIZED (
+           SELECT t.id,t.created_by,t.title,t.scope,t.part_number,t.cover,t.version,t.status,t.created_at,t.updated_at
            FROM tests t WHERE ${whereSql}
            ORDER BY t.updated_at DESC,t.id DESC LIMIT $${limitIndex} OFFSET $${offsetIndex}
          )
-         SELECT p.*,count(ta.id)::text AS attempts FROM page p
-         LEFT JOIN test_snapshots ts ON ts.test_id=p.id
-         LEFT JOIN test_attempts ta ON ta.snapshot_id=ts.id
-         GROUP BY p.id,p.created_by,p.title,p.scope,p.part_number,p.cover,p.version,p.status,p.published_snapshot_id,p.created_at,p.updated_at
+         SELECT p.*,counts.attempts FROM page p
+         CROSS JOIN LATERAL (
+           SELECT count(*)::text AS attempts FROM test_snapshots ts
+           JOIN test_attempts ta ON ta.snapshot_id=ts.id WHERE ts.test_id=p.id
+         ) counts
          ORDER BY p.updated_at DESC,p.id DESC`,
         [...values, query.pageSize, offset],
       ),
@@ -92,13 +94,26 @@ export class WritingTestsRepository {
     const offsetIndex = values.length + 2;
     const [rows, counts] = await Promise.all([
       this.dataSource.query<Array<{
-        id: string; snapshot: WritingTestAggregate; attempts: string; created_at: Date; updated_at: Date;
+        id: string; title: string; picture_url: string | null; mode: WritingTestMode;
+        version: number; attempts: string; created_at: Date; updated_at: Date;
       }>>(
-        `SELECT t.id,ts.snapshot,t.created_at,t.updated_at,count(ta.id)::text AS attempts
-         FROM tests t JOIN test_snapshots ts ON ts.id=t.published_snapshot_id
-         LEFT JOIN test_attempts ta ON ta.snapshot_id=ts.id WHERE ${whereSql}
-         GROUP BY t.id,ts.id,t.created_at,t.updated_at ORDER BY t.updated_at DESC,t.id DESC
-         LIMIT $${limitIndex} OFFSET $${offsetIndex}`,
+        `WITH page AS MATERIALIZED (
+           SELECT t.id,t.published_snapshot_id,t.created_at,t.updated_at,
+                  ts.snapshot #>> '{details,title}' AS title,
+                  ts.snapshot #>> '{details,pictureUrl}' AS picture_url,
+                  ts.snapshot->>'mode' AS mode,
+                  COALESCE((ts.snapshot->>'version')::integer, 1) AS version
+           FROM tests t JOIN test_snapshots ts ON ts.id=t.published_snapshot_id
+           WHERE ${whereSql}
+           ORDER BY t.updated_at DESC,t.id DESC
+           LIMIT $${limitIndex} OFFSET $${offsetIndex}
+         )
+         SELECT p.*,counts.attempts FROM page p
+         CROSS JOIN LATERAL (
+           SELECT count(*)::text AS attempts FROM test_attempts ta
+           WHERE ta.snapshot_id=p.published_snapshot_id
+         ) counts
+         ORDER BY p.updated_at DESC,p.id DESC`,
         [...values, query.pageSize, offset],
       ),
       this.dataSource.query<Array<{ total: string }>>(
@@ -107,7 +122,10 @@ export class WritingTestsRepository {
       ),
     ]);
     return {
-      tests: rows.map(row => this.snapshotSummary(row.snapshot, row.id, Number(row.attempts), row.created_at, row.updated_at)),
+      tests: rows.map(row => this.snapshotSummary(
+        { mode: row.mode, details: { title: row.title, pictureUrl: row.picture_url ?? '' }, version: row.version },
+        row.id, Number(row.attempts), row.created_at, row.updated_at,
+      )),
       total: Number(counts[0]?.total ?? 0),
     };
   }
@@ -291,7 +309,7 @@ export class WritingTestsRepository {
     return aggregate;
   }
 
-  private toSummary(row: TestRow, attempts: number, actor?: WritingActor): WritingTestSummary {
+  private toSummary(row: SummaryRow, attempts: number, actor?: WritingActor): WritingTestSummary {
     const mode = this.rowMode(row);
     const canManage = Boolean(actor && (actor.role === 'ADMIN' || row.created_by === actor.id));
     return {
@@ -302,7 +320,7 @@ export class WritingTestsRepository {
     };
   }
 
-  private snapshotSummary(test: WritingTestAggregate, id: string, attempts: number, createdAt: Date, updatedAt: Date): WritingTestSummary {
+  private snapshotSummary(test: Pick<WritingTestAggregate, 'mode' | 'details' | 'version'>, id: string, attempts: number, createdAt: Date, updatedAt: Date): WritingTestSummary {
     const mode = test.mode;
     return {
       id, title: test.details.title, name: test.details.title, mode, section: this.section(mode), component: 'Writing', status: 'PUBLISHED',

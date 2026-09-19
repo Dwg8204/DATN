@@ -169,7 +169,15 @@ export default function Header() {
                   <History size={16} style={{ marginRight: '8px' }} />
                   Learning History
                 </button>
-                <button className={styles.dropdownItem} onClick={() => { logout(); setIsUserMenuOpen(false); navigate('/'); }}>
+                <button className={styles.dropdownItem} onClick={async () => {
+                  setIsUserMenuOpen(false);
+                  try {
+                    await logout();
+                    navigate('/', { replace: true });
+                  } catch {
+                    // The shared API error toast keeps the user informed.
+                  }
+                }}>
                   <LogOut size={16} style={{ marginRight: '8px' }} />
                   Log out
                 </button>

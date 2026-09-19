@@ -209,7 +209,7 @@ export default function TestListPage() {
 
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
-              {(skill === 'grammar-vocab' ? filteredTests : filteredTests.slice((page - 1) * pageSize, page * pageSize)).map((test) => (
+              {(['grammar-vocab', 'writing'].includes(skill) ? filteredTests : filteredTests.slice((page - 1) * pageSize, page * pageSize)).map((test) => (
                 <div key={test.id} className={styles.testCard}>
                   <div className={styles.cardTop}>
                     <div className={styles.cardTitle}>{test.title}</div>

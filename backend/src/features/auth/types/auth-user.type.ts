@@ -7,6 +7,7 @@ export interface AuthUser {
   lastName: string;
   role: RoleCode;
   status: 'INACTIVE' | 'ACTIVE' | 'BANNED';
+  authVersion?: number;
 }
 
 export interface AccessTokenPayload {
@@ -14,6 +15,8 @@ export interface AccessTokenPayload {
   email: string;
   role: RoleCode;
   type: 'access';
+  family: string;
+  version: number;
 }
 
 export interface RefreshTokenPayload {
@@ -21,4 +24,5 @@ export interface RefreshTokenPayload {
   jti: string;
   family: string;
   type: 'refresh';
+  version: number;
 }

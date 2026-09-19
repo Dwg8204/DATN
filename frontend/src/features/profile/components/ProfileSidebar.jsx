@@ -26,9 +26,13 @@ export default function ProfileSidebar({ activeTab }) {
     };
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/', { replace: true });
+    } catch {
+      // The shared API error toast explains why the session could not be closed.
+    }
   };
 
   const historyEntries = getHistoryEntries();

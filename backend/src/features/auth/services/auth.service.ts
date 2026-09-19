@@ -38,7 +38,7 @@ export class AuthService {
       id: user.id, email: user.email, firstName: user.firstName, lastName: user.lastName,
       role: user.role, status: user.status,
     };
-    return { user: publicUser, tokens: await this.tokens.issue(publicUser, metadata) };
+    return { user: publicUser, tokens: await this.tokens.issue(user, metadata) };
   }
 
   async changePassword(user: AuthUser, dto: ChangePasswordDto): Promise<void> {

@@ -1,15 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { FilterXSS } from 'xss';
 import { ApplicationError } from '../../../common/errors/application.error';
+import { plainRichText, richTextWordCount, sanitizeRichText } from '../../../common/content/rich-text';
 import { CreateWritingTestDto } from '../dto/save-writing-test.dto';
 import { WritingTestAggregate, WritingTestMode } from '../types/writing-test.type';
 
-const richTextFilter = new FilterXSS({
-  whiteList: { p: [], br: [], strong: [], b: [], em: [], i: [], u: [], ul: [], ol: [], li: [] },
-  stripIgnoreTag: true,
-  stripIgnoreTagBody: ['script', 'style', 'iframe', 'object'],
-});
-const plainTextFilter = new FilterXSS({ whiteList: {}, stripIgnoreTag: true, stripIgnoreTagBody: ['script', 'style', 'iframe', 'object'] });
 type WritingPartNumber = 1 | 2 | 3 | 4;
 
 @Injectable()
@@ -61,30 +55,30 @@ export class WritingTestContentService {
       if (!part) this.invalid(`Part ${number} content is required.`);
       if (number === 1) {
         const value = part as NonNullable<WritingTestAggregate['parts'][1]>;
-        this.assertText(value.context, 10_000, 'Part 1 context');
+        this.assertText(value.context, 10_000, 'Part 1 context', 150);
         this.assertArray(value.questions, 5, 'Part 1 questions');
         this.assertArray(value.sampleAnswers, 5, 'Part 1 sample answers');
-        value.questions.forEach((item, index) => this.assertText(item, 4_000, `Part 1 question ${index + 1}`));
-        value.sampleAnswers.forEach((item, index) => this.assertText(item, 1_000, `Part 1 sample answer ${index + 1}`));
+        value.questions.forEach((item, index) => this.assertText(item, 4_000, `Part 1 question ${index + 1}`, 80));
+        value.sampleAnswers.forEach((item, index) => this.assertText(item, 1_000, `Part 1 sample answer ${index + 1}`, 5));
       } else if (number === 2) {
         const value = part as NonNullable<WritingTestAggregate['parts'][2]>;
-        this.assertText(value.instruction, 10_000, 'Part 2 instruction');
-        this.assertText(value.prompt, 6_000, 'Part 2 prompt');
-        this.assertText(value.sampleAnswer, 12_000, 'Part 2 sample answer');
+        this.assertText(value.instruction, 10_000, 'Part 2 instruction', 150);
+        this.assertText(value.prompt, 6_000, 'Part 2 prompt', 100);
+        this.assertText(value.sampleAnswer, 12_000, 'Part 2 sample answer', 80);
       } else if (number === 3) {
         const value = part as NonNullable<WritingTestAggregate['parts'][3]>;
-        this.assertText(value.context, 10_000, 'Part 3 context');
+        this.assertText(value.context, 10_000, 'Part 3 context', 150);
         this.assertArray(value.messages, 3, 'Part 3 prompts');
         this.assertArray(value.sampleAnswers, 3, 'Part 3 sample responses');
-        value.messages.forEach((item, index) => this.assertText(item, 6_000, `Part 3 prompt ${index + 1}`));
-        value.sampleAnswers.forEach((item, index) => this.assertText(item, 12_000, `Part 3 sample response ${index + 1}`));
+        value.messages.forEach((item, index) => this.assertText(item, 6_000, `Part 3 prompt ${index + 1}`, 100));
+        value.sampleAnswers.forEach((item, index) => this.assertText(item, 12_000, `Part 3 sample response ${index + 1}`, 80));
       } else {
         const value = part as NonNullable<WritingTestAggregate['parts'][4]>;
-        this.assertText(value.context, 10_000, 'Part 4 context');
-        this.assertText(value.informalPrompt, 6_000, 'Part 4 informal prompt');
-        this.assertText(value.informalSample, 12_000, 'Part 4 informal sample email');
-        this.assertText(value.formalPrompt, 6_000, 'Part 4 formal prompt');
-        this.assertText(value.formalSample, 20_000, 'Part 4 formal sample email');
+        this.assertText(value.context, 10_000, 'Part 4 context', 150);
+        this.assertText(value.informalPrompt, 6_000, 'Part 4 informal prompt', 100);
+        this.assertText(value.informalSample, 12_000, 'Part 4 informal sample email', 100);
+        this.assertText(value.formalPrompt, 6_000, 'Part 4 formal prompt', 180);
+        this.assertText(value.formalSample, 20_000, 'Part 4 formal sample email', 220);
       }
     }
   }
@@ -133,20 +127,25 @@ export class WritingTestContentService {
 
   private stringArray(value: unknown, partNumber: number): string[] {
     if (!Array.isArray(value)) this.invalid(`Part ${partNumber} content must contain an array.`);
+    if (value.some(item => typeof item !== 'string')) this.invalid(`Part ${partNumber} entries must be text.`);
     return value.map(item => this.rich(item));
   }
 
   private rich(value: unknown): string {
-    if (typeof value !== 'string') return '';
-    return richTextFilter.process(value).trim();
+    if (value == null) return '';
+    if (typeof value !== 'string') this.invalid('Text content must be a string.');
+    return sanitizeRichText(value);
   }
 
   private plain(value: unknown): string {
-    return typeof value === 'string' ? plainTextFilter.process(value).trim() : '';
+    if (value == null) return '';
+    if (typeof value !== 'string') this.invalid('Text content must be a string.');
+    return plainRichText(value);
   }
 
   private normalizeCover(value: string): string {
     if (!value) return '';
+    if (typeof value !== 'string') this.invalid('Test cover must be an image URL.');
     let url: URL;
     try { url = new URL(value); } catch { this.invalid('Upload the test cover before saving.'); }
     if (url.protocol !== 'https:' || url.hostname !== 'res.cloudinary.com') this.invalid('Test covers must be uploaded to Cloudinary.');
@@ -157,8 +156,9 @@ export class WritingTestContentService {
     if (value.length !== length) this.invalid(`${label} must contain exactly ${length} entries.`);
   }
 
-  private assertText(value: string, maxLength: number, label: string): void {
+  private assertText(value: string, maxLength: number, label: string, maxWords?: number): void {
     if (value.length > maxLength) this.invalid(`${label} cannot exceed ${maxLength} characters.`);
+    if (maxWords && richTextWordCount(value) > maxWords) this.invalid(`${label} cannot exceed ${maxWords} words.`);
   }
 
   private required(value: string, label: string): void {

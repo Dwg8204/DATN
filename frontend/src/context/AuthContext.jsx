@@ -6,30 +6,14 @@ const USER_STORAGE_KEY = 'aptimate.auth.user';
 
 const AuthContext = createContext(undefined);
 
-function readStorage(key) {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  return window.localStorage.getItem(key);
-}
-
-function readUser() {
-  const rawUser = readStorage(USER_STORAGE_KEY);
-
-  if (!rawUser) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(rawUser);
-  } catch {
-    return null;
-  }
+function normalizeProfile(profile) {
+  if (!profile) return null;
+  const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(' ').trim();
+  return { ...profile, fullName, name: fullName };
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => readUser());
+  const [user, setUser] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const authMutation = useRef(0);
 
@@ -43,7 +27,8 @@ export function AuthProvider({ children }) {
     };
     window.addEventListener('aptimate:session-expired', clearSession);
     profileApi.getProfile()
-      .then(profile => { if (active && authMutation.current === initialRevision) setUser(profile); })
+      .catch(() => authApi.me())
+      .then(profile => { if (active && authMutation.current === initialRevision) setUser(normalizeProfile(profile)); })
       .catch(() => { if (active && authMutation.current === initialRevision) setUser(null); })
       .finally(() => { if (active) setIsAuthReady(true); });
     return () => {
@@ -71,21 +56,21 @@ export function AuthProvider({ children }) {
       isAuthenticated: isAuthReady && Boolean(user),
       login: ({ profile }) => {
         authMutation.current += 1;
-        setUser(profile ?? null);
+        setUser(normalizeProfile(profile));
         setIsAuthReady(true);
         if (profile) {
           profileApi.getProfile().then(fullProfile => setUser(fullProfile)).catch(() => {});
         }
       },
-      logout: () => {
+      logout: async ({ remote = true } = {}) => {
         authMutation.current += 1;
-        void authApi.logout().catch(() => undefined);
+        if (remote) await authApi.logout();
         setUser(null);
         setIsAuthReady(true);
       },
       updateProfile: (updates) => {
         if (!user) return;
-        const updatedUser = { ...user, ...updates };
+        const updatedUser = normalizeProfile({ ...user, ...updates });
         setUser(updatedUser);
       },
     }),

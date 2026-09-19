@@ -73,4 +73,22 @@ describe('GrammarTestContentService', () => {
     source.details.pictureUrl = 'data:image/png;base64,abc';
     expect(() => service.normalize(source)).toThrow('Cloudinary');
   });
+
+  it('rejects overflow rather than silently discarding questions', () => {
+    const source = completeTest();
+    source.parts[1]!.questions.push({ ...source.parts[1]!.questions[0], id: 26 });
+    expect(() => service.normalize(source)).toThrow('exactly 25 questions');
+  });
+
+  it('handles unused cover metadata and rejects invisible question text', () => {
+    const source = completeTest();
+    source.details.cover = {
+      url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
+      publicId: 123 as unknown as string,
+    };
+    source.parts[1]!.questions[0].text = '<p>&nbsp;&#160;</p>';
+    const normalized = service.normalize(source);
+    expect(normalized.details.cover).toEqual({ url: source.details.cover.url });
+    expect(() => service.assertPublishable(normalized)).toThrow('question content is required');
+  });
 });
