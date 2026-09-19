@@ -54,7 +54,7 @@ export default function ChangePasswordPage() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      logout();
+      await logout({ remote: false });
       navigate('/login', { replace: true });
     } catch (requestError) {
       showError(getApiError(requestError, 'Unable to update your password. Please try again.'));
