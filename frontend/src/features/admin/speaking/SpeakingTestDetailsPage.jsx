@@ -7,7 +7,7 @@ import ImageField from '../shared-test-builder/ImageField';
 import PartSummaryCard from '../writing/components/PartSummaryCard';
 import { useSpeakingBuilder } from './context/SpeakingBuilderContext';
 import { SPEAKING_PARTS } from './data/speakingTestModel';
-import { saveStoredSpeakingTest } from './data/speakingTestStorage';
+import { speakingTestsApi } from './services/speakingTestsApi';
 import { validateSpeakingTest } from './validation/speakingValidation';
 import styles from '../writing/WritingTestDetailsPage.module.css';
 
@@ -18,12 +18,27 @@ export default function SpeakingTestDetailsPage() {
   const [confirm, setConfirm] = useState(false);
   const parts = SPEAKING_PARTS.filter((part) => test.mode === 'full' || test.mode === `part${part.number}`);
   const requestSave = () => { const next = validateSpeakingTest(test); setErrors(next); if (!next.length) setConfirm(true); };
-  const persist = () => {
+  const persist = async () => {
     try {
-      const saved = saveStoredSpeakingTest(test);
+      let saved;
+      if (test.id) {
+        saved = await speakingTestsApi.update(test.id, {
+          mode: test.mode,
+          details: test.details,
+          parts: test.parts,
+          version: test.version || 1
+        });
+      } else {
+        saved = await speakingTestsApi.create({
+          mode: test.mode,
+          details: test.details,
+          parts: test.parts
+        });
+      }
       navigate(`/admin/tests/speaking/${saved.id}/preview`, { state: { toast: test.id ? 'Speaking test updated successfully.' : 'Speaking test created successfully.' } });
-    } catch {
-      setErrors(['Unable to save. Uploaded images may exceed browser storage capacity.']);
+    } catch (err) {
+      console.error(err);
+      setErrors([err.response?.data?.message || 'Unable to save.']);
     } finally { setConfirm(false); }
   };
   return <div className={styles.page}>
