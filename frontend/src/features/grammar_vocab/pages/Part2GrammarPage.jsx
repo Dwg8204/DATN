@@ -1,149 +1,90 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import InstructionBlock from '../../../components/common/InstructionBlock';
-import { PART2_WORD_SETS } from '../data/part2MockData';
-import { getAdminGrammarPart } from '../utils/adminGrammarTestAdapter';
-import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
-import styles from './Part2GrammarPage.module.css';
 import RichTextContent from '../../../components/common/RichTextContent';
+import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
+import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
+import styles from './Part2GrammarPage.module.css';
+
+const SETS_PER_PAGE = 2;
 
 export default function Part2GrammarPage() {
-  const { skill = 'grammar-vocab' } = useParams(); 
-  const part = 'part2';
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const testId = searchParams.get('testId') || '1';
-  const wordSets = getAdminGrammarPart(testId, part) || PART2_WORD_SETS;
-  const isFullTest = searchParams.get('isFull') === 'true';
-  startGrammarVocabSession(testId, isFullTest ? 'full' : 'part2');
-
-  const formattedPart = part ? part.replace(/([a-zA-Z]+)(\d+)/, (m, p1, p2) => `${p1.charAt(0).toUpperCase() + p1.slice(1)} ${p2}`) : 'Part 2';
-  const formattedSkill = skill === 'grammar-vocab'
-    ? 'Grammar & Vocabulary'
-    : skill.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-
+  const { attemptId, paper, answers, loading, loadError, saveStatus, submitting, setAnswer, submit, approveNavigation } = useTestAttempt();
   const [currentPage, setCurrentPage] = useState(1);
-  const [answers, setAnswers] = useState(() => getGrammarVocabAnswers('part2'));
   const [showSubmitModal, setShowSubmitModal] = useState(false);
-  useEffect(() => {
-    saveGrammarVocabAnswers('part2', answers);
-  }, [answers]);
+  const sets = useMemo(() => paper?.parts?.['2']?.sets ?? [], [paper]);
+  const totalPages = Math.max(1, Math.ceil(sets.length / SETS_PER_PAGE));
+  const startIndex = (currentPage - 1) * SETS_PER_PAGE;
+  const currentSets = sets.slice(startIndex, startIndex + SETS_PER_PAGE);
+  const allQuestions = useMemo(() => sets.flatMap(set => set.targetWords).map((target, index) => ({
+    id: target.key, displayLabel: index + 26,
+  })), [sets]);
 
-  const itemsPerPage = 2; // 2 word sets per page
-  const totalPages = Math.ceil(wordSets.length / itemsPerPage);
+  if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
+  if (!paper?.parts?.['2']) return <AttemptPageState error="Part 2 is not included in this test." />;
 
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentSets = wordSets.slice(startIndex, startIndex + itemsPerPage);
-  
-  // Extract all individual questions to pass to Footer
-  const allQuestions = wordSets.flatMap(set => set.targetWords.map(tw => ({ id: tw.id })));
-  const currentPageQuestionIds = currentSets.flatMap(set => set.targetWords.map(tw => tw.id));
-
-  const handleOptionSelect = (questionId, optionLabel) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: optionLabel
-    }));
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(p => p + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentPage > 1) {
-      setCurrentPage(p => p - 1);
-    }
-  };
-
-  const handleSubmit = () => {
-    setShowSubmitModal(true);
-  };
-
-  const handleConfirmSubmit = () => {
+  const confirmSubmit = async () => {
     setShowSubmitModal(false);
-    navigate(`/${skill}/result?testId=${testId}&isFull=${isFullTest}&part=2`);
+    const result = await submit();
+    if (result) { approveNavigation(); navigate(`/grammar-vocab/result?attemptId=${attemptId}`); }
   };
-
-  const handleCloseSubmit = () => {
-    setShowSubmitModal(false);
-  };
-
-  const getPageOfQuestion = (questionId) => {
-    const setIndex = wordSets.findIndex(set => set.targetWords.some(tw => tw.id === questionId));
-    return Math.floor(setIndex / itemsPerPage) + 1;
-  };
-
-  const submitLabel = (isFullTest && part === 'part2') ? 'Submit' : (isFullTest ? 'Next Part' : 'Submit');
 
   return (
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div className={styles.partTitle}>{formattedPart}</div>
-          <div className={styles.skillTitle}>{formattedSkill}</div>
+          <div><div className={styles.partTitle}>Part 2</div><div className={styles.skillTitle}>Grammar &amp; Vocabulary</div></div>
+          <SaveIndicator status={saveStatus} />
         </div>
-
-        {currentSets.map((wordSet) => (
-          <div key={wordSet.setId} className={styles.wordSetBlock}>
-            <InstructionBlock title={`Questions ${wordSet.questionRange}`}>
-              <RichTextContent value={wordSet.instruction}/>
-            </InstructionBlock>
-
-            <div className={styles.matchingArea}>
-              <div className={styles.targetWordsColumn}>
-                {wordSet.targetWords.map((tw) => {
-                  const selectedLabel = answers[tw.id];
-
-                  return (
-                    <div key={tw.id} className={styles.matchingRow}>
-                      <div className={styles.targetWordText}>{tw.word} = </div>
-                      
+        {currentSets.map(set => {
+          const first = allQuestions.findIndex(question => question.id === set.targetWords[0]?.key) + 26;
+          const last = first + set.targetWords.length - 1;
+          return (
+            <div key={set.setId} className={styles.wordSetBlock}>
+              <InstructionBlock title={`Questions ${first}-${last}`}>
+                <RichTextContent value={set.instruction} />
+              </InstructionBlock>
+              <div className={styles.matchingArea}>
+                <div className={styles.targetWordsColumn}>
+                  {set.targetWords.map(target => (
+                    <div key={target.key} className={styles.matchingRow}>
+                      <div className={styles.targetWordText}>{target.word} = </div>
                       <div className={styles.dropdownContainer}>
                         <AnswerSelect
-                          value={selectedLabel || ''}
-                          onChange={(event) => handleOptionSelect(tw.id, event.target.value)}
-                          placeholder={`Question ${tw.id}`}
-                          ariaLabel={`Answer for question ${tw.id}`}
-                          options={wordSet.options.map((option) => ({
-                            value: option.label,
-                            label: `${option.label}. ${option.text}`,
-                          }))}
+                          value={answers[target.key]?.optionId ?? ''}
+                          onChange={event => setAnswer(target.key, { kind: 'MATCH', optionId: event.target.value })}
+                          placeholder={`Question ${allQuestions.findIndex(question => question.id === target.key) + 26}`}
+                          ariaLabel={`Answer for ${target.word}`}
+                          options={set.options.map(option => ({ value: option.id, label: `${option.id}. ${option.text}` }))}
                         />
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-
-      <TestFooter 
-        partLabel={formattedPart} 
+      <TestFooter
+        partLabel="Part 2"
         questions={allQuestions}
         answeredIds={Object.keys(answers)}
-        currentPageQuestionIds={currentPageQuestionIds}
-        onQuestionClick={(qId) => setCurrentPage(getPageOfQuestion(qId))}
-        onPrevClick={handlePrev}
-        onNextClick={handleNext}
-        onSubmitClick={handleSubmit}
-        submitLabel={submitLabel}
+        currentPageQuestionIds={currentSets.flatMap(set => set.targetWords.map(target => target.key))}
+        onQuestionClick={key => setCurrentPage(Math.floor(sets.findIndex(set => set.targetWords.some(target => target.key === key)) / SETS_PER_PAGE) + 1)}
+        onPrevClick={() => setCurrentPage(page => Math.max(1, page - 1))}
+        onNextClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
+        onSubmitClick={() => setShowSubmitModal(true)}
+        submitLabel={submitting ? 'Submitting…' : 'Submit'}
+        submitDisabled={submitting || saveStatus === 'conflict'}
         hasPrev={currentPage > 1}
         hasNext={currentPage < totalPages}
       />
-
-      <SubmitModal 
-        isOpen={showSubmitModal} 
-        onBack={handleCloseSubmit} 
-        onNext={handleConfirmSubmit} 
-      />
+      <SubmitModal isOpen={showSubmitModal} onBack={() => setShowSubmitModal(false)} onNext={confirmSubmit} busy={submitting} />
     </div>
   );
 }

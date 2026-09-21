@@ -1,10 +1,16 @@
-import { useState } from 'react';
 import DashboardActivityChart from './components/DashboardActivityChart';
 import DashboardMetricCard from './components/DashboardMetricCard';
 import DashboardPeriodFilter from './components/DashboardPeriodFilter';
 import useAdminDashboard from './hooks/useAdminDashboard';
 import { formatGeneratedAt } from './utils/dashboardFormatters';
 import styles from './AdminDashboardPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const DASHBOARD_QUERY_SCHEMA = {
+  period: queryParam.enum(['this-year', '12-months', '6-months', '30-days', 'week', '24-hours'], '12-months'),
+  testSkill: { ...queryParam.enum(['ALL', 'READING', 'LISTENING', 'WRITING', 'GRAMMAR_VOCAB', 'SPEAKING'], 'ALL'), param: 'testsSkill' },
+  activitySkill: { ...queryParam.enum(['ALL', 'READING', 'LISTENING', 'WRITING', 'GRAMMAR_VOCAB', 'SPEAKING'], 'ALL'), param: 'activitySkill' },
+};
 
 function DashboardSkeleton() {
   return (
@@ -18,9 +24,11 @@ function DashboardSkeleton() {
 }
 
 export default function AdminDashboardPage() {
-  const [period, setPeriod] = useState('12-months');
-  const [testSkill, setTestSkill] = useState('ALL');
-  const [activitySkill, setActivitySkill] = useState('ALL');
+  const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
+  const { period, testSkill, activitySkill } = urlState;
+  const setPeriod = value => setUrlState({ period: value });
+  const setTestSkill = value => setUrlState({ testSkill: value });
+  const setActivitySkill = value => setUrlState({ activitySkill: value });
   const { data, loading, error, retry } = useAdminDashboard(period);
 
   return (

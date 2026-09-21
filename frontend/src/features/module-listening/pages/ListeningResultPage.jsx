@@ -206,7 +206,7 @@ export default function ListeningResultPage() {
         <div className={styles.topSection}>
           <div className={styles.cefrBox}>
             <div className={styles.cefrLabel}>CEFR Level</div>
-            <div className={styles.cefrValue}>{results.cefrLevel}</div>
+            <div className={styles.cefrValue}>{results.cefrLevel ?? 'Not converted'}</div>
             <div className={styles.scoreText}>Score: {results.totalCorrect}/{results.totalQuestions}</div>
           </div>
 

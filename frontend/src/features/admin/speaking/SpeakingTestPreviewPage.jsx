@@ -6,6 +6,10 @@ import { SPEAKING_PARTS } from './data/speakingTestModel';
 import { speakingTestsApi } from './services/speakingTestsApi';
 import { validateSpeakingTest } from './validation/speakingValidation';
 import styles from '../reading/components/ReadingEditor.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const PREVIEW_QUERY_SCHEMA = { activePart: { ...queryParam.positiveInt(1, 4), param: 'part' } };
+
 export default function SpeakingTestPreviewPage(){
   const { testId } = useParams();
   const navigate = useNavigate();
@@ -14,11 +18,12 @@ export default function SpeakingTestPreviewPage(){
   const [loading, setLoading] = useState(true);
   const [confirmPublish, setConfirmPublish] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [urlState, setUrlState] = useUrlQueryState(PREVIEW_QUERY_SCHEMA);
   
   useEffect(()=>{speakingTestsApi.getOne(testId).then(setTest).catch(()=>{}).finally(()=>setLoading(false))},[testId]);
   
   const parts = SPEAKING_PARTS.filter(part=>test&&(test.mode==='full'||test.mode===`part${part.number}`));
-  const [activePart, setActivePart] = useState(parts[0]?.number||1);
+  const activePart = parts.some(part => part.number === urlState.activePart) ? urlState.activePart : parts[0]?.number || 1;
   
   const requestPublish = () => {
     const next = validateSpeakingTest(test);
@@ -62,7 +67,7 @@ export default function SpeakingTestPreviewPage(){
       <p>Speaking · Candidate-view preview · Fixed Aptis response times are shown with each task.</p>
     </header>
     <nav className={styles.previewTabs}>
-      {parts.map(part=><button aria-pressed={activePart===part.number} key={part.number} onClick={()=>setActivePart(part.number)}>Part {part.number} · {part.title}</button>)}
+      {parts.map(part=><button aria-pressed={activePart===part.number} key={part.number} onClick={()=>setUrlState({ activePart: part.number })}>Part {part.number} · {part.title}</button>)}
     </nav>
     <SpeakingAnswerPreview test={test} part={activePart}/>
   </main>

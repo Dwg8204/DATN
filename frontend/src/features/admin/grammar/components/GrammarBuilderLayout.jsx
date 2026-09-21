@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useParams, useSearchParams } from 'react-router-dom';
 import { GrammarTestBuilderProvider } from '../context/GrammarTestBuilderContext';
 import { createGrammarTestDraft } from '../data/grammarTestData';
@@ -28,8 +28,10 @@ export default function GrammarBuilderLayout() {
     return () => controller.abort();
   }, [mode, testId]);
 
+  const syncPersistedTest = useCallback(test => setState({ test, loading: false, error: '' }), []);
+
   if (state.loading) return <div style={{ padding: 32 }}>Loading Grammar &amp; Vocabulary test…</div>;
   if (state.error || !state.test) return <div style={{ padding: 32 }}><h2>Test not found</h2><p>{state.error || 'This test is unavailable.'}</p></div>;
   const basePath = testId ? `/admin/tests/grammar/${testId}/edit` : '/admin/tests/new/grammar';
-  return <GrammarTestBuilderProvider key={testId || mode} initialTest={state.test} basePath={basePath}><Outlet /></GrammarTestBuilderProvider>;
+  return <GrammarTestBuilderProvider key={testId || mode} initialTest={state.test} basePath={basePath} onTestChange={syncPersistedTest}><Outlet /></GrammarTestBuilderProvider>;
 }

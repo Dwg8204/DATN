@@ -22,6 +22,7 @@ export default function ReadingTestPage() {
   const { testId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const hasPartParam = searchParams.has('part');
   const mode = searchParams.get('mode') || 'full';
 
   const { 
@@ -52,7 +53,7 @@ export default function ReadingTestPage() {
           else if (mode === 'part3') initialPart = 3;
           else if (mode === 'part4') initialPart = 4;
           
-          setCurrentPart(initialPart);
+          if (!hasPartParam) setCurrentPart(initialPart);
           setLoading(false);
       } catch {
         if (cancelled) return;
@@ -70,7 +71,7 @@ export default function ReadingTestPage() {
       cancelled = true;
       setIsStarted(false);
     };
-  }, [testId, setTestData, setIsStarted, setCurrentPart, mode, showError]);
+  }, [hasPartParam, mode, setCurrentPart, setIsStarted, setTestData, showError, testId]);
 
   // Dynamic automatic timeout submission
   useEffect(() => {

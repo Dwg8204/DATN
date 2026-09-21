@@ -5,6 +5,7 @@ import CommentSection from '../../../components/shared/CommentSection/CommentSec
 import { getCompletedListeningTests } from '../utils/listeningSessionStorage';
 import styles from './ListeningTestListPage.module.css';
 import { listeningTestsApi } from '../../admin/listening/services/listeningTestsApi';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const TABS = [
   { id: 'part1', label: 'Part 1' },
@@ -13,16 +14,23 @@ const TABS = [
   { id: 'part4', label: 'Part 4' },
   { id: 'full', label: 'Full test' },
 ];
+const LIST_QUERY_SCHEMA = {
+  activeTab: { ...queryParam.enum(TABS.map(tab => tab.id), 'part1'), param: 'part' },
+  query: { ...queryParam.string(''), param: 'q' },
+  page: queryParam.positiveInt(1),
+  pageSize: { ...queryParam.positiveInt(() => window.innerWidth <= 700 ? 5 : 10, 100), param: 'size' },
+};
 
 
 
 export default function ListeningTestListPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('part1');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
-  const [query, setQuery] = useState('');
-  useEffect(() => setPage(1), [activeTab, query]);
+  const [urlState, setUrlState] = useUrlQueryState(LIST_QUERY_SCHEMA);
+  const { activeTab, page, pageSize, query } = urlState;
+  const setActiveTab = value => setUrlState({ activeTab: value, page: 1 });
+  const setQuery = value => setUrlState({ query: value, page: 1 });
+  const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   const [completedTests, setCompletedTests] = useState({});
   const [adminTests, setAdminTests] = useState([]);
   const [totalItems, setTotalItems] = useState(0);

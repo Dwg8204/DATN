@@ -9,6 +9,16 @@ import { grammarTestsApi } from '../features/admin/grammar/services/grammarTests
 import { writingTestsApi } from '../features/admin/writing/services/writingTestsApi';
 import { getApiError } from '../services/apiError';
 import { useToast } from '../context/ToastContext';
+import { testAttemptsApi } from '../features/test-attempts/services/testAttemptsApi';
+import { formatDuration } from '../features/test-attempts/utils/attemptTime';
+import useUrlQueryState, { queryParam } from '../hooks/useUrlQueryState';
+
+const TEST_LIST_QUERY_SCHEMA = {
+  activeTab: { ...queryParam.enum(['part1', 'part2', 'part3', 'part4', 'full'], 'part1'), param: 'part' },
+  query: { ...queryParam.string(''), param: 'q' },
+  page: queryParam.positiveInt(1),
+  pageSize: { ...queryParam.positiveInt(() => window.innerWidth <= 700 ? 5 : 10, 100), param: 'size' },
+};
 
 // Fake data for tests
 const MOCK_TESTS = [
@@ -55,11 +65,12 @@ export default function TestListPage() {
   const { skill } = useParams();
   const navigate = useNavigate();
   const { showError } = useToast();
-  const [activeTab, setActiveTab] = useState('part1');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
-  const [query, setQuery] = useState('');
-  useEffect(() => setPage(1), [activeTab, skill, query]);
+  const [urlState, setUrlState] = useUrlQueryState(TEST_LIST_QUERY_SCHEMA);
+  const { activeTab, page, pageSize, query } = urlState;
+  const setActiveTab = value => setUrlState({ activeTab: value, page: 1 });
+  const setQuery = value => setUrlState({ query: value, page: 1 });
+  const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   const [grammarState, setGrammarState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
   const [writingState, setWritingState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
   useEffect(() => {
@@ -68,20 +79,36 @@ export default function TestListPage() {
     const timer = window.setTimeout(() => {
       setGrammarState(current => ({ ...current, loading: true, error: '' }));
       grammarTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
-        .then(result => setGrammarState({
-          tests: (result.data ?? []).map(test => ({
+        .then(async result => {
+        const ids = (result.data ?? []).map(test => test.id);
+        const history = ids.length ? await testAttemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+        const latestByTest = new Map();
+        for (const attempt of history.data ?? []) {
+          if (!latestByTest.has(attempt.testId)) latestByTest.set(attempt.testId, attempt);
+        }
+        setGrammarState({
+          tests: (result.data ?? []).map(test => {
+            const attempt = latestByTest.get(test.id);
+            const completed = attempt?.status === 'SUBMITTED';
+            const inProgress = attempt?.status === 'IN_PROGRESS';
+            return {
             ...test,
             title: test.title || test.name,
             desc: `${test.questionType}\nAptiMate published test`,
             part: test.section,
             tabId: test.mode,
-            status: 'Not Started',
+            status: completed ? 'Completed' : inProgress ? 'In Progress' : 'Not Started',
+            attemptId: attempt?.attemptId,
+            submitted: completed ? new Date(attempt.submittedAt).toLocaleString('vi-VN') : undefined,
+            duration: completed && attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : undefined,
+            accuracy: completed && Number(attempt.maxScore) ? Math.round((Number(attempt.score) / Number(attempt.maxScore)) * 100) : undefined,
             apiManaged: true,
-          })),
+          }; }),
           totalItems: result.pagination?.totalItems ?? 0,
           loading: false,
           error: '',
-        }))
+        });
+      })
         .catch(error => {
           if (error.code !== 'ERR_CANCELED') setGrammarState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, 'Unable to load Grammar & Vocabulary tests.') });
         });
@@ -142,7 +169,7 @@ export default function TestListPage() {
   };
 
   const startTest = test => {
-    if (test.apiManaged) {
+    if (test.apiManaged && skill !== 'grammar-vocab') {
       showError('This published test is ready, but the secure attempt and grading API must be connected before learners can start it.');
       return;
     }
@@ -150,6 +177,10 @@ export default function TestListPage() {
   };
 
   const handleReviewTest = (test) => {
+    if (skill === 'grammar-vocab' && test.attemptId) {
+      navigate(`/grammar-vocab/result-detail?attemptId=${test.attemptId}`);
+      return;
+    }
     const resultDetailPath = currentConfig.resultDetailPath || `/${skill}/result-detail`;
     const part = test.tabId === 'part2' ? '2' : '1';
     const isFull = test.tabId === 'full';
@@ -252,7 +283,7 @@ export default function TestListPage() {
                       </button>
                     )}
                     <button className={styles.doTestBtn} onClick={() => startTest(test)}>
-                      <span className={styles.doTestBtnText}>Do the test</span>
+                      <span className={styles.doTestBtnText}>{test.status === 'In Progress' ? 'Continue test' : 'Do the test'}</span>
                     </button>
                   </div>
 
@@ -266,7 +297,7 @@ export default function TestListPage() {
                     </div>
                   ) : (
                     <div className={styles.statusBadgeNotStarted}>
-                      <span className={styles.statusBadgeNotStartedText}>Not Started</span>
+                      <span className={styles.statusBadgeNotStartedText}>{test.status}</span>
                     </div>
                   )}
                 </div>

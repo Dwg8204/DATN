@@ -13,7 +13,8 @@ export default function TestFooter({
   submitLabel = 'Submit',
   hasPrev = true,
   hasNext = true,
-  hideNext = false, // backward compatibility with Part4
+  hideNext: _hideNext = false, // backward compatibility with Part4
+  submitDisabled = false,
 }) {
   const questionListRef = useRef(null);
   const questionNodeRefs = useRef(new Map());
@@ -86,7 +87,7 @@ export default function TestFooter({
             </div>
           </button>
         </div>
-        <button className={styles.submitBtn} onClick={onSubmitClick}>
+        <button className={styles.submitBtn} onClick={onSubmitClick} disabled={submitDisabled}>
           <span className={styles.submitBtnText}>{submitLabel}</span>
         </button>
       </div>

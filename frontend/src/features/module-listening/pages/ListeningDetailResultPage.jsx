@@ -8,6 +8,12 @@ import { listeningTestsApi } from '../../admin/listening/services/listeningTests
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import styles from './ListeningDetailResultPage.module.css';
 import RichTextContent from '../../../components/common/RichTextContent';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const DETAIL_QUERY_SCHEMA = {
+  activePart: { ...queryParam.positiveInt(1, 4), param: 'part' },
+  currentPage: { ...queryParam.positiveInt(1), param: 'page' },
+};
 
 function getStatus(answer, correctAnswer) {
   if (answer === undefined || answer === null) return 'skipped';
@@ -44,8 +50,10 @@ export default function ListeningDetailResultPage() {
       return null; 
     } 
   }, [historyId, testId, isFullTest, initialPart]);
-  const [activePart, setActivePart] = useState(initialPart);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [urlState, setUrlState] = useUrlQueryState(DETAIL_QUERY_SCHEMA);
+  const activePart = searchParams.has('part') ? urlState.activePart : initialPart;
+  const { currentPage } = urlState;
+  const setCurrentPage = next => setUrlState(current => ({ currentPage: typeof next === 'function' ? next(current.currentPage) : next }));
   const [testSnapshot, setTestSnapshot] = useState(history?.testSnapshot || null);
   const [loading, setLoading] = useState(!history?.testSnapshot);
 
@@ -97,8 +105,7 @@ export default function ListeningDetailResultPage() {
   const allAnswers = useMemo(() => history?.allAnswers ? { part1: history.allAnswers.p1Raw || history.allAnswers.part1, part2: history.allAnswers.p2Raw || history.allAnswers.part2, part3: history.allAnswers.p3Raw || history.allAnswers.part3, part4: history.allAnswers.p4Raw || history.allAnswers.part4 } : getAllAnswers() || {}, [history]);
 
   const changePart = (partNum) => {
-    setActivePart(partNum);
-    setCurrentPage(1);
+    setUrlState({ activePart: partNum, currentPage: 1 });
   };
 
   const handleNext = () => {
@@ -117,12 +124,12 @@ export default function ListeningDetailResultPage() {
     } else if (activePart === 4 && currentPage > 1) {
       setCurrentPage(prev => prev - 1);
     } else if (isFullTest && activePart > 1) {
-      changePart(activePart - 1);
+      const previousPart = activePart - 1;
       if (activePart - 1 === 1) {
-        setCurrentPage(PART1_QUESTIONS.length);
+        setUrlState({ activePart: previousPart, currentPage: PART1_QUESTIONS.length });
       } else if (activePart - 1 === 4) {
-        setCurrentPage(PART4_QUESTIONS.length);
-      }
+        setUrlState({ activePart: previousPart, currentPage: PART4_QUESTIONS.length });
+      } else setUrlState({ activePart: previousPart, currentPage: 1 });
     }
   };
 
