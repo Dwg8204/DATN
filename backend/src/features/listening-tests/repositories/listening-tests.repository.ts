@@ -293,8 +293,9 @@ export class ListeningTestsRepository {
           id: q.id,
           text: q.content.text as string,
           options: q.content.options as string[],
-          correctAnswer: q.correct_answer?.optionIndex as number ?? 0,
+          correctAnswer: (q.correct_answer?.optionIndex as number | undefined) ?? -1,
           audioUrl: q.content.audioUrl as string,
+          explanation: q.explanation?.text as string | undefined,
         }))
       };
     }
@@ -308,6 +309,7 @@ export class ListeningTestsRepository {
         speakers: (c.part2 as any)?.speakers || [],
         options: (c.part2 as any)?.options || [],
         answers: q2.map(q => q.correct_answer?.optionLabel as string || ''),
+        explanations: Object.fromEntries(q2.map((q, index) => [`speaker-${index}`, q.explanation?.text as string || ''])),
       };
     }
     
@@ -323,6 +325,7 @@ export class ListeningTestsRepository {
           id: `15${String.fromCharCode(97+i)}`,
           text: q.content.statement as string || '',
           answer: q.correct_answer?.opinion as string || '',
+          explanation: q.explanation?.text as string | undefined,
         })),
       };
     }
@@ -341,7 +344,8 @@ export class ListeningTestsRepository {
               id: q.id,
               text: q.content.text as string,
               options: q.content.options as string[],
-              correctAnswer: q.correct_answer?.optionIndex as number ?? 0,
+              correctAnswer: (q.correct_answer?.optionIndex as number | undefined) ?? -1,
+              explanation: q.explanation?.text as string | undefined,
             })),
           };
         }),
@@ -390,9 +394,9 @@ export class ListeningTestsRepository {
       let position = 1;
       for (const q of aggregate.parts[1].questions) {
         await manager.query(
-          `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer)
-           VALUES ($1, 1, $2, 'MCQ_LISTENING_P1', $3, $4)`,
-          [testId, position++, { text: q.text, options: q.options, audioUrl: q.audioUrl }, { optionIndex: q.correctAnswer }]
+          `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer, explanation)
+           VALUES ($1, 1, $2, 'MCQ_LISTENING_P1', $3, $4, $5)`,
+          [testId, position++, { text: q.text, options: q.options, audioUrl: q.audioUrl }, { optionIndex: q.correctAnswer }, { text: q.explanation ?? '' }]
         );
       }
     }
@@ -401,9 +405,10 @@ export class ListeningTestsRepository {
       let position = 1;
       for (const [idx, speaker] of aggregate.parts[2].speakers.entries()) {
         await manager.query(
-          `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer)
-           VALUES ($1, 2, $2, 'MATCHING_LISTENING_P2', $3, $4)`,
-          [testId, position++, { speakerLabel: speaker }, { optionLabel: aggregate.parts[2].answers[idx] }]
+          `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer, explanation)
+           VALUES ($1, 2, $2, 'MATCHING_LISTENING_P2', $3, $4, $5)`,
+          [testId, position++, { speakerLabel: speaker }, { optionLabel: aggregate.parts[2].answers[idx] },
+            { text: aggregate.parts[2].explanations?.[`speaker-${idx}`] ?? '' }]
         );
       }
     }
@@ -412,9 +417,9 @@ export class ListeningTestsRepository {
       let position = 1;
       for (const stmt of aggregate.parts[3].statements) {
         await manager.query(
-          `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer)
-           VALUES ($1, 3, $2, 'OPINION_LISTENING_P3', $3, $4)`,
-          [testId, position++, { statement: stmt.text }, { opinion: stmt.answer }]
+          `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer, explanation)
+           VALUES ($1, 3, $2, 'OPINION_LISTENING_P3', $3, $4, $5)`,
+          [testId, position++, { statement: stmt.text }, { opinion: stmt.answer }, { text: stmt.explanation ?? '' }]
         );
       }
     }
@@ -424,9 +429,10 @@ export class ListeningTestsRepository {
       for (const [idx, rec] of aggregate.parts[4].recordings.entries()) {
         for (const q of rec.subQuestions) {
           await manager.query(
-            `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer)
-             VALUES ($1, 4, $2, 'MCQ_LISTENING_P4', $3, $4)`,
-            [testId, position++, { text: q.text, options: q.options, recordingIndex: idx }, { optionIndex: q.correctAnswer }]
+            `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer, explanation)
+             VALUES ($1, 4, $2, 'MCQ_LISTENING_P4', $3, $4, $5)`,
+            [testId, position++, { text: q.text, options: q.options, recordingIndex: idx }, { optionIndex: q.correctAnswer },
+              { text: q.explanation ?? '' }]
           );
         }
       }

@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
+import { firstMutationRow } from '../../../common/database/mutation-result';
 import { ListWritingTestsQueryDto } from '../dto/list-writing-tests-query.dto';
 import {
   WritingActor, WritingAudit, WritingTestAggregate, WritingTestMode, WritingTestStatus, WritingTestSummary,
@@ -154,9 +155,10 @@ export class WritingTestsRepository {
           JSON.stringify(test.details.pictureUrl ? { url: test.details.pictureUrl } : null),
           JSON.stringify(this.partContents(test))],
       );
-      await this.upsertQuestions(manager, rows[0].id, this.toQuestions(test));
-      await this.writeAudit(manager, actor.id, 'WRITING_TEST_CREATED', rows[0].id, { mode: test.mode }, audit);
-      return this.hydrate(rows[0], await this.loadQuestions(manager, rows[0].id));
+      const row = firstMutationRow<TestRow>(rows);
+      await this.upsertQuestions(manager, row.id, this.toQuestions(test));
+      await this.writeAudit(manager, actor.id, 'WRITING_TEST_CREATED', row.id, { mode: test.mode }, audit);
+      return this.hydrate(row, await this.loadQuestions(manager, row.id));
     });
   }
 
@@ -175,11 +177,12 @@ export class WritingTestsRepository {
           JSON.stringify(test.details.pictureUrl ? { url: test.details.pictureUrl } : null),
           JSON.stringify(this.partContents(test)), actor.id],
       );
+      const row = firstMutationRow<TestRow>(rows);
       const questionParts = this.partNumbers(test.mode);
       await manager.query(`UPDATE questions SET deleted_at=now(),updated_at=now() WHERE test_id=$1 AND NOT(part_number=ANY($2::smallint[])) AND deleted_at IS NULL`, [id, questionParts]);
       await this.upsertQuestions(manager, id, this.toQuestions(test));
       await this.writeAudit(manager, actor.id, 'WRITING_TEST_UPDATED', id, { fromVersion: expectedVersion, toVersion: expectedVersion + 1 }, audit);
-      return { outcome: 'SUCCESS', value: this.hydrate(rows[0], await this.loadQuestions(manager, id)) };
+      return { outcome: 'SUCCESS', value: this.hydrate(row, await this.loadQuestions(manager, id)) };
     });
   }
 
@@ -206,8 +209,9 @@ export class WritingTestsRepository {
         `UPDATE tests SET status='PUBLISHED',published_snapshot_id=$2,published_at=now(),archived_at=NULL,updated_by=$3,updated_at=now()
          WHERE id=$1 RETURNING *`, [id, snapshotRows[0].id, actor.id],
       );
+      const row = firstMutationRow<TestRow>(rows);
       await this.writeAudit(manager, actor.id, 'WRITING_TEST_PUBLISHED', id, { version: current.version }, audit);
-      return { outcome: 'SUCCESS', value: this.hydrate(rows[0], await this.loadQuestions(manager, id)) };
+      return { outcome: 'SUCCESS', value: this.hydrate(row, await this.loadQuestions(manager, id)) };
     });
   }
 
@@ -219,8 +223,9 @@ export class WritingTestsRepository {
       const rows = await manager.query<TestRow[]>(
         `UPDATE tests SET status='ARCHIVED',archived_at=now(),updated_by=$2,updated_at=now() WHERE id=$1 RETURNING *`, [id, actor.id],
       );
+      const row = firstMutationRow<TestRow>(rows);
       await this.writeAudit(manager, actor.id, 'WRITING_TEST_ARCHIVED', id, { version: current.version }, audit);
-      return { outcome: 'SUCCESS', value: this.hydrate(rows[0], await this.loadQuestions(manager, id)) };
+      return { outcome: 'SUCCESS', value: this.hydrate(row, await this.loadQuestions(manager, id)) };
     });
   }
 

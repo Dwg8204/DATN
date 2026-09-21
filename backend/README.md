@@ -157,7 +157,7 @@ npm run start:prod    # chạy bản đã build trong dist
 npm run lint
 npm run typecheck
 npm test
-npm run test:e2e  # cần PostgreSQL local đã migrate; chỉ kiểm tra đọc và HTTP validation
+npm run test:e2e  # yêu cầu TEST_DATABASE_URL trỏ tới database riêng, tên kết thúc bằng _test, đã migrate và seed
 ```
 
 ## Xác thực JWT và mật khẩu

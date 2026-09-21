@@ -1,5 +1,5 @@
 import {
-  Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, Req, UseGuards,
+  BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, Req, UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -106,6 +106,8 @@ export class PublishedListeningTestsController {
   @ApiParam({ name: 'id', description: 'ID của bài Listening' })
   @ApiQuery({ name: 'mode', required: false, description: 'Chế độ thi (VD: full, part1, part2,...)' })
   @Post(':id/attempts')
+  @UseGuards(RolesGuard)
+  @Roles('STUDENT')
   startAttempt(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Query('mode') mode: string,
@@ -118,11 +120,17 @@ export class PublishedListeningTestsController {
   @ApiParam({ name: 'id', description: 'ID của bài Listening' })
   @ApiParam({ name: 'attemptId', description: 'ID của phiên làm bài' })
   @Post(':id/attempts/:attemptId/submit')
+  @UseGuards(RolesGuard)
+  @Roles('STUDENT')
   submitAttempt(
     @Param('id', new ParseUUIDPipe()) id: string,
+    @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
     @Body() dto: SubmitListeningAttemptDto,
     @CurrentUser() actor: AuthUser
   ) {
+    if (attemptId !== dto.attemptId) {
+      throw new BadRequestException('Attempt ID in the URL must match the request body.');
+    }
     return this.attempts.submitAttempt(id, actor, dto);
   }
 }

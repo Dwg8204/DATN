@@ -5,33 +5,32 @@ import { AuthUser } from '../../auth/types/auth-user.type';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { ListeningTestAggregate } from '../types/listening-test.type';
 import { SubmitListeningAttemptDto } from '../dto/submit-listening-attempt.dto';
+import { TestAttemptsService } from '../../test-attempts/services/test-attempts.service';
+import { Answer, AssessmentResult } from '../../test-attempts/types/attempt.type';
 
 @Injectable()
 export class ListeningAttemptService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(private readonly dataSource: DataSource, private readonly sharedAttempts: TestAttemptsService) {}
 
   async startAttempt(testId: string, mode: string, actor: AuthUser) {
-    const test = await this.getPublishedTest(testId);
-    if (!test) throw new ApplicationError('LISTENING_TEST_NOT_FOUND', 'Test not found or not published.', 404);
-
-    const attemptId = randomUUID();
-    const scope = mode === 'full' ? 'FULL_SKILL' : 'PART';
-    const partNumber = mode === 'full' ? null : parseInt(mode.replace('part', ''), 10);
-
-    await this.dataSource.query(
-      `INSERT INTO test_attempts (id, student_id, snapshot_id, component, scope, part_number, started_at)
-       VALUES ($1, $2, $3, 'LISTENING', $4, $5, now())`,
-      [attemptId, actor.id, test.published_snapshot_id, scope, partNumber]
-    );
-
-    return { attemptId };
+    const started = await this.sharedAttempts.start(testId, randomUUID(), actor, mode, 'LISTENING');
+    return { attemptId: started.attemptId };
   }
 
   async submitAttempt(testId: string, actor: AuthUser, dto: SubmitListeningAttemptDto) {
+    const sharedRow = await this.dataSource.query<Array<{ attempt_id: string }>>(
+      `SELECT p.attempt_id FROM attempt_progress p JOIN test_attempts a ON a.id=p.attempt_id
+       JOIN test_snapshots s ON s.id=a.snapshot_id
+       WHERE p.attempt_id=$1 AND a.student_id=$2 AND s.test_id=$3 AND a.component='LISTENING'`,
+      [dto.attemptId, actor.id, testId]);
+    if (sharedRow.length) return this.submitSharedAttempt(dto, actor);
     const attemptRows = await this.dataSource.query(
-      `SELECT id, snapshot_id, started_at, scope, part_number FROM test_attempts 
-       WHERE id = $1 AND student_id = $2 AND component = 'LISTENING' AND status = 'IN_PROGRESS'`,
-      [dto.attemptId, actor.id]
+      `SELECT a.id, a.snapshot_id, a.started_at, a.scope, a.part_number FROM test_attempts a
+       JOIN test_snapshots s ON s.id=a.snapshot_id
+       WHERE a.id = $1 AND a.student_id = $2 AND s.test_id=$3
+         AND a.component = 'LISTENING' AND a.status = 'IN_PROGRESS'
+         AND NOT EXISTS (SELECT 1 FROM attempt_progress p WHERE p.attempt_id=a.id)`,
+      [dto.attemptId, actor.id, testId]
     );
     if (!attemptRows.length) {
       throw new ApplicationError('ATTEMPT_NOT_FOUND', 'Attempt not found or already submitted.', 404);
@@ -189,14 +188,15 @@ export class ListeningAttemptService {
     };
 
     await this.dataSource.transaction(async manager => {
-      await manager.query(
+      const updated = await manager.query<Array<{ id: string }>>(
         `UPDATE test_attempts 
          SET status = 'SUBMITTED', grading_status = 'COMPLETED',
              score = $1, max_score = $2, estimated_cefr = $3,
              result = $4, submitted_at = now(), completed_at = now()
-         WHERE id = $5`,
+         WHERE id = $5 AND status = 'IN_PROGRESS' RETURNING id`,
         [totalScore, maxScore, estimatedCefr, result, dto.attemptId]
       );
+      if (!updated.length) throw new ApplicationError('ATTEMPT_CONFLICT', 'This test has already been submitted.', 409);
 
       await manager.query(
         `INSERT INTO attempt_progress (attempt_id, answers, progress)
@@ -209,6 +209,79 @@ export class ListeningAttemptService {
     return result;
   }
 
+  private async submitSharedAttempt(dto: SubmitListeningAttemptDto, actor: AuthUser) {
+    const attempt = await this.sharedAttempts.get(dto.attemptId, actor);
+    const rows = await this.dataSource.query<Array<{ snapshot: ListeningTestAggregate }>>(
+      `SELECT s.snapshot FROM test_attempts a JOIN test_snapshots s ON s.id=a.snapshot_id WHERE a.id=$1 AND a.student_id=$2`,
+      [dto.attemptId, actor.id]);
+    const snapshot = rows[0]?.snapshot;
+    if (!snapshot) throw new ApplicationError('SNAPSHOT_NOT_FOUND', 'Test snapshot not found.', 404);
+    const changes = this.toSharedAnswers(snapshot, dto.answers ?? {});
+    const submitted = await this.sharedAttempts.submit(dto.attemptId, actor,
+      { expectedRevision: attempt.revision, finalChanges: changes });
+    const saved = await this.sharedAttempts.get(dto.attemptId, actor);
+    const result = submitted.result as AssessmentResult;
+    const partBreakdown: Record<string, Array<Record<string, unknown>>> = {};
+    for (const item of result.items) {
+      const part = item.partNumber;
+      const index = Number(item.key.match(/\d+$/)?.[0] ?? '1') - 1;
+      const partKey = `part${part}`;
+      const optionId = (saved.answers[item.key] as Answer | undefined)?.kind === 'TEXT' ? undefined
+        : (saved.answers[item.key] as { optionId?: string } | undefined)?.optionId;
+      let qId: string | number;
+      let userAnswer: string | number | undefined;
+      let correctAnswer: string | number;
+      if (part === 1) {
+        const question = snapshot.parts[1]!.questions[index];
+        qId = question.id;
+        userAnswer = optionId ? Number(optionId.slice(1)) : undefined;
+        correctAnswer = question.correctAnswer;
+      } else if (part === 2) {
+        const section = snapshot.parts[2]!;
+        qId = `14.${index + 1}`;
+        userAnswer = optionId ? section.options[optionId.charCodeAt(0) - 65] : undefined;
+        correctAnswer = section.answers[index];
+      } else if (part === 3) {
+        const section = snapshot.parts[3]!;
+        qId = section.statements[index].id;
+        userAnswer = optionId ? section.options[Number(optionId.slice(1))] : undefined;
+        correctAnswer = section.statements[index].answer;
+      } else {
+        const question = snapshot.parts[4]!.recordings.flatMap(recording => recording.subQuestions)[index];
+        qId = question.id;
+        userAnswer = optionId ? Number(optionId.slice(1)) : undefined;
+        correctAnswer = question.correctAnswer;
+      }
+      (partBreakdown[partKey] ??= []).push({ qId, userAnswer, correctAnswer,
+        isCorrect: item.outcome === 'CORRECT', isSkipped: item.outcome === 'SKIPPED' });
+    }
+    return { score: result.score, maxScore: result.maxScore, estimatedCefr: submitted.estimatedCefr,
+      totalCorrect: result.counts.correct, totalWrong: result.counts.incorrect, totalSkip: result.counts.skipped, partBreakdown };
+  }
+
+  private toSharedAnswers(snapshot: ListeningTestAggregate, source: NonNullable<SubmitListeningAttemptDto['answers']>): Record<string, Answer> {
+    const answers: Record<string, Answer> = {};
+    snapshot.parts[1]?.questions.forEach((question, index) => {
+      const selected = source.part1?.[question.id];
+      if (Number.isInteger(selected)) answers[`p1:q${index + 1}`] = { kind: 'CHOICE', optionId: `o${selected}` };
+    });
+    snapshot.parts[2]?.speakers.forEach((_, index) => {
+      const selected = source.part2?.[String(index)];
+      const optionIndex = snapshot.parts[2]!.options.indexOf(selected ?? '');
+      if (optionIndex >= 0) answers[`p2:s${index + 1}`] = { kind: 'MATCH', optionId: String.fromCharCode(65 + optionIndex) };
+    });
+    snapshot.parts[3]?.statements.forEach((statement, index) => {
+      const selected = source.part3?.[statement.id];
+      const optionIndex = snapshot.parts[3]!.options.indexOf(selected ?? '');
+      if (optionIndex >= 0) answers[`p3:s${index + 1}`] = { kind: 'MATCH', optionId: `o${optionIndex}` };
+    });
+    snapshot.parts[4]?.recordings.flatMap(recording => recording.subQuestions).forEach((question, index) => {
+      const selected = source.part4?.[question.id];
+      if (Number.isInteger(selected)) answers[`p4:q${index + 1}`] = { kind: 'CHOICE', optionId: `o${selected}` };
+    });
+    return answers;
+  }
+
   private calculateCefr(score: number): string {
     if (score >= 42) return 'C';
     if (score >= 34) return 'B2';
@@ -217,11 +290,4 @@ export class ListeningAttemptService {
     return 'A1';
   }
 
-  private async getPublishedTest(testId: string) {
-    const rows = await this.dataSource.query(
-      `SELECT published_snapshot_id FROM tests WHERE id = $1 AND component = 'LISTENING' AND status = 'PUBLISHED'`,
-      [testId]
-    );
-    return rows.length ? rows[0] : null;
-  }
 }

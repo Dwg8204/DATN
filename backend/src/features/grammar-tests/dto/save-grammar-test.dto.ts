@@ -18,10 +18,3 @@ export class UpdateGrammarTestDto extends CreateGrammarTestDto {
   @Max(2_147_483_647)
   version!: number;
 }
-
-export class PublishGrammarTestDto {
-  @IsInt()
-  @Min(1)
-  @Max(2_147_483_647)
-  version!: number;
-}
