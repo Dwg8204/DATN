@@ -5,9 +5,10 @@ import { ListeningTestsRepository } from './repositories/listening-tests.reposit
 import { ListeningTestContentService } from './services/listening-test-content.service';
 import { ListeningTestsService } from './services/listening-tests.service';
 import { ListeningAttemptService } from './services/listening-attempt.service';
+import { TestAttemptsModule } from '../test-attempts/test-attempts.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, TestAttemptsModule],
   controllers: [ListeningTestsController, PublishedListeningTestsController],
   providers: [ListeningTestsRepository, ListeningTestContentService, ListeningTestsService, ListeningAttemptService],
   exports: [ListeningTestsService, ListeningAttemptService],

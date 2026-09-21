@@ -6,43 +6,77 @@ import { getHistoryEntries } from '../../../utils/historyStorage';
 import { ClipboardList, Calendar, Clock, FileText, Search } from 'lucide-react';
 import styles from './LearningHistoryPage.module.css';
 import AnswerSelect from '../../../components/common/AnswerSelect';
+import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
+import { formatDuration } from '../../test-attempts/utils/attemptTime';
+import { getApiError } from '../../../services/apiError';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const HISTORY_QUERY_SCHEMA = {
+  skillFilter: { ...queryParam.enum(['all', 'listening', 'reading', 'writing', 'speaking', 'grammar'], 'all'), param: 'skill' },
+  partFilter: { ...queryParam.enum(['all', 'full', 'part1', 'part2', 'part3', 'part4'], 'all'), param: 'part' },
+  sortOrder: { ...queryParam.enum(['desc', 'asc'], 'desc'), param: 'sort' },
+  appliedSearch: { ...queryParam.string(''), param: 'q' },
+  page: queryParam.positiveInt(1),
+  pageSize: { ...queryParam.positiveInt(() => window.innerWidth <= 700 ? 5 : 10, 100), param: 'size' },
+};
 
 export default function LearningHistoryPage() {
   const [history, setHistory] = useState([]);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
-  const [sortOrder, setSortOrder] = useState('desc');
-  const [skillFilter, setSkillFilter] = useState('all');
-  const [partFilter, setPartFilter] = useState('all');
-  const [searchInput, setSearchInput] = useState('');
-  const [appliedSearch, setAppliedSearch] = useState('');
+  const [urlState, setUrlState] = useUrlQueryState(HISTORY_QUERY_SCHEMA);
+  const { page, pageSize, sortOrder, skillFilter, partFilter, appliedSearch } = urlState;
+  const [searchInput, setSearchInput] = useState(appliedSearch);
+  const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   const navigate = useNavigate();
+  const [remote, setRemote] = useState({ entries: [], total: 0, loading: false, error: '' });
 
   useEffect(() => {
     setHistory(getHistoryEntries());
   }, []);
 
+  useEffect(() => setSearchInput(appliedSearch), [appliedSearch]);
+
+  useEffect(() => {
+    if (skillFilter !== 'grammar') return undefined;
+    const controller = new AbortController();
+    setRemote(current => ({ ...current, loading: true, error: '' }));
+    testAttemptsApi.history({
+      page, pageSize, component: 'GRAMMAR_VOCAB', mode: partFilter,
+      search: appliedSearch, sort: sortOrder, signal: controller.signal,
+    }).then(result => setRemote({
+      entries: (result.data ?? []).map(attempt => ({
+        id: attempt.attemptId,
+        skill: 'grammar',
+        testName: attempt.title || 'Grammar & Vocabulary Test',
+        mode: attempt.scope === 'FULL_SKILL' ? 'full' : `part${attempt.partNumber}`,
+        submittedAt: attempt.submittedAt,
+        timeSpent: attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : '--:--:--',
+        reviewUrl: `/grammar-vocab/result-detail?attemptId=${attempt.attemptId}`,
+      })),
+      total: result.pagination?.totalItems ?? 0,
+      loading: false,
+      error: '',
+    })).catch(error => {
+      if (error.code !== 'ERR_CANCELED') setRemote({ entries: [], total: 0, loading: false,
+        error: getApiError(error, 'Unable to load your Grammar & Vocabulary history.') });
+    });
+    return () => controller.abort();
+  }, [appliedSearch, page, pageSize, partFilter, skillFilter, sortOrder]);
+
   const handleSortChange = (e) => {
-    setSortOrder(e.target.value);
-    setPage(1);
+    setUrlState({ sortOrder: e.target.value, page: 1 });
   };
   const handleSkillChange = (skill) => {
-    setSkillFilter(skill);
-    setPartFilter('all');
-    setAppliedSearch('');
+    setUrlState({ skillFilter: skill, partFilter: 'all', appliedSearch: '', page: 1 });
     setSearchInput('');
-    setPage(1);
   };
   const handlePartChange = (part) => {
-    setPartFilter(part);
-    setAppliedSearch('');
+    setUrlState({ partFilter: part, appliedSearch: '', page: 1 });
     setSearchInput('');
-    setPage(1);
   };
 
   const handleSearch = () => {
-    setAppliedSearch(searchInput);
-    setPage(1);
+    setUrlState({ appliedSearch: searchInput, page: 1 });
   };
 
   const handleKeyDown = (e) => {
@@ -68,7 +102,7 @@ export default function LearningHistoryPage() {
     return counts;
   }, [history, skillFilter]);
 
-  const filteredHistory = history
+  const localFilteredHistory = history
     .filter(entry => {
       if (appliedSearch) {
         const normalizedSearch = appliedSearch.toLowerCase().replace(/\s+/g, '');
@@ -85,9 +119,9 @@ export default function LearningHistoryPage() {
       return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
 
-  useEffect(() => setPage(1), [skillFilter, partFilter, sortOrder]);
-
-  const currentEntries = filteredHistory.slice((page - 1) * pageSize, page * pageSize);
+  const isRemoteGrammar = skillFilter === 'grammar';
+  const filteredHistory = isRemoteGrammar ? remote.entries : localFilteredHistory;
+  const currentEntries = isRemoteGrammar ? remote.entries : filteredHistory.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className={styles.page}>
@@ -173,7 +207,9 @@ export default function LearningHistoryPage() {
             )}
           </div>
 
-          {filteredHistory.length === 0 ? (
+          {remote.loading && isRemoteGrammar ? <div className={styles.emptyState}><p>Loading history…</p></div> : remote.error && isRemoteGrammar ? (
+            <div className={styles.emptyState}><h3>Unable to load history</h3><p>{remote.error}</p></div>
+          ) : filteredHistory.length === 0 ? (
             <div className={styles.emptyState}>
               <ClipboardList size={48} />
               <h3>No tests found</h3>
@@ -223,7 +259,7 @@ export default function LearningHistoryPage() {
 
             </div>
           )}
-          <Pagination page={page} totalItems={filteredHistory.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          <Pagination page={page} totalItems={isRemoteGrammar ? remote.total : filteredHistory.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
         </div>
       </div>
     </div>

@@ -14,6 +14,13 @@ import {
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TotalTestsIcon, AvgScoreIcon, AvgBandIcon, StreakIcon, BestSkillIcon, WeakSkillIcon } from '../components/DashboardIcons';
 import styles from './DashboardPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const DASHBOARD_QUERY_SCHEMA = {
+  skillFilter: { ...queryParam.enum(['all', 'listening', 'reading', 'writing', 'speaking', 'grammar'], 'all'), param: 'skill' },
+  partFilter: { ...queryParam.enum(['all', 'full', 'part1', 'part2', 'part3', 'part4'], 'all'), param: 'part' },
+  dateFilter: { ...queryParam.enum(['all', '7', '30', '90'], 'all'), param: 'range' },
+};
 
 const SKILL_COLORS = {
   listening: '#4e79a7',
@@ -25,9 +32,11 @@ const SKILL_COLORS = {
 
 export default function DashboardPage() {
   const [entries, setEntries] = useState([]);
-  const [skillFilter, setSkillFilter] = useState('all');
-  const [partFilter, setPartFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('all'); // all, 7, 30, 90
+  const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
+  const { skillFilter, partFilter, dateFilter } = urlState;
+  const setSkillFilter = value => setUrlState({ skillFilter: value });
+  const setPartFilter = value => setUrlState({ partFilter: value });
+  const setDateFilter = value => setUrlState({ dateFilter: value });
 
   useEffect(() => {
     setEntries(getHistoryEntries());

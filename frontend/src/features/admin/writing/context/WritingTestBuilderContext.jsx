@@ -12,22 +12,26 @@ function reducer(state, action) {
   return state;
 }
 
-export function WritingTestBuilderProvider({ children, initialTest, basePath }) {
+export function WritingTestBuilderProvider({ children, initialTest, basePath, onTestChange }) {
   const [state, dispatch] = useReducer(reducer, initialTest || createWritingTestDraft());
+  const replaceTest = useCallback(test => {
+    dispatch({ type: 'REPLACE', test });
+    onTestChange?.(test);
+  }, [onTestChange]);
   const saveDraft = useCallback(async (candidate = state) => {
     const saved = candidate.id ? await writingTestsApi.update(candidate) : await writingTestsApi.create(candidate);
-    dispatch({ type: 'REPLACE', test: saved });
+    replaceTest(saved);
     return saved;
-  }, [state]);
+  }, [replaceTest, state]);
   const value = useMemo(() => ({
     test: state,
     updateDetails: (field, value) => dispatch({ type: 'UPDATE_DETAILS', field, value }),
     updatePart: (part, field, value) => dispatch({ type: 'UPDATE_PART', part, field, value }),
-    replaceTest: test => dispatch({ type: 'REPLACE', test }),
+    replaceTest,
     saveDraft,
     reset: () => dispatch({ type: 'RESET' }),
     basePath: state.id ? `/admin/tests/writing/${state.id}/edit` : basePath,
-  }), [state, basePath, saveDraft]);
+  }), [state, basePath, replaceTest, saveDraft]);
   return <WritingTestBuilderContext.Provider value={value}>{children}</WritingTestBuilderContext.Provider>;
 }
 

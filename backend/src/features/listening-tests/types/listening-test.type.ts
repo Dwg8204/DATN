@@ -8,6 +8,7 @@ export type ListeningQuestion = {
   text: string;
   options: string[];
   correctAnswer: number;
+  explanation?: string;
   audioUrl?: string;
 };
 
@@ -22,6 +23,7 @@ export type ListeningPart2 = {
   speakers: string[];
   options: string[];
   answers: string[];
+  explanations?: Record<string, string>;
 };
 
 export type ListeningPart3 = {
@@ -30,7 +32,7 @@ export type ListeningPart3 = {
   subTitle: string;
   audioUrl?: string;
   options: string[];
-  statements: Array<{ id: string; text: string; answer: string }>;
+  statements: Array<{ id: string; text: string; answer: string; explanation?: string }>;
 };
 
 export type ListeningPart4 = {

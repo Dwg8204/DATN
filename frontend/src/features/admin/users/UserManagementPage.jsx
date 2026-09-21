@@ -10,6 +10,7 @@ import useManagedUsers from './hooks/useManagedUsers';
 import { adminUsersApi } from './services/adminUsersApi';
 import { toTeacherPayload, validateTeacherForm } from './validation/userFormValidation';
 import styles from './UserManagementPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const ROLE_TABS = [
   { id: 'ADMIN', label: 'Admin' },
@@ -17,6 +18,12 @@ const ROLE_TABS = [
   { id: 'TEACHER', label: 'Teacher' },
 ];
 const EMPTY_TEACHER = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
+const USER_QUERY_SCHEMA = {
+  role: queryParam.enum(ROLE_TABS.map(item => item.id), 'ADMIN'),
+  query: { ...queryParam.string(''), param: 'q' },
+  page: queryParam.positiveInt(1),
+  pageSize: { ...queryParam.positiveInt(5, 100), param: 'size' },
+};
 
 function Avatar({ name = '' }) {
   const initials = name.split(/\s+/).filter(Boolean).map(part => part[0]).slice(0, 2).join('').toUpperCase() || 'U';
@@ -36,10 +43,10 @@ function displayDate(value) {
 }
 
 export default function UserManagementPage() {
-  const [role, setRole] = useState('ADMIN');
-  const [query, setQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [urlState, setUrlState] = useUrlQueryState(USER_QUERY_SCHEMA);
+  const { role, query, page, pageSize } = urlState;
+  const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   const [editor, setEditor] = useState(null);
   const [detail, setDetail] = useState(null);
   const [detailLoadingId, setDetailLoadingId] = useState('');
@@ -55,9 +62,7 @@ export default function UserManagementPage() {
   }, [loadError]);
 
   const changeRole = nextRole => {
-    setRole(nextRole);
-    setQuery('');
-    setPage(1);
+    setUrlState({ role: nextRole, query: '', page: 1 });
   };
 
   const updateEditor = (field, value) => {
@@ -169,7 +174,7 @@ export default function UserManagementPage() {
 
     <header className={styles.toolbar}>
       <nav className={styles.components} aria-label="Account type">{ROLE_TABS.map(item => <button className={role === item.id ? styles.activeComponent : ''} onClick={() => changeRole(item.id)} key={item.id}>{item.label}</button>)}</nav>
-      <div className={styles.tools}><label><Search /><input value={query} onChange={event => { setQuery(event.target.value); setPage(1); }} placeholder="Search people" /></label>{role === 'TEACHER' && <button className={styles.add} onClick={() => { setEditor({ ...EMPTY_TEACHER }); setEditorError(''); }}><Plus />Add teacher</button>}</div>
+      <div className={styles.tools}><label><Search /><input value={query} onChange={event => setUrlState({ query: event.target.value, page: 1 })} placeholder="Search people" /></label>{role === 'TEACHER' && <button className={styles.add} onClick={() => { setEditor({ ...EMPTY_TEACHER }); setEditorError(''); }}><Plus />Add teacher</button>}</div>
     </header>
 
     <section className={styles.panel} aria-busy={loading}>

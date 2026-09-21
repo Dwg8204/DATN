@@ -3,7 +3,7 @@ import { ApplicationError } from '../../../common/errors/application.error';
 import { paginate, PaginatedResponse } from '../../../common/pagination/pagination.dto';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { ListWritingTestsQueryDto } from '../dto/list-writing-tests-query.dto';
-import { CreateWritingTestDto, PublishWritingTestDto, UpdateWritingTestDto } from '../dto/save-writing-test.dto';
+import { CreateWritingTestDto, UpdateWritingTestDto } from '../dto/save-writing-test.dto';
 import { WritingTestsRepository, WritingRepositoryMutation } from '../repositories/writing-tests.repository';
 import { WritingAudit, WritingTestAggregate, WritingTestSummary } from '../types/writing-test.type';
 import { WritingTestContentService } from './writing-test-content.service';
@@ -47,13 +47,12 @@ export class WritingTestsService {
     return this.unwrap(await this.repository.update(id, actor, dto.version, test, audit));
   }
 
-  async publish(id: string, actor: AuthUser, dto: PublishWritingTestDto, audit: WritingAudit): Promise<WritingTestAggregate> {
+  async publish(id: string, actor: AuthUser, audit: WritingAudit): Promise<WritingTestAggregate> {
     const test = await this.repository.findAggregate(id);
     if (!test || test.status === 'ARCHIVED') this.notFound();
     await this.assertOwner(id, actor);
-    if (test.version !== dto.version) this.conflict();
     this.content.assertPublishable(test);
-    return this.unwrap(await this.repository.publish(id, actor, dto.version, test, audit));
+    return this.unwrap(await this.repository.publish(id, actor, test.version!, test, audit));
   }
 
   async archive(id: string, actor: AuthUser, audit: WritingAudit): Promise<void> {

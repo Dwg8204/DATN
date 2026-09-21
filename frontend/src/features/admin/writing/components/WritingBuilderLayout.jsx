@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Outlet, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { WritingTestBuilderProvider } from '../context/WritingTestBuilderContext';
 import { createWritingTestDraft } from '../data/writingBuilderInitialState';
@@ -30,8 +30,9 @@ export default function WritingBuilderLayout() {
       });
     return () => controller.abort();
   }, [requestedMode, testId]);
+  const syncPersistedTest = useCallback(test => setState({ test, loading: false, error: '' }), []);
   if (state.loading) return <p style={{ padding: 24 }}>Loading Writing test…</p>;
   if (state.error || !state.test) return <section style={{ padding: 24 }}><p>{state.error || 'Writing test not found.'}</p><button onClick={() => navigate('/admin/tests')}>Back to Test Management</button></section>;
   const basePath = state.test.id ? `/admin/tests/writing/${state.test.id}/edit` : '/admin/tests/new/writing';
-  return <WritingTestBuilderProvider key={state.test.id || `new-${requestedMode}`} initialTest={state.test} basePath={basePath}><BuilderContent /></WritingTestBuilderProvider>;
+  return <WritingTestBuilderProvider key={state.test.id || `new-${requestedMode}`} initialTest={state.test} basePath={basePath} onTestChange={syncPersistedTest}><BuilderContent /></WritingTestBuilderProvider>;
 }

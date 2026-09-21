@@ -1,6 +1,7 @@
 import { randomUUID, createHash } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
+import { firstMutationRow } from '../../../common/database/mutation-result';
 import { ListGrammarTestsQueryDto } from '../dto/list-grammar-tests-query.dto';
 import {
   GrammarActor,
@@ -201,9 +202,10 @@ export class GrammarTestsRepository {
         [actor.id, test.details.title || 'Untitled test', mapping.scope, mapping.partNumber,
           JSON.stringify(test.details.cover ?? null), JSON.stringify(storage.partContents)],
       );
-      await this.insertQuestions(manager, rows[0].id, storage.questions);
-      await this.audit(manager, actor.id, 'GRAMMAR_TEST_CREATED', rows[0].id, { mode: test.mode }, audit);
-      return this.hydrate(rows[0], await this.activeQuestions(manager, rows[0].id));
+      const row = firstMutationRow<TestRow>(rows);
+      await this.upsertQuestions(manager, row.id, storage.questions);
+      await this.audit(manager, actor.id, 'GRAMMAR_TEST_CREATED', row.id, { mode: test.mode }, audit);
+      return this.hydrate(row, await this.activeQuestions(manager, row.id));
     });
   }
 
@@ -224,10 +226,15 @@ export class GrammarTestsRepository {
         [id, test.details.title || 'Untitled test', mapping.scope, mapping.partNumber,
           JSON.stringify(test.details.cover ?? null), JSON.stringify(storage.partContents), actor.id],
       );
-      await manager.query(`UPDATE questions SET deleted_at=now(), updated_at=now() WHERE test_id=$1 AND deleted_at IS NULL`, [id]);
-      await this.insertQuestions(manager, id, storage.questions);
+      const row = firstMutationRow<TestRow>(rows);
+      await manager.query(
+        `UPDATE questions SET deleted_at=now(),updated_at=now()
+         WHERE test_id=$1 AND NOT(part_number=ANY($2::smallint[])) AND deleted_at IS NULL`,
+        [id, this.partNumbers(test.mode)],
+      );
+      await this.upsertQuestions(manager, id, storage.questions);
       await this.audit(manager, actor.id, 'GRAMMAR_TEST_UPDATED', id, { fromVersion: expectedVersion, toVersion: expectedVersion + 1 }, audit);
-      return { outcome: 'SUCCESS', value: this.hydrate(rows[0], await this.activeQuestions(manager, id)) };
+      return { outcome: 'SUCCESS', value: this.hydrate(row, await this.activeQuestions(manager, id)) };
     });
   }
 
@@ -259,8 +266,9 @@ export class GrammarTestsRepository {
            archived_at=NULL, updated_by=$3, updated_at=now() WHERE id=$1 RETURNING *`,
         [id, snapshotRows[0].id, actor.id],
       );
+      const row = firstMutationRow<TestRow>(rows);
       await this.audit(manager, actor.id, 'GRAMMAR_TEST_PUBLISHED', id, { version: current.version }, audit);
-      return { outcome: 'SUCCESS', value: this.hydrate(rows[0], await this.activeQuestions(manager, id)) };
+      return { outcome: 'SUCCESS', value: this.hydrate(row, await this.activeQuestions(manager, id)) };
     });
   }
 
@@ -274,8 +282,9 @@ export class GrammarTestsRepository {
          WHERE id=$1 RETURNING *`,
         [id, actor.id],
       );
+      const row = firstMutationRow<TestRow>(rows);
       await this.audit(manager, actor.id, 'GRAMMAR_TEST_ARCHIVED', id, { version: current.version }, audit);
-      return { outcome: 'SUCCESS', value: this.hydrate(rows[0], await this.activeQuestions(manager, id)) };
+      return { outcome: 'SUCCESS', value: this.hydrate(row, await this.activeQuestions(manager, id)) };
     });
   }
 
@@ -326,7 +335,7 @@ export class GrammarTestsRepository {
     };
   }
 
-  private async insertQuestions(manager: EntityManager, testId: string, questions: ReturnType<GrammarTestsRepository['toStorage']>['questions']): Promise<void> {
+  private async upsertQuestions(manager: EntityManager, testId: string, questions: ReturnType<GrammarTestsRepository['toStorage']>['questions']): Promise<void> {
     if (!questions.length) return;
     const values: unknown[] = [];
     const rows = questions.map(question => {
@@ -338,9 +347,16 @@ export class GrammarTestsRepository {
     });
     await manager.query(
       `INSERT INTO questions(test_id,part_number,group_key,position,question_type,content,correct_answer,explanation)
-       VALUES ${rows.join(',')}`,
+       VALUES ${rows.join(',')}
+       ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET
+         group_key=EXCLUDED.group_key,question_type=EXCLUDED.question_type,content=EXCLUDED.content,
+         correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=now()`,
       values,
     );
+  }
+
+  private partNumbers(mode: GrammarTestMode): Array<1 | 2> {
+    return mode === 'full' ? [1, 2] : [mode === 'part2' ? 2 : 1];
   }
 
   private async activeQuestions(manager: EntityManager, id: string): Promise<QuestionRow[]> {

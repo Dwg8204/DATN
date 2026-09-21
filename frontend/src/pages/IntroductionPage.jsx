@@ -1,11 +1,13 @@
 import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
-import { startGrammarVocabSession } from '../features/grammar_vocab/utils/grammarVocabSessionStorage';
 import { startListeningSession } from '../features/module-listening/utils/listeningSessionStorage';
 import { listeningTestsApi } from '../features/admin/listening/services/listeningTestsApi';
 import { startReadingSession } from '../features/module-reading/utils/readingSessionStorage';
 import { startWritingSession } from '../features/writing/utils/writingSessionStorage';
+import { testAttemptsApi } from '../features/test-attempts/services/testAttemptsApi';
+import { useToast } from '../context/ToastContext';
+import { getApiError } from '../services/apiError';
 
 const skillConfigs = {
   reading: {
@@ -90,6 +92,7 @@ export default function IntroductionPage({
   const navigate = useNavigate();
   const { skill } = useParams();
   const [searchParams] = useSearchParams();
+  const { showError } = useToast();
   const mode = searchParams.get('mode') || 'full';
 
   // Use props first, then fall back to skill config from URL params
@@ -115,12 +118,12 @@ export default function IntroductionPage({
       const testId = searchParams.get('testId') || '1';
 
       if (skill === 'grammar-vocab') {
-        startGrammarVocabSession(testId, mode, { force: true });
-        if (mode === 'full') {
-          navigate(`/${skill}/test/part1${testId ? `?testId=${testId}&isFull=true` : '?isFull=true'}`);
-        } else {
-          navigate(`/${skill}/test/${mode}${testId ? `?testId=${testId}` : ''}`);
-        }
+        const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+        const actualMode = started.paper?.mode ?? mode;
+        const firstPart = actualMode === 'full' ? 'part1' : actualMode;
+        const params = new URLSearchParams({ testId, attemptId: started.attemptId });
+        if (actualMode === 'full') params.set('isFull', 'true');
+        navigate(`/${skill}/test/${firstPart}?${params.toString()}`);
       } else if (skill === 'listening') {
         const { attemptId } = await listeningTestsApi.startAttempt(testId, mode);
         startListeningSession(testId, attemptId, mode, { force: true });
@@ -142,8 +145,7 @@ export default function IntroductionPage({
       }
       }
     } catch (e) {
-      console.error('Failed to start test', e);
-      alert('Error starting test: ' + (e?.response?.data?.error?.message || e?.message || 'Unknown error'));
+      showError(getApiError(e, 'Unable to start this test. Please try again.'));
     } finally {
       setIsStarting(false);
     }

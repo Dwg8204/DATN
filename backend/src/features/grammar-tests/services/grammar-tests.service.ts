@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { paginate, PaginatedResponse } from '../../../common/pagination/pagination.dto';
 import { AuthUser } from '../../auth/types/auth-user.type';
-import { CreateGrammarTestDto, PublishGrammarTestDto, UpdateGrammarTestDto } from '../dto/save-grammar-test.dto';
+import { CreateGrammarTestDto, UpdateGrammarTestDto } from '../dto/save-grammar-test.dto';
 import { ListGrammarTestsQueryDto } from '../dto/list-grammar-tests-query.dto';
 import { GrammarTestsRepository, RepositoryMutation } from '../repositories/grammar-tests.repository';
 import { GrammarTestContentService } from './grammar-test-content.service';
@@ -50,13 +50,12 @@ export class GrammarTestsService {
     return this.unwrap(await this.repository.update(id, actor, dto.version, aggregate, audit));
   }
 
-  async publish(id: string, actor: AuthUser, dto: PublishGrammarTestDto, audit: GrammarAudit): Promise<GrammarTestAggregate> {
+  async publish(id: string, actor: AuthUser, audit: GrammarAudit): Promise<GrammarTestAggregate> {
     const aggregate = await this.repository.findAggregate(id);
     if (!aggregate || aggregate.status === 'ARCHIVED') this.notFound();
     await this.assertOwner(id, actor);
-    if (aggregate.version !== dto.version) this.versionConflict();
     this.content.assertPublishable(aggregate);
-    return this.unwrap(await this.repository.publish(id, actor, dto.version, aggregate, audit));
+    return this.unwrap(await this.repository.publish(id, actor, aggregate.version!, aggregate, audit));
   }
 
   async archive(id: string, actor: AuthUser, audit: GrammarAudit): Promise<void> {

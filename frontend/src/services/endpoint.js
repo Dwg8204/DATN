@@ -49,6 +49,16 @@ export const API_ENDPOINTS = {
     startAttempt: (id) => `/listening-tests/${id}/attempts`,
     submitAttempt: (id, attemptId) => `/listening-tests/${id}/attempts/${attemptId}/submit`,
   },
+  testAttempts: {
+    list: '/test-attempts',
+    detail: (id) => `/test-attempts/${id}`,
+    progress: (id) => `/test-attempts/${id}/progress`,
+    submit: (id) => `/test-attempts/${id}/submit`,
+    result: (id) => `/test-attempts/${id}/result`,
+    partResult: (id, partNumber) => `/test-attempts/${id}/result/parts/${partNumber}`,
+    history: '/test-attempts/history',
+    states: '/test-attempts/states',
+  },
   adminMedia: {
     testCovers: '/admin/media/test-covers',
     audio: '/admin/media/audio',

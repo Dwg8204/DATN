@@ -4,6 +4,13 @@ import { ArrowLeft, RefreshCw, BrainCircuit, LayoutGrid, List, BookOpen } from '
 import { FlashcardSkeleton } from '../../../components/common/SkeletonLoaders';
 import { useToast } from '../../../context/ToastContext';
 import DataLoadError from '../../../components/common/DataLoadError';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const FLASHCARD_QUERY_SCHEMA = {
+  viewMode: { ...queryParam.enum(['flashcard', 'list'], 'flashcard'), param: 'view' },
+  cardMode: { ...queryParam.enum(['flashcard', 'nghia'], 'flashcard'), param: 'side' },
+  filter: queryParam.enum(['all', '1', '2', '3'], 'all'),
+};
 
 const FlashcardPage = () => {
   const { showError } = useToast();
@@ -12,9 +19,11 @@ const FlashcardPage = () => {
   const [vocabData, setVocabData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
-  const [viewMode, setViewMode] = useState('flashcard'); // 'flashcard' or 'list'
-  const [cardMode, setCardMode] = useState('flashcard'); // 'flashcard' or 'nghia'
-  const [filter, setFilter] = useState('all'); // 'all', 1, 2, 3
+  const [urlState, setUrlState] = useUrlQueryState(FLASHCARD_QUERY_SCHEMA);
+  const { viewMode, cardMode, filter } = urlState;
+  const setViewMode = value => setUrlState({ viewMode: value });
+  const setCardMode = value => setUrlState({ cardMode: value });
+  const setFilter = value => setUrlState({ filter: String(value) });
   
   // State for flashcard engine
   const [currentIndex, setCurrentIndex] = useState(0);

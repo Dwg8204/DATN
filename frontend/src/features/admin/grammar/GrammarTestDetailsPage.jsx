@@ -54,7 +54,7 @@ export default function GrammarTestDetailsPage() {
     try {
       draft = await saveDraft();
       replaceTest(draft);
-      const saved = await grammarTestsApi.publish(draft);
+      const saved = await grammarTestsApi.publish(draft.id);
       showSuccess(test.id ? 'Grammar & Vocabulary test updated successfully.' : 'Grammar & Vocabulary test created successfully.');
       navigate(`/admin/tests/grammar/${saved.id}/preview`, { state: { toast: 'Test published successfully.' } });
     } catch (error) {
@@ -73,11 +73,11 @@ export default function GrammarTestDetailsPage() {
         <div className={styles.fields}>
           <label><b>Title:</b><input value={test.details.title} onChange={event => updateDetails('title', event.target.value)} /></label>
           <ImageField label="Test cover" value={test.details.pictureUrl} uploadFile={grammarMediaApi.uploadCover} onChange={value => updateDetails('pictureUrl', value)} />
-          <button className={styles.saveInfo} disabled={busy} onClick={saveInformation}>{busy ? 'Saving…' : 'Save'}</button>
+          <button className={styles.saveInfo} disabled={busy} onClick={saveInformation}>{busy ? 'Saving…' : 'Save draft'}</button>
         </div>
-        <aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>Not Started</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview" /> : <strong>AptiMate<br /><em>Grammar</em></strong>}<button disabled={busy} onClick={requestSave}>Preview</button></div></aside>
+        <aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>{test.status === 'PUBLISHED' ? 'Published' : 'Draft'}</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview" /> : <strong>AptiMate<br /><em>Grammar</em></strong>}<button disabled={busy} onClick={requestSave}>{test.status === 'PUBLISHED' ? 'Update & preview' : 'Publish & preview'}</button></div></aside>
       </div>
     </section>
-    <section className={styles.content} inert={busy ? '' : undefined}><h2>CONTENT TEST</h2><div>{visible.map(part => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}${test.id ? '' : `?mode=${test.mode}`}`)} />)}</div><button className={styles.saveAll} disabled={busy} onClick={requestSave}>{busy ? 'Saving…' : test.id ? 'Update test & preview' : 'Save test & preview'}</button></section>
+    <section className={styles.content} inert={busy ? '' : undefined}><h2>CONTENT TEST</h2><div>{visible.map(part => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}${test.id ? '' : `?mode=${test.mode}`}`)} />)}</div><button className={styles.saveAll} disabled={busy} onClick={requestSave}>{busy ? 'Saving…' : test.status === 'PUBLISHED' ? 'Update & publish test' : 'Publish test & preview'}</button></section>
   </div>;
 }

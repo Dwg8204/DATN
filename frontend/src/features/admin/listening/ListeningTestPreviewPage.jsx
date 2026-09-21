@@ -6,6 +6,9 @@ import ListeningAnswerPreview from './ListeningAnswerPreview';
 import { listeningTestsApi } from './services/listeningTestsApi';
 import { validateListeningTest } from './validation/listeningValidation';
 import styles from '../reading/components/ReadingEditor.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const PREVIEW_QUERY_SCHEMA = { activePart: { ...queryParam.positiveInt(1, 4), param: 'part' } };
 
 export default function ListeningTestPreviewPage() {
   const { testId } = useParams();
@@ -13,7 +16,7 @@ export default function ListeningTestPreviewPage() {
   const location = useLocation();
   const [test, setTest] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activePart, setActivePart] = useState(1);
+  const [urlState, setUrlState] = useUrlQueryState(PREVIEW_QUERY_SCHEMA);
   const [confirmPublish, setConfirmPublish] = useState(false);
   const [errors, setErrors] = useState([]);
 
@@ -22,8 +25,6 @@ export default function ListeningTestPreviewPage() {
     listeningTestsApi.getAdmin(testId, controller.signal)
       .then(data => {
         setTest(data);
-        const firstPart = LISTENING_PARTS.find(p => data.mode === 'full' || data.mode === `part${p.number}`);
-        if (firstPart) setActivePart(firstPart.number);
         setLoading(false);
       })
       .catch(err => {
@@ -57,6 +58,8 @@ export default function ListeningTestPreviewPage() {
   if (!test) return <p className={styles.page}>Test not found.</p>;
 
   const parts = LISTENING_PARTS.filter(part => test.mode === 'full' || test.mode === `part${part.number}`);
+  const activePart = parts.some(part => part.number === urlState.activePart) ? urlState.activePart : parts[0]?.number || 1;
+  const setActivePart = value => setUrlState({ activePart: value });
 
   return <main className={styles.page}>
     <AdminToast message={location.state?.toast} onClose={() => navigate(location.pathname, { replace: true, state: {} })} />

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "test": "node --test src/features/auth/utils/passwordValidation.test.js",
+    "test": "node --test src/features/auth/utils/passwordValidation.test.js src/features/test-attempts/utils/attemptTime.test.js src/hooks/useUrlQueryState.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

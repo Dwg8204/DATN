@@ -9,10 +9,15 @@ import {
   saveUserNotificationState,
 } from '../../../utils/notificationStorage';
 import styles from './NotificationsPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const NOTIFICATION_QUERY_SCHEMA = { filter: queryParam.enum(['all', 'unread'], 'all') };
 
 export default function NotificationsPage() {
   const location = useLocation();
-  const [filter, setFilter] = useState('all');
+  const [urlState, setUrlState] = useUrlQueryState(NOTIFICATION_QUERY_SCHEMA);
+  const { filter } = urlState;
+  const setFilter = value => setUrlState({ filter: value });
   const [notifications] = useState(getAvailableUserNotifications);
   const [notificationState, setNotificationState] = useState(getUserNotificationState);
   const [selected, setSelected] = useState(() => {

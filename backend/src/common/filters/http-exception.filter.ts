@@ -46,6 +46,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         code: normalized.code,
         message: normalized.message,
         ...(normalized.fieldErrors?.length ? { fieldErrors: normalized.fieldErrors } : {}),
+        ...(normalized.currentRevision !== undefined ? { currentRevision: normalized.currentRevision } : {}),
       },
       requestId,
       timestamp: new Date().toISOString(),
@@ -54,7 +55,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
   private normalize(exception: unknown) {
     if (exception instanceof ApplicationError) {
-      return { status: exception.statusCode, code: exception.code, message: exception.message };
+      const details = exception.code === 'ATTEMPT_REVISION_CONFLICT' ? exception.details as { currentRevision?: unknown } : undefined;
+      return { status: exception.statusCode, code: exception.code, message: exception.message,
+        currentRevision: Number.isSafeInteger(details?.currentRevision) ? details?.currentRevision as number : undefined };
     }
 
     if (exception instanceof Error && 'type' in exception) {

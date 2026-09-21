@@ -19,10 +19,3 @@ export class UpdateWritingTestDto extends CreateWritingTestDto {
   version!: number;
 }
 
-export class PublishWritingTestDto {
-  @IsInt()
-  @Min(1)
-  @Max(2_147_483_647)
-  version!: number;
-}
-

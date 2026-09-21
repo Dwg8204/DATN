@@ -62,7 +62,7 @@ export default function WritingTestDetailsPage() {
     let draft;
     try {
       draft = await saveDraft(test);
-      const published = await writingTestsApi.publish(draft);
+      const published = await writingTestsApi.publish(draft.id);
       replaceTest(published);
       showSuccess(test.id ? 'Writing test updated and published.' : 'Writing test created and published.');
       navigate(`/admin/tests/writing/${published.id}/preview`);
@@ -87,8 +87,8 @@ export default function WritingTestDetailsPage() {
     <section className={styles.information} inert={saving ? '' : undefined} aria-busy={saving}><h2>INFORMATION TEST</h2><div className={styles.infoGrid}><div className={styles.fields}>
       <label><b>Title:</b><input value={test.details.title} onChange={(event) => updateDetails('title', event.target.value)}/></label>
       <ImageField label="Test cover" value={test.details.pictureUrl} onChange={(value) => updateDetails('pictureUrl', value)} uploadFile={writingTestsApi.uploadCover}/>
-      <button className={styles.saveInfo} onClick={saveInformation} disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
-    </div><aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>Not Started</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview"/> : <strong>AptiMate<br/><em>Writing</em></strong>}<button onClick={requestSave} disabled={saving}>Preview</button></div></aside></div></section>
-    <section className={styles.content} inert={saving ? '' : undefined}><h2>CONTENT TEST</h2><div>{visibleParts.map((part) => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}${test.id ? '' : `?mode=${test.mode}`}`)}/>)}</div><button className={styles.saveAll} onClick={requestSave} disabled={saving}>{saving ? 'Saving…' : test.id ? 'Update test & preview' : 'Save test & preview'}</button></section>
+      <button className={styles.saveInfo} onClick={saveInformation} disabled={saving}>{saving ? 'Saving…' : 'Save draft'}</button>
+    </div><aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>{test.status === 'PUBLISHED' ? 'Published' : 'Draft'}</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview"/> : <strong>AptiMate<br/><em>Writing</em></strong>}<button onClick={requestSave} disabled={saving}>{test.status === 'PUBLISHED' ? 'Update & preview' : 'Publish & preview'}</button></div></aside></div></section>
+    <section className={styles.content} inert={saving ? '' : undefined}><h2>CONTENT TEST</h2><div>{visibleParts.map((part) => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}${test.id ? '' : `?mode=${test.mode}`}`)}/>)}</div><button className={styles.saveAll} onClick={requestSave} disabled={saving}>{saving ? 'Saving…' : test.status === 'PUBLISHED' ? 'Update & publish test' : 'Publish test & preview'}</button></section>
   </div>;
 }

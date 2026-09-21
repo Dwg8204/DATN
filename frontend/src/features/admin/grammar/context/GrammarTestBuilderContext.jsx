@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useReducer } from 'react';
+import { createContext, useCallback, useContext, useMemo, useReducer } from 'react';
 import { createGrammarTestDraft } from '../data/grammarTestData';
 
 const GrammarTestBuilderContext = createContext(null);
@@ -16,15 +16,19 @@ function reducer(state, action) {
   }
 }
 
-export function GrammarTestBuilderProvider({ children, initialTest, basePath }) {
+export function GrammarTestBuilderProvider({ children, initialTest, basePath, onTestChange }) {
   const [test, dispatch] = useReducer(reducer, initialTest || createGrammarTestDraft());
+  const replaceTest = useCallback(nextTest => {
+    dispatch({ type: 'REPLACE', test: nextTest });
+    onTestChange?.(nextTest);
+  }, [onTestChange]);
   const value = useMemo(() => ({
     test,
     basePath,
-    replaceTest: nextTest => dispatch({ type: 'REPLACE', test: nextTest }),
+    replaceTest,
     updateDetails: (field, nextValue) => dispatch({ type: 'UPDATE_DETAILS', field, value: nextValue }),
     updatePart: (part, nextValue) => dispatch({ type: 'UPDATE_PART', part, value: nextValue }),
-  }), [test, basePath]);
+  }), [test, basePath, replaceTest]);
 
   return <GrammarTestBuilderContext.Provider value={value}>{children}</GrammarTestBuilderContext.Provider>;
 }
