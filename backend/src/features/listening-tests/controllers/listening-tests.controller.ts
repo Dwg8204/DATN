@@ -9,7 +9,6 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { ListListeningTestsQueryDto } from '../dto/list-listening-tests-query.dto';
-import { SubmitListeningAttemptDto } from '../dto/submit-listening-attempt.dto';
 import { CreateListeningTestDto, UpdateListeningTestDto, PublishListeningTestDto } from '../dto/save-listening-test.dto';
 import { ListeningTestsService } from '../services/listening-tests.service';
 import { ListeningAttemptService } from '../services/listening-attempt.service';
@@ -116,21 +115,4 @@ export class PublishedListeningTestsController {
     return this.attempts.startAttempt(id, mode || 'full', actor);
   }
 
-  @ApiOperation({ summary: 'Nộp bài và chấm điểm' })
-  @ApiParam({ name: 'id', description: 'ID của bài Listening' })
-  @ApiParam({ name: 'attemptId', description: 'ID của phiên làm bài' })
-  @Post(':id/attempts/:attemptId/submit')
-  @UseGuards(RolesGuard)
-  @Roles('STUDENT')
-  submitAttempt(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
-    @Body() dto: SubmitListeningAttemptDto,
-    @CurrentUser() actor: AuthUser
-  ) {
-    if (attemptId !== dto.attemptId) {
-      throw new BadRequestException('Attempt ID in the URL must match the request body.');
-    }
-    return this.attempts.submitAttempt(id, actor, dto);
-  }
 }

@@ -10,6 +10,7 @@ import { AttemptHistoryQueryDto, SaveProgressDto, SubmitAttemptDto } from '../dt
 import { TestAttemptsRepository } from '../repositories/test-attempts.repository';
 import { AssessmentPaper, AttemptRow, LockedAttemptRow, ProgressRow, SkillComponent } from '../types/attempt.type';
 import { examDurationMinutes } from '../policies/exam-time.policy';
+import { estimateCefr } from '../policies/exam-cefr.policy';
 
 const COMPONENTS: SkillComponent[] = ['GRAMMAR_VOCAB', 'READING', 'LISTENING', 'WRITING', 'SPEAKING'];
 
@@ -110,8 +111,9 @@ export class TestAttemptsService {
         await this.repository.saveProgress(manager, attemptId, answers, progress.revision + 1, progress.progress);
       }
       const result = this.grader.grade(paper.items, answers);
+      const cefr = result.score != null && result.maxScore != null ? estimateCefr(metadata.component, result.score, result.maxScore) : null;
       await manager.query('UPDATE attempt_progress SET sealed_at=now() WHERE attempt_id=$1 AND sealed_at IS NULL', [attemptId]);
-      const completed = await this.repository.complete(manager, attemptId, result, serverTime);
+      const completed = await this.repository.complete(manager, attemptId, result, serverTime, cefr);
       return this.resultSummary(completed);
     });
   }
