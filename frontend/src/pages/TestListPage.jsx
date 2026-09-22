@@ -8,7 +8,6 @@ import { WRITING_CONFIG } from '../features/writing/config/writingConfig';
 import { grammarTestsApi } from '../features/admin/grammar/services/grammarTestsApi';
 import { writingTestsApi } from '../features/admin/writing/services/writingTestsApi';
 import { getApiError } from '../services/apiError';
-import { useToast } from '../context/ToastContext';
 import { testAttemptsApi } from '../features/test-attempts/services/testAttemptsApi';
 import { formatDuration } from '../features/test-attempts/utils/attemptTime';
 import useUrlQueryState, { queryParam } from '../hooks/useUrlQueryState';
@@ -64,7 +63,6 @@ const MOCK_TESTS = [
 export default function TestListPage() {
   const { skill } = useParams();
   const navigate = useNavigate();
-  const { showError } = useToast();
   const [urlState, setUrlState] = useUrlQueryState(TEST_LIST_QUERY_SCHEMA);
   const { activeTab, page, pageSize, query } = urlState;
   const setActiveTab = value => setUrlState({ activeTab: value, page: 1 });
@@ -122,20 +120,34 @@ export default function TestListPage() {
     const timer = window.setTimeout(() => {
       setWritingState(current => ({ ...current, loading: true, error: '' }));
       writingTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
-        .then(result => setWritingState({
-          tests: (result.data ?? []).map(test => ({
-            ...test,
-            title: test.title || test.name,
-            desc: `AptiMate Writing ${test.section} practice\nAptis writing task`,
-            part: test.section,
-            tabId: test.mode,
-            status: 'Not Started',
-            apiManaged: true,
-          })),
-          totalItems: result.pagination?.totalItems ?? 0,
-          loading: false,
-          error: '',
-        }))
+        .then(async result => {
+          const ids = (result.data ?? []).map(test => test.id);
+          const states = ids.length ? await testAttemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+          const latestByTest = new Map((states.data ?? []).map(attempt => [attempt.testId, attempt]));
+          setWritingState({
+            tests: (result.data ?? []).map(test => {
+              const attempt = latestByTest.get(test.id);
+              const completed = attempt?.status === 'SUBMITTED';
+              const inProgress = attempt?.status === 'IN_PROGRESS';
+              return {
+                ...test,
+                title: test.title || test.name,
+                desc: `AptiMate Writing ${test.section} practice\n${completed && attempt.gradingStatus !== 'COMPLETED' ? 'Assessment pending' : 'Aptis writing task'}`,
+                part: test.section,
+                tabId: test.mode,
+                status: completed ? 'Completed' : inProgress ? 'In Progress' : 'Not Started',
+                attemptId: attempt?.attemptId,
+                submitted: completed && attempt.submittedAt ? new Date(attempt.submittedAt).toLocaleString('vi-VN') : undefined,
+                duration: completed && attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : undefined,
+                accuracy: completed && Number(attempt.maxScore) ? Math.round((Number(attempt.score) / Number(attempt.maxScore)) * 100) : null,
+                apiManaged: true,
+              };
+            }),
+            totalItems: result.pagination?.totalItems ?? 0,
+            loading: false,
+            error: '',
+          });
+        })
         .catch(error => {
           if (error.code !== 'ERR_CANCELED') setWritingState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, 'Unable to load Writing tests.') });
         });
@@ -169,16 +181,12 @@ export default function TestListPage() {
   };
 
   const startTest = test => {
-    if (test.apiManaged && skill !== 'grammar-vocab') {
-      showError('This published test is ready, but the secure attempt and grading API must be connected before learners can start it.');
-      return;
-    }
     handleDoTest(test.id);
   };
 
   const handleReviewTest = (test) => {
-    if (skill === 'grammar-vocab' && test.attemptId) {
-      navigate(`/grammar-vocab/result-detail?attemptId=${test.attemptId}`);
+    if (['grammar-vocab', 'writing'].includes(skill) && test.attemptId) {
+      navigate(`/${skill}/result-detail?attemptId=${test.attemptId}`);
       return;
     }
     const resultDetailPath = currentConfig.resultDetailPath || `/${skill}/result-detail`;
@@ -261,9 +269,9 @@ export default function TestListPage() {
                               <span className={styles.statValue}>{test.duration}</span>
                             </div>
                             <div className={styles.statItem}>
-                              <span className={styles.statLabel}>Accuracy:</span>
-                              <span className={`${styles.statValue} ${test.accuracy >= 80 ? styles.statValueSuccess : styles.statValueDanger}`}>
-                                {test.accuracy}%
+                              <span className={styles.statLabel}>{skill === 'writing' ? 'Score:' : 'Accuracy:'}</span>
+                              <span className={`${styles.statValue} ${test.accuracy == null ? '' : test.accuracy >= 80 ? styles.statValueSuccess : styles.statValueDanger}`}>
+                                {test.accuracy == null ? 'Awaiting score' : `${test.accuracy}%`}
                               </span>
                             </div>
                           </div>

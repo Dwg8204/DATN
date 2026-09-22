@@ -8,7 +8,10 @@ export class ObjectiveGraderService {
     const outcomes: ItemOutcome[] = items.map(item => {
       const answer = answers[item.key];
       if (item.kind === 'TEXT' || item.kind === 'AUDIO') {
-        return { key: item.key, partNumber: item.partNumber, outcome: 'PENDING', score: 0, maxScore: item.points };
+        const hasAnswer = answer?.kind === 'TEXT'
+          ? answer.text.trim().length > 0
+          : answer?.kind === 'AUDIO' && answer.mediaKey.trim().length > 0;
+        return { key: item.key, partNumber: item.partNumber, outcome: hasAnswer ? 'PENDING' : 'SKIPPED', score: 0, maxScore: item.points };
       }
       const outcome = !answer ? 'SKIPPED'
         : (answer.kind === 'CHOICE' || answer.kind === 'MATCH') && answer.optionId === item.correctOptionId

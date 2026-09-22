@@ -36,6 +36,7 @@ export type AttemptRow = {
   part_number: number | null;
   status: 'IN_PROGRESS' | 'SUBMITTED' | 'ABANDONED';
   grading_status: string;
+  assessment_revision: number;
   result: AssessmentResult | Record<string, unknown> | null;
   score: string | null;
   max_score: string | null;
@@ -46,7 +47,11 @@ export type AttemptRow = {
   completed_at: Date | null;
 };
 
-export type LockedAttemptRow = Omit<AttemptRow, 'test_id' | 'version'>;
+export type LockedAttemptRow = Omit<AttemptRow, 'test_id' | 'version'> & {
+  test_id?: string;
+  version?: number;
+  test_title?: string;
+};
 export type AttemptMetadata = Pick<AttemptRow, 'id' | 'snapshot_id' | 'component'>;
 
 export type ProgressRow = {

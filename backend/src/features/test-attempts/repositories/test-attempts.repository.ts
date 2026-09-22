@@ -31,7 +31,7 @@ export class TestAttemptsRepository {
 
   async findSummary(attemptId: string, studentId: string): Promise<LockedAttemptRow | null> {
     const rows = await this.dataSource.query<LockedAttemptRow[]>(
-      `SELECT a.*,s.test_id,s.version FROM test_attempts a
+      `SELECT a.*,s.test_id,s.version,s.snapshot #>> '{details,title}' AS test_title FROM test_attempts a
        JOIN test_snapshots s ON s.id=a.snapshot_id WHERE a.id=$1 AND a.student_id=$2`,
       [attemptId, studentId]);
     return rows[0] ?? null;
@@ -151,7 +151,7 @@ export class TestAttemptsRepository {
   async states(studentId: string, testIds: string[]) {
     return this.dataSource.query<Array<Record<string, unknown>>>(
       `SELECT DISTINCT ON (s.test_id)
-              a.id AS "attemptId",s.test_id AS "testId",a.status,a.score::float8 AS score,
+              a.id AS "attemptId",s.test_id AS "testId",a.status,a.grading_status AS "gradingStatus",a.score::float8 AS score,
               a.max_score::float8 AS "maxScore",a.started_at AS "startedAt",a.submitted_at AS "submittedAt"
        FROM test_attempts a JOIN test_snapshots s ON s.id=a.snapshot_id
        WHERE a.student_id=$1 AND s.test_id=ANY($2::uuid[])

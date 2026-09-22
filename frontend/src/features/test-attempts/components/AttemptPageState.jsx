@@ -1,13 +1,13 @@
 import styles from './AttemptPageState.module.css';
 
-export function AttemptPageState({ loading, error }) {
+export function AttemptPageState({ loading, error, backHref = '/grammar-vocab/tests' }) {
   if (!loading && !error) return null;
   return (
     <main className={styles.state} role={error ? 'alert' : 'status'}>
       <span className={loading ? styles.spinner : styles.errorIcon} aria-hidden="true">{error ? '!' : ''}</span>
       <h1>{error ? 'Unable to open this test' : 'Loading your test…'}</h1>
       {error && <p>{error}</p>}
-      {error && <a href="/grammar-vocab/tests">Back to test list</a>}
+      {error && <a href={backHref}>Back to test list</a>}
     </main>
   );
 }

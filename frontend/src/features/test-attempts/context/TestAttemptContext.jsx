@@ -146,7 +146,7 @@ export function TestAttemptProvider({ expectedComponent, children }) {
   }, [flush]);
 
   const setAnswer = useCallback((key, answer) => {
-    if (!attemptRef.current?.canAnswer || conflictedRef.current) return;
+    if (!attemptRef.current?.canAnswer || conflictedRef.current || submittingRef.current) return;
     pendingRef.current = { ...pendingRef.current, [key]: answer };
     setAnswers(current => {
       const next = { ...current };

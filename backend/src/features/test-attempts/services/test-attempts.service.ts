@@ -240,7 +240,9 @@ export class TestAttemptsService {
   private resultSummary(attempt: LockedAttemptRow) {
     const result = attempt.component === 'LISTENING' && isLegacyListeningResult(attempt.result)
       ? normalizeLegacyListeningResult(attempt.result) : attempt.result;
-    return { attemptId: attempt.id, status: attempt.status, gradingStatus: attempt.grading_status,
+    return { attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null, component: attempt.component,
+      scope: attempt.scope, partNumber: attempt.part_number, assessmentRevision: attempt.assessment_revision,
+      status: attempt.status, gradingStatus: attempt.grading_status,
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
       estimatedCefr: attempt.estimated_cefr, result, submittedAt: attempt.submitted_at,

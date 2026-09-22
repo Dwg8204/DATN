@@ -21,47 +21,46 @@ const HISTORY_QUERY_SCHEMA = {
 };
 
 export default function LearningHistoryPage() {
-  const [history, setHistory] = useState([]);
+  const [history] = useState(() => getHistoryEntries());
   const [urlState, setUrlState] = useUrlQueryState(HISTORY_QUERY_SCHEMA);
   const { page, pageSize, sortOrder, skillFilter, partFilter, appliedSearch } = urlState;
-  const [searchInput, setSearchInput] = useState(appliedSearch);
+  const [searchDraft, setSearchDraft] = useState({ source: appliedSearch, value: appliedSearch });
+  const searchInput = searchDraft.source === appliedSearch ? searchDraft.value : appliedSearch;
+  const setSearchInput = value => setSearchDraft({ source: appliedSearch, value });
   const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
   const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   const navigate = useNavigate();
-  const [remote, setRemote] = useState({ entries: [], total: 0, loading: false, error: '' });
+  const [remote, setRemote] = useState({ requestKey: null, entries: [], total: 0, error: '' });
+  const remoteRequestKey = `${skillFilter}:${partFilter}:${sortOrder}:${page}:${pageSize}:${appliedSearch}`;
+  const remoteLoading = ['grammar', 'writing'].includes(skillFilter) && remote.requestKey !== remoteRequestKey;
 
   useEffect(() => {
-    setHistory(getHistoryEntries());
-  }, []);
-
-  useEffect(() => setSearchInput(appliedSearch), [appliedSearch]);
-
-  useEffect(() => {
-    if (skillFilter !== 'grammar') return undefined;
+    if (!['grammar', 'writing'].includes(skillFilter)) return undefined;
     const controller = new AbortController();
-    setRemote(current => ({ ...current, loading: true, error: '' }));
+    const isGrammar = skillFilter === 'grammar';
     testAttemptsApi.history({
-      page, pageSize, component: 'GRAMMAR_VOCAB', mode: partFilter,
+      page, pageSize, component: isGrammar ? 'GRAMMAR_VOCAB' : 'WRITING', mode: partFilter,
       search: appliedSearch, sort: sortOrder, signal: controller.signal,
     }).then(result => setRemote({
+      requestKey: remoteRequestKey,
       entries: (result.data ?? []).map(attempt => ({
         id: attempt.attemptId,
-        skill: 'grammar',
-        testName: attempt.title || 'Grammar & Vocabulary Test',
+        skill: isGrammar ? 'grammar' : 'writing',
+        testName: attempt.title || (isGrammar ? 'Grammar & Vocabulary Test' : 'Writing Test'),
         mode: attempt.scope === 'FULL_SKILL' ? 'full' : `part${attempt.partNumber}`,
         submittedAt: attempt.submittedAt,
         timeSpent: attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : '--:--:--',
-        reviewUrl: `/grammar-vocab/result-detail?attemptId=${attempt.attemptId}`,
+        reviewUrl: `/${isGrammar ? 'grammar-vocab' : 'writing'}/result-detail?attemptId=${attempt.attemptId}`,
+        assessmentPending: !isGrammar && attempt.gradingStatus !== 'COMPLETED',
       })),
       total: result.pagination?.totalItems ?? 0,
-      loading: false,
       error: '',
     })).catch(error => {
-      if (error.code !== 'ERR_CANCELED') setRemote({ entries: [], total: 0, loading: false,
-        error: getApiError(error, 'Unable to load your Grammar & Vocabulary history.') });
+      if (error.code !== 'ERR_CANCELED') setRemote({ requestKey: remoteRequestKey, entries: [], total: 0,
+        error: getApiError(error, `Unable to load your ${skillFilter === 'grammar' ? 'Grammar & Vocabulary' : 'Writing'} history.`) });
     });
     return () => controller.abort();
-  }, [appliedSearch, page, pageSize, partFilter, skillFilter, sortOrder]);
+  }, [appliedSearch, page, pageSize, partFilter, remoteRequestKey, skillFilter, sortOrder]);
 
   const handleSortChange = (e) => {
     setUrlState({ sortOrder: e.target.value, page: 1 });
@@ -119,9 +118,9 @@ export default function LearningHistoryPage() {
       return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
     });
 
-  const isRemoteGrammar = skillFilter === 'grammar';
-  const filteredHistory = isRemoteGrammar ? remote.entries : localFilteredHistory;
-  const currentEntries = isRemoteGrammar ? remote.entries : filteredHistory.slice((page - 1) * pageSize, page * pageSize);
+  const isRemoteSkill = ['grammar', 'writing'].includes(skillFilter);
+  const filteredHistory = isRemoteSkill ? remote.entries : localFilteredHistory;
+  const currentEntries = isRemoteSkill ? remote.entries : filteredHistory.slice((page - 1) * pageSize, page * pageSize);
 
   return (
     <div className={styles.page}>
@@ -207,7 +206,7 @@ export default function LearningHistoryPage() {
             )}
           </div>
 
-          {remote.loading && isRemoteGrammar ? <div className={styles.emptyState}><p>Loading history…</p></div> : remote.error && isRemoteGrammar ? (
+          {remoteLoading && isRemoteSkill ? <div className={styles.emptyState}><p>Loading history…</p></div> : remote.error && isRemoteSkill ? (
             <div className={styles.emptyState}><h3>Unable to load history</h3><p>{remote.error}</p></div>
           ) : filteredHistory.length === 0 ? (
             <div className={styles.emptyState}>
@@ -244,6 +243,7 @@ export default function LearningHistoryPage() {
                             <span className={styles.cefrBadge}>CEFR / Band: {entry.cefrLevel}</span>
                           </span>
                         )}
+                        {entry.assessmentPending && <span className={styles.metaItem}>Assessment pending</span>}
                       </div>
                     </div>
 
@@ -259,7 +259,7 @@ export default function LearningHistoryPage() {
 
             </div>
           )}
-          <Pagination page={page} totalItems={isRemoteGrammar ? remote.total : filteredHistory.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          <Pagination page={page} totalItems={isRemoteSkill ? remote.total : filteredHistory.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
         </div>
       </div>
     </div>

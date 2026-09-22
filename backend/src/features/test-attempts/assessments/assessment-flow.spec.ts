@@ -53,6 +53,11 @@ describe('shared attempt assessment', () => {
     const answers = applyAnswerChanges({}, { 'p2:q1': { kind: 'TEXT', text: 'My response' } }, paper.items);
     const result = grader.grade(paper.items, answers);
     expect(result).toMatchObject({ method: 'PENDING_AI', score: null, maxScore: null });
+    expect(result.items[0].outcome).toBe('PENDING');
+    const blank = grader.grade(paper.items, {});
+    expect(blank).toMatchObject({ method: 'PENDING_AI', score: null, maxScore: null,
+      counts: { correct: 0, incorrect: 0, skipped: 1 } });
+    expect(blank.items[0].outcome).toBe('SKIPPED');
   });
 
   it('maps Listening statement text to stable option IDs', () => {

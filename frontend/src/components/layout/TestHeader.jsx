@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './TestHeader.module.css';
 import { getReadingRemainingSeconds } from '../../features/module-reading/utils/readingSessionStorage';
-import { finishWritingSession, getWritingRemainingSeconds } from '../../features/writing/utils/writingSessionStorage';
 
 function formatRemainingTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -13,46 +12,31 @@ function formatRemainingTime(totalSeconds) {
 export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, controlledTimer = false, onConfirmExit, showTimer = true, showExit = true }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
   const [showExitModal, setShowExitModal] = useState(false);
   const [exiting, setExiting] = useState(false);
-  const isListeningTest = location.pathname.startsWith('/listening/test/');
   const isReadingTest = location.pathname.startsWith('/reading/test/');
-  const isWritingTest = location.pathname.startsWith('/writing/test/');
   const [remainingSeconds, setRemainingSeconds] = useState(() => {
     if (isReadingTest) return getReadingRemainingSeconds();
-    if (isWritingTest) return getWritingRemainingSeconds();
     return null;
   });
 
   useEffect(() => {
     if (controlledTimer) return undefined;
-    if (!isListeningTest && !isReadingTest && !isWritingTest) return undefined;
+    if (!isReadingTest) return undefined;
 
     const updateTimer = () => {
       let remaining = null;
       if (isReadingTest) {
         remaining = getReadingRemainingSeconds();
-      } else if (isWritingTest) {
-        remaining = getWritingRemainingSeconds();
       }
       setRemainingSeconds(remaining);
 
-      if (remaining === 0) {
-        const testId = searchParams.get('testId') || '1';
-        const isFull = searchParams.get('isFull') === 'true';
-        if (isWritingTest) {
-          const part = location.pathname.match(/\/(part[1-4])$/)?.[1] || 'part1';
-          finishWritingSession();
-          navigate(`/writing/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
-        }
-      }
     };
 
     updateTimer();
     const intervalId = window.setInterval(updateTimer, 1000);
     return () => window.clearInterval(intervalId);
-  }, [controlledTimer, isListeningTest, isReadingTest, isWritingTest, location.pathname, navigate, searchParams]);
+  }, [controlledTimer, isReadingTest]);
 
   const displayedTime = controlledTimer
     ? (timeRemaining ?? '--:--')
