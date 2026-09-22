@@ -1,9 +1,12 @@
+import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
-import { startGrammarVocabSession } from '../features/grammar_vocab/utils/grammarVocabSessionStorage';
-import { startListeningSession } from '../features/module-listening/utils/listeningSessionStorage';
+import { listeningTestsApi } from '../features/admin/listening/services/listeningTestsApi';
 import { startReadingSession } from '../features/module-reading/utils/readingSessionStorage';
 import { startWritingSession } from '../features/writing/utils/writingSessionStorage';
+import { testAttemptsApi } from '../features/test-attempts/services/testAttemptsApi';
+import { useToast } from '../context/ToastContext';
+import { getApiError } from '../services/apiError';
 
 const skillConfigs = {
   reading: {
@@ -88,6 +91,7 @@ export default function IntroductionPage({
   const navigate = useNavigate();
   const { skill } = useParams();
   const [searchParams] = useSearchParams();
+  const { showError } = useToast();
   const mode = searchParams.get('mode') || 'full';
 
   // Use props first, then fall back to skill config from URL params
@@ -101,25 +105,33 @@ export default function IntroductionPage({
   const finalInstructions = instructions || config.instructions;
   const finalInformation = information || config.information;
 
-  const handleStartTest = () => {
-    if (onStartTest) {
-      onStartTest();
-    } else if (skill) {
+  const [isStarting, setIsStarting] = React.useState(false);
+
+  const handleStartTest = async () => {
+    if (isStarting) return;
+    try {
+      setIsStarting(true);
+      if (onStartTest) {
+        onStartTest();
+      } else if (skill) {
       const testId = searchParams.get('testId') || '1';
 
       if (skill === 'grammar-vocab') {
-        startGrammarVocabSession(testId, mode, { force: true });
-        if (mode === 'full') {
-          navigate(`/${skill}/test/part1${testId ? `?testId=${testId}&isFull=true` : '?isFull=true'}`);
-        } else {
-          navigate(`/${skill}/test/${mode}${testId ? `?testId=${testId}` : ''}`);
-        }
+        const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+        const actualMode = started.paper?.mode ?? mode;
+        const firstPart = actualMode === 'full' ? 'part1' : actualMode;
+        const params = new URLSearchParams({ testId, attemptId: started.attemptId });
+        if (actualMode === 'full') params.set('isFull', 'true');
+        navigate(`/${skill}/test/${firstPart}?${params.toString()}`);
       } else if (skill === 'listening') {
-        startListeningSession(testId, mode, { force: true });
+        const { attemptId } = await listeningTestsApi.startAttempt(testId, mode);
+        const params = new URLSearchParams({ attemptId });
+        if (testId) params.set('testId', testId);
+        
         if (mode === 'full') {
-          navigate(`/${skill}/test/part1${testId ? `?testId=${testId}&isFull=true` : '?isFull=true'}`);
+          navigate(`/${skill}/test/part1?${params.toString()}`);
         } else {
-          navigate(`/${skill}/test/${mode}${testId ? `?testId=${testId}` : ''}`);
+          navigate(`/${skill}/test/${mode}?${params.toString()}`);
         }
       } else if (skill === 'reading') {
         startReadingSession(testId, mode, { force: true });
@@ -132,6 +144,11 @@ export default function IntroductionPage({
         const firstPart = mode === 'full' ? 'part1' : mode;
         navigate(`/speaking/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
       }
+      }
+    } catch (e) {
+      showError(getApiError(e, 'Unable to start this test. Please try again.'));
+    } finally {
+      setIsStarting(false);
     }
   };
 
@@ -177,8 +194,8 @@ export default function IntroductionPage({
         {/* Action */}
         <div className={styles.actionBlock}>
           <span className={styles.warning}>{warningText}</span>
-          <button className={styles.startBtn} onClick={handleStartTest}>
-            <span className={styles.startBtnText}>{startButtonText}</span>
+          <button className={styles.startBtn} onClick={handleStartTest} disabled={isStarting}>
+            <span className={styles.startBtnText}>{isStarting ? 'Starting...' : startButtonText}</span>
           </button>
         </div>
       </div>

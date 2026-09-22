@@ -26,9 +26,13 @@ export default function ProfileSidebar({ activeTab }) {
     };
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/', { replace: true });
+    } catch {
+      // The shared API error toast explains why the session could not be closed.
+    }
   };
 
   const historyEntries = getHistoryEntries();
@@ -96,9 +100,9 @@ export default function ProfileSidebar({ activeTab }) {
       </div>
 
       <div className={`${styles.userInfo} ${styles.mobileHidden}`}>
-        <img src={user?.avatar || 'https://placehold.co/74x74'} alt="Avatar" className={styles.avatar} />
+        <img src={user?.avatar?.url || user?.avatar || 'https://placehold.co/74x74'} alt="Avatar" className={styles.avatar} />
         <div className={styles.userDetails}>
-          <div className={styles.name}>{user?.name || 'User'}</div>
+          <div className={styles.name}>{user?.fullName || user?.name || [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'User'}</div>
           <div className={styles.email}>{user?.email || 'email@example.com'}</div>
         </div>
       </div>

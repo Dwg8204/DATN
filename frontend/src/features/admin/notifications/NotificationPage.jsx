@@ -4,9 +4,14 @@ import { useToast } from '../../../context/ToastContext';
 import Pagination from '../../../components/common/Pagination';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import styles from './NotificationPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const STORAGE_KEY = 'aptimate.admin.notifications';
 const MAX_ATTACHMENT_SIZE = 2 * 1024 * 1024;
+const NOTIFICATION_QUERY_SCHEMA = {
+  page: queryParam.positiveInt(1),
+  pageSize: { ...queryParam.positiveInt(8, 100), param: 'size' },
+};
 
 
 const initialNotifications = [
@@ -65,8 +70,10 @@ export default function NotificationPage() {
   const { showError, showSuccess, dismissToast } = useToast();
   const [form, setForm] = useState(emptyForm);
   const [notifications, setNotifications] = useState(loadNotifications);
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(8);
+  const [urlState, setUrlState] = useUrlQueryState(NOTIFICATION_QUERY_SCHEMA);
+  const { page, pageSize } = urlState;
+  const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   const [preview, setPreview] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [previewAttachment, setPreviewAttachment] = useState(null);

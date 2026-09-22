@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import WritingScoreRing from '../components/WritingScoreRing';
@@ -9,8 +9,13 @@ import { getAdminWritingTask } from '../utils/adminWritingTestAdapter';
 import { countWords } from '../utils/wordCount';
 import styles from './WritingResultDetailPage.module.css';
 import './WritingResultDetailEnhancements.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const views = [{ key: 'student', label: 'Your Answer' }, { key: 'ai', label: 'AI Answer' }, { key: 'sample', label: 'Sample Answer' }];
+const DETAIL_QUERY_SCHEMA = {
+  activePart: { ...queryParam.enum(WRITING_PART_ORDER, 'part1'), param: 'part' },
+  view: queryParam.enum(views.map(item => item.key), 'student'),
+};
 
 function ResponseCard({ part, index, answer, view, task }) {
   const sampleAnswer = task.sampleAnswers?.[index] || WRITING_SAMPLE_ANSWERS[part][index];
@@ -31,8 +36,11 @@ export default function WritingResultDetailPage() {
   }, [historyIdParam]);
   const isFull = params.get('isFull') === 'true' || session.mode === 'full';
   const initialPart = params.get('part') && WRITING_PART_ORDER.includes(params.get('part')) ? params.get('part') : 'part1';
-  const [activePart, setActivePart] = useState(initialPart);
-  const [view, setView] = useState('student');
+  const [urlState, setUrlState] = useUrlQueryState(DETAIL_QUERY_SCHEMA);
+  const activePart = params.has('part') ? urlState.activePart : initialPart;
+  const { view } = urlState;
+  const setActivePart = value => setUrlState({ activePart: value });
+  const setView = value => setUrlState({ view: value });
   const visibleParts = isFull ? WRITING_PART_ORDER : [initialPart];
   const task = getAdminWritingTask(session.testId, activePart) || WRITING_TASKS[activePart];
   const answers = session.answers?.[activePart] || {};

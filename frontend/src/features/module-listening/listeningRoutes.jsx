@@ -3,6 +3,8 @@ import ListeningOverviewPage from './pages/ListeningOverviewPage';
 import ListeningFeedPage from './pages/ListeningFeedPage';
 import ListeningTestListPage from './pages/ListeningTestListPage';
 import TestLayout from '../../components/layout/TestLayout';
+import RoleGuard from '../auth/components/RoleGuard';
+import ListeningAttemptLayout from './components/ListeningAttemptLayout';
 import Part1ListeningPage from './pages/Part1ListeningPage';
 import Part2ListeningPage from './pages/Part2ListeningPage';
 import Part3ListeningPage from './pages/Part3ListeningPage';
@@ -25,14 +27,14 @@ export const listeningMainRoutes = [
   },
   {
     path: 'listening/result',
-    element: <ListeningResultPage />,
+    element: <RoleGuard allowedRoles={['STUDENT']}><ListeningResultPage /></RoleGuard>,
   }
 ];
 
 export const listeningTestRoutes = [
   {
     path: 'listening/test',
-    element: <TestLayout />,
+    element: <ListeningAttemptLayout />,
     children: [
       { path: 'part1', element: <Part1ListeningPage /> },
       { path: 'part2', element: <Part2ListeningPage /> },
@@ -42,7 +44,7 @@ export const listeningTestRoutes = [
   },
   {
     path: 'listening/detail-result',
-    element: <TestLayout headerProps={{ showTimer: false, showExit: false }} />,
+    element: <RoleGuard allowedRoles={['STUDENT']}><TestLayout headerProps={{ showTimer: false, showExit: false }} /></RoleGuard>,
     children: [
       { index: true, element: <ListeningDetailResultPage /> },
     ],

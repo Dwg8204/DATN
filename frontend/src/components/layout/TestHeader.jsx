@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './TestHeader.module.css';
-import { getGrammarVocabRemainingSeconds } from '../../features/grammar_vocab/utils/grammarVocabSessionStorage';
-import { getListeningRemainingSeconds } from '../../features/module-listening/utils/listeningSessionStorage';
 import { getReadingRemainingSeconds } from '../../features/module-reading/utils/readingSessionStorage';
 import { finishWritingSession, getWritingRemainingSeconds } from '../../features/writing/utils/writingSessionStorage';
 
@@ -12,33 +10,28 @@ function formatRemainingTime(totalSeconds) {
   return `${minutes}:${seconds}`;
 }
 
-export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, showTimer = true, showExit = true }) {
+export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, controlledTimer = false, onConfirmExit, showTimer = true, showExit = true }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const [showExitModal, setShowExitModal] = useState(false);
-  const isGrammarVocabTest = location.pathname.startsWith('/grammar-vocab/test/');
+  const [exiting, setExiting] = useState(false);
   const isListeningTest = location.pathname.startsWith('/listening/test/');
   const isReadingTest = location.pathname.startsWith('/reading/test/');
   const isWritingTest = location.pathname.startsWith('/writing/test/');
   const [remainingSeconds, setRemainingSeconds] = useState(() => {
-    if (isGrammarVocabTest) return getGrammarVocabRemainingSeconds();
-    if (isListeningTest) return getListeningRemainingSeconds();
     if (isReadingTest) return getReadingRemainingSeconds();
     if (isWritingTest) return getWritingRemainingSeconds();
     return null;
   });
 
   useEffect(() => {
-    if (!isGrammarVocabTest && !isListeningTest && !isReadingTest && !isWritingTest) return undefined;
+    if (controlledTimer) return undefined;
+    if (!isListeningTest && !isReadingTest && !isWritingTest) return undefined;
 
     const updateTimer = () => {
       let remaining = null;
-      if (isGrammarVocabTest) {
-        remaining = getGrammarVocabRemainingSeconds();
-      } else if (isListeningTest) {
-        remaining = getListeningRemainingSeconds();
-      } else if (isReadingTest) {
+      if (isReadingTest) {
         remaining = getReadingRemainingSeconds();
       } else if (isWritingTest) {
         remaining = getWritingRemainingSeconds();
@@ -48,13 +41,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
       if (remaining === 0) {
         const testId = searchParams.get('testId') || '1';
         const isFull = searchParams.get('isFull') === 'true';
-        if (isGrammarVocabTest) {
-          const part = location.pathname.endsWith('/part2') ? '2' : '1';
-          navigate(`/grammar-vocab/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
-        } else if (isListeningTest) {
-          // For listening test, when timeout always redirect to full test results because we want to see the total score
-          navigate(`/listening/result?testId=${testId}&isFull=true&timedOut=true`, { replace: true });
-        } else if (isWritingTest) {
+        if (isWritingTest) {
           const part = location.pathname.match(/\/(part[1-4])$/)?.[1] || 'part1';
           finishWritingSession();
           navigate(`/writing/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
@@ -65,10 +52,11 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
     updateTimer();
     const intervalId = window.setInterval(updateTimer, 1000);
     return () => window.clearInterval(intervalId);
-  }, [isGrammarVocabTest, isListeningTest, isReadingTest, isWritingTest, location.pathname, navigate, searchParams]);
+  }, [controlledTimer, isListeningTest, isReadingTest, isWritingTest, location.pathname, navigate, searchParams]);
 
-  const displayedTime = timeRemaining
-    || (remainingSeconds === null ? '' : formatRemainingTime(remainingSeconds));
+  const displayedTime = controlledTimer
+    ? (timeRemaining ?? '--:--')
+    : (timeRemaining || (remainingSeconds === null ? '' : formatRemainingTime(remainingSeconds)));
 
   const handleExitClick = () => {
     setShowExitModal(true);
@@ -78,8 +66,15 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
     setShowExitModal(false);
   };
 
-  const handleConfirmExit = () => {
-    navigate('/');
+  const handleConfirmExit = async () => {
+    if (exiting) return;
+    setExiting(true);
+    try {
+      const destination = onConfirmExit ? await onConfirmExit() : '/';
+      if (destination !== false) navigate(typeof destination === 'string' ? destination : '/');
+    } finally {
+      setExiting(false);
+    }
   };
 
   return (
@@ -127,12 +122,12 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
             </div>
             <p className={styles.modalText}>
               Are you sure you want to exit the test?<br /><br />
-              Your progress will not be saved if you leave now.<br />
+              {controlledTimer ? 'Your currently saved answers will be submitted before you leave.' : 'Your progress will not be saved if you leave now.'}<br />
               Do you still want to exit?
             </p>
             <div className={styles.modalActions}>
-              <button className={styles.stayBtn} onClick={handleCloseModal}>Stay in test</button>
-              <button className={styles.confirmExitBtn} onClick={handleConfirmExit}>Exit anyway</button>
+              <button className={styles.stayBtn} onClick={handleCloseModal} disabled={exiting}>Stay in test</button>
+              <button className={styles.confirmExitBtn} onClick={handleConfirmExit} disabled={exiting}>{exiting ? 'Submitting…' : 'Submit and exit'}</button>
             </div>
           </div>
         </div>

@@ -29,7 +29,7 @@ export interface PasswordResetChallenge {
 
 type UserRow = {
   id: string; email: string; first_name: string; last_name: string; role: RoleCode;
-  status: AuthUser['status']; password_hash: string;
+  status: AuthUser['status']; password_hash: string; auth_version: number;
 };
 
 @Injectable()
@@ -38,18 +38,25 @@ export class AuthRepository {
 
   async findCredentialByEmail(email: string): Promise<UserCredential | null> {
     const rows = await this.dataSource.query<UserRow[]>(
-      `SELECT u.id, u.email::text, u.first_name, u.last_name, u.status, u.password_hash, r.code AS role
+      `SELECT u.id, u.email::text, u.first_name, u.last_name, u.status, u.password_hash,
+              u.auth_version, r.code AS role
        FROM users u JOIN roles r ON r.id = u.role_id
        WHERE u.email = $1 AND u.deleted_at IS NULL LIMIT 1`, [email],
     );
     return rows[0] ? this.toCredential(rows[0]) : null;
   }
 
-  async findAuthUserById(id: string): Promise<AuthUser | null> {
+  async findAuthUserById(id: string, familyId?: string): Promise<AuthUser | null> {
     const rows = await this.dataSource.query<UserRow[]>(
-      `SELECT u.id, u.email::text, u.first_name, u.last_name, u.status, u.password_hash, r.code AS role
+      `SELECT u.id, u.email::text, u.first_name, u.last_name, u.status, u.password_hash,
+              u.auth_version, r.code AS role
        FROM users u JOIN roles r ON r.id = u.role_id
-       WHERE u.id = $1 AND u.deleted_at IS NULL LIMIT 1`, [id],
+       WHERE u.id = $1 AND u.deleted_at IS NULL
+         AND ($2::uuid IS NULL OR EXISTS (
+           SELECT 1 FROM refresh_tokens rt
+           WHERE rt.user_id=u.id AND rt.family_id=$2::uuid
+             AND rt.revoked_at IS NULL AND rt.expires_at>now()
+         )) LIMIT 1`, [id, familyId ?? null],
     );
     return rows[0] ? this.toUser(rows[0]) : null;
   }
@@ -59,7 +66,7 @@ export class AuthRepository {
       const rows = await manager.query<UserRow[]>(
         `INSERT INTO users(email, password_hash, first_name, last_name, role_id, status, email_verified_at)
          SELECT $1, $2, $3, $4, id, 'ACTIVE', now() FROM roles WHERE code='STUDENT'
-         RETURNING id, email::text, first_name, last_name, status, password_hash,
+         RETURNING id, email::text, first_name, last_name, status, password_hash, auth_version,
            (SELECT code FROM roles WHERE id=users.role_id) AS role`,
         [input.email, input.passwordHash, input.firstName, input.lastName],
       );
@@ -85,14 +92,20 @@ export class AuthRepository {
   async rotateRefreshToken(input: {
     currentId: string; currentHash: string; nextId: string; nextHash: string; userId: string;
     familyId: string; expiresAt: Date; userAgent?: string; ipAddress?: string;
-  }): Promise<'ROTATED' | 'REUSED' | 'INVALID'> {
+  }): Promise<'ROTATED' | 'STALE' | 'REUSED' | 'INVALID'> {
     return this.dataSource.transaction(async manager => {
-      const rows = await manager.query<(StoredRefreshToken & { token_hash: string; family_id: string; user_id: string; expires_at: Date; revoked_at: Date | null })[]>(
-        `SELECT id, user_id, token_hash, family_id, expires_at, revoked_at
+      await manager.query('SELECT id FROM users WHERE id=$1 FOR UPDATE', [input.userId]);
+      const rows = await manager.query<(StoredRefreshToken & { token_hash: string; family_id: string; user_id: string; expires_at: Date; revoked_at: Date | null; replaced_by_id: string | null })[]>(
+        `SELECT id, user_id, token_hash, family_id, expires_at, revoked_at, replaced_by_id
          FROM refresh_tokens WHERE id=$1 FOR UPDATE`, [input.currentId],
       );
       const current = rows[0];
       if (!current || current.token_hash !== input.currentHash || current.user_id !== input.userId || current.family_id !== input.familyId) return 'INVALID';
+      // Another tab may have rotated this cookie milliseconds ago. The old token
+      // cannot obtain new credentials, but a brief retry must not revoke the session.
+      if (current.replaced_by_id && current.revoked_at && Date.now() - new Date(current.revoked_at).getTime() < 10_000) {
+        return 'STALE';
+      }
       if (current.revoked_at || new Date(current.expires_at) <= new Date()) {
         await manager.query('UPDATE refresh_tokens SET revoked_at=COALESCE(revoked_at,now()) WHERE family_id=$1', [input.familyId]);
         return 'REUSED';
@@ -108,15 +121,31 @@ export class AuthRepository {
   }
 
   async revokeRefreshToken(hash: string): Promise<void> {
-    await this.dataSource.query('UPDATE refresh_tokens SET revoked_at=COALESCE(revoked_at,now()) WHERE token_hash=$1', [hash]);
+    await this.dataSource.transaction(async manager => {
+      const rows = await manager.query<Array<{ user_id: string; family_id: string }>>(
+        'SELECT user_id, family_id FROM refresh_tokens WHERE token_hash=$1', [hash],
+      );
+      if (!rows[0]) return;
+      await manager.query('SELECT id FROM users WHERE id=$1 FOR UPDATE', [rows[0].user_id]);
+      await manager.query(
+        'UPDATE refresh_tokens SET revoked_at=COALESCE(revoked_at,now()) WHERE user_id=$1 AND family_id=$2',
+        [rows[0].user_id, rows[0].family_id],
+      );
+    });
   }
 
-  async revokeAllRefreshTokens(userId: string, manager: EntityManager = this.dataSource.manager): Promise<void> {
+  async revokeAllRefreshTokens(userId: string, manager?: EntityManager): Promise<void> {
+    if (!manager) {
+      await this.dataSource.transaction(transaction => this.revokeAllRefreshTokens(userId, transaction));
+      return;
+    }
+    await manager.query('UPDATE users SET auth_version=auth_version+1 WHERE id=$1', [userId]);
     await manager.query('UPDATE refresh_tokens SET revoked_at=COALESCE(revoked_at,now()) WHERE user_id=$1', [userId]);
   }
 
   async createPasswordReset(input: { userId: string; challengeHash: string; expiresAt: Date }): Promise<void> {
     await this.dataSource.transaction(async manager => {
+      await manager.query('SELECT id FROM users WHERE id=$1 FOR UPDATE', [input.userId]);
       await manager.query('UPDATE password_reset_tokens SET revoked_at=COALESCE(revoked_at,now()) WHERE user_id=$1 AND used_at IS NULL', [input.userId]);
       await manager.query(
         'INSERT INTO password_reset_tokens(user_id,challenge_hash,expires_at) VALUES($1,$2,$3)',
@@ -143,22 +172,33 @@ export class AuthRepository {
     } : null;
   }
 
-  async recordFailedOtp(id: string, revoke: boolean): Promise<void> {
+  async recordFailedOtp(id: string, maxAttempts: number): Promise<void> {
     await this.dataSource.query(
       `UPDATE password_reset_tokens SET failed_attempts=failed_attempts+1,
-       revoked_at=CASE WHEN $2 THEN now() ELSE revoked_at END WHERE id=$1`, [id, revoke],
+       revoked_at=CASE WHEN failed_attempts+1 >= $2 THEN now() ELSE revoked_at END
+       WHERE id=$1 AND used_at IS NULL AND revoked_at IS NULL`, [id, maxAttempts],
     );
   }
 
-  async verifyPasswordReset(id: string, grantHash: string, grantExpiresAt: Date): Promise<void> {
-    await this.dataSource.query(
-      'UPDATE password_reset_tokens SET verified_at=now(),reset_grant_hash=$2,reset_grant_expires_at=$3 WHERE id=$1',
+  async verifyPasswordReset(id: string, grantHash: string, grantExpiresAt: Date): Promise<boolean> {
+    const rows = await this.dataSource.query<Array<{ id: string }>>(
+      `UPDATE password_reset_tokens SET verified_at=now(),reset_grant_hash=$2,reset_grant_expires_at=$3
+       WHERE id=$1 AND verified_at IS NULL AND used_at IS NULL AND revoked_at IS NULL AND expires_at>now()
+       RETURNING id`,
       [id, grantHash, grantExpiresAt],
     );
+    return rows.length > 0;
   }
 
   async resetPassword(grantHash: string, passwordHash: string): Promise<boolean> {
     return this.dataSource.transaction(async manager => {
+      // Lock users before reset grants, matching OTP issuance and password changes.
+      const grant = await manager.query<Array<{ user_id: string }>>(
+        `SELECT user_id FROM password_reset_tokens WHERE reset_grant_hash=$1 AND verified_at IS NOT NULL
+         AND reset_grant_expires_at>now() AND used_at IS NULL AND revoked_at IS NULL`, [grantHash],
+      );
+      if (!grant[0]) return false;
+      await manager.query('SELECT id FROM users WHERE id=$1 FOR UPDATE', [grant[0].user_id]);
       const rows = await manager.query<Array<{ id: string; user_id: string }>>(
         `SELECT id,user_id FROM password_reset_tokens WHERE reset_grant_hash=$1 AND verified_at IS NOT NULL
          AND reset_grant_expires_at>now() AND used_at IS NULL AND revoked_at IS NULL FOR UPDATE`, [grantHash],
@@ -166,6 +206,7 @@ export class AuthRepository {
       if (!rows[0]) return false;
       await manager.query('UPDATE users SET password_hash=$1,password_changed_at=now(),updated_at=now() WHERE id=$2', [passwordHash, rows[0].user_id]);
       await manager.query('UPDATE password_reset_tokens SET used_at=now(),reset_grant_hash=NULL WHERE id=$1', [rows[0].id]);
+      await this.revokePendingPasswordResets(manager, rows[0].user_id);
       await this.revokeAllRefreshTokens(rows[0].user_id, manager);
       return true;
     });
@@ -174,12 +215,24 @@ export class AuthRepository {
   async changePassword(userId: string, passwordHash: string): Promise<void> {
     await this.dataSource.transaction(async manager => {
       await manager.query('UPDATE users SET password_hash=$1,password_changed_at=now(),updated_at=now() WHERE id=$2', [passwordHash, userId]);
+      await this.revokePendingPasswordResets(manager, userId);
       await this.revokeAllRefreshTokens(userId, manager);
     });
   }
 
+  private async revokePendingPasswordResets(manager: EntityManager, userId: string): Promise<void> {
+    await manager.query(
+      `UPDATE password_reset_tokens SET revoked_at=COALESCE(revoked_at,now()),
+              reset_grant_hash=NULL,reset_grant_expires_at=NULL
+       WHERE user_id=$1 AND used_at IS NULL`, [userId],
+    );
+  }
+
   private toUser(row: UserRow): AuthUser {
-    return { id: row.id, email: row.email, firstName: row.first_name, lastName: row.last_name, role: row.role, status: row.status };
+    return {
+      id: row.id, email: row.email, firstName: row.first_name, lastName: row.last_name,
+      role: row.role, status: row.status, authVersion: row.auth_version,
+    };
   }
 
   private toCredential(row: UserRow): UserCredential {

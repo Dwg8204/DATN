@@ -16,7 +16,7 @@ export default function GrammarPartEditorPage() {
   const { test, updatePart, basePath } = useGrammarTestBuilder();
   const [errors, setErrors] = useState([]);
   const scopeRef = useRef(null);
-  const close = () => navigate(basePath);
+  const close = () => navigate(test.id ? basePath : `${basePath}?mode=${test.mode}`);
   const updateQuestion = (index, value) => {
     setErrors([]);
     updatePart(1, { ...test.parts[1], questions: test.parts[1].questions.map((question, current) => current === index ? value : question) });

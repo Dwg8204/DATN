@@ -1,143 +1,109 @@
-import React, { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
-import { savePartAnswers } from '../utils/listeningSessionStorage';
-import { getListeningTestParts } from '../services/listeningTestRepository';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MultipleChoice from '../../../components/common/MultipleChoice';
-import styles from './Part4ListeningPage.module.css';
 import RichTextContent from '../../../components/common/RichTextContent';
+import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
+import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
+import styles from './Part4ListeningPage.module.css';
 
 export default function Part4ListeningPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const testId = searchParams.get('testId') || '1';
-  const isFullTest = searchParams.get('isFull') === 'true';
-  const { part4: questions } = getListeningTestParts(testId);
-
-  const [answers, setAnswers] = useState(() => {
-    const allAnswers = JSON.parse(sessionStorage.getItem('listening_p4_answers') || '{}');
-    return allAnswers;
-  });
+  const { attemptId, paper, answers, loading, loadError, saveStatus, submitting, setAnswer, submit, approveNavigation } = useTestAttempt();
+  const [currentRecordingIdx, setCurrentRecordingIdx] = useState(0);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
-  const [currentMainIdx, setCurrentMainIdx] = useState(0);
 
-  const handleOptionSelect = (questionId, optionIndex) => {
-    setAnswers(prev => {
-      const newAnswers = {
-        ...prev,
-        [questionId]: optionIndex
-      };
-      savePartAnswers('part4', newAnswers);
-      return newAnswers;
-    });
-  };
+  const part = paper?.parts?.['4'];
+  const isFullTest = paper?.mode === 'full';
+  
+  const recordings = useMemo(() => part?.recordings ?? [], [part]);
+  const allQuestions = useMemo(() => recordings.flatMap(r => r.subQuestions), [recordings]);
 
-  const handleSubmit = () => {
-    setShowSubmitModal(true);
-  };
+  if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
+  if (!part) return <AttemptPageState error="Part 4 is not included in this test." />;
 
-  const handleConfirmSubmit = () => {
-    savePartAnswers('part4', answers);
+  const currentRecording = recordings[currentRecordingIdx];
+  const allQuestionLabels = allQuestions.map((_, idx) => isFullTest ? 16 + idx : 1 + idx);
+  const currentQuestionLabels = currentRecording.subQuestions.map(q => {
+    const globalIdx = allQuestions.findIndex(sq => sq.key === q.key);
+    return isFullTest ? 16 + globalIdx : 1 + globalIdx;
+  });
+
+  const confirmSubmit = async () => {
     setShowSubmitModal(false);
-    navigate(`/listening/result?testId=${testId}&isFull=${isFullTest}${!isFullTest ? '&part=4' : ''}`);
+    const result = await submit();
+    if (result) { approveNavigation(); navigate(`/listening/result?attemptId=${attemptId}`); }
   };
 
-  const handleCloseSubmit = () => {
-    setShowSubmitModal(false);
+  const handleQuestionClick = (qKey) => {
+    const recIdx = recordings.findIndex(rec => rec.subQuestions.some(sq => sq.key === qKey));
+    if (recIdx !== -1) setCurrentRecordingIdx(recIdx);
   };
 
-  const currentMainQ = questions[currentMainIdx];
-  const allQuestionIds = questions.flatMap(q => q.subQuestions.map(sq => sq.id));
-  const currentPageIds = currentMainQ.subQuestions.map(sq => sq.id);
-
-  const handleNext = () => {
-    if (currentMainIdx < questions.length - 1) {
-      setCurrentMainIdx(prev => prev + 1);
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentMainIdx > 0) {
-      setCurrentMainIdx(prev => prev - 1);
-    } else {
-      navigate(`/listening/test/part3?testId=${testId}&isFull=${isFullTest}`);
-    }
-  };
-
-  const handleQuestionClick = (qId) => {
-    const mainIdx = questions.findIndex(mainQ => mainQ.subQuestions.some(sq => sq.id === qId));
-    if (mainIdx !== -1) {
-      setCurrentMainIdx(mainIdx);
-    }
-  };
+  const footerQuestions = allQuestions.map((q, idx) => ({ id: q.key, displayLabel: isFullTest ? 16 + idx : 1 + idx }));
 
   return (
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div className={styles.partTitle}>Part 4</div>
-          <div className={styles.skillTitle}>Listening Test</div>
+          <div><div className={styles.partTitle}>Part 4</div><div className={styles.skillTitle}>Listening Test</div></div>
+          <SaveIndicator status={saveStatus} />
         </div>
-
-        <InstructionBlock title={`Questions ${allQuestionIds.join(', ')}`}>
+        <InstructionBlock title={`Questions ${allQuestionLabels.join(', ')}`}>
           Listen and choose the correct answer to the question.
         </InstructionBlock>
-
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
             <div className={styles.questionItem}>
-                <div className={styles.multipleChoiceGroup} style={{ marginBottom: '40px' }}>
-                  <RichTextContent className={styles.questionContext} value={currentMainQ.context}/>
-                  
-                  {currentMainQ.subQuestions.map((q) => (
-                    <div key={q.id} style={{ marginBottom: '24px' }}>
+              <div className={styles.multipleChoiceGroup} style={{ marginBottom: '40px' }}>
+                <RichTextContent className={styles.questionContext} value={currentRecording.context}/>
+                {currentRecording.subQuestions.map((q, localIdx) => {
+                  const answer = answers[q.key];
+                  const selectedIndex = q.options.findIndex(opt => opt.id === answer?.optionId);
+                  return (
+                    <div key={q.key} style={{ marginBottom: '24px' }}>
                       <div className={styles.questionHeader}>
                         <div className={styles.questionNumberBox}>
-                          <span className={styles.questionNumber}>{q.id}</span>
+                          <span className={styles.questionNumber}>{currentQuestionLabels[localIdx]}</span>
                         </div>
                         <div className={styles.questionSubText}>{q.text}</div>
                       </div>
-                      
                       <MultipleChoice
-                        name={`listening-question-${q.id}`}
-                        options={q.options}
-                        value={answers[q.id]}
-                        onChange={(optionIndex) => handleOptionSelect(q.id, optionIndex)}
+                        name={`listening-question-${q.key}`}
+                        options={q.options.map(opt => opt.text)}
+                        value={selectedIndex < 0 ? undefined : selectedIndex}
+                        onChange={(optionIndex) => setAnswer(q.key, { kind: 'CHOICE', optionId: q.options[optionIndex].id })}
                       />
                     </div>
-                  ))}
-                </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
-
           <div className={styles.audioSection}>
-            <AudioPlayer key={currentMainQ.id} src={currentMainQ.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
+            <AudioPlayer key={currentRecording.id} src={currentRecording.audioUrl} maxPlays={2} allowSkip={!isFullTest} />
           </div>
         </div>
       </div>
-
       <TestFooter 
         partLabel="Part 4" 
-        questions={questions.flatMap(q => q.subQuestions)}
-        answeredIds={Object.keys(answers)}
-        currentPageQuestionIds={currentPageIds}
+        questions={footerQuestions}
+        answeredIds={Object.keys(answers).filter(key => key.startsWith('p4:'))}
+        currentPageQuestionIds={currentRecording.subQuestions.map(q => q.key)}
         onQuestionClick={handleQuestionClick}
-        onPrevClick={handlePrev}
-        onNextClick={handleNext}
-        onSubmitClick={handleSubmit}
-        submitLabel="Submit"
-        hasPrev={currentMainIdx > 0 || isFullTest}
-        hasNext={currentMainIdx < questions.length - 1}
+        onPrevClick={() => currentRecordingIdx > 0 ? setCurrentRecordingIdx(prev => prev - 1) : navigate(`/listening/test/part3?attemptId=${attemptId}`)}
+        onNextClick={() => setCurrentRecordingIdx(prev => prev + 1)}
+        onSubmitClick={() => setShowSubmitModal(true)}
+        submitLabel={submitting ? 'Submitting…' : 'Submit'}
+        submitDisabled={submitting || saveStatus === 'conflict'}
+        hasPrev={currentRecordingIdx > 0 || isFullTest}
+        hasNext={currentRecordingIdx < recordings.length - 1}
       />
-
-      <SubmitModal 
-        isOpen={showSubmitModal} 
-        onBack={handleCloseSubmit} 
-        onNext={handleConfirmSubmit} 
-      />
+      <SubmitModal isOpen={showSubmitModal} onBack={() => setShowSubmitModal(false)} onNext={confirmSubmit} busy={submitting} />
     </div>
   );
 }

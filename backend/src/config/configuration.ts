@@ -35,4 +35,13 @@ export default () => ({
     greetingTimeoutMs: Number(process.env.SMTP_GREETING_TIMEOUT_MS ?? 5000),
     socketTimeoutMs: Number(process.env.SMTP_SOCKET_TIMEOUT_MS ?? 10000),
   },
+  cloudinary: {
+    enabled: process.env.CLOUDINARY_ENABLED === 'true',
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+    folder: process.env.CLOUDINARY_FOLDER ?? 'aptimate/test-covers',
+    avatarFolder: process.env.CLOUDINARY_AVATAR_FOLDER ?? 'aptimate/avatars',
+    maxFileSizeBytes: Number(process.env.UPLOAD_MAX_FILE_SIZE_BYTES ?? 5_242_880),
+  },
 });

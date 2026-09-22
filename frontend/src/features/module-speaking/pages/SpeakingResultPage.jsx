@@ -1,8 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MOCK_SPEAKING_RESULT } from '../data/speakingResultMockData';
 import { saveHistoryEntry } from '../../../utils/historyStorage';
 import styles from './SpeakingResultPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const RESULT_QUERY_SCHEMA = {
+  activePart: { ...queryParam.positiveInt(1, 4), param: 'part' },
+  activeFeedbackTab: { ...queryParam.enum(['grammar', 'vocab'], 'grammar'), param: 'feedback' },
+};
 
 function getStatColor(percentage) {
   if (percentage >= 75) return '#43B75D'; // Green
@@ -23,8 +29,11 @@ export default function SpeakingResultPage() {
 
   // Default active part based on param, or part 1 if full test
   const defaultPart = (isFullTest || !partParam) ? 1 : parseInt(partParam);
-  const [activePart, setActivePart] = useState(defaultPart);
-  const [activeFeedbackTab, setActiveFeedbackTab] = useState('grammar'); // 'grammar' or 'vocab'
+  const [urlState, setUrlState] = useUrlQueryState(RESULT_QUERY_SCHEMA);
+  const activePart = partParam ? urlState.activePart : defaultPart;
+  const { activeFeedbackTab } = urlState;
+  const setActivePart = value => setUrlState({ activePart: value });
+  const setActiveFeedbackTab = value => setUrlState({ activeFeedbackTab: value });
 
   const currentPartData = result.parts[activePart];
 

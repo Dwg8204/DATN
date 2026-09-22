@@ -33,13 +33,15 @@ export class PasswordResetService {
     const maxAttempts = this.config.get<number>('auth.resetMaxAttempts', 5);
     if (challenge.failedAttempts >= maxAttempts) throw new ApplicationError('OTP_ATTEMPTS_EXCEEDED', 'Too many incorrect attempts. Request a new OTP.', 429);
     if (challenge.challengeHash !== this.otpHash(email, otp)) {
-      const nextAttempts = challenge.failedAttempts + 1;
-      await this.repository.recordFailedOtp(challenge.id, nextAttempts >= maxAttempts);
+      await this.repository.recordFailedOtp(challenge.id, maxAttempts);
       throw new ApplicationError('OTP_INVALID_OR_EXPIRED', 'The OTP is invalid or expired.', 400);
     }
     const resetToken = randomBytes(32).toString('base64url');
     const grantTtl = this.config.get<number>('auth.resetGrantTtlMinutes', 15);
-    await this.repository.verifyPasswordReset(challenge.id, this.tokenHash(resetToken), new Date(Date.now() + grantTtl * 60_000));
+    const verified = await this.repository.verifyPasswordReset(
+      challenge.id, this.tokenHash(resetToken), new Date(Date.now() + grantTtl * 60_000),
+    );
+    if (!verified) throw new ApplicationError('OTP_INVALID_OR_EXPIRED', 'The OTP is invalid or expired.', 400);
     return resetToken;
   }
 

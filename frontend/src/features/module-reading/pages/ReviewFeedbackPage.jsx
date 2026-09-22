@@ -1,11 +1,14 @@
 import AnswerExplanation from '../../../components/common/AnswerExplanation';
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { calculateScore } from '../services/gradingService';
 import { loadReadingTest } from '../services/readingTestRepository';
 import TestFooter from '../../../components/layout/TestFooter';
 import { useToast } from '../../../context/ToastContext';
 import DataLoadError from '../../../components/common/DataLoadError';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+
+const REVIEW_QUERY_SCHEMA = { currentPart: { ...queryParam.positiveInt(1, 4), param: 'part' } };
 
 const getGapQuestionText = (passage, position) => {
   const marker = `[${position}]`;
@@ -21,11 +24,14 @@ const ReviewFeedbackPage = () => {
   const { showError } = useToast();
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const hasPartParam = searchParams.has('part');
   const [results, setResults] = useState(null);
   const [testData, setTestData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
-  const [currentPart, setCurrentPart] = useState(1);
+  const [urlState, setUrlState] = useUrlQueryState(REVIEW_QUERY_SCHEMA);
+  const { currentPart } = urlState;
   const [expandedId, setExpandedId] = useState(null);
   const [mode, setMode] = useState('full');
 
@@ -55,7 +61,7 @@ const ReviewFeedbackPage = () => {
         else if (sessionData.mode === 'part2') initialPart = 2;
         else if (sessionData.mode === 'part3') initialPart = 3;
         else if (sessionData.mode === 'part4') initialPart = 4;
-        setCurrentPart(initialPart);
+        if (!hasPartParam) setUrlState({ currentPart: initialPart });
 
         const gradedResults = calculateScore(sessionData.answers, testData, sessionData.mode || 'full');
         setResults(gradedResults);
@@ -71,14 +77,14 @@ const ReviewFeedbackPage = () => {
 
     fetchResults();
     return () => { cancelled = true; };
-  }, [sessionId, showError]);
+  }, [hasPartParam, sessionId, setUrlState, showError]);
 
   useEffect(() => {
     if (expandedId != null) document.getElementById(`reading-review-${expandedId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [expandedId]);
 
   const handlePartChange = (partNum) => {
-    setCurrentPart(partNum);
+    setUrlState({ currentPart: partNum });
     setExpandedId(null);
   };
 

@@ -10,6 +10,8 @@ import { useWritingTestBuilder } from './context/WritingTestBuilderContext';
 import { WRITING_PART_META } from './data/writingBuilderInitialState';
 import { hasValidationErrors, validateWritingPart } from './validation/writingTestValidation';
 import styles from './WritingPartEditorPage.module.css';
+import { useToast } from '../../../context/ToastContext';
+import { getApiError } from '../../../services/apiError';
 
 const summary = value => richTextToPlainText(value) || 'Content required';
 
@@ -56,22 +58,34 @@ export default function WritingPartEditorPage() {
   const navigate = useNavigate();
   const { partNumber: rawPartNumber } = useParams();
   const partNumber = Math.min(4, Math.max(1, Number(rawPartNumber) || 1));
-  const { test, updatePart, basePath } = useWritingTestBuilder();
+  const { test, updatePart, basePath, saveDraft } = useWritingTestBuilder();
+  const { showError, showSuccess } = useToast();
   const part = test.parts[partNumber];
   const meta = WRITING_PART_META[partNumber - 1];
   const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
   const update = (field, value) => updatePart(partNumber, field, value);
-  const close = () => navigate(basePath);
-  const save = () => {
+  const close = () => navigate(test.id ? basePath : `${basePath}?mode=${test.mode}`);
+  const save = async () => {
+    if (saving) return;
     const nextErrors = validateWritingPart(partNumber, part);
     setErrors(nextErrors);
-    if (!hasValidationErrors(nextErrors)) close();
-    else revealFirstEditorError(nextErrors);
+    if (hasValidationErrors(nextErrors)) return revealFirstEditorError(nextErrors);
+    setSaving(true);
+    try {
+      const saved = await saveDraft();
+      showSuccess(`Part ${partNumber} draft saved.`);
+      navigate(saved.id ? `/admin/tests/writing/${saved.id}/edit` : basePath);
+    } catch (error) {
+      showError(getApiError(error, `Unable to save Part ${partNumber}.`));
+    } finally {
+      setSaving(false);
+    }
   };
   const props = { part, update };
   return <div className={styles.overlay}>
     <AdminValidationToast errors={errors} onClose={() => setErrors({})}/>
-    <main><EditorBackButton onClick={close}/><header><strong>Part {partNumber}</strong><span>{meta.title} ({meta.summary})</span></header>{partNumber === 1 && <Part1 {...props}/>} {partNumber === 2 && <Part2 {...props}/>} {partNumber === 3 && <Part3 {...props}/>} {partNumber === 4 && <Part4 {...props}/>}</main>
-    <button className={styles.save} onClick={save}>Save change</button>
+    <main inert={saving ? '' : undefined} aria-busy={saving}><EditorBackButton onClick={close}/><header><strong>Part {partNumber}</strong><span>{meta.title} ({meta.summary})</span></header>{partNumber === 1 && <Part1 {...props}/>} {partNumber === 2 && <Part2 {...props}/>} {partNumber === 3 && <Part3 {...props}/>} {partNumber === 4 && <Part4 {...props}/>}</main>
+    <button className={styles.save} onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save change'}</button>
   </div>;
 }

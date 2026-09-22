@@ -1,18 +1,63 @@
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { DASHBOARD_TRENDS, TEST_VOLUME } from '../data/adminMockData';
+import DashboardActivityChart from './components/DashboardActivityChart';
+import DashboardMetricCard from './components/DashboardMetricCard';
+import DashboardPeriodFilter from './components/DashboardPeriodFilter';
+import useAdminDashboard from './hooks/useAdminDashboard';
+import { formatGeneratedAt } from './utils/dashboardFormatters';
 import styles from './AdminDashboardPage.module.css';
-import './AdminDashboardResponsive.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
-const colors = { reading: '#9685ff', listening: '#ff9292', writing: '#55c5d0', grammar: '#e45252', speaking: '#ffb766' };
+const DASHBOARD_QUERY_SCHEMA = {
+  period: queryParam.enum(['this-year', '12-months', '6-months', '30-days', 'week', '24-hours'], '12-months'),
+  testSkill: { ...queryParam.enum(['ALL', 'READING', 'LISTENING', 'WRITING', 'GRAMMAR_VOCAB', 'SPEAKING'], 'ALL'), param: 'testsSkill' },
+  activitySkill: { ...queryParam.enum(['ALL', 'READING', 'LISTENING', 'WRITING', 'GRAMMAR_VOCAB', 'SPEAKING'], 'ALL'), param: 'activitySkill' },
+};
 
-function MiniChart({ title, data }) {
-  return <article className={`${styles.mini} dashboardMiniCard`}><div className={styles.metric}><h2>{title}</h2><div><strong>0</strong><span>-100%</span></div></div><div className={styles.miniChart}><ResponsiveContainer><AreaChart data={data}><defs><linearGradient id={`fill-${title}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#9585ff" stopOpacity=".48"/><stop offset="1" stopColor="#9585ff" stopOpacity="0"/></linearGradient></defs><CartesianGrid stroke="#eee" vertical={false}/><XAxis dataKey="month" tick={{ fontSize: 10 }} axisLine={false}/><YAxis tick={{ fontSize: 10 }} axisLine={false} width={30}/><Area type="monotone" dataKey="value" stroke="#8f7dff" fill={`url(#fill-${title})`} strokeWidth={1}/></AreaChart></ResponsiveContainer></div></article>;
-}
-
-function VolumeChart({ title }) {
-  return <article className={`${styles.panel} dashboardChartPanel`}><header><h2>{title}</h2><nav><b>Full</b><span>Reading</span><span>Listening</span><span>Writing</span><span>Speaking</span></nav></header><div className="dashboardChartScroller"><div className={`${styles.largeChart} dashboardLargeChart`}><ResponsiveContainer><BarChart data={TEST_VOLUME} barGap={2}><CartesianGrid stroke="#ddd" vertical={false}/><XAxis dataKey="month" tick={{ fontSize: 11 }}/><YAxis domain={[0, 120]} tick={{ fontSize: 11 }} width={36}/><Tooltip/><Legend wrapperStyle={{ fontSize: 11 }}/><Bar dataKey="reading" fill={colors.reading}/><Bar dataKey="listening" fill={colors.listening}/><Bar dataKey="writing" fill={colors.writing}/><Bar dataKey="grammar" name="Grammar & Vocab" fill={colors.grammar}/><Bar dataKey="speaking" fill={colors.speaking}/></BarChart></ResponsiveContainer></div></div></article>;
+function DashboardSkeleton() {
+  return (
+    <div className={styles.skeletonGrid} aria-label="Loading dashboard" role="status">
+      <div className={styles.skeletonCard} />
+      <div className={styles.skeletonCard} />
+      <div className={styles.skeletonChart} />
+      <div className={styles.skeletonChart} />
+    </div>
+  );
 }
 
 export default function AdminDashboardPage() {
-  return <div className={styles.page}><nav className={`${styles.periods} dashboardPeriods`}>{['This year', '12 months', '6 months', '30 days', 'Week', '24 hours'].map((period) => <button className={period === '12 months' ? styles.active : ''} key={period}>{period}</button>)}</nav><section className={styles.miniGrid}><MiniChart title="Visit" data={DASHBOARD_TRENDS.visit}/><MiniChart title="Subscribers" data={DASHBOARD_TRENDS.subscribers}/></section><VolumeChart title="APTIS Test Volume"/><VolumeChart title="Test Activity by Users"/></div>;
+  const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
+  const { period, testSkill, activitySkill } = urlState;
+  const setPeriod = value => setUrlState({ period: value });
+  const setTestSkill = value => setUrlState({ testSkill: value });
+  const setActivitySkill = value => setUrlState({ activitySkill: value });
+  const { data, loading, error, retry } = useAdminDashboard(period);
+
+  return (
+    <div className={styles.page} aria-busy={loading}>
+      <div className={styles.toolbar}>
+        <DashboardPeriodFilter value={period} onChange={setPeriod} />
+        {data && <span className={styles.updatedAt}>Updated {formatGeneratedAt(data.generatedAt)} (UTC+7)</span>}
+      </div>
+
+      {loading && !data ? <DashboardSkeleton /> : null}
+      {error && !data ? (
+        <section className={styles.errorState} role="alert">
+          <strong>Dashboard data could not be loaded.</strong>
+          <span>{error}</span>
+          <button type="button" onClick={retry}>Try again</button>
+        </section>
+      ) : null}
+
+      {data ? (
+        <>
+          {error && <div className={styles.refreshError} role="status">The latest refresh failed. Showing the previous data. <button type="button" onClick={retry}>Try again</button></div>}
+          <section className={styles.metricGrid}>
+            <DashboardMetricCard id="learners" title="Active Learners" metric={data.metrics.activeLearners} />
+            <DashboardMetricCard id="users" title="New Users" metric={data.metrics.newUsers} />
+          </section>
+          <DashboardActivityChart title="Tests Created" data={data.series.testsCreated} skill={testSkill} onSkillChange={setTestSkill} />
+          <DashboardActivityChart title="Test Activity" data={data.series.testActivity} skill={activitySkill} onSkillChange={setActivitySkill} />
+        </>
+      ) : null}
+    </div>
+  );
 }

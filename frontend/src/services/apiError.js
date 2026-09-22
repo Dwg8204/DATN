@@ -17,6 +17,14 @@ const messagesByCode = {
   INVALID_REFRESH_TOKEN: 'Your session has expired. Please sign in again.',
   REFRESH_TOKEN_REQUIRED: 'Please sign in to continue.',
   REFRESH_TOKEN_REUSED: 'Your session has ended. Please sign in again.',
+  TEST_NOT_PUBLISHED: 'This test is no longer available.',
+  ATTEMPT_NOT_FOUND: 'This test session could not be found. Start the test again.',
+  ATTEMPT_NOT_SUBMITTED: 'Submit the test before viewing its result.',
+  ATTEMPT_EXPIRED: 'The time limit has expired. Submit your saved answers to view the result.',
+  ATTEMPT_REVISION_CONFLICT: 'This test changed in another tab. Reload the page before continuing.',
+  ATTEMPT_MODE_MISMATCH: 'The test type has changed. Refresh the test list and try again.',
+  ATTEMPT_COMPONENT_MISMATCH: 'This test belongs to another skill.',
+  ATTEMPT_INVALID_SNAPSHOT: 'This published test is incomplete. Please contact a teacher or administrator.',
 };
 
 const messagesByStatus = {

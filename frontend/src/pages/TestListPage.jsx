@@ -5,8 +5,20 @@ import CommentSection from '../components/shared/CommentSection/CommentSection';
 import styles from './TestListPage.module.css';
 import { GRAMMAR_VOCAB_CONFIG } from '../features/grammar_vocab/config/grammarVocabConfig';
 import { WRITING_CONFIG } from '../features/writing/config/writingConfig';
-import { getAdminWritingListItems } from '../features/writing/utils/adminWritingTestAdapter';
-import { getAdminGrammarListItems } from '../features/grammar_vocab/utils/adminGrammarTestAdapter';
+import { grammarTestsApi } from '../features/admin/grammar/services/grammarTestsApi';
+import { writingTestsApi } from '../features/admin/writing/services/writingTestsApi';
+import { getApiError } from '../services/apiError';
+import { useToast } from '../context/ToastContext';
+import { testAttemptsApi } from '../features/test-attempts/services/testAttemptsApi';
+import { formatDuration } from '../features/test-attempts/utils/attemptTime';
+import useUrlQueryState, { queryParam } from '../hooks/useUrlQueryState';
+
+const TEST_LIST_QUERY_SCHEMA = {
+  activeTab: { ...queryParam.enum(['part1', 'part2', 'part3', 'part4', 'full'], 'part1'), param: 'part' },
+  query: { ...queryParam.string(''), param: 'q' },
+  page: queryParam.positiveInt(1),
+  pageSize: { ...queryParam.positiveInt(() => window.innerWidth <= 700 ? 5 : 10, 100), param: 'size' },
+};
 
 // Fake data for tests
 const MOCK_TESTS = [
@@ -52,28 +64,84 @@ const MOCK_TESTS = [
 export default function TestListPage() {
   const { skill } = useParams();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('part1');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
-  const [query, setQuery] = useState('');
-  useEffect(() => setPage(1), [activeTab, skill, query]);
-  const [adminWritingTests, setAdminWritingTests] = useState(() => skill === 'writing' ? getAdminWritingListItems() : []);
-  const [adminGrammarTests, setAdminGrammarTests] = useState(() => skill === 'grammar-vocab' ? getAdminGrammarListItems() : []);
+  const { showError } = useToast();
+  const [urlState, setUrlState] = useUrlQueryState(TEST_LIST_QUERY_SCHEMA);
+  const { activeTab, page, pageSize, query } = urlState;
+  const setActiveTab = value => setUrlState({ activeTab: value, page: 1 });
+  const setQuery = value => setUrlState({ query: value, page: 1 });
+  const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
+  const [grammarState, setGrammarState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
+  const [writingState, setWritingState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
+  useEffect(() => {
+    if (skill !== 'grammar-vocab') return undefined;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setGrammarState(current => ({ ...current, loading: true, error: '' }));
+      grammarTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
+        .then(async result => {
+        const ids = (result.data ?? []).map(test => test.id);
+        const history = ids.length ? await testAttemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+        const latestByTest = new Map();
+        for (const attempt of history.data ?? []) {
+          if (!latestByTest.has(attempt.testId)) latestByTest.set(attempt.testId, attempt);
+        }
+        setGrammarState({
+          tests: (result.data ?? []).map(test => {
+            const attempt = latestByTest.get(test.id);
+            const completed = attempt?.status === 'SUBMITTED';
+            const inProgress = attempt?.status === 'IN_PROGRESS';
+            return {
+            ...test,
+            title: test.title || test.name,
+            desc: `${test.questionType}\nAptiMate published test`,
+            part: test.section,
+            tabId: test.mode,
+            status: completed ? 'Completed' : inProgress ? 'In Progress' : 'Not Started',
+            attemptId: attempt?.attemptId,
+            submitted: completed ? new Date(attempt.submittedAt).toLocaleString('vi-VN') : undefined,
+            duration: completed && attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : undefined,
+            accuracy: completed && Number(attempt.maxScore) ? Math.round((Number(attempt.score) / Number(attempt.maxScore)) * 100) : undefined,
+            apiManaged: true,
+          }; }),
+          totalItems: result.pagination?.totalItems ?? 0,
+          loading: false,
+          error: '',
+        });
+      })
+        .catch(error => {
+          if (error.code !== 'ERR_CANCELED') setGrammarState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, 'Unable to load Grammar & Vocabulary tests.') });
+        });
+    }, query.trim() ? 300 : 0);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [activeTab, page, pageSize, query, skill]);
 
   useEffect(() => {
     if (skill !== 'writing') return undefined;
-    const refresh = () => setAdminWritingTests(getAdminWritingListItems());
-    window.addEventListener('writing-tests-updated', refresh);
-    window.addEventListener('storage', refresh);
-    return () => { window.removeEventListener('writing-tests-updated', refresh); window.removeEventListener('storage', refresh); };
-  }, [skill]);
-  useEffect(() => {
-    if (skill !== 'grammar-vocab') return undefined;
-    const refresh = () => setAdminGrammarTests(getAdminGrammarListItems());
-    window.addEventListener('grammar-tests-updated', refresh);
-    window.addEventListener('storage', refresh);
-    return () => { window.removeEventListener('grammar-tests-updated', refresh); window.removeEventListener('storage', refresh); };
-  }, [skill]);
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      setWritingState(current => ({ ...current, loading: true, error: '' }));
+      writingTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
+        .then(result => setWritingState({
+          tests: (result.data ?? []).map(test => ({
+            ...test,
+            title: test.title || test.name,
+            desc: `AptiMate Writing ${test.section} practice\nAptis writing task`,
+            part: test.section,
+            tabId: test.mode,
+            status: 'Not Started',
+            apiManaged: true,
+          })),
+          totalItems: result.pagination?.totalItems ?? 0,
+          loading: false,
+          error: '',
+        }))
+        .catch(error => {
+          if (error.code !== 'ERR_CANCELED') setWritingState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, 'Unable to load Writing tests.') });
+        });
+    }, query.trim() ? 300 : 0);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [activeTab, page, pageSize, query, skill]);
 
   // Helper to get config based on skill
   const getConfig = () => {
@@ -84,8 +152,8 @@ export default function TestListPage() {
   };
 
   const currentConfig = getConfig();
-  const tests = skill === 'writing' ? [...adminWritingTests, ...(currentConfig.tests || [])] : skill === 'grammar-vocab' ? [...adminGrammarTests, ...(currentConfig.tests || [])] : currentConfig.tests || MOCK_TESTS;
-  const filteredTests = tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
+  const tests = skill === 'writing' ? writingState.tests : skill === 'grammar-vocab' ? grammarState.tests : currentConfig.tests || MOCK_TESTS;
+  const filteredTests = ['grammar-vocab', 'writing'].includes(skill) ? tests : tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
 
   // Helper to format skill name nicely
   const formatSkillName = (skillStr) => {
@@ -100,7 +168,19 @@ export default function TestListPage() {
     navigate(`/${skill}/introduction?testId=${testId}&mode=${activeTab}`);
   };
 
+  const startTest = test => {
+    if (test.apiManaged && skill !== 'grammar-vocab') {
+      showError('This published test is ready, but the secure attempt and grading API must be connected before learners can start it.');
+      return;
+    }
+    handleDoTest(test.id);
+  };
+
   const handleReviewTest = (test) => {
+    if (skill === 'grammar-vocab' && test.attemptId) {
+      navigate(`/grammar-vocab/result-detail?attemptId=${test.attemptId}`);
+      return;
+    }
     const resultDetailPath = currentConfig.resultDetailPath || `/${skill}/result-detail`;
     const part = test.tabId === 'part2' ? '2' : '1';
     const isFull = test.tabId === 'full';
@@ -160,7 +240,7 @@ export default function TestListPage() {
 
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
-              {filteredTests.slice((page - 1) * pageSize, page * pageSize).map((test) => (
+              {(['grammar-vocab', 'writing'].includes(skill) ? filteredTests : filteredTests.slice((page - 1) * pageSize, page * pageSize)).map((test) => (
                 <div key={test.id} className={styles.testCard}>
                   <div className={styles.cardTop}>
                     <div className={styles.cardTitle}>{test.title}</div>
@@ -202,8 +282,8 @@ export default function TestListPage() {
                         <span className={styles.reviewBtnText}>Review</span>
                       </button>
                     )}
-                    <button className={styles.doTestBtn} onClick={() => handleDoTest(test.id)}>
-                      <span className={styles.doTestBtnText}>Do the test</span>
+                    <button className={styles.doTestBtn} onClick={() => startTest(test)}>
+                      <span className={styles.doTestBtnText}>{test.status === 'In Progress' ? 'Continue test' : 'Do the test'}</span>
                     </button>
                   </div>
 
@@ -217,7 +297,7 @@ export default function TestListPage() {
                     </div>
                   ) : (
                     <div className={styles.statusBadgeNotStarted}>
-                      <span className={styles.statusBadgeNotStartedText}>Not Started</span>
+                      <span className={styles.statusBadgeNotStartedText}>{test.status}</span>
                     </div>
                   )}
                 </div>
@@ -225,7 +305,10 @@ export default function TestListPage() {
             </div>
           </div>
           
-          <Pagination page={page} totalItems={filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          {['grammar-vocab', 'writing'].includes(skill) && (skill === 'grammar-vocab' ? grammarState.loading : writingState.loading) && <p>Loading tests…</p>}
+          {skill === 'grammar-vocab' && grammarState.error && <p>{grammarState.error}</p>}
+          {skill === 'writing' && writingState.error && <p>{writingState.error}</p>}
+          <Pagination page={page} totalItems={skill === 'grammar-vocab' ? grammarState.totalItems : skill === 'writing' ? writingState.totalItems : filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper}>
             <CommentSection />
           </div>

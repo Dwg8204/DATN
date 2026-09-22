@@ -147,8 +147,8 @@ export default function Header() {
                 }
               }}
             >
-              <img src={user?.avatar || 'https://placehold.co/32x32'} alt="User" className={styles.userAvatar} />
-              <span className={styles.userName}>{user?.name}</span>
+              <img src={user?.avatar?.url || user?.avatar || 'https://placehold.co/32x32'} alt="User" className={styles.userAvatar} />
+              <span className={styles.userName}>{user?.fullName || user?.name || [user?.firstName, user?.lastName].filter(Boolean).join(' ')}</span>
               <ChevronDown className={styles.navIcon} aria-hidden="true" />
             </div>
             {isUserMenuOpen && window.innerWidth > 700 && (
@@ -169,7 +169,15 @@ export default function Header() {
                   <History size={16} style={{ marginRight: '8px' }} />
                   Learning History
                 </button>
-                <button className={styles.dropdownItem} onClick={() => { logout(); setIsUserMenuOpen(false); navigate('/'); }}>
+                <button className={styles.dropdownItem} onClick={async () => {
+                  setIsUserMenuOpen(false);
+                  try {
+                    await logout();
+                    navigate('/', { replace: true });
+                  } catch {
+                    // The shared API error toast keeps the user informed.
+                  }
+                }}>
                   <LogOut size={16} style={{ marginRight: '8px' }} />
                   Log out
                 </button>

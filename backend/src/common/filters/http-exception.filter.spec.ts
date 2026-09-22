@@ -31,6 +31,15 @@ describe('HttpExceptionFilter', () => {
     expect(body.requestId).toBe('request-123');
   });
 
+  it('returns only the safe revision metadata needed to resolve an autosave conflict', () => {
+    const revision = handle(new ApplicationError('ATTEMPT_REVISION_CONFLICT', 'Reload progress.', 409,
+      { currentRevision: 4, secret: 'hidden' })).body;
+    expect(revision.error).toEqual({ code: 'ATTEMPT_REVISION_CONFLICT', message: 'Reload progress.', currentRevision: 4 });
+    const unrelated = handle(new ApplicationError('OTHER_ERROR', 'Other error.', 409,
+      { currentRevision: 5, secret: 'hidden' })).body;
+    expect(unrelated.error).not.toHaveProperty('currentRevision');
+  });
+
   it('explains a missing or expired authenticated session', () => {
     const { body } = handle(new UnauthorizedException());
     expect(body.error.message).toContain('Please sign in');
