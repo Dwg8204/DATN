@@ -19,6 +19,9 @@ import { StorageModule } from './common/storage/storage.module';
 import { ProfileModule } from './features/profile/profile.module';
 import { TestAttemptsModule } from './features/test-attempts/test-attempts.module';
 import { AccountThrottlerGuard } from './common/guards/account-throttler.guard';
+import { ReadingModule } from './features/reading/reading.module';
+import { NotificationsModule } from './features/notifications/notifications.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, cache: true, load: [configuration], validationSchema: environmentSchema }),
@@ -32,6 +35,8 @@ import { AccountThrottlerGuard } from './common/guards/account-throttler.guard';
     WritingTestsModule,
     AdminDashboardModule,
     ListeningTestsModule,
+    ReadingModule,
+    NotificationsModule,
     HealthModule,
     StorageModule,
     ProfileModule,
