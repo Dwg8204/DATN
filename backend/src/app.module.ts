@@ -21,6 +21,7 @@ import { TestAttemptsModule } from './features/test-attempts/test-attempts.modul
 import { AccountThrottlerGuard } from './common/guards/account-throttler.guard';
 import { ReadingModule } from './features/reading/reading.module';
 import { NotificationsModule } from './features/notifications/notifications.module';
+import { VocabularyModule } from './features/vocabulary/vocabulary.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { NotificationsModule } from './features/notifications/notifications.modu
     ListeningTestsModule,
     ReadingModule,
     NotificationsModule,
+    VocabularyModule,
     HealthModule,
     StorageModule,
     ProfileModule,
