@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
-import { startListeningSession } from '../features/module-listening/utils/listeningSessionStorage';
 import { listeningTestsApi } from '../features/admin/listening/services/listeningTestsApi';
 import { startReadingSession } from '../features/module-reading/utils/readingSessionStorage';
 import { startWritingSession } from '../features/writing/utils/writingSessionStorage';
@@ -126,11 +125,13 @@ export default function IntroductionPage({
         navigate(`/${skill}/test/${firstPart}?${params.toString()}`);
       } else if (skill === 'listening') {
         const { attemptId } = await listeningTestsApi.startAttempt(testId, mode);
-        startListeningSession(testId, attemptId, mode, { force: true });
+        const params = new URLSearchParams({ attemptId });
+        if (testId) params.set('testId', testId);
+        
         if (mode === 'full') {
-          navigate(`/${skill}/test/part1${testId ? `?testId=${testId}&isFull=true` : '?isFull=true'}`);
+          navigate(`/${skill}/test/part1?${params.toString()}`);
         } else {
-          navigate(`/${skill}/test/${mode}${testId ? `?testId=${testId}` : ''}`);
+          navigate(`/${skill}/test/${mode}?${params.toString()}`);
         }
       } else if (skill === 'reading') {
         startReadingSession(testId, mode, { force: true });

@@ -2,9 +2,10 @@ import Pagination from '../../../components/common/Pagination';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
-import { getCompletedListeningTests } from '../utils/listeningSessionStorage';
 import styles from './ListeningTestListPage.module.css';
 import { listeningTestsApi } from '../../admin/listening/services/listeningTestsApi';
+import { testAttemptsApi } from '../../../features/test-attempts/services/testAttemptsApi';
+import { formatDuration } from '../../../features/test-attempts/utils/attemptTime';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const TABS = [
@@ -36,18 +37,33 @@ export default function ListeningTestListPage() {
   const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
-    setCompletedTests(getCompletedListeningTests());
     const controller = new AbortController();
     const timer = setTimeout(() => {
       listeningTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
-        .then(result => {
-          setAdminTests(result.data.map(test => ({
-            id: test.id, title: test.title, desc: 'Listening practice test',
-            part: test.mode === 'full' ? 'Full Listening Test' : test.mode.replace('part', 'Part '),
-            tabId: test.mode, thumbnail: test.pictureUrl || 'https://placehold.co/157x79?text=Listening',
-            status: 'Not Started'
-          })));
-          setTotalItems(result.pagination.totalItems);
+        .then(async result => {
+          const ids = (result.data ?? []).map(test => test.id);
+          const history = ids.length ? await testAttemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+          const latestByTest = new Map();
+          for (const attempt of history.data ?? []) {
+            if (!latestByTest.has(attempt.testId)) latestByTest.set(attempt.testId, attempt);
+          }
+
+          setAdminTests((result.data ?? []).map(test => {
+            const attempt = latestByTest.get(test.id);
+            const completed = attempt?.status === 'SUBMITTED';
+            const inProgress = attempt?.status === 'IN_PROGRESS';
+            return {
+              id: test.id, title: test.title, desc: 'Listening practice test',
+              part: test.mode === 'full' ? 'Full Listening Test' : test.mode.replace('part', 'Part '),
+              tabId: test.mode, thumbnail: test.pictureUrl || 'https://placehold.co/157x79?text=Listening',
+              status: completed ? 'Completed' : inProgress ? 'In Progress' : 'Not Started',
+              attemptId: attempt?.attemptId,
+              submitted: completed ? new Date(attempt.submittedAt).toLocaleString('vi-VN') : undefined,
+              duration: completed && attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : undefined,
+              accuracy: completed && Number(attempt.maxScore) ? Math.round((Number(attempt.score) / Number(attempt.maxScore)) * 100) : undefined,
+            };
+          }));
+          setTotalItems(result.pagination?.totalItems ?? 0);
         })
         .catch(err => {
           if (err.code !== 'ERR_CANCELED') console.error(err);
@@ -66,28 +82,12 @@ export default function ListeningTestListPage() {
   };
 
   const handleReview = (test) => {
-    const isFull = test.tabId === 'full';
-    const partNum = test.part ? test.part.replace('Part ', '') : '1';
-    navigate(`/listening/detail-result?testId=${test.id}&isFull=${isFull}${!isFull ? `&part=${partNum}` : ''}`);
+    navigate(`/listening/result?attemptId=${test.attemptId}&testId=${test.id}&isFull=${test.tabId === 'full'}`);
   };
 
   const filteredTests = adminTests;
 
-  const testsToRender = filteredTests.map(test => {
-    const comp = completedTests[test.id];
-    if (comp) {
-      const d = new Date(comp.submittedAt);
-      const formattedDate = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate().toString().padStart(2, '0')}, ${d.getFullYear()}`;
-      return {
-        ...test,
-        status: 'Completed',
-        submitted: formattedDate,
-        duration: comp.timeString || '00:00:00',
-        accuracy: comp.accuracy || 0
-      };
-    }
-    return { ...test, status: 'Not Started' };
-  });
+  const testsToRender = filteredTests;
 
   return (
     <div className={styles.page}>
@@ -191,7 +191,7 @@ export default function ListeningTestListPage() {
                           handleDoTestPart(test.id, partNum);
                         }
                       }}>
-                        <span className={styles.doTestBtnText}>{test.status === 'Completed' ? 'Try again' : 'Do the test'}</span>
+                        <span className={styles.doTestBtnText}>{test.status === 'Completed' ? 'Try again' : test.status === 'In Progress' ? 'Continue test' : 'Do the test'}</span>
                       </button>
                     </div>
 

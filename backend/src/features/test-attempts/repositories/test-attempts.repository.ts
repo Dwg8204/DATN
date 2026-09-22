@@ -102,16 +102,17 @@ export class TestAttemptsRepository {
     return saved;
   }
 
-  async complete(manager: EntityManager, attemptId: string, result: AssessmentResult, submittedAt?: Date): Promise<LockedAttemptRow> {
+  async complete(manager: EntityManager, attemptId: string, result: AssessmentResult, submittedAt?: Date, estimatedCefr?: string | null): Promise<LockedAttemptRow> {
     const rows = await manager.query<LockedAttemptRow[]>(
       `UPDATE test_attempts SET status='SUBMITTED',grading_status=$2,
        result=$3::jsonb,score=$4,max_score=$5,result_source=$6,
        submitted_at=COALESCE($7::timestamptz,clock_timestamp()),
        completed_at=CASE WHEN $6::result_source='AUTOMATIC'::result_source THEN clock_timestamp() ELSE NULL END,
+       estimated_cefr=$8,
        updated_at=clock_timestamp()
        WHERE id=$1 RETURNING *`,
       [attemptId, result.method === 'OBJECTIVE' ? 'COMPLETED' : 'QUEUED', JSON.stringify(result),
-        result.score, result.maxScore, result.method === 'OBJECTIVE' ? 'AUTOMATIC' : null, submittedAt ?? null]);
+        result.score, result.maxScore, result.method === 'OBJECTIVE' ? 'AUTOMATIC' : null, submittedAt ?? null, estimatedCefr ?? null]);
     const completed = firstMutationRow<LockedAttemptRow>(rows);
     return completed;
   }

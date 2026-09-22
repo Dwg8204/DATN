@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import styles from './TestHeader.module.css';
-import { getListeningRemainingSeconds } from '../../features/module-listening/utils/listeningSessionStorage';
 import { getReadingRemainingSeconds } from '../../features/module-reading/utils/readingSessionStorage';
 import { finishWritingSession, getWritingRemainingSeconds } from '../../features/writing/utils/writingSessionStorage';
 
@@ -21,7 +20,6 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
   const isReadingTest = location.pathname.startsWith('/reading/test/');
   const isWritingTest = location.pathname.startsWith('/writing/test/');
   const [remainingSeconds, setRemainingSeconds] = useState(() => {
-    if (isListeningTest) return getListeningRemainingSeconds();
     if (isReadingTest) return getReadingRemainingSeconds();
     if (isWritingTest) return getWritingRemainingSeconds();
     return null;
@@ -33,9 +31,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
 
     const updateTimer = () => {
       let remaining = null;
-      if (isListeningTest) {
-        remaining = getListeningRemainingSeconds();
-      } else if (isReadingTest) {
+      if (isReadingTest) {
         remaining = getReadingRemainingSeconds();
       } else if (isWritingTest) {
         remaining = getWritingRemainingSeconds();
@@ -45,10 +41,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
       if (remaining === 0) {
         const testId = searchParams.get('testId') || '1';
         const isFull = searchParams.get('isFull') === 'true';
-        if (isListeningTest) {
-          // For listening test, when timeout always redirect to full test results because we want to see the total score
-          navigate(`/listening/result?testId=${testId}&isFull=true&timedOut=true`, { replace: true });
-        } else if (isWritingTest) {
+        if (isWritingTest) {
           const part = location.pathname.match(/\/(part[1-4])$/)?.[1] || 'part1';
           finishWritingSession();
           navigate(`/writing/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
