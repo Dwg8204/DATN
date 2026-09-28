@@ -21,8 +21,9 @@ export default function GrammarVocabResultPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const attemptId = searchParams.get('attemptId');
+  const isPractice = searchParams.get('practice') === 'true';
   const timedOut = searchParams.get('timedOut') === 'true';
-  const { data, loading, error } = useAttemptResult(attemptId);
+  const { data, loading, error } = useAttemptResult(attemptId, 'GRAMMAR_VOCAB');
   const view = useMemo(() => {
     if (!data?.result) return null;
     const score = Number(data.score ?? 0);
@@ -72,8 +73,8 @@ export default function GrammarVocabResultPage() {
         {view.groups.map(group => <div className={styles.statisticItem} key={group.label}><ScoreRing percentage={group.percentage} size="small"><span>{group.correct}/{group.total}</span></ScoreRing><div>{group.label}</div></div>)}
       </div></section>
       <div className={styles.actions}>
-        <button className={styles.primaryButton} onClick={() => navigate(`/grammar-vocab/result-detail?attemptId=${attemptId}`)}>View detail result</button>
-        <button className={styles.secondaryButton} onClick={() => navigate('/grammar-vocab/tests')}>Take another test</button>
+        <button className={styles.primaryButton} onClick={() => navigate(`/grammar-vocab/result-detail?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}>View detail result</button>
+        <button className={styles.secondaryButton} onClick={() => navigate(isPractice ? '/grammar-vocab/practice' : '/grammar-vocab/tests')}>Take another test</button>
       </div>
     </div></div>
   );

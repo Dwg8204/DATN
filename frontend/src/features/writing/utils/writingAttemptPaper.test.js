@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { partsInWritingPaper, writingTaskFromPaper } from './writingAttemptPaper.js';
+import { partsInWritingPaper, resumableQuestionKey, resumePartFromAttempt, writingTaskFromPaper } from './writingAttemptPaper.js';
+import { wouldExceedAnswerLimit, writingAnswerCharacterLimit } from './writingAnswerLimits.js';
 
 const paper = {
   title: 'Writing mock',
@@ -23,4 +24,23 @@ test('maps every Writing part to stable answer keys', () => {
 
 test('returns null for a part that is outside the published snapshot', () => {
   assert.equal(writingTaskFromPaper({ ...paper, parts: { 2: paper.parts[2] } }, 'part1'), null);
+  assert.equal(writingTaskFromPaper(paper, 'part1.5'), null);
+});
+
+test('resumes a full Writing attempt at the last saved part', () => {
+  assert.equal(resumePartFromAttempt({ paper, progress: { currentQuestionKey: 'p3:q1' } }, 'full'), 'part3');
+  assert.equal(resumePartFromAttempt({ paper, progress: { currentQuestionKey: 'unknown' } }, 'full'), 'part1');
+});
+
+test('resumes the saved question within a Writing part', () => {
+  const task = { questions: [{ key: 'p3:q1' }, { key: 'p3:q2' }, { key: 'p3:q3' }] };
+  assert.equal(resumableQuestionKey(task, 'p3:q3'), 'p3:q3');
+  assert.equal(resumableQuestionKey(task, 'p4:q1'), 'p3:q1');
+});
+
+test('uses the Writing limits for each response without silently accepting a long paste', () => {
+  assert.equal(writingAnswerCharacterLimit('part4', 0), 4_000);
+  assert.equal(writingAnswerCharacterLimit('part4', 1), 8_000);
+  assert.equal(wouldExceedAnswerLimit('A'.repeat(3_999), 3_999, 3_999, 'ĐĐ', 4_000), true);
+  assert.equal(wouldExceedAnswerLimit('A'.repeat(4_000), 3_999, 4_000, 'Đ', 4_000), false);
 });

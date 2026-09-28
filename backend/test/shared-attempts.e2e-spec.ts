@@ -174,7 +174,7 @@ maybeDescribe('shared attempts with PostgreSQL', () => {
   it('persists Listening explanations through draft, published snapshot and result detail', async () => {
     const listening = new ListeningTestsRepository(dataSource);
     const author = { id: studentId, role: 'ADMIN' as const };
-    const aggregate = { mode: 'part3' as const, details: { title: 'Listening explanation test' }, parts: {
+    const aggregate = { purpose: 'PRACTICE' as const, mode: 'part3' as const, details: { title: 'Listening explanation test' }, parts: {
       3: { id: 15, context: 'Context', subTitle: 'Opinions', audioUrl: 'https://example.com/audio.mp3',
         options: ['Man', 'Woman', 'Both'], statements: Array.from({ length: 4 }, (_, index) => ({
           id: `15${String.fromCharCode(97 + index)}`, text: `Statement ${index + 1}`, answer: 'Woman',

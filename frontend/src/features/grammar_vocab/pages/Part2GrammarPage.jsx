@@ -5,6 +5,7 @@ import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import RichTextContent from '../../../components/common/RichTextContent';
+import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal';
 import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
 import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
 import styles from './Part2GrammarPage.module.css';
@@ -13,7 +14,7 @@ const SETS_PER_PAGE = 2;
 
 export default function Part2GrammarPage() {
   const navigate = useNavigate();
-  const { attemptId, paper, answers, loading, loadError, saveStatus, submitting, setAnswer, submit, approveNavigation } = useTestAttempt();
+  const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, submit, approveNavigation } = useTestAttempt();
   const [currentPage, setCurrentPage] = useState(1);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const sets = useMemo(() => paper?.parts?.['2']?.sets ?? [], [paper]);
@@ -29,8 +30,10 @@ export default function Part2GrammarPage() {
 
   const confirmSubmit = async () => {
     setShowSubmitModal(false);
-    const result = await submit();
-    if (result) { approveNavigation(); navigate(`/grammar-vocab/result?attemptId=${attemptId}`); }
+    try {
+      const result = await submit();
+      if (result) { approveNavigation(); navigate(`/grammar-vocab/result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`); }
+    } catch { /* The provider displays the error. */ }
   };
 
   return (
@@ -56,11 +59,13 @@ export default function Part2GrammarPage() {
                       <div className={styles.dropdownContainer}>
                         <AnswerSelect
                           value={answers[target.key]?.optionId ?? ''}
+                          disabled={submitting || timeExpired || !attempt?.canAnswer || saveStatus === 'conflict'}
                           onChange={event => setAnswer(target.key, { kind: 'MATCH', optionId: event.target.value })}
                           placeholder={`Question ${allQuestions.findIndex(question => question.id === target.key) + 26}`}
                           ariaLabel={`Answer for ${target.word}`}
                           options={set.options.map(option => ({ value: option.id, label: `${option.id}. ${option.text}` }))}
                         />
+                        <PracticeAnswerReveal questionKey={target.key} options={set.options} />
                       </div>
                     </div>
                   ))}
@@ -80,7 +85,7 @@ export default function Part2GrammarPage() {
         onNextClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
         onSubmitClick={() => setShowSubmitModal(true)}
         submitLabel={submitting ? 'Submitting…' : 'Submit'}
-        submitDisabled={submitting || saveStatus === 'conflict'}
+        submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={currentPage > 1}
         hasNext={currentPage < totalPages}
       />

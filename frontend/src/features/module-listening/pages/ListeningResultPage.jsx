@@ -1,10 +1,8 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AttemptPageState } from '../../test-attempts/components/AttemptPageState';
 import { useAttemptResult } from '../../test-attempts/hooks/useAttemptResult';
 import { formatDuration } from '../../test-attempts/utils/attemptTime';
-import { listeningTestsApi } from '../../admin/listening/services/listeningTestsApi';
-import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
 import styles from './ListeningResultPage.module.css';
 
 function AnswerStatusIcon({ status }) {
@@ -40,8 +38,9 @@ export default function ListeningResultPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const attemptId = searchParams.get('attemptId');
+  const isPractice = searchParams.get('practice') === 'true';
   const timedOut = searchParams.get('timedOut') === 'true';
-  const { data, loading, error } = useAttemptResult(attemptId);
+  const { data, loading, error } = useAttemptResult(attemptId, 'LISTENING');
 
   const view = useMemo(() => {
     if (!data?.result) return null;
@@ -72,8 +71,6 @@ export default function ListeningResultPage() {
 
   if (loading || error) return <AttemptPageState loading={loading} error={error} />;
   if (!view) return <AttemptPageState error="This result is not available yet." />;
-  const isFullTest = searchParams.get('isFull') === 'true';
-
   const columns = [];
   if (view.parts.length > 0) {
     const p1 = view.items.filter(i => i.partNumber === 1);
@@ -101,9 +98,9 @@ export default function ListeningResultPage() {
         )}
         <div className={styles.topSection}>
           <div className={styles.cefrBox}>
-            <div className={styles.cefrLabel}>CEFR Level</div>
-            <div className={styles.cefrValue}>{view.cefrLevel ?? 'Not converted'}</div>
-            <div className={styles.scoreText}>Score: {view.score}/{view.maximum}</div>
+            <div className={styles.cefrLabel}>{isPractice ? 'Practice score' : 'CEFR Level'}</div>
+            <div className={styles.cefrValue}>{isPractice ? `${view.score}/${view.maximum}` : view.cefrLevel ?? 'Not converted'}</div>
+            {!isPractice && <div className={styles.scoreText}>Score: {view.score}/{view.maximum}</div>}
           </div>
 
           <div className={styles.resultBox}>
@@ -202,11 +199,11 @@ export default function ListeningResultPage() {
           <button
             className={`${styles.tryAgainBtn} ${styles.detailBtn || ''}`}
             style={{ backgroundColor: '#da1e21', borderColor: '#da1e21' }}
-            onClick={() => navigate(`/listening/detail-result?attemptId=${attemptId}`)}
+            onClick={() => navigate(`/listening/detail-result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}
           >
             View detail result
           </button>
-          <button className={styles.backBtn} onClick={() => navigate('/listening/tests')}>Back to tests</button>
+          <button className={styles.backBtn} onClick={() => navigate(isPractice ? '/listening/practice' : '/listening/tests')}>Back to tests</button>
         </div>
       </div>
     </div>

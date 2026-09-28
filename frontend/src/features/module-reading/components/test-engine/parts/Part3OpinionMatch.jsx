@@ -4,7 +4,7 @@ import { ReadingTestContext } from '../../../context/ReadingTestContext';
 import styles from './Part3OpinionMatch.module.css';
 
 const Part3OpinionMatch = ({ data }) => {
-  const { answers, handleAnswerChange } = useContext(ReadingTestContext);
+  const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   if (!data) return null;
 
   return (
@@ -32,6 +32,7 @@ const Part3OpinionMatch = ({ data }) => {
                   placeholder={`Question ${index + 11}`}
                   ariaLabel={`Answer for question ${index + 11}`}
                 />
+                {renderAnswerReveal?.(question.id)}
               </div>
             </article>
           ))}

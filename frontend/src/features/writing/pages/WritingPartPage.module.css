@@ -65,12 +65,13 @@
 .taskCard input:disabled, .taskCard textarea:disabled { background: #f4f4f4; cursor: wait; }
 .wordCount {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 12px;
   color: #666;
   font-size: 12px;
 }
-.wordCount strong { color: #222; }
+.wordCount strong { color: #222; white-space: nowrap; }
 @media (max-width: 700px) {
   .content { padding: 16px 10px 24px; gap: 14px; }
   .heading { padding: 8px 10px; align-items: flex-start; }

@@ -49,6 +49,7 @@ describe('shared attempt assessment', () => {
     const paper = factory.build('WRITING', { mode: 'part2', details: { title: 'Writing' }, parts: {
       2: { instruction: 'Write', prompt: 'A form', sampleAnswer: 'Secret sample answer' },
     } });
+    expect(paper.items[0].maxCharacters).toBe(4_000);
     expect(JSON.stringify(paper.parts)).not.toContain('Secret sample answer');
     const answers = applyAnswerChanges({}, { 'p2:q1': { kind: 'TEXT', text: 'My response' } }, paper.items);
     const result = grader.grade(paper.items, answers);
@@ -58,6 +59,17 @@ describe('shared attempt assessment', () => {
     expect(blank).toMatchObject({ method: 'PENDING_AI', score: null, maxScore: null,
       counts: { correct: 0, incorrect: 0, skipped: 1 } });
     expect(blank.items[0].outcome).toBe('SKIPPED');
+  });
+
+  it('enforces the Writing limits advertised in the learner paper', () => {
+    const paper = factory.build('WRITING', { mode: 'part4', details: { title: 'Writing' }, parts: {
+      4: { context: 'Write emails', informalPrompt: 'Friend', formalPrompt: 'Manager' },
+    } });
+    expect(paper.items.map(item => item.maxCharacters)).toEqual([4_000, 8_000]);
+    expect(applyAnswerChanges({}, { 'p4:q1': { kind: 'TEXT', text: 'Đ'.repeat(4_000) } }, paper.items))
+      .toMatchObject({ 'p4:q1': { text: 'Đ'.repeat(4_000) } });
+    expect(() => applyAnswerChanges({}, { 'p4:q1': { kind: 'TEXT', text: 'Đ'.repeat(4_001) } }, paper.items))
+      .toThrow(ApplicationError);
   });
 
   it('maps Listening statement text to stable option IDs', () => {
@@ -87,5 +99,44 @@ describe('shared attempt assessment', () => {
     expect(() => factory.build('GRAMMAR_VOCAB', { mode: 'part1', details: { title: 'Broken' }, parts: {
       1: { instruction: 'Q', questions: null },
     } })).toThrow(ApplicationError);
+  });
+
+  it('builds and grades a Reading practice part without exposing its answer keys', () => {
+    const paper = factory.build('READING', { mode: 'part1', details: { title: 'Reading' }, parts: {
+      1: { passageHtml: '<p>A short passage</p>', questions: Array.from({ length: 5 }, (_, index) => ({
+        position: index + 1, options: ['first', 'second', 'third'], answer: index === 0 ? 'second' : 'first',
+        explanation: `Reading reason ${index + 1}`,
+      })) },
+    } });
+    expect(JSON.stringify(paper.parts)).not.toContain('Reading reason');
+    expect(paper.items[0]).toMatchObject({ correctOptionId: 'o1', explanation: 'Reading reason 1' });
+    const result = grader.grade(paper.items, applyAnswerChanges({}, {
+      'p1:q1': { kind: 'CHOICE', optionId: 'o1' },
+    }, paper.items));
+    expect(result).toMatchObject({ method: 'OBJECTIVE', score: 1, maxScore: 5,
+      counts: { correct: 1, incorrect: 0, skipped: 4 } });
+  });
+
+  it('treats one Speaking Part 4 recording as an unassessed response', () => {
+    const paper = factory.build('SPEAKING', { mode: 'part4', details: { title: 'Speaking' }, parts: {
+      4: { topic: 'Technology', imageUrl: 'https://example.com/image.jpg',
+        questions: [{ text: 'Describe it.' }, { text: 'Why?' }, { text: 'What next?' }],
+        sampleAnswer: 'Technology can make daily life more convenient.',
+        explanation: 'Give a balanced opinion and support it with examples.',
+      },
+    } });
+    expect(paper.items).toHaveLength(1);
+    expect(paper.parts['4']).toMatchObject({ responseKey: 'p4:q1' });
+    expect(JSON.stringify(paper.parts)).not.toContain('Technology can make daily life');
+    expect(JSON.stringify(paper.parts)).not.toContain('balanced opinion');
+    expect(paper.items[0]).toMatchObject({
+      sampleAnswer: 'Technology can make daily life more convenient.',
+      explanation: 'Give a balanced opinion and support it with examples.',
+    });
+    const result = grader.grade(paper.items, applyAnswerChanges({}, {
+      'p4:q1': { kind: 'AUDIO', mediaKey: 'https://res.cloudinary.com/demo/video/upload/aptimate/test-covers/candidate-recordings/recording.webm' },
+    }, paper.items));
+    expect(result).toMatchObject({ method: 'PENDING_AI', score: null, maxScore: null });
+    expect(result.items[0].outcome).toBe('PENDING');
   });
 });

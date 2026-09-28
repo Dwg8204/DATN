@@ -1,12 +1,14 @@
 import { WritingTestAggregate } from '../../../writing-tests/types/writing-test.type';
 import { PaperAdapter } from './paper-adapter.type';
+import { writingAnswerMaxCharacters } from '../writing-answer-limits';
 
 export const writingPaperAdapter: PaperAdapter = snapshot => {
   const test = snapshot as unknown as WritingTestAggregate;
   const parts: Record<string, unknown> = {};
   const items: ReturnType<PaperAdapter>['items'] = [];
   const add = (key: string, partNumber: number, sampleAnswer?: string) =>
-    items.push({ key, partNumber, kind: 'TEXT', points: 0, sampleAnswer });
+    items.push({ key, partNumber, kind: 'TEXT', points: 0, sampleAnswer,
+      maxCharacters: writingAnswerMaxCharacters(partNumber, key) });
   if (test.parts[1]) {
     const part = test.parts[1];
     parts['1'] = { context: part.context, questions: part.questions.map((text, index) => {

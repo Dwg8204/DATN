@@ -17,8 +17,9 @@ export default function WritingResultPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const attemptId = params.get('attemptId');
+  const isPractice = params.get('practice') === 'true';
   const timedOut = params.get('timedOut') === 'true';
-  const { data, loading, error } = useAttemptResult(attemptId);
+  const { data, loading, error } = useAttemptResult(attemptId, 'WRITING');
 
   if (loading || error) return <AttemptPageState loading={loading} error={error} backHref="/writing/tests" />;
   if (!data?.result) return <AttemptPageState error="This result is not available yet." backHref="/writing/tests" />;
@@ -51,8 +52,8 @@ export default function WritingResultPage() {
       <p>{scoreReady ? 'Your assessment is complete. Open the detailed result to review every response.' : 'You can already review your submitted responses and the reference samples while assessment is pending.'}</p>
     </section>
     <div className={styles.actions}>
-      <button onClick={() => navigate(`/writing/result-detail?attemptId=${attemptId}`)}>View detail result</button>
-      <button onClick={() => navigate('/writing/tests')}>Take another test</button>
+      <button onClick={() => navigate(`/writing/result-detail?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}>View detail result</button>
+      <button onClick={() => navigate(isPractice ? '/writing/practice' : '/writing/tests')}>Take another test</button>
     </div>
   </main></div>;
 }

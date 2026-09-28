@@ -8,12 +8,13 @@ const PART_META = {
 };
 
 export function writingPartNumber(part) {
-  const number = Number(String(part).replace('part', ''));
-  return number >= 1 && number <= 4 ? number : 1;
+  const match = /^part([1-4])$/.exec(String(part));
+  return match ? Number(match[1]) : null;
 }
 
 export function writingTaskFromPaper(paper, part) {
   const number = writingPartNumber(part);
+  if (!number) return null;
   const data = paper?.parts?.[String(number)];
   if (!data) return null;
   const meta = PART_META[part] ?? PART_META.part1;
@@ -33,4 +34,18 @@ export function writingWordGuide(part, index) {
 
 export function partsInWritingPaper(paper) {
   return WRITING_PARTS.filter((_, index) => Boolean(paper?.parts?.[String(index + 1)]));
+}
+
+export function resumableQuestionKey(task, savedKey) {
+  return task?.questions?.find(question => question.key === savedKey)?.key ?? task?.questions?.[0]?.key ?? null;
+}
+
+export function resumePartFromAttempt(attempt, fallbackMode = 'part1') {
+  const available = partsInWritingPaper(attempt?.paper);
+  const currentKey = attempt?.progress?.currentQuestionKey;
+  const match = typeof currentKey === 'string' ? /^p([1-4]):/.exec(currentKey) : null;
+  const savedPart = match ? `part${match[1]}` : null;
+  if (savedPart && available.includes(savedPart)) return savedPart;
+  if (fallbackMode !== 'full' && available.includes(fallbackMode)) return fallbackMode;
+  return available[0] ?? 'part1';
 }

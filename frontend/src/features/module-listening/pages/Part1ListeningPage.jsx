@@ -7,6 +7,7 @@ import MultipleChoice from '../../../components/common/MultipleChoice';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
 import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
+import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal';
 import styles from './Part1ListeningPage.module.css';
 
 const ITEMS_PER_PAGE = 1;
@@ -14,7 +15,7 @@ const ITEMS_PER_PAGE = 1;
 export default function Part1ListeningPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { attemptId, paper, answers, loading, loadError, saveStatus, submitting, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
+  const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
   const [currentPage, setCurrentPage] = useState(1);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const questions = useMemo(() => paper?.parts?.['1']?.questions ?? [], [paper]);
@@ -38,8 +39,10 @@ export default function Part1ListeningPage() {
 
   const confirmSubmit = async () => {
     setShowSubmitModal(false);
-    const result = await submit();
-    if (result) { approveNavigation(); navigate(`/listening/result?attemptId=${attemptId}`); }
+    try {
+      const result = await submit();
+      if (result) { approveNavigation(); navigate(`/listening/result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`); }
+    } catch { /* The provider displays the error. */ }
   };
 
   return (
@@ -69,8 +72,10 @@ export default function Part1ListeningPage() {
                     name={`listening-question-${question.key}`}
                     options={question.options.map(option => option.text)}
                     value={selectedIndex < 0 ? undefined : selectedIndex}
+                    disabled={submitting || timeExpired || !attempt?.canAnswer || saveStatus === 'conflict'}
                     onChange={index => setAnswer(question.key, { kind: 'CHOICE', optionId: question.options[index].id })}
                   />
+                  <PracticeAnswerReveal questionKey={question.key} options={question.options} />
                 </div>
               );
             })}
@@ -88,9 +93,9 @@ export default function Part1ListeningPage() {
         onQuestionClick={key => setCurrentPage(Math.floor(questions.findIndex(question => question.key === key) / ITEMS_PER_PAGE) + 1)}
         onPrevClick={() => setCurrentPage(page => Math.max(1, page - 1))}
         onNextClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
-        onSubmitClick={isFullTest ? goToPartTwo : () => setShowSubmitModal(true)}
+        onSubmitClick={isFullTest ? () => void goToPartTwo().catch(() => undefined) : () => setShowSubmitModal(true)}
         submitLabel={isFullTest ? 'Next Part' : submitting ? 'Submitting…' : 'Submit'}
-        submitDisabled={submitting || saveStatus === 'conflict'}
+        submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={currentPage > 1}
         hasNext={currentPage < totalPages}
       />

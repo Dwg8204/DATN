@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { firstMutationRow } from '../../../common/database/mutation-result';
 import { ApplicationError } from '../../../common/errors/application.error';
-import { Answers, AssessmentResult, AttemptMetadata, AttemptRow, LockedAttemptRow, ProgressRow, SavedProgressRow, SkillComponent } from '../types/attempt.type';
+import { Answers, AssessmentResult, AttemptMetadata, AttemptPurpose, AttemptRow, LockedAttemptRow, ProgressRow, SavedProgressRow, SkillComponent } from '../types/attempt.type';
 
 type PublishedTest = {
   id: string; component: SkillComponent;
+  purpose: AttemptPurpose; scope: 'PART' | 'FULL_SKILL'; part_number: number | null;
   snapshot_id: string; version: number; schema_version: number;
 };
 
@@ -15,7 +16,7 @@ export class TestAttemptsRepository {
 
   async published(testId: string, manager: EntityManager): Promise<PublishedTest | null> {
     const rows = await manager.query<PublishedTest[]>(
-      `SELECT t.id,t.component,ts.id AS snapshot_id,ts.version,ts.schema_version
+      `SELECT t.id,t.component,t.purpose,t.scope,t.part_number,ts.id AS snapshot_id,ts.version,ts.schema_version
        FROM tests t JOIN test_snapshots ts ON ts.id=t.published_snapshot_id
        WHERE t.id=$1 AND t.status='PUBLISHED' AND t.archived_at IS NULL`, [testId]);
     return rows[0] ?? null;
@@ -39,7 +40,7 @@ export class TestAttemptsRepository {
 
   async metadata(attemptId: string, studentId: string): Promise<AttemptMetadata | null> {
     const rows = await this.dataSource.query<AttemptMetadata[]>(
-      'SELECT id,snapshot_id,component FROM test_attempts WHERE id=$1 AND student_id=$2', [attemptId, studentId]);
+      'SELECT id,snapshot_id,component,purpose FROM test_attempts WHERE id=$1 AND student_id=$2', [attemptId, studentId]);
     return rows[0] ?? null;
   }
 
@@ -66,7 +67,7 @@ export class TestAttemptsRepository {
       `SELECT a.*,s.test_id,s.version FROM test_attempts a
        JOIN test_snapshots s ON s.id=a.snapshot_id
        JOIN attempt_progress p ON p.attempt_id=a.id
-       WHERE s.test_id=$1 AND a.student_id=$2 AND a.status='IN_PROGRESS'
+       WHERE s.test_id=$1 AND a.student_id=$2 AND a.status='IN_PROGRESS' AND a.purpose='EXAM'
          AND p.sealed_at IS NULL AND (a.expires_at IS NULL OR a.expires_at>clock_timestamp())
        ORDER BY a.started_at DESC LIMIT 1`, [testId, studentId]);
     return rows[0] ?? null;
@@ -88,7 +89,7 @@ export class TestAttemptsRepository {
     return manager.query<Array<ProgressRow & { student_id: string }>>(
       `SELECT p.*,a.student_id FROM attempt_progress p
        JOIN test_attempts a ON a.id=p.attempt_id
-        WHERE a.status='IN_PROGRESS' AND a.expires_at<=clock_timestamp() AND p.sealed_at IS NULL
+        WHERE a.status='IN_PROGRESS' AND a.purpose='EXAM' AND a.expires_at<=clock_timestamp() AND p.sealed_at IS NULL
           AND NOT (p.attempt_id=ANY($1::uuid[]))
         ORDER BY a.expires_at,a.id LIMIT 1 FOR UPDATE OF p SKIP LOCKED`, [excludedIds]);
   }
@@ -107,20 +108,20 @@ export class TestAttemptsRepository {
       `UPDATE test_attempts SET status='SUBMITTED',grading_status=$2,
        result=$3::jsonb,score=$4,max_score=$5,result_source=$6,
        submitted_at=COALESCE($7::timestamptz,clock_timestamp()),
-       completed_at=CASE WHEN $6::result_source='AUTOMATIC'::result_source THEN clock_timestamp() ELSE NULL END,
+       completed_at=CASE WHEN $2 IN ('COMPLETED','NOT_STARTED') THEN clock_timestamp() ELSE NULL END,
        estimated_cefr=$8,
        updated_at=clock_timestamp()
        WHERE id=$1 RETURNING *`,
-      [attemptId, result.method === 'OBJECTIVE' ? 'COMPLETED' : 'QUEUED', JSON.stringify(result),
+      [attemptId, result.method === 'OBJECTIVE' ? 'COMPLETED' : result.method === 'UNASSESSED' ? 'NOT_STARTED' : 'QUEUED', JSON.stringify(result),
         result.score, result.maxScore, result.method === 'OBJECTIVE' ? 'AUTOMATIC' : null, submittedAt ?? null, estimatedCefr ?? null]);
     const completed = firstMutationRow<LockedAttemptRow>(rows);
     return completed;
   }
 
   async history(studentId: string, component: SkillComponent | undefined, page: number, pageSize: number,
-    mode?: string, search?: string, sort = 'desc') {
-    const values: unknown[] = [studentId];
-    const filters = ["a.status='SUBMITTED'"];
+    mode?: string, search?: string, sort = 'desc', purpose: AttemptPurpose = 'EXAM') {
+    const values: unknown[] = [studentId, purpose];
+    const filters = ["a.status='SUBMITTED'", 'a.purpose=$2'];
     if (component) { values.push(component); filters.push(`a.component=$${values.length}`); }
     if (mode === 'full') filters.push("a.scope='FULL_SKILL'");
     else if (/^part[1-4]$/.test(mode ?? '')) {
@@ -135,8 +136,9 @@ export class TestAttemptsRepository {
     const direction = sort === 'asc' ? 'ASC' : 'DESC';
     const rows = await this.dataSource.query<Array<Record<string, unknown>>>(
       `SELECT a.id AS "attemptId",s.test_id AS "testId",s.version,
-              s.snapshot #>> '{details,title}' AS title,a.component,a.scope,a.part_number AS "partNumber",
-               a.status,a.grading_status AS "gradingStatus",a.score::float8 AS score,a.max_score::float8 AS "maxScore",a.started_at AS "startedAt",
+              s.snapshot #>> '{details,title}' AS title,a.component,a.purpose,a.scope,a.part_number AS "partNumber",
+               a.status,a.grading_status AS "gradingStatus",a.score::float8 AS score,a.max_score::float8 AS "maxScore",
+              a.estimated_cefr AS "estimatedCefr",a.started_at AS "startedAt",
               a.submitted_at AS "submittedAt",a.completed_at AS "completedAt"
        FROM test_attempts a JOIN test_snapshots s ON s.id=a.snapshot_id
        WHERE a.student_id=$1 ${filter} ORDER BY a.started_at ${direction},a.id ${direction}
@@ -148,15 +150,15 @@ export class TestAttemptsRepository {
     return { rows, total: Number(count[0]?.total ?? 0) };
   }
 
-  async states(studentId: string, testIds: string[]) {
+  async states(studentId: string, testIds: string[], purpose: AttemptPurpose = 'EXAM') {
     return this.dataSource.query<Array<Record<string, unknown>>>(
       `SELECT DISTINCT ON (s.test_id)
               a.id AS "attemptId",s.test_id AS "testId",a.status,a.grading_status AS "gradingStatus",a.score::float8 AS score,
               a.max_score::float8 AS "maxScore",a.started_at AS "startedAt",a.submitted_at AS "submittedAt"
        FROM test_attempts a JOIN test_snapshots s ON s.id=a.snapshot_id
-       WHERE a.student_id=$1 AND s.test_id=ANY($2::uuid[])
+       WHERE a.student_id=$1 AND s.test_id=ANY($2::uuid[]) AND a.purpose=$3
        ORDER BY s.test_id,a.started_at DESC,a.id DESC`,
-      [studentId, testIds],
+      [studentId, testIds, purpose],
     );
   }
 }

@@ -5,11 +5,15 @@ import { PaperAdapter } from './adapters/paper-adapter.type';
 import { grammarPaperAdapter } from './adapters/grammar-paper.adapter';
 import { listeningPaperAdapter } from './adapters/listening-paper.adapter';
 import { writingPaperAdapter } from './adapters/writing-paper.adapter';
+import { speakingPaperAdapter } from './adapters/speaking-paper.adapter';
+import { readingPaperAdapter } from './adapters/reading-paper.adapter';
 
 const adapters: Partial<Record<SkillComponent, PaperAdapter>> = {
   GRAMMAR_VOCAB: grammarPaperAdapter,
   LISTENING: listeningPaperAdapter,
   WRITING: writingPaperAdapter,
+  SPEAKING: speakingPaperAdapter,
+  READING: readingPaperAdapter,
 };
 
 @Injectable()
@@ -61,6 +65,12 @@ export class AssessmentPaperFactory {
     }
     if (component === 'GRAMMAR_VOCAB') {
       const required: Record<number, number> = { 1: 25, 2: 25 };
+      if (actualParts.some(part => items.filter(item => item.partNumber === part).length !== required[part])) {
+        throw this.invalidSnapshot();
+      }
+    }
+    if (component === 'READING') {
+      const required: Record<number, number> = { 1: 5, 2: 5, 3: 7, 4: 7 };
       if (actualParts.some(part => items.filter(item => item.partNumber === part).length !== required[part])) {
         throw this.invalidSnapshot();
       }

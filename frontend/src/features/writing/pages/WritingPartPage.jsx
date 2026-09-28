@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useToast } from '../../../context/ToastContext';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import RichTextContent from '../../../components/common/RichTextContent';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -7,25 +8,43 @@ import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
 import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
 import { countWords } from '../utils/wordCount';
-import { partsInWritingPaper, writingPartNumber, writingTaskFromPaper, writingWordGuide } from '../utils/writingAttemptPaper';
+import { wouldExceedAnswerLimit, writingAnswerCharacterLimit } from '../utils/writingAnswerLimits';
+import { partsInWritingPaper, resumableQuestionKey, writingPartNumber, writingTaskFromPaper, writingWordGuide } from '../utils/writingAttemptPaper';
+import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal';
 import styles from './WritingPartPage.module.css';
 
 export default function WritingPartPage() {
   const { part = 'part1' } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { attemptId, paper, answers, loading, loadError, saveStatus, submitting,
-    setAnswer, flush, submit, approveNavigation } = useTestAttempt();
+  const { showError } = useToast();
+  const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired,
+    isPractice, setAnswer, setCurrentQuestion, flush, submit, approveNavigation } = useTestAttempt();
   const [showSubmit, setShowSubmit] = useState(false);
+  const restoredLocationRef = useRef(null);
   const partNumber = writingPartNumber(part);
   const task = useMemo(() => writingTaskFromPaper(paper, part), [paper, part]);
   const availableParts = useMemo(() => partsInWritingPaper(paper), [paper]);
   const partIndex = availableParts.indexOf(part);
   const isFull = paper?.mode === 'full';
   const footerQuestions = useMemo(() => (task?.questions ?? []).map((question, index) => ({ id: question.key, displayLabel: index + 1 })), [task]);
+  const currentPageQuestionIds = useMemo(() => footerQuestions.map(question => question.id), [footerQuestions]);
+  useEffect(() => {
+    if (!task?.questions?.length || !attempt) return;
+    const locationKey = `${attempt.attemptId}:${part}`;
+    if (restoredLocationRef.current === locationKey) return;
+    restoredLocationRef.current = locationKey;
+    const savedKey = attempt.progress?.currentQuestionKey;
+    const selectedKey = resumableQuestionKey(task, savedKey);
+    if (selectedKey === savedKey) {
+      document.getElementById(`writing-${savedKey}`)?.scrollIntoView({ block: 'center' });
+    } else {
+      setCurrentQuestion(selectedKey);
+    }
+  }, [attempt, part, setCurrentQuestion, task]);
 
   if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} backHref="/writing/tests" />;
-  if (!task) return <AttemptPageState error={`Part ${partNumber} is not included in this test.`} backHref="/writing/tests" />;
+  if (!task) return <AttemptPageState error="The requested Part is not included in this test." backHref="/writing/tests" />;
 
   const navigateToPart = async nextPart => {
     await flush();
@@ -36,7 +55,7 @@ export default function WritingPartPage() {
 
   const handlePrimaryAction = () => {
     if (isFull && partIndex < availableParts.length - 1) {
-      void navigateToPart(availableParts[partIndex + 1]);
+      void navigateToPart(availableParts[partIndex + 1]).catch(() => undefined);
       return;
     }
     setShowSubmit(true);
@@ -44,14 +63,19 @@ export default function WritingPartPage() {
 
   const confirmSubmit = async () => {
     setShowSubmit(false);
-    const result = await submit();
-    if (result) {
-      approveNavigation();
-      navigate(`/writing/result?attemptId=${attemptId}`);
-    }
+    try {
+      const result = await submit();
+      if (result) {
+        approveNavigation();
+        navigate(`/writing/result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`);
+      }
+    } catch { /* The provider reports the error and keeps the attempt open. */ }
   };
 
-  const scrollToQuestion = key => document.getElementById(`writing-${key}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const scrollToQuestion = key => {
+    setCurrentQuestion(key);
+    document.getElementById(`writing-${key}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
 
   return <div className={styles.page}>
     <div className={styles.content}>
@@ -64,10 +88,33 @@ export default function WritingPartPage() {
         {task.questions.map((question, index) => {
           const answer = answers[question.key];
           const value = answer?.kind === 'TEXT' ? answer.text : '';
+          const characterLimit = paper.items?.find(item => item.key === question.key)?.maxCharacters
+            ?? writingAnswerCharacterLimit(part, index);
           const inputProps = {
             id: `writing-${question.key}`,
             value,
-            disabled: submitting,
+            disabled: submitting || timeExpired || !attempt?.canAnswer || saveStatus === 'conflict',
+            maxLength: characterLimit,
+            onFocus: () => setCurrentQuestion(question.key),
+            onBeforeInput: event => {
+              const inputEvent = event.nativeEvent;
+              if (inputEvent.isComposing || !['insertText', 'insertLineBreak'].includes(inputEvent.inputType)) return;
+              const inserted = inputEvent.inputType === 'insertLineBreak' ? '\n' : inputEvent.data ?? '';
+              const input = event.currentTarget;
+              if (inserted && wouldExceedAnswerLimit(value, input.selectionStart, input.selectionEnd,
+                inserted, characterLimit)) {
+                event.preventDefault();
+                showError(`This answer cannot exceed ${characterLimit} characters. Shorten it before continuing.`);
+              }
+            },
+            onPaste: event => {
+              const input = event.currentTarget;
+              if (wouldExceedAnswerLimit(value, input.selectionStart, input.selectionEnd,
+                event.clipboardData.getData('text'), characterLimit)) {
+                event.preventDefault();
+                showError(`This answer cannot exceed ${characterLimit} characters. Shorten the text before pasting.`);
+              }
+            },
             onBlur: () => void flush().catch(() => undefined),
             onChange: event => setAnswer(question.key, event.target.value === '' ? null : { kind: 'TEXT', text: event.target.value }),
             placeholder: task.type === 'short' ? 'Type your answer' : 'Write your response here...',
@@ -75,7 +122,8 @@ export default function WritingPartPage() {
           return <article className={styles.taskCard} key={question.key}>
             <label htmlFor={inputProps.id}><span className={styles.number}>{index + 1}</span><RichTextContent value={question.text} /></label>
             {task.type === 'short' ? <input {...inputProps} /> : <textarea {...inputProps} rows={task.type === 'email' && index === 1 ? 10 : 6} />}
-            <div className={styles.wordCount}><span>{writingWordGuide(part, index)}</span><strong>{countWords(value)} words</strong></div>
+            <div className={styles.wordCount}><span>{writingWordGuide(part, index)}</span><strong>{countWords(value)} words · {value.length}/{characterLimit} characters</strong></div>
+            <PracticeAnswerReveal questionKey={question.key} />
           </article>;
         })}
       </div>
@@ -84,12 +132,12 @@ export default function WritingPartPage() {
       partLabel={`Part ${partNumber}`}
       questions={footerQuestions}
       answeredIds={Object.entries(answers).filter(([, answer]) => answer?.kind === 'TEXT' && answer.text.trim()).map(([key]) => key)}
-      currentPageQuestionIds={footerQuestions.map(question => question.id)}
+      currentPageQuestionIds={currentPageQuestionIds}
       onQuestionClick={scrollToQuestion}
-      onPrevClick={isFull && partIndex > 0 ? () => void navigateToPart(availableParts[partIndex - 1]) : undefined}
+      onPrevClick={isFull && partIndex > 0 ? () => void navigateToPart(availableParts[partIndex - 1]).catch(() => undefined) : undefined}
       onSubmitClick={handlePrimaryAction}
       submitLabel={isFull && partIndex < availableParts.length - 1 ? 'Next Part' : submitting ? 'Submitting…' : 'Submit'}
-      submitDisabled={submitting || saveStatus === 'conflict'}
+      submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
       hasPrev={isFull && partIndex > 0}
       hasNext={false}
     />

@@ -122,15 +122,16 @@ export default function ListeningDetailResultPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const attemptId = searchParams.get('attemptId');
+  const isPractice = searchParams.get('practice') === 'true';
   const [urlState, setUrlState] = useUrlQueryState(DETAIL_QUERY_SCHEMA);
   const { selectedPart, currentPage } = urlState;
   const setCurrentPage = next => setUrlState(current => ({ currentPage: typeof next === 'function' ? next(current.currentPage) : next }));
   
-  const summary = useAttemptResult(attemptId);
+  const summary = useAttemptResult(attemptId, 'LISTENING');
   const availableParts = useMemo(() => summary.data?.result?.parts?.map(part => part.partNumber).sort((a, b) => a - b) ?? [], [summary.data]);
   const activePart = availableParts.includes(selectedPart) ? selectedPart : availableParts[0] ?? null;
   
-  const detail = useAttemptPartResult(attemptId, activePart);
+  const detail = useAttemptPartResult(attemptId, activePart, 'LISTENING');
   const paper = detail.data?.paper;
   const itemMap = useMemo(() => new Map((detail.data?.items ?? []).map(item => [item.key, item])), [detail.data]);
   
@@ -239,7 +240,7 @@ export default function ListeningDetailResultPage() {
       }}
       onPrevClick={previous}
       onNextClick={next}
-      onSubmitClick={() => navigate('/listening/tests')}
+      onSubmitClick={() => navigate(isPractice ? '/listening/practice' : '/listening/tests')}
       submitLabel="Take another test"
       hasPrev={currentPage > 1 || availableParts.indexOf(activePart) > 0}
       hasNext={currentPage < totalPages || availableParts.indexOf(activePart) < availableParts.length - 1}

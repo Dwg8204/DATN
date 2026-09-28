@@ -5,7 +5,7 @@ import { splitFormattedPassage } from '../../../../admin/reading/utils/richPassa
 import styles from './Part1GapFilling.module.css';
 
 const Part1GapFilling = ({ data }) => {
-  const { answers, handleAnswerChange } = useContext(ReadingTestContext);
+  const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   if (!data) return null;
 
   const parts = splitFormattedPassage(data);
@@ -31,6 +31,7 @@ const Part1GapFilling = ({ data }) => {
                   placeholder={`Question ${position}`}
                   ariaLabel={`Answer for gap ${position}`}
                 />
+                {renderAnswerReveal?.(question.id)}
               </span>
             );
           })}
