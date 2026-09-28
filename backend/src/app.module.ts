@@ -22,7 +22,8 @@ import { AccountThrottlerGuard } from './common/guards/account-throttler.guard';
 import { ReadingModule } from './features/reading/reading.module';
 import { NotificationsModule } from './features/notifications/notifications.module';
 import { VocabularyModule } from './features/vocabulary/vocabulary.module';
-
+import { ReadingTestsModule } from './features/reading-tests/reading-tests.module';
+import { DictionaryModule } from './features/dictionary/dictionary.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, cache: true, load: [configuration], validationSchema: environmentSchema }),
@@ -43,6 +44,8 @@ import { VocabularyModule } from './features/vocabulary/vocabulary.module';
     StorageModule,
     ProfileModule,
     TestAttemptsModule,
+    ReadingTestsModule,
+    DictionaryModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: AccountThrottlerGuard }],

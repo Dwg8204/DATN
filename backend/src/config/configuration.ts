@@ -44,4 +44,13 @@ export default () => ({
     avatarFolder: process.env.CLOUDINARY_AVATAR_FOLDER ?? 'aptimate/avatars',
     maxFileSizeBytes: Number(process.env.UPLOAD_MAX_FILE_SIZE_BYTES ?? 5_242_880),
   },
+  dictionary: {
+    azureTranslator: {
+      enabled: process.env.AZURE_TRANSLATOR_ENABLED === 'true',
+      key: process.env.AZURE_TRANSLATOR_KEY,
+      region: process.env.AZURE_TRANSLATOR_REGION,
+      endpoint: process.env.AZURE_TRANSLATOR_ENDPOINT ?? 'https://api.cognitive.microsofttranslator.com',
+      timeoutMs: Number(process.env.AZURE_TRANSLATOR_TIMEOUT_MS ?? 2500),
+    },
+  },
 });
