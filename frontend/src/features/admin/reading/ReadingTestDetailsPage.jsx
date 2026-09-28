@@ -6,7 +6,8 @@ import ImageField from '../shared-test-builder/ImageField';
 import PartSummaryCard from '../writing/components/PartSummaryCard';
 import { useReadingBuilder } from './context/ReadingBuilderContext';
 import { READING_PARTS } from './data/readingTestModel';
-import { saveStoredReadingTest } from './data/readingTestStorage';
+import { readingTestsApi } from './services/readingTestsApi';
+import { getApiError } from '../../../services/apiError';
 import { validateReadingTest } from './validation/readingValidation';
 import styles from '../writing/WritingTestDetailsPage.module.css';
 import { Field } from './components/EditorFields';
@@ -19,6 +20,7 @@ export default function ReadingTestDetailsPage() {
   const navigate = useNavigate();
   const [errors, setErrors] = useState([]);
   const [confirm, setConfirm] = useState(false);
+  const [saving, setSaving] = useState(false);
   const detail = (field, value) => setTest(current => ({
     ...current,
     details: {
@@ -31,18 +33,22 @@ export default function ReadingTestDetailsPage() {
     setErrors(next);
     if (!next.length) setConfirm(true);
   };
-  const persist = () => {
+  const persist = async () => {
+    if (saving) return;
+    setSaving(true);
     try {
-      const saved = saveStoredReadingTest(test);
+      const draft = test.id ? await readingTestsApi.update(test.id, test) : await readingTestsApi.create(test);
+      const saved = await readingTestsApi.publish(draft.id, draft.version);
       navigate(`/admin/tests/reading/${saved.id}/preview`, {
         state: {
           toast: test.id ? 'Reading test updated successfully.' : 'Reading test created successfully.'
         }
       });
-    } catch {
-      setErrors(['Unable to save. Browser storage may be full.']);
+    } catch (error) {
+      setErrors([getApiError(error, 'Unable to save this Reading test.')]);
     } finally {
       setConfirm(false);
+      setSaving(false);
     }
   };
   const parts = READING_PARTS.filter(p => test.mode === 'full' || test.mode === `part${p.number}`);
@@ -53,11 +59,11 @@ export default function ReadingTestDetailsPage() {
         open={confirm}
         title={test.id ? 'Save changes to this test?' : 'Create Reading test?'}
         message="Confirm to save this Reading test and make it available in the test list."
-        confirmLabel="Save test"
+        confirmLabel={saving ? 'Saving…' : 'Save test'}
         onCancel={() => setConfirm(false)}
         onConfirm={persist}
       />
-      <AdminBreadcrumb current={test.details.title || 'New Reading test'} />
+      <AdminBreadcrumb current={test.details.title || 'New Reading test'} purpose={test.purpose} />
       <section className={styles.information}>
         <h2>INFORMATION TEST</h2>
         <div className={styles.infoGrid}>

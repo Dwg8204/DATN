@@ -15,9 +15,10 @@ export const READING_PARTS = [{
   title: 'Heading matching',
   summary: '7 paragraphs and 7 headings.'
 }];
-export function createReadingDraft(mode = 'full') {
+export function createReadingDraft(mode = 'full', purpose = mode === 'full' ? 'EXAM' : 'PRACTICE') {
   return {
     mode,
+    purpose,
     details: {
       title: '',
       pictureUrl: ''

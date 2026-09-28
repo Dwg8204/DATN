@@ -1,4 +1,5 @@
 import { RoleCode } from '../../auth/types/auth-user.type';
+import { TestPurpose } from '../../../common/tests/test-purpose';
 
 export type WritingTestMode = 'part1' | 'part2' | 'part3' | 'part4' | 'full';
 export type WritingTestStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
@@ -29,6 +30,7 @@ export type WritingPart4 = {
 export type WritingTestAggregate = {
   id?: string;
   mode: WritingTestMode;
+  purpose: TestPurpose;
   details: { title: string; pictureUrl?: string };
   parts: {
     1?: WritingPart1;
@@ -47,6 +49,7 @@ export type WritingTestSummary = {
   title: string;
   name: string;
   mode: WritingTestMode;
+  purpose: TestPurpose;
   section: string;
   component: 'Writing';
   status: WritingTestStatus;

@@ -19,9 +19,9 @@ export class AdminDashboardRepository {
     const rows = await this.dataSource.query<DashboardTotals[]>(
       `SELECT
          (SELECT count(DISTINCT student_id) FROM test_attempts
-          WHERE started_at >= $1 AND started_at < $2)::text AS active_current,
+          WHERE purpose='EXAM' AND started_at >= $1 AND started_at < $2)::text AS active_current,
          (SELECT count(DISTINCT student_id) FROM test_attempts
-          WHERE started_at >= $3 AND started_at < $4)::text AS active_previous,
+          WHERE purpose='EXAM' AND started_at >= $3 AND started_at < $4)::text AS active_previous,
          (SELECT count(*) FROM users u JOIN roles r ON r.id=u.role_id
           WHERE r.code <> 'ADMIN' AND u.created_at >= $1 AND u.created_at < $2)::text AS users_current,
          (SELECT count(*) FROM users u JOIN roles r ON r.id=u.role_id
@@ -36,7 +36,7 @@ export class AdminDashboardRepository {
       `SELECT ${this.bucketExpression('started_at', range.bucket)} AS bucket,
               count(DISTINCT student_id)::text AS value
        FROM test_attempts
-       WHERE started_at >= $1 AND started_at < $2
+       WHERE purpose='EXAM' AND started_at >= $1 AND started_at < $2
        GROUP BY bucket ORDER BY bucket`,
       [range.start, range.end],
     );
@@ -56,7 +56,7 @@ export class AdminDashboardRepository {
     return this.dataSource.query<DashboardComponentBucketRow[]>(
       `SELECT ${this.bucketExpression('created_at', range.bucket)} AS bucket,
               component, count(*)::text AS value
-       FROM tests WHERE created_at >= $1 AND created_at < $2
+       FROM tests WHERE purpose='EXAM' AND created_at >= $1 AND created_at < $2
        GROUP BY bucket, component ORDER BY bucket, component`,
       [range.start, range.end],
     );
@@ -66,7 +66,7 @@ export class AdminDashboardRepository {
     return this.dataSource.query<DashboardComponentBucketRow[]>(
       `SELECT ${this.bucketExpression('started_at', range.bucket)} AS bucket,
               component, count(*)::text AS value
-       FROM test_attempts WHERE started_at >= $1 AND started_at < $2
+       FROM test_attempts WHERE purpose='EXAM' AND started_at >= $1 AND started_at < $2
        GROUP BY bucket, component ORDER BY bucket, component`,
       [range.start, range.end],
     );

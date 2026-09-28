@@ -37,4 +37,9 @@ export const environmentSchema = Joi.object({
   CLOUDINARY_FOLDER: Joi.string().pattern(/^[a-zA-Z0-9/_-]+$/).default('aptimate/test-covers'),
   CLOUDINARY_AVATAR_FOLDER: Joi.string().default('aptimate/avatars'),
   UPLOAD_MAX_FILE_SIZE_BYTES: Joi.number().integer().min(1024).default(5242880),
+  AZURE_TRANSLATOR_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+  AZURE_TRANSLATOR_KEY: Joi.when('AZURE_TRANSLATOR_ENABLED', { is: true, then: Joi.string().required(), otherwise: Joi.string().allow('') }),
+  AZURE_TRANSLATOR_REGION: Joi.string().allow('').optional(),
+  AZURE_TRANSLATOR_ENDPOINT: Joi.string().uri({ scheme: ['https'] }).default('https://api.cognitive.microsofttranslator.com'),
+  AZURE_TRANSLATOR_TIMEOUT_MS: Joi.number().integer().min(1000).max(15000).default(2500),
 }).unknown(true);

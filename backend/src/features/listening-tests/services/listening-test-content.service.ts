@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { ListeningTestAggregate } from '../types/listening-test.type';
 import { CreateListeningTestDto, UpdateListeningTestDto } from '../dto/save-listening-test.dto';
+import { defaultTestPurpose } from '../../../common/tests/test-purpose';
 
 @Injectable()
 export class ListeningTestContentService {
   normalize(dto: CreateListeningTestDto | UpdateListeningTestDto): ListeningTestAggregate {
     return {
       mode: dto.mode,
+      purpose: dto.purpose ?? defaultTestPurpose(dto.mode),
       details: {
         title: dto.details?.title?.trim() || 'Untitled Listening Test',
         pictureUrl: dto.details?.pictureUrl || undefined,
@@ -17,6 +19,9 @@ export class ListeningTestContentService {
   }
 
   assertDraftShape(aggregate: ListeningTestAggregate): void {
+    if (aggregate.purpose === 'EXAM' && aggregate.mode !== 'full') {
+      throw new ApplicationError('LISTENING_EXAM_SCOPE_INVALID', 'Exam tests must contain the full skill.', 400);
+    }
     if (!aggregate.details.title) {
       throw new ApplicationError('LISTENING_TITLE_REQUIRED', 'Test title is required.', 400);
     }

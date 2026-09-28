@@ -244,6 +244,20 @@ CLOUDINARY_FOLDER=aptimate/test-covers
 
 Không commit `CLOUDINARY_API_SECRET`. Khi `CLOUDINARY_ENABLED=false`, các chức năng khác vẫn chạy nhưng API upload cover sẽ trả lỗi cấu hình rõ ràng. Endpoint `POST /api/v1/admin/media/test-covers` nhận trường multipart `file`, giới hạn 10 MB và chỉ chấp nhận JPEG, PNG, WebP hoặc GIF hợp lệ. Cloudinary tự giới hạn ảnh về tối đa 1600 × 1200 và tối ưu định dạng/chất lượng trước khi trả URL.
 
+### Tra từ Anh - Việt
+
+Azure Translator Bilingual Dictionary là nguồn nghĩa tiếng Việt chính. Tạo Translator resource ở tier F0 rồi điền thông tin vào `backend/.env`:
+
+```dotenv
+AZURE_TRANSLATOR_ENABLED=true
+AZURE_TRANSLATOR_KEY=your_translator_key
+AZURE_TRANSLATOR_REGION=
+AZURE_TRANSLATOR_ENDPOINT=https://api.cognitive.microsofttranslator.com
+AZURE_TRANSLATOR_TIMEOUT_MS=2500
+```
+
+Không commit `AZURE_TRANSLATOR_KEY`. Để trống `AZURE_TRANSLATOR_REGION` với Translator resource loại Global; với resource regional hoặc Azure AI multi-service, nhập mã region hiển thị trong trang “Keys and Endpoint”, chẳng hạn `southeastasia`. Azure cung cấp nghĩa tiếng Việt, từ loại, từ liên quan và câu ví dụ. Wiktionary cung cấp IPA, bổ sung từ đồng nghĩa và là nguồn nghĩa dự phòng khi Azure hết quota, timeout hoặc trả lỗi. Hệ thống không gọi thêm nhà cung cấp từ điển nào khác. Kết quả thành công được cache trong bộ nhớ 24 giờ để giảm độ trễ và số ký tự tính quota. Nút “Look up again” gửi `refresh=true` để bỏ qua cache frontend và backend.
+
 ### Admin Dashboard
 
 `GET /api/v1/admin/dashboard?period=12-months` chỉ dành cho Admin và trả hai chỉ số `activeLearners`, `newUsers` cùng chuỗi dữ liệu `testsCreated`, `testActivity` theo năm kỹ năng. Các giá trị `period` hợp lệ gồm `this-year`, `12-months`, `6-months`, `30-days`, `week` và `24-hours`. Dữ liệu được phân nhóm theo múi giờ `Asia/Bangkok` và cache 30 giây để giảm truy vấn tổng hợp lặp lại.

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './TestHeader.module.css';
 import { getReadingRemainingSeconds } from '../../features/module-reading/utils/readingSessionStorage';
-import { finishWritingSession, getWritingRemainingSeconds } from '../../features/writing/utils/writingSessionStorage';
+import { useTranslation } from 'react-i18next';
 
 function formatRemainingTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -10,49 +10,36 @@ function formatRemainingTime(totalSeconds) {
   return `${minutes}:${seconds}`;
 }
 
-export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, controlledTimer = false, onConfirmExit, showTimer = true, showExit = true }) {
+export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, controlledTimer = false,
+  onConfirmExit, showTimer = true, showExit = true, finalizingExpired = false, exitMode = 'exam' }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
   const [showExitModal, setShowExitModal] = useState(false);
   const [exiting, setExiting] = useState(false);
-  const isListeningTest = location.pathname.startsWith('/listening/test/');
   const isReadingTest = location.pathname.startsWith('/reading/test/');
-  const isWritingTest = location.pathname.startsWith('/writing/test/');
   const [remainingSeconds, setRemainingSeconds] = useState(() => {
     if (isReadingTest) return getReadingRemainingSeconds();
-    if (isWritingTest) return getWritingRemainingSeconds();
     return null;
   });
 
   useEffect(() => {
     if (controlledTimer) return undefined;
-    if (!isListeningTest && !isReadingTest && !isWritingTest) return undefined;
+    if (!isReadingTest) return undefined;
 
     const updateTimer = () => {
       let remaining = null;
       if (isReadingTest) {
         remaining = getReadingRemainingSeconds();
-      } else if (isWritingTest) {
-        remaining = getWritingRemainingSeconds();
       }
       setRemainingSeconds(remaining);
 
-      if (remaining === 0) {
-        const testId = searchParams.get('testId') || '1';
-        const isFull = searchParams.get('isFull') === 'true';
-        if (isWritingTest) {
-          const part = location.pathname.match(/\/(part[1-4])$/)?.[1] || 'part1';
-          finishWritingSession();
-          navigate(`/writing/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
-        }
-      }
     };
 
     updateTimer();
     const intervalId = window.setInterval(updateTimer, 1000);
     return () => window.clearInterval(intervalId);
-  }, [controlledTimer, isListeningTest, isReadingTest, isWritingTest, location.pathname, navigate, searchParams]);
+  }, [controlledTimer, isReadingTest]);
 
   const displayedTime = controlledTimer
     ? (timeRemaining ?? '--:--')
@@ -72,6 +59,8 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
     try {
       const destination = onConfirmExit ? await onConfirmExit() : '/';
       if (destination !== false) navigate(typeof destination === 'string' ? destination : '/');
+    } catch {
+      // The attempt flow displays the API error and keeps the learner in the test.
     } finally {
       setExiting(false);
     }
@@ -81,7 +70,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
     <header className={styles.testHeader}>
       <div className={styles.inner}>
         <div className={styles.leftSide}>
-          <button className={styles.logoBtn} onClick={handleExitClick} title="Exit test">
+          <button className={styles.logoBtn} onClick={handleExitClick} title={t('test.exit')} disabled={finalizingExpired}>
             <img
               src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png"
               alt="AptiMate Logo"
@@ -95,7 +84,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
 
         <div className={styles.rightSide}>
           {showTimer && <div className={styles.timeWrap}>
-            <div className={styles.timeLabel}>Time remaining</div>
+            <div className={styles.timeLabel}>{finalizingExpired ? t('test.finalizing') : t('test.timeRemaining')}</div>
             <div className={styles.timeRow}>
               <div className={styles.timeIconWrap}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -106,8 +95,8 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
               <div className={styles.timeValue}>{displayedTime}</div>
             </div>
           </div>}
-          {showExit && <button className={styles.exitBtn} onClick={handleExitClick}>
-            <span className={styles.exitBtnText}>Exit test</span>
+          {showExit && <button className={styles.exitBtn} onClick={handleExitClick} disabled={finalizingExpired}>
+            <span className={styles.exitBtnText}>{t('test.exit')}</span>
           </button>}
         </div>
       </div>
@@ -121,13 +110,15 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
               </svg>
             </div>
             <p className={styles.modalText}>
-              Are you sure you want to exit the test?<br /><br />
-              {controlledTimer ? 'Your currently saved answers will be submitted before you leave.' : 'Your progress will not be saved if you leave now.'}<br />
-              Do you still want to exit?
+              {t('test.exitQuestion')}<br /><br />
+              {exitMode === 'practice'
+                ? t('practice.exitMessage')
+                : controlledTimer ? t('test.examExitMessage') : 'Your progress will not be saved if you leave now.'}<br />
+              {t('test.stillExit')}
             </p>
             <div className={styles.modalActions}>
-              <button className={styles.stayBtn} onClick={handleCloseModal} disabled={exiting}>Stay in test</button>
-              <button className={styles.confirmExitBtn} onClick={handleConfirmExit} disabled={exiting}>{exiting ? 'Submitting…' : 'Submit and exit'}</button>
+              <button className={styles.stayBtn} onClick={handleCloseModal} disabled={exiting}>{exitMode === 'practice' ? t('practice.stay') : t('test.stay')}</button>
+              <button className={styles.confirmExitBtn} onClick={handleConfirmExit} disabled={exiting || finalizingExpired}>{exiting ? t('test.leaving') : exitMode === 'practice' ? t('practice.leave') : t('test.submitAndExit')}</button>
             </div>
           </div>
         </div>

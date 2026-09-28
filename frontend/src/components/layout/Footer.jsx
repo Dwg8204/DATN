@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
+import { useTranslation } from 'react-i18next';
 
 const footerLinks = [
-  { label: 'About us', to: '/#about-us' },
-  { label: 'Privacy Policy', to: '/#privacy-policy' },
-  { label: 'Terms of use', to: '/#terms-of-use' },
-  { label: 'Disclaimer', to: '/#disclaimer' },
+  { key: 'about', to: '/#about-us' },
+  { key: 'privacy', to: '/#privacy-policy' },
+  { key: 'terms', to: '/#terms-of-use' },
+  { key: 'disclaimer', to: '/#disclaimer' },
 ];
 
 const contactItems = [
@@ -16,6 +17,7 @@ const contactItems = [
 ];
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className={styles.footer}>
       <div className={styles.footerLeft}>
@@ -28,25 +30,25 @@ export default function Footer() {
             />
           </Link>
           <p className={styles.brandDescription}>
-            Online Aptis preparation with realistic practice tests, instant results, and detailed answer reviews.
+            {t('footer.description')}
           </p>
           <div className={styles.linkList}>
             {footerLinks.map((link) => (
-              <Link key={link.label} to={link.to} className={styles.linkItem}>
-                {link.label}
+              <Link key={link.key} to={link.to} className={styles.linkItem}>
+                {t(`footer.${link.key}`)}
               </Link>
             ))}
           </div>
         </div>
 
         <div className={styles.contactCol}>
-          <span className={styles.contactTitle}>CONTACT</span>
+          <span className={styles.contactTitle}>{t('footer.contact')}</span>
           <div className={styles.contactList}>
             {contactItems.map((item) => {
               const content = (
                 <>
-                  <strong>{item.label}</strong>
-                  <span>{item.value}</span>
+                  <strong>{t(`footer.${item.label.toLowerCase()}`)}</strong>
+                  <span>{item.label === 'Location' ? t('footer.locationValue') : item.value}</span>
                 </>
               );
 
@@ -66,10 +68,10 @@ export default function Footer() {
 
       <div className={styles.footerRight}>
         <a className={styles.feedbackBtn} href="mailto:support@aptimate.com?subject=AptiMate%20feedback">
-          <span className={styles.feedbackBtnText}>Leave us feedback</span>
+          <span className={styles.feedbackBtnText}>{t('footer.feedback')}</span>
         </a>
         <span className={styles.copyright}>
-          Copyright ©2026 AptiMate. All rights reserved.
+          {t('footer.copyright')}
         </span>
       </div>
     </footer>

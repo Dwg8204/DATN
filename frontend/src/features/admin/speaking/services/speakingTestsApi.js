@@ -2,8 +2,8 @@ import api from '../../../../services/api';
 
 export const speakingTestsApi = {
   // --- Admin/Teacher endpoints ---
-  list: async (params) => {
-    const res = await api.get('/speaking-tests', { params });
+  list: async ({ signal, ...params }) => {
+    const res = await api.get('/speaking-tests', { params, signal });
     return res.data;
   },
 
@@ -33,8 +33,8 @@ export const speakingTestsApi = {
   },
 
   // --- Learner endpoints ---
-  listPublished: async (params) => {
-    const res = await api.get('/speaking-tests/published', { params });
+  listPublished: async ({ signal, ...params } = {}) => {
+    const res = await api.get('/speaking-tests/published', { params, signal });
     return res.data;
   },
 

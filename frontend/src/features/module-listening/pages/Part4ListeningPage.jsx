@@ -8,12 +8,13 @@ import MultipleChoice from '../../../components/common/MultipleChoice';
 import RichTextContent from '../../../components/common/RichTextContent';
 import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
 import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
+import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal';
 import styles from './Part4ListeningPage.module.css';
 
 export default function Part4ListeningPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { attemptId, paper, answers, loading, loadError, saveStatus, submitting, setAnswer, submit, approveNavigation } = useTestAttempt();
+  const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, submit, approveNavigation } = useTestAttempt();
   const [currentRecordingIdx, setCurrentRecordingIdx] = useState(0);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
@@ -35,8 +36,10 @@ export default function Part4ListeningPage() {
 
   const confirmSubmit = async () => {
     setShowSubmitModal(false);
-    const result = await submit();
-    if (result) { approveNavigation(); navigate(`/listening/result?attemptId=${attemptId}`); }
+    try {
+      const result = await submit();
+      if (result) { approveNavigation(); navigate(`/listening/result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`); }
+    } catch { /* The provider displays the error. */ }
   };
 
   const handleQuestionClick = (qKey) => {
@@ -76,8 +79,10 @@ export default function Part4ListeningPage() {
                         name={`listening-question-${q.key}`}
                         options={q.options.map(opt => opt.text)}
                         value={selectedIndex < 0 ? undefined : selectedIndex}
+                        disabled={submitting || timeExpired || !attempt?.canAnswer || saveStatus === 'conflict'}
                         onChange={(optionIndex) => setAnswer(q.key, { kind: 'CHOICE', optionId: q.options[optionIndex].id })}
                       />
+                      <PracticeAnswerReveal questionKey={q.key} options={q.options} />
                     </div>
                   );
                 })}
@@ -95,11 +100,15 @@ export default function Part4ListeningPage() {
         answeredIds={Object.keys(answers).filter(key => key.startsWith('p4:'))}
         currentPageQuestionIds={currentRecording.subQuestions.map(q => q.key)}
         onQuestionClick={handleQuestionClick}
-        onPrevClick={() => currentRecordingIdx > 0 ? setCurrentRecordingIdx(prev => prev - 1) : navigate(`/listening/test/part3?attemptId=${attemptId}`)}
+        onPrevClick={() => {
+          if (currentRecordingIdx > 0) { setCurrentRecordingIdx(previous => previous - 1); return; }
+          const params = new URLSearchParams(searchParams); params.set('attemptId', attemptId);
+          navigate(`/listening/test/part3?${params}`);
+        }}
         onNextClick={() => setCurrentRecordingIdx(prev => prev + 1)}
         onSubmitClick={() => setShowSubmitModal(true)}
         submitLabel={submitting ? 'Submitting…' : 'Submit'}
-        submitDisabled={submitting || saveStatus === 'conflict'}
+        submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={currentRecordingIdx > 0 || isFullTest}
         hasNext={currentRecordingIdx < recordings.length - 1}
       />

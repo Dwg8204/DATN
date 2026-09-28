@@ -58,7 +58,7 @@ export class CloudinaryMediaService {
     };
   }
 
-  async uploadAudio(file?: Express.Multer.File) {
+  async uploadAudio(file?: Express.Multer.File, subfolder?: string) {
     if (!this.enabled) {
       throw new ApplicationError(
         'CLOUDINARY_NOT_CONFIGURED',
@@ -73,7 +73,7 @@ export class CloudinaryMediaService {
 
     const result = await new Promise<UploadApiResponse>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream({
-        folder: this.folder,
+        folder: subfolder ? `${this.folder}/${subfolder}` : this.folder,
         resource_type: 'auto',
         unique_filename: true,
         overwrite: false,

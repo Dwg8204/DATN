@@ -1,4 +1,5 @@
 export type SkillComponent = 'GRAMMAR_VOCAB' | 'READING' | 'LISTENING' | 'WRITING' | 'SPEAKING';
+export type AttemptPurpose = 'EXAM' | 'PRACTICE';
 export type AnswerKind = 'CHOICE' | 'MATCH' | 'TEXT' | 'AUDIO';
 export type Answer =
   | { kind: 'CHOICE' | 'MATCH'; optionId: string }
@@ -15,6 +16,7 @@ export type AssessableItem = {
   points: number;
   explanation?: string;
   sampleAnswer?: string;
+  maxCharacters?: number;
 };
 
 export type AssessmentPaper = {
@@ -32,10 +34,12 @@ export type AttemptRow = {
   test_id: string;
   version: number;
   component: SkillComponent;
+  purpose: AttemptPurpose;
   scope: 'PART' | 'FULL_SKILL';
   part_number: number | null;
   status: 'IN_PROGRESS' | 'SUBMITTED' | 'ABANDONED';
   grading_status: string;
+  assessment_revision: number;
   result: AssessmentResult | Record<string, unknown> | null;
   score: string | null;
   max_score: string | null;
@@ -46,8 +50,12 @@ export type AttemptRow = {
   completed_at: Date | null;
 };
 
-export type LockedAttemptRow = Omit<AttemptRow, 'test_id' | 'version'>;
-export type AttemptMetadata = Pick<AttemptRow, 'id' | 'snapshot_id' | 'component'>;
+export type LockedAttemptRow = Omit<AttemptRow, 'test_id' | 'version'> & {
+  test_id?: string;
+  version?: number;
+  test_title?: string;
+};
+export type AttemptMetadata = Pick<AttemptRow, 'id' | 'snapshot_id' | 'component' | 'purpose'>;
 
 export type ProgressRow = {
   attempt_id: string;
@@ -62,10 +70,11 @@ export type SavedProgressRow = Pick<ProgressRow, 'revision' | 'saved_at' | 'prog
 export type ItemOutcome = { key: string; partNumber: number; outcome: 'CORRECT' | 'INCORRECT' | 'SKIPPED' | 'PENDING'; score: number; maxScore: number };
 export type AssessmentResult = {
   schemaVersion: 1;
-  method: 'OBJECTIVE' | 'PENDING_AI';
+  method: 'OBJECTIVE' | 'PENDING_AI' | 'UNASSESSED';
   score: number | null;
   maxScore: number | null;
   counts: { correct: number; incorrect: number; skipped: number };
   parts: Array<{ partNumber: number; score: number | null; maxScore: number | null }>;
   items: ItemOutcome[];
+  assistance?: { revealedKeys: string[] };
 };

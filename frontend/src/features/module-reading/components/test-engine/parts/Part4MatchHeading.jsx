@@ -5,7 +5,7 @@ import styles from './Part4MatchHeading.module.css';
 import RichTextContent from '../../../../../components/common/RichTextContent';
 
 const Part4MatchHeading = ({ data }) => {
-  const { answers, handleAnswerChange } = useContext(ReadingTestContext);
+  const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   if (!data) return null;
 
   const headingOptions = data.headings.map((heading) => ({ value: heading.id, label: heading.text }));
@@ -27,6 +27,7 @@ const Part4MatchHeading = ({ data }) => {
                     placeholder={`Question ${index + 18}`}
                     ariaLabel={`Heading for paragraph ${index + 1}`}
                   />
+                  {renderAnswerReveal?.(paragraph.id)}
                 </div>
                 <RichTextContent className={styles.paragraphText} value={paragraph.content}/>
               </article>

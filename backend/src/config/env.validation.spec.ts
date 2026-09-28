@@ -43,4 +43,14 @@ describe('environment validation', () => {
       CLOUDINARY_API_SECRET: 'secret',
     }).error).toBeUndefined();
   });
+
+  it('requires Azure Translator credentials only when the provider is enabled', () => {
+    expect(environmentSchema.validate({ ...validEnvironment, AZURE_TRANSLATOR_ENABLED: false }).error).toBeUndefined();
+    expect(environmentSchema.validate({ ...validEnvironment, AZURE_TRANSLATOR_ENABLED: true }).error).toBeDefined();
+    expect(environmentSchema.validate({
+      ...validEnvironment,
+      AZURE_TRANSLATOR_ENABLED: true,
+      AZURE_TRANSLATOR_KEY: 'translator-key',
+    }).error).toBeUndefined();
+  });
 });

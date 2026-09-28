@@ -8,6 +8,7 @@ const reducer=(state,action)=>action.type==='init'?action.payload:action.type===
 export const useSpeakingBuilder=()=>{const value=useContext(Context);if(!value)throw new Error('useSpeakingBuilder must be used inside SpeakingBuilderLayout');return value};
 export default function SpeakingBuilderLayout(){
   const{testId}=useParams();const[params]=useSearchParams();const requested=params.get('mode');const mode=['part1','part2','part3','part4','full'].includes(requested)?requested:'full';
+  const purpose=params.get('purpose')==='PRACTICE'?'PRACTICE':'EXAM';
   const[test,dispatch]=useReducer(reducer,null);
   const[loading,setLoading]=React.useState(!!testId);
   const[error,setError]=React.useState(null);
@@ -22,9 +23,9 @@ export default function SpeakingBuilderLayout(){
         setError('Test not found.');
       }).finally(()=>setLoading(false));
     } else {
-      dispatch({type:'init',payload:createSpeakingDraft(initialMode.current)});
+      dispatch({type:'init',payload:{...createSpeakingDraft(purpose==='EXAM'?'full':initialMode.current),purpose}});
     }
-  },[testId]);
+  },[testId,purpose]);
 
   const basePath=testId?`/admin/tests/speaking/${testId}/edit`:'/admin/tests/new/speaking';
   const value=useMemo(()=>({test,basePath,updateDetails:(field,next)=>dispatch({type:'details',field,value:next}),updatePart:(number,next)=>dispatch({type:'part',number,value:next})}),[test,basePath]);

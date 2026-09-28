@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
@@ -7,12 +7,13 @@ import AnswerSelect from '../../../components/common/AnswerSelect';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
 import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
+import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal';
 import styles from './Part2ListeningPage.module.css';
 
 export default function Part2ListeningPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { attemptId, paper, answers, loading, loadError, saveStatus, submitting, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
+  const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const part = paper?.parts?.['2'];
   const isFullTest = paper?.mode === 'full';
@@ -29,11 +30,12 @@ export default function Part2ListeningPage() {
 
   const confirmSubmit = async () => {
     setShowSubmitModal(false);
-    const result = await submit();
-    if (result) { approveNavigation(); navigate(`/listening/result?attemptId=${attemptId}`); }
+    try {
+      const result = await submit();
+      if (result) { approveNavigation(); navigate(`/listening/result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`); }
+    } catch { /* The provider displays the error. */ }
   };
 
-  const questionIds = ['p2'];
   const isAnswered = part.speakers.every(speaker => answers[speaker.key]);
 
   return (
@@ -59,6 +61,7 @@ export default function Part2ListeningPage() {
                       <div className={styles.dropdownContainer}>
                         <AnswerSelect
                           value={selectedOption?.text || ''}
+                          disabled={submitting || timeExpired || !attempt?.canAnswer || saveStatus === 'conflict'}
                           onChange={(event) => {
                             const opt = part.options.find(o => o.text === event.target.value);
                             if (opt) setAnswer(speaker.key, { kind: 'MATCH', optionId: opt.id });
@@ -67,6 +70,7 @@ export default function Part2ListeningPage() {
                           ariaLabel={`Answer for ${speaker.name}`}
                           options={part.options.map((opt) => ({ value: opt.text, label: `${opt.id}. ${opt.text}` }))}
                         />
+                        <PracticeAnswerReveal questionKey={speaker.key} options={part.options} />
                       </div>
                     </div>
                   );
@@ -85,11 +89,11 @@ export default function Part2ListeningPage() {
         answeredIds={isAnswered ? ['p2'] : []}
         currentPageQuestionIds={['p2']}
         onQuestionClick={() => {}}
-        onPrevClick={() => navigate(`/listening/test/part1?attemptId=${attemptId}`)}
+        onPrevClick={() => { const params = new URLSearchParams(searchParams); params.set('attemptId', attemptId); navigate(`/listening/test/part1?${params}`); }}
         onNextClick={() => {}}
-        onSubmitClick={isFullTest ? goToPartThree : () => setShowSubmitModal(true)}
+        onSubmitClick={isFullTest ? () => void goToPartThree().catch(() => undefined) : () => setShowSubmitModal(true)}
         submitLabel={isFullTest ? 'Next Part' : submitting ? 'Submitting…' : 'Submit'}
-        submitDisabled={submitting || saveStatus === 'conflict'}
+        submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={isFullTest}
         hasNext={false}
       />

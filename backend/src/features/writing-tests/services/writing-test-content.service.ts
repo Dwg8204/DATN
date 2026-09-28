@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { plainRichText, richTextWordCount, sanitizeRichText } from '../../../common/content/rich-text';
+import { defaultTestPurpose } from '../../../common/tests/test-purpose';
 import { CreateWritingTestDto } from '../dto/save-writing-test.dto';
 import { WritingTestAggregate, WritingTestMode } from '../types/writing-test.type';
 
@@ -45,10 +46,11 @@ export class WritingTestContentService {
     }
     const title = this.plain(input.details?.title ?? '').trim();
     const pictureUrl = this.normalizeCover(input.details?.pictureUrl ?? '');
-    return { mode, details: { title, pictureUrl }, parts };
+    return { mode, purpose: input.purpose ?? defaultTestPurpose(mode), details: { title, pictureUrl }, parts };
   }
 
   assertDraftShape(test: WritingTestAggregate): void {
+    if (test.purpose === 'EXAM' && test.mode !== 'full') this.invalid('Exam tests must contain the full skill.');
     if (test.details.title.length > 180) this.invalid('Test title cannot exceed 180 characters.');
     for (const number of this.partNumbers(test.mode)) {
       const part = test.parts[number];

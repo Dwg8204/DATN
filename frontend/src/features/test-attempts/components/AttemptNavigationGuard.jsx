@@ -7,7 +7,8 @@ function isSameAttemptDestination(location, attemptId, testPathPrefix) {
   return new URLSearchParams(location.search).get('attemptId') === attemptId;
 }
 
-export default function AttemptNavigationGuard({ active, attemptId, testPathPrefix, onSubmitBeforeLeave, approveNavigation, isNavigationApproved }) {
+export default function AttemptNavigationGuard({ active, attemptId, testPathPrefix, onSubmitBeforeLeave, approveNavigation, isNavigationApproved,
+  message, confirmLabel = 'Submit and leave', backLabel = 'Stay in test' }) {
   const [busy, setBusy] = useState(false);
   const blocker = useBlocker(useCallback(({ nextLocation }) => (
     active
@@ -44,9 +45,9 @@ export default function AttemptNavigationGuard({ active, attemptId, testPathPref
     isOpen={blocker.state === 'blocked'}
     onBack={() => blocker.reset()}
     onNext={confirmLeave}
-    message={<>Leaving this test will submit all answers currently saved.<br/><br/>You will not be able to continue this attempt after leaving.</>}
-    backLabel="Stay in test"
-    confirmLabel="Submit and leave"
+    message={message ?? <>Leaving this test will submit all answers currently saved.<br/><br/>You will not be able to continue this attempt after leaving.</>}
+    backLabel={backLabel}
+    confirmLabel={confirmLabel}
     busy={busy}
   />;
 }

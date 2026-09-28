@@ -1,4 +1,5 @@
 import { RoleCode } from '../../auth/types/auth-user.type';
+import { TestPurpose } from '../../../common/tests/test-purpose';
 
 export type GrammarTestMode = 'part1' | 'part2' | 'full';
 export type GrammarTestStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
@@ -37,6 +38,7 @@ export type VocabularySet = {
 export type GrammarTestAggregate = {
   id?: string;
   mode: GrammarTestMode;
+  purpose: TestPurpose;
   details: { title: string; pictureUrl?: string; cover?: GrammarCover | null };
   parts: {
     1?: { instruction: string; questions: GrammarQuestion[] };
@@ -53,6 +55,7 @@ export type GrammarTestSummary = {
   title: string;
   name: string;
   mode: GrammarTestMode;
+  purpose: TestPurpose;
   section: string;
   component: 'Grammar & Vocab';
   status: GrammarTestStatus;
@@ -69,4 +72,3 @@ export type GrammarTestSummary = {
 
 export type GrammarActor = { id: string; role: RoleCode };
 export type GrammarAudit = { requestId?: string; ipAddress?: string };
-

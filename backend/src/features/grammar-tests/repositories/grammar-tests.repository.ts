@@ -16,6 +16,7 @@ type TestRow = {
   id: string;
   created_by: string;
   title: string;
+  purpose: GrammarTestAggregate['purpose'];
   scope: 'PART' | 'FULL_SKILL';
   part_number: number | null;
   cover: GrammarTestAggregate['details']['cover'];
@@ -27,7 +28,7 @@ type TestRow = {
   updated_at: Date;
 };
 
-type SummaryRow = Pick<TestRow, 'id' | 'created_by' | 'title' | 'scope' | 'part_number' | 'cover' | 'version' | 'status' | 'created_at' | 'updated_at'>;
+type SummaryRow = Pick<TestRow, 'id' | 'created_by' | 'title' | 'purpose' | 'scope' | 'part_number' | 'cover' | 'version' | 'status' | 'created_at' | 'updated_at'>;
 
 type StoredSet = {
   setId: number;
@@ -58,6 +59,10 @@ export class GrammarTestsRepository {
   async list(query: ListGrammarTestsQueryDto, actor?: GrammarActor): Promise<{ tests: GrammarTestSummary[]; total: number }> {
     const values: unknown[] = ['GRAMMAR_VOCAB'];
     const where = ['t.component = $1'];
+    if (query.purpose) {
+      values.push(query.purpose);
+      where.push(`t.purpose = $${values.length}`);
+    }
     if (actor?.role === 'TEACHER') {
       values.push(actor.id);
       where.push(`t.created_by = $${values.length}`);
@@ -88,7 +93,7 @@ export class GrammarTestsRepository {
     const [rows, countRows] = await Promise.all([
       this.dataSource.query<Array<SummaryRow & { attempts: string }>>(
       `WITH page AS MATERIALIZED (
-         SELECT t.id,t.created_by,t.title,t.scope,t.part_number,t.cover,t.version,t.status,t.created_at,t.updated_at
+         SELECT t.id,t.created_by,t.title,t.purpose,t.scope,t.part_number,t.cover,t.version,t.status,t.created_at,t.updated_at
          FROM tests t WHERE ${whereSql}
          ORDER BY t.updated_at DESC, t.id DESC
          LIMIT $${limitIndex} OFFSET $${offsetIndex}
@@ -114,8 +119,9 @@ export class GrammarTestsRepository {
   }
 
   async listPublished(query: ListGrammarTestsQueryDto): Promise<{ tests: GrammarTestSummary[]; total: number }> {
-    const values: unknown[] = [];
+    const values: unknown[] = [query.purpose ?? 'EXAM'];
     const where = [`t.component='GRAMMAR_VOCAB'`, 't.published_snapshot_id IS NOT NULL', 't.archived_at IS NULL'];
+    where.push('t.purpose=$1');
     if (query.search?.trim()) {
       values.push(`%${query.search.trim().replace(/[%_\\]/g, value => `\\${value}`)}%`);
       where.push(`(ts.snapshot #>> '{details,title}') ILIKE $${values.length} ESCAPE '\\'`);
@@ -130,11 +136,11 @@ export class GrammarTestsRepository {
     const offset = (query.page - 1) * query.pageSize;
     const [rows, countRows] = await Promise.all([
       this.dataSource.query<Array<{
-      id: string; title: string; picture_url: string | null; mode: GrammarTestMode;
+      id: string; title: string; picture_url: string | null; mode: GrammarTestMode; purpose: GrammarTestAggregate['purpose'];
       version: number; attempts: string; created_at: Date; updated_at: Date;
       }>>(
       `WITH page AS MATERIALIZED (
-         SELECT t.id, t.published_snapshot_id, t.created_at, t.updated_at,
+         SELECT t.id, t.published_snapshot_id, t.purpose, t.created_at, t.updated_at,
                 ts.snapshot #>> '{details,title}' AS title,
                 ts.snapshot #>> '{details,pictureUrl}' AS picture_url,
                 ts.snapshot->>'mode' AS mode,
@@ -160,7 +166,7 @@ export class GrammarTestsRepository {
     ]);
     return {
       tests: rows.map(row => this.snapshotSummary(
-        { mode: row.mode, details: { title: row.title, pictureUrl: row.picture_url ?? '' }, version: row.version },
+        { mode: row.mode, purpose: row.purpose, details: { title: row.title, pictureUrl: row.picture_url ?? '' }, version: row.version },
         row.id, Number(row.attempts), row.created_at, row.updated_at,
       )),
       total: Number(countRows[0]?.total ?? 0),
@@ -197,9 +203,9 @@ export class GrammarTestsRepository {
       const mapping = this.modeColumns(test.mode);
       const storage = this.toStorage(test);
       const rows = await manager.query<TestRow[]>(
-        `INSERT INTO tests(created_by, updated_by, title, component, scope, part_number, cover, part_contents, status)
-         VALUES($1, $1, $2, 'GRAMMAR_VOCAB', $3, $4, $5::jsonb, $6::jsonb, 'DRAFT') RETURNING *`,
-        [actor.id, test.details.title || 'Untitled test', mapping.scope, mapping.partNumber,
+        `INSERT INTO tests(created_by, updated_by, title, component, purpose, scope, part_number, cover, part_contents, status)
+         VALUES($1, $1, $2, 'GRAMMAR_VOCAB', $3, $4, $5, $6::jsonb, $7::jsonb, 'DRAFT') RETURNING *`,
+        [actor.id, test.details.title || 'Untitled test', test.purpose, mapping.scope, mapping.partNumber,
           JSON.stringify(test.details.cover ?? null), JSON.stringify(storage.partContents)],
       );
       const row = firstMutationRow<TestRow>(rows);
@@ -244,7 +250,7 @@ export class GrammarTestsRepository {
       if (!current) return { outcome: 'NOT_FOUND' };
       if (actor.role === 'TEACHER' && current.created_by !== actor.id) return { outcome: 'FORBIDDEN' };
       if (current.version !== expectedVersion) return { outcome: 'VERSION_CONFLICT' };
-      const snapshotPayload = { ...snapshot, status: 'PUBLISHED' as const, version: current.version };
+    const snapshotPayload = { ...snapshot, purpose: current.purpose, status: 'PUBLISHED' as const, version: current.version };
       const serialized = JSON.stringify(snapshotPayload);
       const contentHash = createHash('sha256').update(serialized).digest('hex');
       const snapshotRows = await manager.query<Array<{ id: string }>>(
@@ -371,6 +377,7 @@ export class GrammarTestsRepository {
     const aggregate: GrammarTestAggregate = {
       id: row.id,
       mode,
+      purpose: row.purpose,
       details: { title: row.title, pictureUrl: row.cover?.url ?? '', cover: row.cover ?? null },
       parts: {}, status: row.status, version: row.version, createdAt: row.created_at, updatedAt: row.updated_at,
     };
@@ -409,7 +416,7 @@ export class GrammarTestsRepository {
     const mode = this.rowMode(row);
     const canManage = Boolean(actor && (actor.role === 'ADMIN' || row.created_by === actor.id));
     return {
-      id: row.id, title: row.title, name: row.title, mode,
+      id: row.id, title: row.title, name: row.title, mode, purpose: row.purpose,
       section: mode === 'full' ? 'Full Test' : mode === 'part1' ? 'Part 1' : 'Part 2',
       component: 'Grammar & Vocab', status: row.status, attempts,
       questionType: mode === 'part1' ? 'Multiple Choice' : mode === 'part2' ? 'Word Matching' : 'Mixed',
@@ -419,10 +426,10 @@ export class GrammarTestsRepository {
     };
   }
 
-  private snapshotSummary(test: Pick<GrammarTestAggregate, 'mode' | 'details' | 'version'>, id: string, attempts: number, createdAt: Date, updatedAt: Date): GrammarTestSummary {
+  private snapshotSummary(test: Pick<GrammarTestAggregate, 'mode' | 'purpose' | 'details' | 'version'>, id: string, attempts: number, createdAt: Date, updatedAt: Date): GrammarTestSummary {
     const mode = test.mode;
     return {
-      id, title: test.details.title, name: test.details.title, mode,
+      id, title: test.details.title, name: test.details.title, mode, purpose: test.purpose,
       section: mode === 'full' ? 'Full Test' : mode === 'part1' ? 'Part 1' : 'Part 2',
       component: 'Grammar & Vocab', status: 'PUBLISHED', attempts,
       questionType: mode === 'part1' ? 'Multiple Choice' : mode === 'part2' ? 'Word Matching' : 'Mixed',

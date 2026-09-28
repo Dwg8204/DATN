@@ -25,14 +25,14 @@ describe('WritingTestsService', () => {
   });
 
   it('prevents a teacher from loading another teacher’s test', async () => {
-    repository.findAggregate.mockResolvedValue({ id: 'test-id', mode: 'part1', details: { title: 'Writing practice' }, parts: {}, status: 'DRAFT' });
+    repository.findAggregate.mockResolvedValue({ id: 'test-id', purpose: 'PRACTICE', mode: 'part1', details: { title: 'Writing practice' }, parts: {}, status: 'DRAFT' });
     repository.findOwner.mockResolvedValue({ createdBy: 'other-teacher', status: 'DRAFT' });
     await expect(service.get('test-id', actor)).rejects.toMatchObject({ code: 'WRITING_TEST_FORBIDDEN', statusCode: 403 });
   });
 
   it('publishes the current persisted version without a version in the request body', async () => {
     const aggregate = {
-      id: 'test-id', version: 6, status: 'DRAFT' as const, mode: 'part1' as const,
+      id: 'test-id', version: 6, status: 'DRAFT' as const, purpose: 'PRACTICE' as const, mode: 'part1' as const,
       details: { title: 'Complete writing test', pictureUrl: '' },
       parts: { 1: {
         context: 'Answer all questions about your language club.',

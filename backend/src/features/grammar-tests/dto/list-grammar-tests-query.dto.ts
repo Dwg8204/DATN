@@ -1,8 +1,13 @@
 import { IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
 import { PaginationQueryDto } from '../../../common/pagination/pagination.dto';
 import { GrammarTestMode, GrammarTestStatus } from '../types/grammar-test.type';
+import { TestPurpose } from '../../../common/tests/test-purpose';
 
 export class ListGrammarTestsQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @IsIn(['EXAM', 'PRACTICE'])
+  purpose?: TestPurpose;
+
   @IsOptional()
   @IsString()
   @MaxLength(120)
@@ -16,4 +21,3 @@ export class ListGrammarTestsQueryDto extends PaginationQueryDto {
   @IsIn(['DRAFT', 'PUBLISHED', 'ARCHIVED'])
   status?: GrammarTestStatus;
 }
-

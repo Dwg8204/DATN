@@ -5,6 +5,7 @@ import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MultipleChoice from '../../../components/common/MultipleChoice';
 import RichTextContent from '../../../components/common/RichTextContent';
+import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal';
 import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
 import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
 import styles from './Part1GrammarPage.module.css';
@@ -14,7 +15,7 @@ const ITEMS_PER_PAGE = 3;
 export default function Part1GrammarPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { attemptId, paper, answers, loading, loadError, saveStatus, submitting, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
+  const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
   const [currentPage, setCurrentPage] = useState(1);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const questions = useMemo(() => paper?.parts?.['1']?.questions ?? [], [paper]);
@@ -39,8 +40,10 @@ export default function Part1GrammarPage() {
 
   const confirmSubmit = async () => {
     setShowSubmitModal(false);
-    const result = await submit();
-    if (result) { approveNavigation(); navigate(`/grammar-vocab/result?attemptId=${attemptId}`); }
+    try {
+      const result = await submit();
+      if (result) { approveNavigation(); navigate(`/grammar-vocab/result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`); }
+    } catch { /* The provider displays the error. */ }
   };
 
   return (
@@ -67,8 +70,10 @@ export default function Part1GrammarPage() {
                   name={`grammar-question-${question.key}`}
                   options={question.options.map(option => option.text)}
                   value={selectedIndex < 0 ? undefined : selectedIndex}
+                  disabled={submitting || timeExpired || !attempt?.canAnswer || saveStatus === 'conflict'}
                   onChange={index => setAnswer(question.key, { kind: 'CHOICE', optionId: question.options[index].id })}
                 />
+                <PracticeAnswerReveal questionKey={question.key} options={question.options} />
               </div>
             );
           })}
@@ -82,9 +87,9 @@ export default function Part1GrammarPage() {
         onQuestionClick={key => setCurrentPage(Math.floor(questions.findIndex(question => question.key === key) / ITEMS_PER_PAGE) + 1)}
         onPrevClick={() => setCurrentPage(page => Math.max(1, page - 1))}
         onNextClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
-        onSubmitClick={isFullTest ? goToPartTwo : () => setShowSubmitModal(true)}
+        onSubmitClick={isFullTest ? () => void goToPartTwo().catch(() => undefined) : () => setShowSubmitModal(true)}
         submitLabel={isFullTest ? 'Next Part' : submitting ? 'Submitting…' : 'Submit'}
-        submitDisabled={submitting || saveStatus === 'conflict'}
+        submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={currentPage > 1}
         hasNext={currentPage < totalPages}
       />

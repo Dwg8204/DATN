@@ -2,9 +2,8 @@ import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
 import { listeningTestsApi } from '../features/admin/listening/services/listeningTestsApi';
-import { startReadingSession } from '../features/module-reading/utils/readingSessionStorage';
-import { startWritingSession } from '../features/writing/utils/writingSessionStorage';
 import { testAttemptsApi } from '../features/test-attempts/services/testAttemptsApi';
+import { resumePartFromAttempt } from '../features/writing/utils/writingAttemptPaper';
 import { useToast } from '../context/ToastContext';
 import { getApiError } from '../services/apiError';
 
@@ -69,7 +68,7 @@ const readingModeConfigs = {
     title: 'APTIS GENERAL READING - PART 4',
     time: 'Time: 14 min',
     instructions: 'Read the passage. Choose a heading for each numbered paragraph.',
-    information: 'This part consists of a long text with 7 paragraphs. Select the best heading for each paragraph from the 8 options.'
+    information: 'This part consists of a long text with 7 paragraphs. Select the best heading for each paragraph from the 7 options.'
   },
   full: {
     title: 'APTIS GENERAL READING',
@@ -114,36 +113,40 @@ export default function IntroductionPage({
       if (onStartTest) {
         onStartTest();
       } else if (skill) {
-      const testId = searchParams.get('testId') || '1';
+        const testId = searchParams.get('testId') || '1';
 
-      if (skill === 'grammar-vocab') {
-        const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
-        const actualMode = started.paper?.mode ?? mode;
-        const firstPart = actualMode === 'full' ? 'part1' : actualMode;
-        const params = new URLSearchParams({ testId, attemptId: started.attemptId });
-        if (actualMode === 'full') params.set('isFull', 'true');
-        navigate(`/${skill}/test/${firstPart}?${params.toString()}`);
-      } else if (skill === 'listening') {
-        const { attemptId } = await listeningTestsApi.startAttempt(testId, mode);
-        const params = new URLSearchParams({ attemptId });
-        if (testId) params.set('testId', testId);
+        if (skill === 'grammar-vocab') {
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const actualMode = started.paper?.mode ?? mode;
+          const firstPart = actualMode === 'full' ? 'part1' : actualMode;
+          const params = new URLSearchParams({ testId, attemptId: started.attemptId });
+          if (actualMode === 'full') params.set('isFull', 'true');
+          navigate(`/${skill}/test/${firstPart}?${params.toString()}`);
+        } else if (skill === 'listening') {
+          const { attemptId } = await listeningTestsApi.startAttempt(testId, mode);
+          const params = new URLSearchParams({ attemptId });
+          if (testId) params.set('testId', testId);
         
-        if (mode === 'full') {
-          navigate(`/${skill}/test/part1?${params.toString()}`);
-        } else {
-          navigate(`/${skill}/test/${mode}?${params.toString()}`);
+          if (mode === 'full') {
+            navigate(`/${skill}/test/part1?${params.toString()}`);
+          } else {
+            navigate(`/${skill}/test/${mode}?${params.toString()}`);
+          }
+        } else if (skill === 'reading') {
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const firstPart = started.paper?.mode === 'full' ? 'part1' : started.paper?.mode ?? mode;
+          navigate(`/reading/test/${firstPart}?${new URLSearchParams({ testId, attemptId: started.attemptId }).toString()}`);
+        } else if (skill === 'writing') {
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const actualMode = started.paper?.mode ?? mode;
+          const firstPart = resumePartFromAttempt(started, actualMode);
+          const params = new URLSearchParams({ testId, attemptId: started.attemptId });
+          navigate(`/writing/test/${firstPart}?${params.toString()}`);
+        } else if (skill === 'speaking') {
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const firstPart = started.paper?.mode === 'full' ? 'part1' : started.paper?.mode ?? mode;
+          navigate(`/speaking/test/${firstPart}?${new URLSearchParams({ testId, attemptId: started.attemptId }).toString()}`);
         }
-      } else if (skill === 'reading') {
-        startReadingSession(testId, mode, { force: true });
-        navigate(`/reading/test/${testId}?mode=${mode}`);
-      } else if (skill === 'writing') {
-        startWritingSession(testId, mode, { force: true });
-        const firstPart = mode === 'full' ? 'part1' : mode;
-        navigate(`/writing/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}&fresh=true`);
-      } else if (skill === 'speaking') {
-        const firstPart = mode === 'full' ? 'part1' : mode;
-        navigate(`/speaking/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
-      }
       }
     } catch (e) {
       showError(getApiError(e, 'Unable to start this test. Please try again.'));

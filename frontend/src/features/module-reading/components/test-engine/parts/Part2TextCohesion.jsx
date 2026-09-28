@@ -108,7 +108,7 @@ const DroppableGap = ({
 
 const Part2TextCohesion = ({ data }) => {
   const shuffled = useMemo(() => shuffleSentences(data?.sentences || []), [data?.sentences]);
-  const { answers, handleAnswerChange } = useContext(ReadingTestContext);
+  const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   const [activeId, setActiveId] = useState(null);
   const [selectedSentenceId, setSelectedSentenceId] = useState(null);
   const sensors = useSensors(
@@ -197,6 +197,7 @@ const Part2TextCohesion = ({ data }) => {
                       hasSelectedSentence={Boolean(selectedSentenceId)}
                       isSelected={selectedSentenceId === sentence?.id}
                     />
+                    {renderAnswerReveal?.(position)}
                   </div>
                 );
               })}

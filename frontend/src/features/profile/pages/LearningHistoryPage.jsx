@@ -1,5 +1,5 @@
 import Pagination from '../../../components/common/Pagination';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { getHistoryEntries } from '../../../utils/historyStorage';
@@ -7,11 +7,14 @@ import { ClipboardList, Calendar, Clock, FileText, Search } from 'lucide-react';
 import styles from './LearningHistoryPage.module.css';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
+import { practiceAttemptsApi } from '../../test-attempts/services/practiceAttemptsApi';
 import { formatDuration } from '../../test-attempts/utils/attemptTime';
 import { getApiError } from '../../../services/apiError';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+import { useTranslation } from 'react-i18next';
 
 const HISTORY_QUERY_SCHEMA = {
+  purpose: { ...queryParam.enum(['EXAM', 'PRACTICE'], 'EXAM'), param: 'type' },
   skillFilter: { ...queryParam.enum(['all', 'listening', 'reading', 'writing', 'speaking', 'grammar'], 'all'), param: 'skill' },
   partFilter: { ...queryParam.enum(['all', 'full', 'part1', 'part2', 'part3', 'part4'], 'all'), param: 'part' },
   sortOrder: { ...queryParam.enum(['desc', 'asc'], 'desc'), param: 'sort' },
@@ -20,63 +23,123 @@ const HISTORY_QUERY_SCHEMA = {
   pageSize: { ...queryParam.positiveInt(() => window.innerWidth <= 700 ? 5 : 10, 100), param: 'size' },
 };
 
+const REMOTE_SKILLS = new Set(['all', 'grammar', 'writing', 'listening', 'reading', 'speaking']);
+const BROWSER_SKILLS = new Set(['reading']);
+const REMOTE_COMPONENTS = { grammar: 'GRAMMAR_VOCAB', writing: 'WRITING', listening: 'LISTENING', reading: 'READING', speaking: 'SPEAKING' };
+const COMPONENT_SKILLS = {
+  GRAMMAR_VOCAB: { skill: 'grammar', resultPath: '/grammar-vocab/result-detail', fallbackTitle: 'Grammar & Vocabulary Test' },
+  WRITING: { skill: 'writing', resultPath: '/writing/result-detail', fallbackTitle: 'Writing Test' },
+  LISTENING: { skill: 'listening', resultPath: '/listening/detail-result', fallbackTitle: 'Listening Test' },
+  READING: { skill: 'reading', resultPath: '/reading/detail-result', fallbackTitle: 'Reading Test' },
+  SPEAKING: { skill: 'speaking', resultPath: '/speaking/detail-result', fallbackTitle: 'Speaking Test' },
+};
+
+function remoteHistoryEntry(attempt) {
+  const metadata = COMPONENT_SKILLS[attempt.component] ?? {
+    skill: attempt.component?.toLowerCase() ?? 'unknown', resultPath: null, fallbackTitle: 'Test result',
+  };
+  return {
+    id: attempt.attemptId,
+    skill: metadata.skill,
+    testName: attempt.title || metadata.fallbackTitle,
+    mode: attempt.scope === 'FULL_SKILL' ? 'full' : `part${attempt.partNumber}`,
+    submittedAt: attempt.submittedAt,
+    timeSpent: attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : '--:--:--',
+    purpose: attempt.purpose ?? 'EXAM',
+    reviewUrl: metadata.resultPath ? `${metadata.resultPath}?attemptId=${attempt.attemptId}${attempt.purpose === 'PRACTICE' ? '&practice=true' : ''}` : null,
+    assessmentPending: ['WRITING', 'SPEAKING'].includes(attempt.component) && attempt.gradingStatus !== 'COMPLETED',
+    cefrLevel: attempt.estimatedCefr,
+  };
+}
+
+function HistoryCards({ entries, navigate, t, locale }) {
+  return <div className={styles.historyList}>{entries.map(entry =>
+    <div key={entry.id} className={`${styles.card} ${entry.reviewUrl ? styles.clickableCard : ''}`}
+      onClick={entry.reviewUrl ? () => navigate(entry.reviewUrl) : undefined}>
+      <div className={styles.cardHeader}>
+        <div>
+          <div className={styles.cardTitleWrap}>
+            <span className={`${styles.skillBadge} ${styles[entry.skill]}`}>{entry.skill}</span>
+            <span className={styles.modeBadge}>{entry.purpose === 'PRACTICE' ? t('common.practice') : t('history.mockTest')}</span>
+            <h3 className={styles.testName}>{entry.testName}</h3>
+            <span className={styles.modeBadge}>{entry.mode === 'full' ? t('common.fullTest') : t('common.part', { number: entry.mode?.replace('part', '') })}</span>
+          </div>
+          <div className={styles.metaInfo}>
+            <span className={styles.metaItem}><Calendar size={14} />{new Date(entry.submittedAt).toLocaleString(locale)}</span>
+            <span className={styles.metaItem}><Clock size={14} />{entry.timeSpent}</span>
+            {entry.cefrLevel && <span className={styles.metaItem}><span className={styles.cefrBadge}>CEFR / Band: {entry.cefrLevel}</span></span>}
+            {entry.assessmentPending && <span className={styles.metaItem}>{t('history.assessmentPending')}</span>}
+          </div>
+        </div>
+        {entry.reviewUrl && <div className={styles.cardAction}>
+          <Link to={entry.reviewUrl} className={styles.reviewBtn} onClick={event => event.stopPropagation()}>
+            <FileText size={16} />{t('history.reviewResult')}
+          </Link>
+        </div>}
+      </div>
+    </div>)}</div>;
+}
+
 export default function LearningHistoryPage() {
-  const [history, setHistory] = useState([]);
+  const { t, i18n } = useTranslation();
+  const [history] = useState(() => getHistoryEntries());
   const [urlState, setUrlState] = useUrlQueryState(HISTORY_QUERY_SCHEMA);
-  const { page, pageSize, sortOrder, skillFilter, partFilter, appliedSearch } = urlState;
-  const [searchInput, setSearchInput] = useState(appliedSearch);
+  const { page, pageSize, sortOrder, skillFilter, partFilter, appliedSearch, purpose } = urlState;
+  const [browserPage, setBrowserPage] = useState(1);
+  const [searchDraft, setSearchDraft] = useState({ source: appliedSearch, value: appliedSearch });
+  const searchInput = searchDraft.source === appliedSearch ? searchDraft.value : appliedSearch;
+  const setSearchInput = value => setSearchDraft({ source: appliedSearch, value });
   const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
-  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
+  const setPageSize = next => {
+    setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
+    setBrowserPage(1);
+  };
   const navigate = useNavigate();
-  const [remote, setRemote] = useState({ entries: [], total: 0, loading: false, error: '' });
+  const [remote, setRemote] = useState({ requestKey: null, entries: [], total: 0, error: '' });
+  const remoteRequestKey = `${purpose}:${skillFilter}:${partFilter}:${sortOrder}:${page}:${pageSize}:${appliedSearch}`;
+  const remoteLoading = REMOTE_SKILLS.has(skillFilter) && remote.requestKey !== remoteRequestKey;
 
   useEffect(() => {
-    setHistory(getHistoryEntries());
-  }, []);
-
-  useEffect(() => setSearchInput(appliedSearch), [appliedSearch]);
-
-  useEffect(() => {
-    if (skillFilter !== 'grammar') return undefined;
+    if (!REMOTE_SKILLS.has(skillFilter)) return undefined;
     const controller = new AbortController();
-    setRemote(current => ({ ...current, loading: true, error: '' }));
-    testAttemptsApi.history({
-      page, pageSize, component: 'GRAMMAR_VOCAB', mode: partFilter,
+    const component = REMOTE_COMPONENTS[skillFilter];
+    const historyApi = purpose === 'PRACTICE' ? practiceAttemptsApi : testAttemptsApi;
+    historyApi.history({
+      page, pageSize, component, mode: partFilter,
       search: appliedSearch, sort: sortOrder, signal: controller.signal,
     }).then(result => setRemote({
-      entries: (result.data ?? []).map(attempt => ({
-        id: attempt.attemptId,
-        skill: 'grammar',
-        testName: attempt.title || 'Grammar & Vocabulary Test',
-        mode: attempt.scope === 'FULL_SKILL' ? 'full' : `part${attempt.partNumber}`,
-        submittedAt: attempt.submittedAt,
-        timeSpent: attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : '--:--:--',
-        reviewUrl: `/grammar-vocab/result-detail?attemptId=${attempt.attemptId}`,
-      })),
+      requestKey: remoteRequestKey,
+      entries: (result.data ?? []).map(remoteHistoryEntry),
       total: result.pagination?.totalItems ?? 0,
-      loading: false,
       error: '',
     })).catch(error => {
-      if (error.code !== 'ERR_CANCELED') setRemote({ entries: [], total: 0, loading: false,
-        error: getApiError(error, 'Unable to load your Grammar & Vocabulary history.') });
+      if (error.code !== 'ERR_CANCELED') setRemote({ requestKey: remoteRequestKey, entries: [], total: 0,
+        error: getApiError(error, 'Unable to load your test history.') });
     });
     return () => controller.abort();
-  }, [appliedSearch, page, pageSize, partFilter, skillFilter, sortOrder]);
+  }, [appliedSearch, page, pageSize, partFilter, purpose, remoteRequestKey, skillFilter, sortOrder]);
 
   const handleSortChange = (e) => {
     setUrlState({ sortOrder: e.target.value, page: 1 });
   };
+  const handlePurposeChange = nextPurpose => {
+    setUrlState({ purpose: nextPurpose, partFilter: 'all', page: 1 });
+    setBrowserPage(1);
+  };
   const handleSkillChange = (skill) => {
     setUrlState({ skillFilter: skill, partFilter: 'all', appliedSearch: '', page: 1 });
+    setBrowserPage(1);
     setSearchInput('');
   };
   const handlePartChange = (part) => {
     setUrlState({ partFilter: part, appliedSearch: '', page: 1 });
+    setBrowserPage(1);
     setSearchInput('');
   };
 
   const handleSearch = () => {
     setUrlState({ appliedSearch: searchInput, page: 1 });
+    setBrowserPage(1);
   };
 
   const handleKeyDown = (e) => {
@@ -85,43 +148,29 @@ export default function LearningHistoryPage() {
     }
   };
 
-  const skillCounts = React.useMemo(() => {
-    const counts = {};
-    history.forEach(entry => {
-      counts[entry.skill] = (counts[entry.skill] || 0) + 1;
-    });
-    return counts;
-  }, [history]);
-
-  const partCounts = React.useMemo(() => {
-    const counts = {};
-    const relevantHistory = skillFilter === 'all' ? history : history.filter(e => e.skill === skillFilter);
-    relevantHistory.forEach(entry => {
-      counts[entry.mode] = (counts[entry.mode] || 0) + 1;
-    });
-    return counts;
-  }, [history, skillFilter]);
-
-  const localFilteredHistory = history
+  const localFilteredHistory = useMemo(() => history
     .filter(entry => {
+      if (!BROWSER_SKILLS.has(entry.skill)) return false;
+      if ((entry.purpose ?? 'EXAM') !== purpose) return false;
+      if (skillFilter !== 'all' && entry.skill !== skillFilter) return false;
+      if (partFilter !== 'all' && entry.mode !== partFilter) return false;
       if (appliedSearch) {
         const normalizedSearch = appliedSearch.toLowerCase().replace(/\s+/g, '');
         const normalizedName = entry.testName.toLowerCase().replace(/\s+/g, '');
         return normalizedName.includes(normalizedSearch);
       }
-      if (skillFilter !== 'all' && entry.skill !== skillFilter) return false;
-      if (partFilter !== 'all' && entry.mode !== partFilter && !(partFilter === 'full' && entry.mode === 'full')) return false;
       return true;
     })
     .sort((a, b) => {
       const dateA = new Date(a.submittedAt);
       const dateB = new Date(b.submittedAt);
       return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
-    });
+    }), [history, purpose, skillFilter, partFilter, appliedSearch, sortOrder]);
 
-  const isRemoteGrammar = skillFilter === 'grammar';
-  const filteredHistory = isRemoteGrammar ? remote.entries : localFilteredHistory;
-  const currentEntries = isRemoteGrammar ? remote.entries : filteredHistory.slice((page - 1) * pageSize, page * pageSize);
+  const isRemoteSkill = REMOTE_SKILLS.has(skillFilter);
+  const filteredHistory = isRemoteSkill ? remote.entries : localFilteredHistory;
+  const currentEntries = isRemoteSkill ? remote.entries : filteredHistory.slice((page - 1) * pageSize, page * pageSize);
+  const browserEntries = localFilteredHistory.slice((browserPage - 1) * pageSize, browserPage * pageSize);
 
   return (
     <div className={styles.page}>
@@ -130,20 +179,29 @@ export default function LearningHistoryPage() {
 
         <div className={styles.content}>
           <div className={styles.header}>
-            <h2>Learning History</h2>
+            <h2>{t('profile.history')}</h2>
           </div>
 
           <div className={styles.filters}>
+            <div className={styles.filterRow}>
+              <span className={styles.filterLabel}>{t('history.activity')}:</span>
+              <div className={styles.filterBtnGroup}>
+                <button className={`${styles.filterBtn} ${purpose === 'EXAM' ? styles.active : ''}`}
+                  onClick={() => handlePurposeChange('EXAM')}>{t('history.mockTests')}</button>
+                <button className={`${styles.filterBtn} ${purpose === 'PRACTICE' ? styles.active : ''}`}
+                  onClick={() => handlePurposeChange('PRACTICE')}>{t('common.practice')}</button>
+              </div>
+            </div>
             <div className={styles.searchSortRow}>
               <div className={styles.sortRow}>
-                <span className={styles.filterLabel}>Sort by:</span>
-                <AnswerSelect className={styles.select} value={sortOrder} onChange={handleSortChange} options={[{ value: 'desc', label: 'Newest first' }, { value: 'asc', label: 'Oldest first' }]} ariaLabel="Sort test history" />
+                <span className={styles.filterLabel}>{t('history.sortBy')}:</span>
+                <AnswerSelect className={styles.select} value={sortOrder} onChange={handleSortChange} options={[{ value: 'desc', label: t('history.newest') }, { value: 'asc', label: t('history.oldest') }]} ariaLabel={t('history.sortHistory')} />
               </div>
 
               <div className={styles.searchRow}>
                 <input
                   type="text"
-                  placeholder="Search by test name (e.g. Aptis Grammar...)"
+                  placeholder={t('history.searchPlaceholder')}
                   className={styles.searchInput}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
@@ -153,13 +211,13 @@ export default function LearningHistoryPage() {
                   className={`${styles.searchBtn} ${searchInput !== appliedSearch ? styles.highlight : ''}`}
                   onClick={handleSearch}
                 >
-                  <Search size={18} /> Search
+                  <Search size={18} /> {t('common.search')}
                 </button>
               </div>
             </div>
 
             <div className={styles.filterRow}>
-              <span className={styles.filterLabel}>Skill:</span>
+              <span className={styles.filterLabel}>{t('history.skill')}:</span>
               <div className={styles.filterBtnGroup}>
                 {['all', 'listening', 'reading', 'writing', 'speaking', 'grammar'].map(skill => (
                   <button
@@ -167,10 +225,7 @@ export default function LearningHistoryPage() {
                     className={`${styles.filterBtn} ${skillFilter === skill && !appliedSearch ? styles.active : ''}`}
                     onClick={() => handleSkillChange(skill)}
                   >
-                    {skill.charAt(0).toUpperCase() + skill.slice(1)}
-                    {skill !== 'all' && skillCounts[skill] !== undefined && (
-                      <span className={styles.filterCount}>({skillCounts[skill]})</span>
-                    )}
+                    {skill === 'all' ? t('history.all') : t(`nav.${skill}`)}
                   </button>
                 ))}
               </div>
@@ -178,16 +233,16 @@ export default function LearningHistoryPage() {
 
             {skillFilter !== 'all' && (
               <div className={styles.filterRow}>
-                <span className={styles.filterLabel}>Part:</span>
+                <span className={styles.filterLabel}>{t('history.part')}:</span>
                 <div className={styles.filterBtnGroup}>
                   {['all', 'full', 'part1', 'part2', 'part3', 'part4'].map(part => {
                     // Grammar only has part 1 and 2
                     if (skillFilter === 'grammar' && (part === 'part3' || part === 'part4')) return null;
 
                     let label = part;
-                    if (part === 'all') label = 'All Parts';
-                    if (part === 'full') label = 'Full Test';
-                    if (part.startsWith('part')) label = part.replace('part', 'Part ');
+                    if (part === 'all') label = t('history.allParts');
+                    if (part === 'full') label = t('common.fullTest');
+                    if (part.startsWith('part')) label = t('common.part', { number: part.replace('part', '') });
 
                     return (
                       <button
@@ -196,9 +251,6 @@ export default function LearningHistoryPage() {
                         onClick={() => handlePartChange(part)}
                       >
                         {label}
-                        {part !== 'all' && partCounts[part] !== undefined && (
-                          <span className={styles.filterCount}>({partCounts[part]})</span>
-                        )}
                       </button>
                     );
                   })}
@@ -207,59 +259,24 @@ export default function LearningHistoryPage() {
             )}
           </div>
 
-          {remote.loading && isRemoteGrammar ? <div className={styles.emptyState}><p>Loading history…</p></div> : remote.error && isRemoteGrammar ? (
-            <div className={styles.emptyState}><h3>Unable to load history</h3><p>{remote.error}</p></div>
-          ) : filteredHistory.length === 0 ? (
+          {!isRemoteSkill && <p className={styles.sourceNote}>{t('history.browserOnly')}</p>}
+          {remoteLoading && isRemoteSkill ? <div className={styles.emptyState}><p>{t('history.loading')}</p></div> : remote.error && isRemoteSkill ? (
+            <div className={styles.emptyState}><h3>{t('history.loadError')}</h3><p>{remote.error}</p></div>
+          ) : filteredHistory.length === 0 && !(skillFilter === 'all' && localFilteredHistory.length) ? (
             <div className={styles.emptyState}>
               <ClipboardList size={48} />
-              <h3>No tests found</h3>
-              <p>You haven't completed any tests matching these filters yet.</p>
+              <h3>{t('common.noTests')}</h3>
+              <p>{t('history.noResults')}</p>
             </div>
-          ) : (
-            <div className={styles.historyList}>
-              {currentEntries.map(entry => (
-                <div key={entry.id} className={`${styles.card} ${styles.clickableCard}`} onClick={() => navigate(entry.reviewUrl)}>
-                  <div className={styles.cardHeader}>
-                    <div>
-                      <div className={styles.cardTitleWrap}>
-                        <span className={`${styles.skillBadge} ${styles[entry.skill]}`}>
-                          {entry.skill}
-                        </span>
-                        <h3 className={styles.testName}>{entry.testName}</h3>
-                        <span className={styles.modeBadge}>
-                          {entry.mode === 'full' ? 'Full Test' : entry.mode.replace('part', 'Part ')}
-                        </span>
-                      </div>
-                      <div className={styles.metaInfo}>
-                        <span className={styles.metaItem}>
-                          <Calendar size={14} />
-                          {new Date(entry.submittedAt).toLocaleString('vi-VN')}
-                        </span>
-                        <span className={styles.metaItem}>
-                          <Clock size={14} />
-                          {entry.timeSpent}
-                        </span>
-                        {entry.cefrLevel && (
-                          <span className={styles.metaItem}>
-                            <span className={styles.cefrBadge}>CEFR / Band: {entry.cefrLevel}</span>
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className={styles.cardAction}>
-                      <Link to={entry.reviewUrl} className={styles.reviewBtn}>
-                        <FileText size={16} />
-                        Review Result
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-            </div>
-          )}
-          <Pagination page={page} totalItems={isRemoteGrammar ? remote.total : filteredHistory.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          ) : <HistoryCards entries={currentEntries} navigate={navigate} t={t} locale={i18n.language === 'vi' ? 'vi-VN' : 'en-US'} />}
+          <Pagination page={page} totalItems={isRemoteSkill ? remote.total : filteredHistory.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          {skillFilter === 'all' && localFilteredHistory.length > 0 && <section className={styles.browserHistory}>
+            <h3>{t('history.browserResults')}</h3>
+            <p>{t('history.legacyResults')}</p>
+            <HistoryCards entries={browserEntries} navigate={navigate} t={t} locale={i18n.language === 'vi' ? 'vi-VN' : 'en-US'} />
+            <Pagination page={browserPage} totalItems={localFilteredHistory.length} pageSize={pageSize}
+              onPageChange={setBrowserPage} />
+          </section>}
         </div>
       </div>
     </div>

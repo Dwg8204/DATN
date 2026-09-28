@@ -83,7 +83,7 @@ export default function WritingTestDetailsPage() {
 
   return <div className={styles.page}>
     <AdminConfirmDialog open={confirmSave} title="Save changes to this test?" message="Your current changes will replace the previously saved version of this Writing test." confirmLabel="Save changes" onCancel={() => setConfirmSave(false)} onConfirm={persistTest}/>
-    <AdminBreadcrumb current={test.details.title || 'New test'} />
+    <AdminBreadcrumb current={test.details.title || 'New test'} purpose={test.purpose} />
     <section className={styles.information} inert={saving ? '' : undefined} aria-busy={saving}><h2>INFORMATION TEST</h2><div className={styles.infoGrid}><div className={styles.fields}>
       <label><b>Title:</b><input value={test.details.title} onChange={(event) => updateDetails('title', event.target.value)}/></label>
       <ImageField label="Test cover" value={test.details.pictureUrl} onChange={(value) => updateDetails('pictureUrl', value)} uploadFile={writingTestsApi.uploadCover}/>

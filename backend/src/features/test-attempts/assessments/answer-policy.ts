@@ -26,11 +26,17 @@ export function applyAnswerChanges(current: Answers, changes: Record<string, Ans
       }
       next[key] = { kind: item.kind, optionId: answer.optionId };
     } else if (item.kind === 'TEXT') {
-      if (answer.kind !== 'TEXT' || typeof answer.text !== 'string' || answer.text.length > 20_000 ||
+      if (answer.kind !== 'TEXT' || typeof answer.text !== 'string' || answer.text.length > (item.maxCharacters ?? 20_000) ||
           Object.keys(answer).some(field => field !== 'kind' && field !== 'text')) {
         throw new ApplicationError('ATTEMPT_INVALID_ANSWER', `Text answer for ${key} is invalid.`, 422);
       }
       next[key] = { kind: 'TEXT', text: answer.text };
+    } else if (item.kind === 'AUDIO') {
+      if (answer.kind !== 'AUDIO' || !isVerifiedAudioUrl(answer.mediaKey) ||
+          Object.keys(answer).some(field => field !== 'kind' && field !== 'mediaKey')) {
+        throw new ApplicationError('ATTEMPT_INVALID_ANSWER', `Audio answer for ${key} is invalid.`, 422);
+      }
+      next[key] = { kind: 'AUDIO', mediaKey: answer.mediaKey };
     } else {
       throw new ApplicationError('ATTEMPT_AUDIO_UNAVAILABLE', 'Audio answers require a verified upload.', 422);
     }
@@ -39,4 +45,15 @@ export function applyAnswerChanges(current: Answers, changes: Record<string, Ans
     throw new ApplicationError('ATTEMPT_ANSWERS_TOO_LARGE', 'Saved answers exceed the allowed size.', 413);
   }
   return next;
+}
+
+function isVerifiedAudioUrl(value: unknown): value is string {
+  if (typeof value !== 'string' || value.length > 2_048) return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'https:' && url.hostname === 'res.cloudinary.com' &&
+      /\/candidate-recordings\//.test(url.pathname);
+  } catch {
+    return false;
+  }
 }

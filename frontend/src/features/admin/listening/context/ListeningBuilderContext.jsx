@@ -22,6 +22,7 @@ export default function ListeningBuilderLayout() {
   const { testId } = useParams();
   const [params] = useSearchParams();
   const mode = ['part1', 'part2', 'part3', 'part4'].includes(params.get('mode')) ? params.get('mode') : 'full';
+  const purpose = params.get('purpose') === 'PRACTICE' ? 'PRACTICE' : 'EXAM';
   
   const [test, dispatch] = useReducer(reducer, null);
   const [loading, setLoading] = useState(!!testId);
@@ -29,7 +30,7 @@ export default function ListeningBuilderLayout() {
 
   useEffect(() => {
     if (!testId) {
-      dispatch({ type: 'init', payload: createListeningDraft(mode) });
+      dispatch({ type: 'init', payload: { ...createListeningDraft(purpose === 'EXAM' ? 'full' : mode), purpose } });
       return;
     }
     const controller = new AbortController();
@@ -45,7 +46,7 @@ export default function ListeningBuilderLayout() {
         }
       });
     return () => controller.abort();
-  }, [testId, mode]);
+  }, [testId, mode, purpose]);
 
   const basePath = testId ? `/admin/tests/listening/${testId}/edit` : '/admin/tests/new/listening';
   

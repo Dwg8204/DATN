@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiCookieAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiCookieAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';

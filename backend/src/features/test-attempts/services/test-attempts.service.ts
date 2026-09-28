@@ -30,6 +30,7 @@ export class TestAttemptsService {
       const existingId = await this.repository.find(attemptId, actor.id, manager);
       if (existingId) {
         if (existingId.test_id !== testId) this.conflict('This attempt ID belongs to another test.');
+        if (existingId.purpose !== 'EXAM') this.conflict('This attempt belongs to the practice flow.');
         this.assertComponent(expectedComponent, existingId.component);
         this.assertMode(expectedMode, existingId.scope, existingId.part_number);
         return existingId;
@@ -43,6 +44,9 @@ export class TestAttemptsService {
       }
       const test = await this.repository.published(testId, manager);
       if (!test) throw new ApplicationError('TEST_NOT_PUBLISHED', 'This test is unavailable.', 404);
+      if (test.purpose !== 'EXAM' || test.scope !== 'FULL_SKILL') {
+        throw new ApplicationError('EXAM_FULL_TEST_REQUIRED', 'Only full exam tests can be started from the test flow.', 422);
+      }
       this.assertComponent(expectedComponent, test.component);
       if (test.schema_version !== 1) throw new ApplicationError('ATTEMPT_INVALID_SNAPSHOT', 'Unsupported test version.', 422);
       const paper = await this.paperFactory.getOrBuild(test.snapshot_id, test.component,
@@ -53,8 +57,8 @@ export class TestAttemptsService {
       const scope = paper.mode === 'full' ? 'FULL_SKILL' : 'PART';
       const partNumber = scope === 'PART' ? Number(paper.mode.slice(4)) : null;
       await manager.query(
-        `INSERT INTO test_attempts(id,student_id,snapshot_id,component,scope,part_number,expires_at)
-         VALUES($1,$2,$3,$4,$5,$6,now() + ($7::integer * interval '1 minute'))`,
+        `INSERT INTO test_attempts(id,student_id,snapshot_id,component,purpose,scope,part_number,expires_at)
+         VALUES($1,$2,$3,$4,'EXAM',$5,$6,now() + ($7::integer * interval '1 minute'))`,
         [attemptId, actor.id, test.snapshot_id, test.component, scope, partNumber,
           examDurationMinutes(test.component)]);
       await manager.query('INSERT INTO attempt_progress(attempt_id) VALUES($1)', [attemptId]);
@@ -72,6 +76,7 @@ export class TestAttemptsService {
   async save(attemptId: string, actor: AuthUser, dto: SaveProgressDto) {
     const metadata = await this.repository.metadata(attemptId, actor.id);
     if (!metadata) this.notFound();
+    if (metadata.purpose !== 'EXAM') this.conflict('Practice attempts cannot be autosaved through the exam flow.');
     const paper = await this.paperFactory.getOrBuild(metadata.snapshot_id, metadata.component,
       () => this.repository.snapshot(metadata.snapshot_id));
     return this.repository.dataSource.transaction(async manager => {
@@ -94,6 +99,7 @@ export class TestAttemptsService {
   async submit(attemptId: string, actor: AuthUser, dto: SubmitAttemptDto) {
     const metadata = await this.repository.metadata(attemptId, actor.id);
     if (!metadata) this.notFound();
+    if (metadata.purpose !== 'EXAM') this.conflict('Practice attempts must be completed through the practice flow.');
     const paper = await this.paperFactory.getOrBuild(metadata.snapshot_id, metadata.component,
       () => this.repository.snapshot(metadata.snapshot_id));
     return this.repository.dataSource.transaction(async manager => {
@@ -102,18 +108,22 @@ export class TestAttemptsService {
       const attempt = await this.repository.lockAttempt(attemptId, actor.id, manager);
       if (!progress || !attempt) this.notFound();
       if (attempt.status === 'SUBMITTED') return this.resultSummary(attempt);
-      this.assertWritable(attempt, progress, dto.expectedRevision);
+      if (attempt.status !== 'IN_PROGRESS' || progress.sealed_at) this.conflict('This test has already been submitted.');
       if (attempt.snapshot_id !== metadata.snapshot_id) this.conflict('This test changed while submitting.');
       const serverTime = await this.repository.serverTime(manager);
       const expired = !!attempt.expires_at && new Date(attempt.expires_at).getTime() <= new Date(serverTime).getTime();
+      // Once time has expired, the database snapshot is authoritative. Accept a stale client
+      // revision so a lost autosave response cannot prevent the server from sealing the attempt.
+      if (!expired) this.assertRevision(progress, dto.expectedRevision);
       const answers = expired ? progress.answers : applyAnswerChanges(progress.answers, dto.finalChanges ?? {}, paper.items);
       if (!expired && dto.finalChanges && Object.keys(dto.finalChanges).length) {
         await this.repository.saveProgress(manager, attemptId, answers, progress.revision + 1, progress.progress);
       }
       const result = this.grader.grade(paper.items, answers);
-      const cefr = result.score != null && result.maxScore != null ? estimateCefr(metadata.component, result.score, result.maxScore) : null;
       await manager.query('UPDATE attempt_progress SET sealed_at=now() WHERE attempt_id=$1 AND sealed_at IS NULL', [attemptId]);
-      const completed = await this.repository.complete(manager, attemptId, result, serverTime, cefr);
+      const submittedAt = expired ? attempt.expires_at ?? serverTime : serverTime;
+      const completed = await this.repository.complete(manager, attemptId, result, submittedAt,
+        this.estimatedCefr(metadata.component, result.score, result.maxScore));
       return this.resultSummary(completed);
     });
   }
@@ -144,7 +154,7 @@ export class TestAttemptsService {
     const answers = legacyResult ? legacyListeningAnswers(partNumber, legacyResult, part.options ?? []) : progress!.answers;
     const outcomes = new Map(result.items.map(outcome => [outcome.key, outcome]));
     return {
-      attemptId, partNumber, paper: paper.parts[String(partNumber)],
+      attemptId, component: attempt.component, partNumber, paper: paper.parts[String(partNumber)],
       items: items.map(item => ({
         key: item.key,
         selectedAnswer: answers[item.key] ?? null,
@@ -161,7 +171,7 @@ export class TestAttemptsService {
       throw new ApplicationError('ATTEMPT_INVALID_COMPONENT', 'Choose a valid skill.', 400);
     }
     const found = await this.repository.history(actor.id, query.component as SkillComponent | undefined,
-      query.page, query.pageSize, query.mode, query.search, query.sort);
+      query.page, query.pageSize, query.mode, query.search, query.sort, 'EXAM');
     return paginate(found.rows, found.total, query);
   }
 
@@ -171,7 +181,7 @@ export class TestAttemptsService {
     if (!testIds.length || testIds.length > 100 || testIds.some(id => !uuid.test(id))) {
       throw new ApplicationError('ATTEMPT_INVALID_TEST_IDS', 'Choose between 1 and 100 valid tests.', 400);
     }
-    return { data: await this.repository.states(actor.id, testIds) };
+    return { data: await this.repository.states(actor.id, testIds, 'EXAM') };
   }
 
   async finalizeExpiredBatch(limit = 25): Promise<number> {
@@ -191,7 +201,8 @@ export class TestAttemptsService {
             () => this.repository.snapshot(attempt.snapshot_id, manager));
           const result = this.grader.grade(paper.items, progress.answers);
           await manager.query('UPDATE attempt_progress SET sealed_at=now() WHERE attempt_id=$1', [attempt.id]);
-          await this.repository.complete(manager, attempt.id, result);
+          await this.repository.complete(manager, attempt.id, result, attempt.expires_at ?? undefined,
+            this.estimatedCefr(attempt.component, result.score, result.maxScore));
           this.expiryRetries.delete(attempt.id);
           return true;
         });
@@ -223,7 +234,7 @@ export class TestAttemptsService {
     const effectiveStatus = progress?.sealed_at ? 'SUBMITTED' : attempt.status;
     return {
       attemptId: attempt.id, testId: attempt.test_id, snapshotVersion: attempt.version,
-      component: attempt.component, scope: attempt.scope, partNumber: attempt.part_number,
+      component: attempt.component, purpose: attempt.purpose, scope: attempt.scope, partNumber: attempt.part_number,
       status: effectiveStatus, gradingStatus: attempt.grading_status,
       startedAt: attempt.started_at, expiresAt: attempt.expires_at, serverTime,
       canAnswer: effectiveStatus === 'IN_PROGRESS' && !progress?.sealed_at &&
@@ -234,13 +245,17 @@ export class TestAttemptsService {
 
   private safePaper(paper: AssessmentPaper) {
     return { component: paper.component, title: paper.title, mode: paper.mode, parts: paper.parts,
-      items: paper.items.map(({ key, partNumber, kind, optionIds }) => ({ key, partNumber, kind, optionIds })) };
+      items: paper.items.map(({ key, partNumber, kind, optionIds, maxCharacters }) =>
+        ({ key, partNumber, kind, optionIds, ...(maxCharacters ? { maxCharacters } : {}) })) };
   }
 
   private resultSummary(attempt: LockedAttemptRow) {
     const result = attempt.component === 'LISTENING' && isLegacyListeningResult(attempt.result)
       ? normalizeLegacyListeningResult(attempt.result) : attempt.result;
-    return { attemptId: attempt.id, status: attempt.status, gradingStatus: attempt.grading_status,
+    return { attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null, component: attempt.component,
+      purpose: attempt.purpose,
+      scope: attempt.scope, partNumber: attempt.part_number, assessmentRevision: attempt.assessment_revision,
+      status: attempt.status, gradingStatus: attempt.grading_status,
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
       estimatedCefr: attempt.estimated_cefr, result, submittedAt: attempt.submitted_at,
@@ -263,13 +278,21 @@ export class TestAttemptsService {
 
   private assertWritable(attempt: LockedAttemptRow, progress: ProgressRow, expectedRevision: number, serverTime?: Date) {
     if (attempt.status !== 'IN_PROGRESS' || progress.sealed_at) this.conflict('This test has already been submitted.');
+    if (serverTime && attempt.expires_at && new Date(attempt.expires_at).getTime() <= new Date(serverTime).getTime()) {
+      throw new ApplicationError('ATTEMPT_EXPIRED', 'The time limit has expired. Submit the saved answers to see your result.', 409);
+    }
+    this.assertRevision(progress, expectedRevision);
+  }
+
+  private assertRevision(progress: ProgressRow, expectedRevision: number) {
     if (progress.revision !== expectedRevision) {
       throw new ApplicationError('ATTEMPT_REVISION_CONFLICT', 'Your progress changed elsewhere. Reload before saving.', 409,
         { currentRevision: progress.revision });
     }
-    if (serverTime && attempt.expires_at && new Date(attempt.expires_at).getTime() <= new Date(serverTime).getTime()) {
-      throw new ApplicationError('ATTEMPT_EXPIRED', 'The time limit has expired. Submit the saved answers to see your result.', 409);
-    }
+  }
+
+  private estimatedCefr(component: SkillComponent, score: number | null, maxScore: number | null): string | null {
+    return score != null && maxScore != null ? estimateCefr(component, score, maxScore) : null;
   }
 
   private notFound(): never { throw new ApplicationError('ATTEMPT_NOT_FOUND', 'Test attempt not found.', 404); }

@@ -8,13 +8,13 @@ import {
   calcStreak,
   calcAvgBand,
   calcBestSkill,
-  calcWeakSkill,
-  calcGoalProgress
+  calcWeakSkill
 } from '../../../utils/dashboardUtils';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TotalTestsIcon, AvgScoreIcon, AvgBandIcon, StreakIcon, BestSkillIcon, WeakSkillIcon } from '../components/DashboardIcons';
 import styles from './DashboardPage.module.css';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+import { useTranslation } from 'react-i18next';
 
 const DASHBOARD_QUERY_SCHEMA = {
   skillFilter: { ...queryParam.enum(['all', 'listening', 'reading', 'writing', 'speaking', 'grammar'], 'all'), param: 'skill' },
@@ -31,6 +31,7 @@ const SKILL_COLORS = {
 };
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const [entries, setEntries] = useState([]);
   const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
   const { skillFilter, partFilter, dateFilter } = urlState;
@@ -98,10 +99,10 @@ export default function DashboardPage() {
           <div className={styles.headerBanner}>
             <div className={styles.titleArea}>
               <div className={styles.titleRow}>
-                <h1 className={styles.title}>Learning Overview</h1>
-                <span className={styles.badge}>Aptis ESOL Exam</span>
+                <h1 className={styles.title}>{t('dashboard.title')}</h1>
+                <span className={styles.badge}>{t('dashboard.exam')}</span>
               </div>
-              <p className={styles.subtitle}>Track performance metrics, average scores, and your path to target Aptis bands.</p>
+              <p className={styles.subtitle}>{t('dashboard.subtitle')}</p>
             </div>
             <div className={styles.headerActions}>
             </div>
@@ -113,11 +114,11 @@ export default function DashboardPage() {
                 <TotalTestsIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel} style={{ color: '#0284c7', opacity: 0.85 }}>Total Tests Completed</div>
+                <div className={styles.kpiLabel} style={{ color: '#0284c7', opacity: 0.85 }}>{t('dashboard.totalTests')}</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue}>{totalTests}</span>
                 </div>
-                <div className={styles.kpiDesc} style={{ color: '#0284c7', opacity: 0.7 }}>Overall finished tests</div>
+                <div className={styles.kpiDesc} style={{ color: '#0284c7', opacity: 0.7 }}>{t('dashboard.totalTestsDesc')}</div>
               </div>
             </div>
 
@@ -126,7 +127,7 @@ export default function DashboardPage() {
                 <AvgScoreIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel} style={{ color: '#d97706', opacity: 0.85 }}>Average Score (Criteria)</div>
+                <div className={styles.kpiLabel} style={{ color: '#d97706', opacity: 0.85 }}>{t('dashboard.averageScore')}</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue}>{avgCriteriaScore}%</span>
                 </div>
@@ -141,11 +142,11 @@ export default function DashboardPage() {
                 <AvgBandIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel} style={{ color: '#059669', opacity: 0.85 }}>Average Band (Avg Band)</div>
+                <div className={styles.kpiLabel} style={{ color: '#059669', opacity: 0.85 }}>{t('dashboard.averageBand')}</div>
                 <div className={styles.kpiValueRow}>
                   <span className={styles.kpiValue}>{avgBand}</span>
                 </div>
-                <div className={styles.kpiDesc} style={{ color: '#059669', opacity: 0.7 }}>Based on test history</div>
+                <div className={styles.kpiDesc} style={{ color: '#059669', opacity: 0.7 }}>{t('dashboard.averageBandDesc')}</div>
               </div>
             </div>
 
@@ -154,11 +155,11 @@ export default function DashboardPage() {
                 <StreakIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel} style={{ color: '#e11d48', opacity: 0.85 }}>Learning Streak</div>
+                <div className={styles.kpiLabel} style={{ color: '#e11d48', opacity: 0.85 }}>{t('dashboard.streak')}</div>
                 <div className={styles.kpiValueRow}>
-                  <span className={styles.kpiValue}>{streak} days</span>
+                  <span className={styles.kpiValue}>{t('dashboard.days', { count: streak })}</span>
                 </div>
-                <div className={styles.kpiDesc} style={{ color: '#e11d48', opacity: 0.7 }}>Current active streak</div>
+                <div className={styles.kpiDesc} style={{ color: '#e11d48', opacity: 0.7 }}>{t('dashboard.streakDesc')}</div>
               </div>
             </div>
 
@@ -167,10 +168,10 @@ export default function DashboardPage() {
                 <BestSkillIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel} style={{ color: '#7e22ce', opacity: 0.85 }}>Best Skill</div>
+                <div className={styles.kpiLabel} style={{ color: '#7e22ce', opacity: 0.85 }}>{t('dashboard.bestSkill')}</div>
                 <div className={styles.kpiValueRow}>
-                  <span className={styles.kpiValue}>{bestSkill.name}</span>
-                  {bestSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#6b21a8', background: 'rgba(126, 34, 206, 0.15)', padding: '2px 8px', borderRadius: '6px' }}>Band {bestSkill.band}</span>}
+                  <span className={styles.kpiValue}>{bestSkill.name === 'N/A' ? t('dashboard.noData') : t(`nav.${bestSkill.name.toLowerCase()}`, { defaultValue: bestSkill.name })}</span>
+                  {bestSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#6b21a8', background: 'rgba(126, 34, 206, 0.15)', padding: '2px 8px', borderRadius: '6px' }}>{t('dashboard.band', { band: bestSkill.band })}</span>}
                 </div>
               </div>
             </div>
@@ -180,10 +181,10 @@ export default function DashboardPage() {
                 <WeakSkillIcon size={24} />
               </div>
               <div className={styles.kpiInfo}>
-                <div className={styles.kpiLabel} style={{ color: '#ea580c', opacity: 0.85 }}>Needs Improvement (Weakest Skill)</div>
+                <div className={styles.kpiLabel} style={{ color: '#ea580c', opacity: 0.85 }}>{t('dashboard.weakSkill')}</div>
                 <div className={styles.kpiValueRow}>
-                  <span className={styles.kpiValue}>{weakSkill.name}</span>
-                  {weakSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#9a3412', background: 'rgba(234, 88, 12, 0.15)', padding: '2px 8px', borderRadius: '6px' }}>Band {weakSkill.band}</span>}
+                  <span className={styles.kpiValue}>{weakSkill.name === 'N/A' ? t('dashboard.noData') : t(`nav.${weakSkill.name.toLowerCase()}`, { defaultValue: weakSkill.name })}</span>
+                  {weakSkill.band && <span style={{ fontSize: '12px', fontWeight: '800', color: '#9a3412', background: 'rgba(234, 88, 12, 0.15)', padding: '2px 8px', borderRadius: '6px' }}>{t('dashboard.band', { band: weakSkill.band })}</span>}
                 </div>
               </div>
             </div>
@@ -191,58 +192,58 @@ export default function DashboardPage() {
 
           <div className={styles.filterBar}>
             <div className={styles.filterRow}>
-              <span className={styles.filterLabel}>Skill:</span>
+              <span className={styles.filterLabel}>{t('dashboard.skill')}:</span>
               <div className={styles.filterBtnGroup}>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'all' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('all'); setPartFilter('all'); }}
                 >
-                  All
+                  {t('dashboard.all')}
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'listening' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('listening'); setPartFilter('all'); }}
                 >
-                  Listening ({skillCounts.listening})
+                  {t('nav.listening')} ({skillCounts.listening})
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'reading' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('reading'); setPartFilter('all'); }}
                 >
-                  Reading ({skillCounts.reading})
+                  {t('nav.reading')} ({skillCounts.reading})
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'writing' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('writing'); setPartFilter('all'); }}
                 >
-                  Writing ({skillCounts.writing})
+                  {t('nav.writing')} ({skillCounts.writing})
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'speaking' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('speaking'); setPartFilter('all'); }}
                 >
-                  Speaking ({skillCounts.speaking})
+                  {t('nav.speaking')} ({skillCounts.speaking})
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'grammar' ? styles.active : ''}`}
                   onClick={() => { setSkillFilter('grammar'); setPartFilter('all'); }}
                 >
-                  Grammar & Vocab ({skillCounts.grammar})
+                  {t('nav.grammar')} ({skillCounts.grammar})
                 </button>
               </div>
             </div>
 
             {skillFilter !== 'all' && (
               <div className={styles.filterRow}>
-                <span className={styles.filterLabel}>Part:</span>
+                <span className={styles.filterLabel}>{t('dashboard.part')}:</span>
                 <div className={styles.filterBtnGroup}>
                   {['all', 'full', 'part1', 'part2', 'part3', 'part4'].map(part => {
                     if (skillFilter === 'grammar' && (part === 'part3' || part === 'part4')) return null;
 
                     let label = part;
-                    if (part === 'all') label = 'All';
-                    if (part === 'full') label = 'Full Test';
-                    if (part.startsWith('part')) label = part.replace('part', 'Part ');
+                    if (part === 'all') label = t('dashboard.all');
+                    if (part === 'full') label = t('dashboard.fullTest');
+                    if (part.startsWith('part')) label = t('common.part', { number: part.replace('part', '') });
 
                     return (
                       <button
@@ -262,31 +263,31 @@ export default function DashboardPage() {
             )}
 
             <div className={styles.filterRow}>
-              <span className={styles.filterLabel}>Time:</span>
+              <span className={styles.filterLabel}>{t('dashboard.time')}:</span>
               <div className={styles.filterBtnGroup}>
                 <button
                   className={`${styles.filterBtn} ${dateFilter === 'all' ? styles.active : ''}`}
                   onClick={() => setDateFilter('all')}
                 >
-                  All Time
+                  {t('dashboard.allTime')}
                 </button>
                 <button
                   className={`${styles.filterBtn} ${dateFilter === '7' ? styles.active : ''}`}
                   onClick={() => setDateFilter('7')}
                 >
-                  Last 7 days
+                  {t('dashboard.last7')}
                 </button>
                 <button
                   className={`${styles.filterBtn} ${dateFilter === '30' ? styles.active : ''}`}
                   onClick={() => setDateFilter('30')}
                 >
-                  Last 30 days
+                  {t('dashboard.last30')}
                 </button>
                 <button
                   className={`${styles.filterBtn} ${dateFilter === '90' ? styles.active : ''}`}
                   onClick={() => setDateFilter('90')}
                 >
-                  This Quarter
+                  {t('dashboard.quarter')}
                 </button>
               </div>
             </div>
@@ -294,7 +295,7 @@ export default function DashboardPage() {
 
           <div className={styles.chartsSection}>
             <div className={styles.chartContainerFull}>
-              <h3>Score Over Time</h3>
+              <h3>{t('dashboard.scoreOverTime')}</h3>
               <div className={styles.chartWrapper}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={scoreOverTimeData}>
@@ -302,7 +303,7 @@ export default function DashboardPage() {
                     <XAxis dataKey="date" />
                     <YAxis domain={[0, 100]} />
                     <Tooltip />
-                    <Legend />
+                    <Legend formatter={value => t(`nav.${value}`, { defaultValue: value })} />
                     {(skillFilter === 'all' ? Object.keys(SKILL_COLORS) : [skillFilter]).map(skill => (
                       <Line key={skill} type="monotone" dataKey={skill} stroke={SKILL_COLORS[skill]} strokeWidth={2} activeDot={{ r: 8 }} connectNulls />
                     ))}
@@ -312,7 +313,7 @@ export default function DashboardPage() {
             </div>
 
             <div className={styles.chartContainerFull}>
-              <h3>Skill Distribution</h3>
+              <h3>{t('dashboard.skillDistribution')}</h3>
               <div className={styles.chartWrapper}>
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -322,7 +323,7 @@ export default function DashboardPage() {
                       ))}
                     </Pie>
                     <Tooltip />
-                    <Legend />
+                    <Legend formatter={value => t(`nav.${value}`, { defaultValue: value })} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>

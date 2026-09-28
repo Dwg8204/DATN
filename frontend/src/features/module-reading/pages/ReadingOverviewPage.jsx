@@ -47,14 +47,14 @@ export default function ReadingOverviewPage() {
               - Part 1 – Sentence Comprehension: You will read a short text in the form of a note or an email. For five sentences in the text, you must choose a word to complete each sentence. This part tests your ability to read and understand simple sentences.
               <br />- Part 2 – Text Cohesion: This section contains two separate texts. Each text consists of six sentences, but only the first sentence is placed correctly. Your task is to arrange the remaining five sentences in the correct order to form a complete, coherent text.
               <br />- Part 3 – Opinion Matching: You will read a text made up of four paragraphs on a common topic, each paragraph representing a different person's opinions or preferences. You will then match seven given statements to the correct person.
-              <br />- Part 4 – Long Text Comprehension: In the final section, you will read a longer text of approximately 750 words, consisting of eight paragraphs. You are given eight headings and must match seven of them to seven of the paragraphs.
+              <br />- Part 4 – Long Text Comprehension: In the final section, you will read a longer text split into seven paragraphs. You are given seven headings and must match one heading to each paragraph.
             </p>
 
             <p>
               <strong>Top tips for the reading test:</strong>
               <br />- Read all the sentences carefully first, then decide on the correct order. You need to look for words that show how the sentences link with each other.
               <br />- To perform well in section two, first read each paragraph so you understand each person's point of view. Then read the statements and decide which person's opinion it best represents.
-              <br />- In section three it is necessary to scroll the reading text to see all of it. Select the appropriate heading from the drop-down list on the left-hand side. There is always an extra heading that does not fit with any paragraph.
+              <br />- In section four it is necessary to scroll the reading text to see all of it. Select the most appropriate heading for each paragraph.
             </p>
 
             <p>

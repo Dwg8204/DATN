@@ -2,8 +2,10 @@ import { useEffect, useId, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { getPagination, isValidPageInput, MAX_PAGE_SIZE, pageNumbers } from './paginationUtils';
 import styles from './Pagination.module.css';
+import { useTranslation } from 'react-i18next';
 
 export default function Pagination({ page, totalItems, pageSize, onPageChange, onPageSizeChange }) {
+  const { t } = useTranslation();
   const sizesId = useId();
   const { total, current } = getPagination(totalItems, page, pageSize);
   const [target, setTarget] = useState(String(current));
@@ -32,10 +34,9 @@ export default function Pagination({ page, totalItems, pageSize, onPageChange, o
     <div className={styles.pagination}>
       <form onSubmit={changeSize}>
         <label>
-          Rows per page
+          {t('common.rowsPerPage')}
           <input
-            aria-label="Rows per page"
-            title={`Enter 1–${MAX_PAGE_SIZE} rows`}
+            aria-label={t('common.rowsPerPage')}
             type="number"
             min="1"
             max={MAX_PAGE_SIZE}
@@ -48,29 +49,29 @@ export default function Pagination({ page, totalItems, pageSize, onPageChange, o
         <datalist id={sizesId}>
           {[5, 10, 20, 50, 100].map(number => <option key={number} value={number} />)}
         </datalist>
-        <button type="submit" disabled={!validSize}>Apply</button>
+        <button type="submit" disabled={!validSize}>{t('common.apply')}</button>
       </form>
 
-      <nav aria-label="Pagination">
-        <button type="button" aria-label="Previous page" disabled={current === 1} onClick={() => onPageChange(current - 1)}>
+      <nav aria-label={t('common.pagination')}>
+        <button type="button" aria-label={t('common.previousPage')} disabled={current === 1} onClick={() => onPageChange(current - 1)}>
           <ChevronLeft />
         </button>
         {pageNumbers(current, total).map(number => typeof number === 'string'
           ? <span key={number}>…</span>
           : <button type="button" key={number} aria-current={number === current ? 'page' : undefined} onClick={() => onPageChange(number)}>{number}</button>
         )}
-        <button type="button" aria-label="Next page" disabled={current === total} onClick={() => onPageChange(current + 1)}>
+        <button type="button" aria-label={t('common.nextPage')} disabled={current === total} onClick={() => onPageChange(current + 1)}>
           <ChevronRight />
         </button>
       </nav>
 
       <form onSubmit={goToPage}>
         <label>
-          Go to page
-          <input aria-label="Go to page" type="number" min="1" max={total} required value={target} onChange={event => setTarget(event.target.value)} />
+          {t('common.goToPage')}
+          <input aria-label={t('common.goToPage')} type="number" min="1" max={total} required value={target} onChange={event => setTarget(event.target.value)} />
         </label>
-        <span>of {total}</span>
-        <button type="submit" disabled={!validPage}>Go</button>
+        <span>{t('common.ofPages', { total })}</span>
+        <button type="submit" disabled={!validPage}>{t('common.go')}</button>
       </form>
     </div>
   );

@@ -1,8 +1,13 @@
 import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { SpeakingTestStatus } from '../types/speaking-test.type';
+import { TestPurpose } from '../../../common/tests/test-purpose';
 
 export class ListSpeakingTestsQueryDto {
+  @IsOptional()
+  @IsIn(['EXAM', 'PRACTICE'])
+  purpose?: TestPurpose;
+
   @IsOptional()
   @IsString()
   search?: string;

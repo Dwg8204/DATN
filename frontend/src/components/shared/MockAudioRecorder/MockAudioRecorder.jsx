@@ -3,7 +3,7 @@ import { Mic, MicOff, Square, Camera, CameraOff } from 'lucide-react';
 import styles from './MockAudioRecorder.module.css';
 import { useToast } from '../../../context/ToastContext';
 
-export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, maxTime, onStartRecord, onStopRecord, countdownBeforeStart = 0 }) {
+export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, maxTime, onStartRecord, onStopRecord, countdownBeforeStart = 0, disabled = false }) {
   const { showError } = useToast();
   const [cameraOn, setCameraOn] = useState(false);
   const [cameraPermission, setCameraPermission] = useState('pending'); // 'pending', 'granted', 'denied'
@@ -138,7 +138,7 @@ export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, m
               <span className={styles.countdownNumber}>{countdownBeforeStart}</span>
             </div>
           ) : (
-            <button className={styles.recordBtn} onClick={onStartRecord} title="Start record">
+            <button className={styles.recordBtn} onClick={onStartRecord} title="Start record" disabled={disabled}>
               <span className={styles.recordBtnInner}></span>
             </button>
           )

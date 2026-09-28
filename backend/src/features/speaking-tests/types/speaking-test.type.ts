@@ -1,4 +1,5 @@
 import { RoleCode } from '../../auth/types/auth-user.type';
+import { TestPurpose } from '../../../common/tests/test-purpose';
 
 export type SpeakingTestMode = 'part1' | 'part2' | 'part3' | 'part4' | 'full';
 export type SpeakingTestStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
@@ -6,6 +7,8 @@ export type SpeakingTestStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 export type SpeakingQuestion = {
   id: string;
   text: string;
+  sampleAnswer?: string;
+  explanation?: string;
 };
 
 export type SpeakingPart1 = {
@@ -26,11 +29,14 @@ export type SpeakingPart4 = {
   topic: string;
   imageUrl?: string;
   questions: SpeakingQuestion[];
+  sampleAnswer?: string;
+  explanation?: string;
 };
 
 export type SpeakingTestAggregate = {
   id?: string;
   mode: SpeakingTestMode;
+  purpose: TestPurpose;
   details: { title: string; pictureUrl?: string };
   parts: {
     1?: SpeakingPart1;
@@ -49,6 +55,7 @@ export type SpeakingTestSummary = {
   title: string;
   name: string;
   mode: SpeakingTestMode;
+  purpose: TestPurpose;
   section: string;
   component: 'Speaking';
   status: SpeakingTestStatus;

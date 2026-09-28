@@ -4,6 +4,7 @@ import { GrammarTestAggregate } from '../types/grammar-test.type';
 function completeTest(): GrammarTestAggregate {
   const letters = 'ABCDEFGHIJ'.split('');
   return {
+    purpose: 'EXAM',
     mode: 'full',
     details: { title: 'Grammar Mock Test' },
     parts: {

@@ -7,7 +7,7 @@ import { SpeakingTestsService } from './services/speaking-tests.service';
 
 @Module({
   imports: [AuthModule],
-  controllers: [SpeakingTestsController, PublishedSpeakingTestsController],
+  controllers: [PublishedSpeakingTestsController, SpeakingTestsController],
   providers: [SpeakingTestsRepository, SpeakingTestContentService, SpeakingTestsService],
   exports: [SpeakingTestsService],
 })

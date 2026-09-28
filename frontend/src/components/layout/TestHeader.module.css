@@ -111,6 +111,8 @@
   opacity: 0.8;
 }
 
+.exitBtn:disabled { cursor: wait; opacity: .55; }
+
 .exitBtnText {
   color: white;
   font-size: 14px;
