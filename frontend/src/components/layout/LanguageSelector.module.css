@@ -1,0 +1,95 @@
+.selector {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.trigger {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  border: 1px solid #e2d5d6;
+  border-radius: 50%;
+  background: #fff;
+  color: #352d2e;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.trigger:hover,
+.trigger:focus-visible,
+.selector:has(.menu) .trigger {
+  border-color: #da1e21;
+  background: #fff7f7;
+  box-shadow: 0 0 0 3px rgba(218, 30, 33, .08);
+  outline: none;
+}
+
+.trigger > svg:not(.flag) {
+  display: none;
+}
+
+.chevronOpen { transform: rotate(180deg); }
+.flag { width: 21px; height: 21px; flex: 0 0 auto; overflow: hidden; border-radius: 50%; box-shadow: 0 0 0 1px rgba(0,0,0,.12); object-fit: cover; }
+.code { font-size: 10px; line-height: 1; }
+
+.menu {
+  position: absolute;
+  z-index: 1100;
+  top: calc(100% + 8px);
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: 94px;
+  padding: 4px;
+  border: 1px solid #eadfe0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 14px 36px rgba(36, 18, 20, .16);
+}
+
+.option {
+  width: 100%;
+  min-height: 32px;
+  display: grid;
+  grid-template-columns: 22px 1fr 14px;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #403738;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option:hover { background: #f8f3f3; }
+.option > svg:last-child { width: 14px; height: 14px; }
+
+.option.active {
+  background: #fff0f1;
+  color: #c5151e;
+}
+
+@media (max-width: 700px) {
+  .trigger {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    padding: 0;
+  }
+
+  .trigger > svg:not(.flag) { width: 13px; height: 13px; }
+  .menu { position: fixed; top: 53px; left: auto; right: 8px; transform: none; width: 94px; }
+}

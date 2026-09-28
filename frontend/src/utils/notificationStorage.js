@@ -30,8 +30,8 @@ export function saveUserNotificationState(state) {
   window.dispatchEvent(new CustomEvent('aptimate:notification-state-change'));
 }
 
-export function formatNotificationDate(value) {
-  return new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+export function formatNotificationDate(value, locale = 'en-GB') {
+  return new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 }
 
 export function addPersonalNotification(content) {
