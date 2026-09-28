@@ -531,3 +531,142 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* User email selection styles */
+.userEmailSection {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+}
+
+.userEmailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.userEmailHeader label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+}
+
+.userEmailBadgeCount {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #c51629;
+  color: #fff;
+}
+
+.emailSearchBox {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.emailSearchBox input {
+  width: 100%;
+  height: 38px;
+  padding: 8px 12px 8px 34px;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 12px;
+  outline: none;
+}
+
+.emailSearchBox input:focus {
+  border-color: #c51629;
+  box-shadow: 0 0 0 2px rgba(197, 22, 41, 0.1);
+}
+
+.emailSearchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 15px;
+  height: 15px;
+  color: #888;
+}
+
+.userEmailList {
+  max-height: 180px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.userEmailItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  font-size: 12px;
+}
+
+.userEmailItem:last-child {
+  border-bottom: none;
+}
+
+.userEmailItem:hover {
+  background: #fff0f1;
+}
+
+.userEmailItemActive {
+  background: #ffe6e8;
+  font-weight: 600;
+}
+
+.userEmailInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.userEmailName {
+  font-weight: 600;
+  color: #222;
+  font-size: 12px;
+}
+
+.userEmailAddr {
+  color: #666;
+  font-size: 11px;
+}
+
+.userEmailRoleTag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.roleAdmin {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.roleTeacher {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.roleStudent {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+.specificEmail {
+  color: #0284c7;
+  background: #e0f2fe;
+}
+

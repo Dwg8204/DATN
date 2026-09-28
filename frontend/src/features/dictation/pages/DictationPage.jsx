@@ -64,9 +64,18 @@ export default function DictationPage() {
   const [newItem, setNewItem] = useState({ word: '', pronunciation: '', type: 'noun', topic: DICTATION_TOPICS[0].name, meaning: '', example: '' });
   const textareaRef = useRef(null);
   const availableTopics = [...DICTATION_TOPICS, ...customTopics];
-  const selectedTopic = (mode === 'dictation' ? DICTATION_TOPICS : availableTopics).find((topic) => topic.id === requestedTopic) || null;
+  const selectedTopic = availableTopics.find((topic) => topic.id === requestedTopic) || null;
   const allFlashcards = [...DICTATION_FLASHCARDS, ...customWords];
-  const activeExercises = selectedTopic ? DICTATION_EXERCISES.filter((item) => item.topic === selectedTopic.name) : [];
+  const allExercises = [
+    ...DICTATION_EXERCISES,
+    ...customSentences.map((item) => ({
+      ...item,
+      title: item.word,
+      transcript: item.meaning,
+      accent: item.accent || 'en-GB',
+    })),
+  ];
+  const activeExercises = selectedTopic ? allExercises.filter((item) => item.topic === selectedTopic.name) : [];
   const activeFlashcards = selectedTopic ? allFlashcards.filter((item) => item.topic === selectedTopic.name) : [];
   const exercise = activeExercises[exerciseIndex] || DICTATION_EXERCISES[0];
 
@@ -124,7 +133,7 @@ export default function DictationPage() {
   const [itemsPerPage, setItemsPerPage] = useState(4);
   const notebookItems = notebookTab === 'sentences'
     ? [...DICTATION_EXERCISES.map((item) => ({ ...item, word: item.title, meaning: item.transcript, type: item.topic })), ...customSentences]
-    : [...DICTATION_FLASHCARDS, ...customWords].filter((item) => notebookTab === 'lookup' || savedWords.includes(item.id));
+    : [...DICTATION_FLASHCARDS, ...customWords].filter((item) => savedWords.includes(item.id));
   const filteredNotebookItems = notebookItems.filter((item) => {
     const matchesQuery = `${item.word} ${item.meaning} ${item.example || ''}`.toLowerCase().includes(notebookQuery.toLowerCase());
     const itemTopic = item.topic || 'Other';
@@ -270,7 +279,7 @@ export default function DictationPage() {
     setNotebookPage(1);
     dismissToast();
     setShowCreateForm(false);
-    setNotebookNotice(`${createType === 'word' ? 'Word or phrase' : 'Sentence'} saved to ${item.topic}.`);
+    setNotebookNotice(`${createType === 'word' ? 'Word or phrase added to the Flashcard folder' : 'Sentence added to the Dictation Practice folder'}: ${item.topic}.`);
   };
 
   return (
@@ -287,8 +296,8 @@ export default function DictationPage() {
           </header>
 
           <section className={styles.topicGrid} aria-label={`${mode} topics`}>
-            {(mode === 'dictation' ? DICTATION_TOPICS : availableTopics).map((topic) => {
-              const lessons = DICTATION_EXERCISES.filter((item) => item.topic === topic.name);
+            {availableTopics.map((topic) => {
+              const lessons = allExercises.filter((item) => item.topic === topic.name);
               const cards = allFlashcards.filter((item) => item.topic === topic.name);
               const completedLessons = lessons.filter((item) => progress[item.id]).length;
               const reviewedCards = cards.filter((item) => cardRatings[item.id]).length;
@@ -414,7 +423,7 @@ export default function DictationPage() {
             <div><span>Personal learning space</span><h2>My Vocabulary Notebook</h2></div>
             <div className={styles.notebookHeaderActions}>
               <label className={styles.topicFilter}><FolderOpen size={17} /><AnswerSelect value={notebookTopic} onChange={(event) => { setNotebookTopic(event.target.value); setNotebookPage(1); }} options={['All topics', ...availableTopics.map((topic) => topic.name), 'Other']} ariaLabel="Filter notebook by topic" /></label>
-              <label className={styles.notebookSearch}><Search size={17} /><input value={notebookQuery} onChange={(event) => { setNotebookQuery(event.target.value); setNotebookPage(1); }} placeholder={notebookTab === 'lookup' ? 'Look up a word…' : 'Search saved items…'} /></label>
+              <label className={styles.notebookSearch}><Search size={17} /><input value={notebookQuery} onChange={(event) => { setNotebookQuery(event.target.value); setNotebookPage(1); }} placeholder="Search saved items…" /></label>
               <button className={styles.createButton} onClick={() => openCreateForm()}><Plus size={18} /> Add new</button>
             </div>
           </header>
@@ -422,7 +431,6 @@ export default function DictationPage() {
           <div className={styles.notebookTabs}>
             <button className={notebookTab === 'words' ? styles.activeNotebookTab : ''} onClick={() => { setNotebookTab('words'); setNotebookPage(1); }}>Saved words</button>
             <button className={notebookTab === 'sentences' ? styles.activeNotebookTab : ''} onClick={() => { setNotebookTab('sentences'); setNotebookPage(1); }}>Saved sentences</button>
-            <button className={notebookTab === 'lookup' ? styles.activeNotebookTab : ''} onClick={() => { setNotebookTab('lookup'); setNotebookPage(1); }}>Lookup</button>
           </div>
 
           {notebookNotice && <div className={styles.notebookNotice} role="status"><Check size={17} />{notebookNotice}<button type="button" onClick={() => setNotebookNotice('')} aria-label="Dismiss message"><X size={15} /></button></div>}
@@ -439,14 +447,14 @@ export default function DictationPage() {
                   </div>
                   {notebookTab !== 'sentences' && <button className={`${styles.saveButton} ${savedWords.includes(item.id) ? styles.isSaved : ''}`} onClick={() => toggleSavedWord(item.id)} aria-label="Toggle saved word"><Heart size={20} fill={savedWords.includes(item.id) ? 'currentColor' : 'none'} /></button>}
                 </article>
-              )) : <div className={styles.emptyNotebook}><Search size={34} /><h3>No matching items</h3><p>Try another keyword or save more words from the lookup tab.</p></div>}
+              )) : <div className={styles.emptyNotebook}><Search size={34} /><h3>No matching items</h3><p>Try another keyword or add a new word to your notebook.</p></div>}
 
               <Pagination page={notebookPage} totalItems={filteredNotebookItems.length} pageSize={itemsPerPage} onPageChange={setNotebookPage} onPageSizeChange={setItemsPerPage} />
             </section>
 
             <aside className={styles.notebookStats}>
               <h3>Notebook Stats</h3>
-              <dl><div><dt>Total Words</dt><dd>{savedWords.length}</dd></div><div><dt>Total Sentences</dt><dd>{Object.keys(progress).length}</dd></div><div><dt>Flashcards Reviewed</dt><dd>{Object.keys(cardRatings).length}</dd></div></dl>
+              <dl><div><dt>Total Words</dt><dd>{savedWords.length}</dd></div><div><dt>Total Sentences</dt><dd>{allExercises.length}</dd></div><div><dt>Flashcards Reviewed</dt><dd>{Object.keys(cardRatings).length}</dd></div></dl>
               <div className={styles.statsProgress}><span style={{ width: `${allFlashcards.length ? (Object.keys(cardRatings).length / allFlashcards.length) * 100 : 0}%` }} /></div>
               <button onClick={() => setMode('flashcard')}>Review Flashcards</button>
             </aside>
