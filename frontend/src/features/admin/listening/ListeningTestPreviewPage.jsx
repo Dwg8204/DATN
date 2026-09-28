@@ -74,7 +74,7 @@ export default function ListeningTestPreviewPage() {
     />
     
     <div className={styles.actions}>
-      <button onClick={() => navigate('/admin/tests')}>Back to Test Management</button>
+      <button onClick={() => navigate(`/admin/tests?purpose=${test.purpose ?? 'EXAM'}`)}>Back to Test Management</button>
       <button onClick={() => navigate(`/admin/tests/listening/${test.id}/edit`)}>Edit test</button>
       {test.status !== 'PUBLISHED' && <button className={styles.primaryAction} onClick={requestPublish}>Publish</button>}
     </div>

@@ -5,6 +5,7 @@ const silent = { notifyOnError: false };
 
 function payload(test, includeVersion = false) {
   return {
+    purpose: test.purpose,
     mode: test.mode,
     details: { title: test.details?.title ?? '', pictureUrl: test.details?.pictureUrl ?? '' },
     parts: test.parts ?? {},
@@ -13,18 +14,18 @@ function payload(test, includeVersion = false) {
 }
 
 export const listeningTestsApi = {
-  listAdmin: ({ search, mode, status, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.adminListeningTests.list, {
+  listAdmin: ({ search, mode, purpose, status, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.adminListeningTests.list, {
     ...silent, signal,
-    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), ...(status && status !== 'All' ? { status } : {}), page, pageSize },
+    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), ...(purpose ? { purpose } : {}), ...(status && status !== 'All' ? { status } : {}), page, pageSize },
   }).then(response => response.data),
   getAdmin: (id, signal) => api.get(API_ENDPOINTS.adminListeningTests.detail(id), { ...silent, signal }).then(response => response.data),
   create: test => api.post(API_ENDPOINTS.adminListeningTests.list, payload(test), silent).then(response => response.data),
   update: test => api.put(API_ENDPOINTS.adminListeningTests.detail(test.id), payload(test, true), silent).then(response => response.data),
   publish: test => api.post(API_ENDPOINTS.adminListeningTests.publish(test.id), { version: test.version }, silent).then(response => response.data),
   archive: id => api.delete(API_ENDPOINTS.adminListeningTests.detail(id), silent),
-  listPublished: ({ search, mode, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.listeningTests.list, {
+  listPublished: ({ search, mode, purpose, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.listeningTests.list, {
     ...silent, signal,
-    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), page, pageSize },
+    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), ...(purpose ? { purpose } : {}), page, pageSize },
   }).then(response => response.data),
   getPublished: (id, signal) => api.get(API_ENDPOINTS.listeningTests.detail(id), { ...silent, signal }).then(response => response.data),
   startAttempt: (id, mode) => api.post(API_ENDPOINTS.listeningTests.startAttempt(id), {}, { ...silent, params: { mode } }).then(response => response.data),

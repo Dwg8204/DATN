@@ -1,5 +1,5 @@
 import Pagination from '../components/common/Pagination';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import CommentSection from '../components/shared/CommentSection/CommentSection';
 import styles from './TestListPage.module.css';
@@ -7,17 +7,22 @@ import { GRAMMAR_VOCAB_CONFIG } from '../features/grammar_vocab/config/grammarVo
 import { WRITING_CONFIG } from '../features/writing/config/writingConfig';
 import { grammarTestsApi } from '../features/admin/grammar/services/grammarTestsApi';
 import { writingTestsApi } from '../features/admin/writing/services/writingTestsApi';
+import { listeningTestsApi } from '../features/admin/listening/services/listeningTestsApi';
+import { speakingTestsApi } from '../features/admin/speaking/services/speakingTestsApi';
+import { readingTestsApi } from '../features/admin/reading/services/readingTestsApi';
 import { getApiError } from '../services/apiError';
 import { testAttemptsApi } from '../features/test-attempts/services/testAttemptsApi';
+import { practiceAttemptsApi } from '../features/test-attempts/services/practiceAttemptsApi';
 import { formatDuration } from '../features/test-attempts/utils/attemptTime';
 import useUrlQueryState, { queryParam } from '../hooks/useUrlQueryState';
+import { useTranslation } from 'react-i18next';
 
-const TEST_LIST_QUERY_SCHEMA = {
-  activeTab: { ...queryParam.enum(['part1', 'part2', 'part3', 'part4', 'full'], 'part1'), param: 'part' },
+const testListQuerySchema = purpose => ({
+  activeTab: { ...queryParam.enum(['part1', 'part2', 'part3', 'part4', 'full'], purpose === 'EXAM' ? 'full' : 'part1'), param: 'part' },
   query: { ...queryParam.string(''), param: 'q' },
   page: queryParam.positiveInt(1),
   pageSize: { ...queryParam.positiveInt(() => window.innerWidth <= 700 ? 5 : 10, 100), param: 'size' },
-};
+});
 
 // Fake data for tests
 const MOCK_TESTS = [
@@ -60,10 +65,11 @@ const MOCK_TESTS = [
   }
 ];
 
-export default function TestListPage() {
+export default function TestListPage({ purpose = 'EXAM' }) {
+  const { t } = useTranslation();
   const { skill } = useParams();
   const navigate = useNavigate();
-  const [urlState, setUrlState] = useUrlQueryState(TEST_LIST_QUERY_SCHEMA);
+  const [urlState, setUrlState] = useUrlQueryState(useMemo(() => testListQuerySchema(purpose), [purpose]));
   const { activeTab, page, pageSize, query } = urlState;
   const setActiveTab = value => setUrlState({ activeTab: value, page: 1 });
   const setQuery = value => setUrlState({ query: value, page: 1 });
@@ -71,15 +77,22 @@ export default function TestListPage() {
   const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   const [grammarState, setGrammarState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
   const [writingState, setWritingState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
+  const [listeningState, setListeningState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
+  const [speakingState, setSpeakingState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
+  const [readingState, setReadingState] = useState({ tests: [], totalItems: 0, loading: false, error: '' });
+  useEffect(() => {
+    if (purpose === 'EXAM' && activeTab !== 'full') setUrlState({ activeTab: 'full', page: 1 });
+  }, [activeTab, purpose, setUrlState]);
   useEffect(() => {
     if (skill !== 'grammar-vocab') return undefined;
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
       setGrammarState(current => ({ ...current, loading: true, error: '' }));
-      grammarTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
+      grammarTestsApi.listPublished({ search: query, mode: purpose === 'EXAM' ? 'full' : activeTab, purpose, page, pageSize, signal: controller.signal })
         .then(async result => {
         const ids = (result.data ?? []).map(test => test.id);
-        const history = ids.length ? await testAttemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+        const attemptsApi = purpose === 'PRACTICE' ? practiceAttemptsApi : testAttemptsApi;
+        const history = ids.length ? await attemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
         const latestByTest = new Map();
         for (const attempt of history.data ?? []) {
           if (!latestByTest.has(attempt.testId)) latestByTest.set(attempt.testId, attempt);
@@ -112,17 +125,18 @@ export default function TestListPage() {
         });
     }, query.trim() ? 300 : 0);
     return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [activeTab, page, pageSize, query, skill]);
+  }, [activeTab, page, pageSize, purpose, query, skill]);
 
   useEffect(() => {
     if (skill !== 'writing') return undefined;
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
       setWritingState(current => ({ ...current, loading: true, error: '' }));
-      writingTestsApi.listPublished({ search: query, mode: activeTab, page, pageSize, signal: controller.signal })
+      writingTestsApi.listPublished({ search: query, mode: purpose === 'EXAM' ? 'full' : activeTab, purpose, page, pageSize, signal: controller.signal })
         .then(async result => {
           const ids = (result.data ?? []).map(test => test.id);
-          const states = ids.length ? await testAttemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+          const attemptsApi = purpose === 'PRACTICE' ? practiceAttemptsApi : testAttemptsApi;
+          const states = ids.length ? await attemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
           const latestByTest = new Map((states.data ?? []).map(attempt => [attempt.testId, attempt]));
           setWritingState({
             tests: (result.data ?? []).map(test => {
@@ -153,19 +167,67 @@ export default function TestListPage() {
         });
     }, query.trim() ? 300 : 0);
     return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [activeTab, page, pageSize, query, skill]);
+  }, [activeTab, page, pageSize, purpose, query, skill]);
+
+  useEffect(() => {
+    const catalog = skill === 'listening'
+      ? { api: listeningTestsApi, setState: setListeningState, label: 'Listening' }
+      : skill === 'speaking' ? { api: speakingTestsApi, setState: setSpeakingState, label: 'Speaking' }
+        : skill === 'reading' ? { api: readingTestsApi, setState: setReadingState, label: 'Reading' } : null;
+    if (!catalog) return undefined;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      catalog.setState(current => ({ ...current, loading: true, error: '' }));
+      catalog.api.listPublished({ search: query, mode: purpose === 'EXAM' ? 'full' : activeTab, purpose, page, pageSize, signal: controller.signal })
+        .then(async result => {
+          const rows = result.data ?? result.tests ?? [];
+          const ids = rows.map(test => test.id);
+          const attemptsApi = purpose === 'PRACTICE' ? practiceAttemptsApi : testAttemptsApi;
+          const states = ids.length ? await attemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+          const latest = new Map((states.data ?? []).map(attempt => [attempt.testId, attempt]));
+          catalog.setState({
+            tests: rows.map(test => {
+              const attempt = latest.get(test.id);
+              const completed = attempt?.status === 'SUBMITTED';
+              return { ...test, title: test.title || test.name, desc: `AptiMate ${catalog.label} ${test.section}`,
+                part: test.section, tabId: test.mode, status: completed ? 'Completed' : 'Not Started',
+                attemptId: attempt?.attemptId, submitted: completed && attempt.submittedAt ? new Date(attempt.submittedAt).toLocaleString('vi-VN') : undefined,
+                duration: completed && attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : undefined,
+                accuracy: completed && Number(attempt.maxScore) ? Math.round((Number(attempt.score) / Number(attempt.maxScore)) * 100) : null,
+                apiManaged: true };
+            }),
+            totalItems: result.pagination?.totalItems ?? rows.length, loading: false, error: '',
+          });
+        })
+        .catch(error => {
+          if (error.code !== 'ERR_CANCELED') catalog.setState({ tests: [], totalItems: 0, loading: false,
+            error: getApiError(error, `Unable to load ${catalog.label} tests.`) });
+        });
+    }, query.trim() ? 300 : 0);
+    return () => { window.clearTimeout(timer); controller.abort(); };
+  }, [activeTab, page, pageSize, purpose, query, skill]);
 
   // Helper to get config based on skill
   const getConfig = () => {
     if (skill === 'grammar-vocab') return GRAMMAR_VOCAB_CONFIG;
     if (skill === 'writing') return WRITING_CONFIG;
+    if (skill === 'listening' || skill === 'speaking' || skill === 'reading') return {
+      title: purpose === 'PRACTICE' ? t('practice.title', { skill: t(`nav.${skill}`) }) : `${t(`nav.${skill}`)} ${t('common.tests')}`,
+      tabs: [1, 2, 3, 4].map(number => ({ id: `part${number}`, label: t('common.part', { number }) })).concat({ id: 'full', label: t('common.fullTest') }),
+    };
     // fallback config
     return { tabs: [{ id: 'part1', label: 'Part 1' }] };
   };
 
   const currentConfig = getConfig();
-  const tests = skill === 'writing' ? writingState.tests : skill === 'grammar-vocab' ? grammarState.tests : currentConfig.tests || MOCK_TESTS;
-  const filteredTests = ['grammar-vocab', 'writing'].includes(skill) ? tests : tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
+  const visibleTabs = purpose === 'EXAM'
+    ? [{ id: 'full', label: t('common.fullTest') }]
+    : currentConfig.tabs.map(tab => ({ ...tab, label: tab.id === 'full'
+      ? t('common.fullTest') : t('common.part', { number: tab.id.replace('part', '') }) }));
+  const managedState = skill === 'writing' ? writingState : skill === 'grammar-vocab' ? grammarState
+    : skill === 'listening' ? listeningState : skill === 'speaking' ? speakingState : skill === 'reading' ? readingState : null;
+  const tests = managedState?.tests ?? currentConfig.tests ?? MOCK_TESTS;
+  const filteredTests = managedState ? tests : tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
 
   // Helper to format skill name nicely
   const formatSkillName = (skillStr) => {
@@ -173,20 +235,43 @@ export default function TestListPage() {
     return skillStr.replace(/-/g, ' ').toUpperCase() + ' TEST';
   };
 
-  const title = currentConfig.title || formatSkillName(skill);
+  const skillTranslationKey = skill === 'grammar-vocab' ? 'grammar' : skill;
+  const translatedSkill = skillTranslationKey && t(`nav.${skillTranslationKey}`);
+  const title = translatedSkill
+    ? (purpose === 'PRACTICE' ? t('practice.title', { skill: translatedSkill }) : `${translatedSkill} ${t('common.tests')}`.toUpperCase())
+    : currentConfig.title || formatSkillName(skill);
 
   const handleDoTest = (testId) => {
     // Navigate to the generic introduction page with testId and mode in query params
     navigate(`/${skill}/introduction?testId=${testId}&mode=${activeTab}`);
   };
 
-  const startTest = test => {
-    handleDoTest(test.id);
+  const startTest = async test => {
+    if (purpose === 'EXAM') { handleDoTest(test.id); return; }
+    try {
+      const started = await practiceAttemptsApi.start({ testId: test.id, attemptId: crypto.randomUUID(), mode: test.mode || activeTab });
+      const firstPart = started.scope === 'PART' ? `part${started.partNumber}` : 'part1';
+      navigate(`/${skill}/test/${firstPart}?attemptId=${started.attemptId}&practice=true`);
+    } catch (error) {
+      const message = getApiError(error, 'Unable to start this practice.');
+      if (skill === 'grammar-vocab') setGrammarState(current => ({ ...current, error: message }));
+      else if (skill === 'writing') setWritingState(current => ({ ...current, error: message }));
+      else if (skill === 'listening') setListeningState(current => ({ ...current, error: message }));
+      else if (skill === 'speaking') setSpeakingState(current => ({ ...current, error: message }));
+      else if (skill === 'reading') setReadingState(current => ({ ...current, error: message }));
+    }
   };
 
   const handleReviewTest = (test) => {
-    if (['grammar-vocab', 'writing'].includes(skill) && test.attemptId) {
-      navigate(`/${skill}/result-detail?attemptId=${test.attemptId}`);
+    const apiResultPaths = {
+      'grammar-vocab': '/grammar-vocab/result-detail',
+      writing: '/writing/result-detail',
+      listening: '/listening/detail-result',
+      reading: '/reading/detail-result',
+      speaking: '/speaking/detail-result',
+    };
+    if (apiResultPaths[skill] && test.attemptId) {
+      navigate(`${apiResultPaths[skill]}?attemptId=${test.attemptId}${purpose === 'PRACTICE' ? '&practice=true' : ''}`);
       return;
     }
     const resultDetailPath = currentConfig.resultDetailPath || `/${skill}/result-detail`;
@@ -209,7 +294,7 @@ export default function TestListPage() {
 
       <div className={styles.tabsBox}>
         <div className={styles.tabsLabel}>
-          Choose passage
+          {purpose === 'PRACTICE' ? t('practice.choosePart') : t('common.fullTest')}
           <div className={styles.tabsIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M7 10L12 15L17 10" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -217,7 +302,7 @@ export default function TestListPage() {
           </div>
         </div>
         <div className={styles.tabsContainer}>
-          {currentConfig.tabs.map((tab) => (
+          {visibleTabs.map((tab) => (
             <div
               key={tab.id}
               className={`${styles.tabItem} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
@@ -238,17 +323,17 @@ export default function TestListPage() {
                   <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-                <input type="text" className={styles.searchInput} placeholder="Search by test name." value={query} onChange={e => setQuery(e.target.value)} />
+                <input type="text" className={styles.searchInput} placeholder={t('common.search')} value={query} onChange={e => setQuery(e.target.value)} />
               </div>
             </div>
             <button className={styles.searchBtn}>
-              <span className={styles.searchBtnText}>Search</span>
+              <span className={styles.searchBtnText}>{t('common.search')}</span>
             </button>
           </div>
 
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
-              {(['grammar-vocab', 'writing'].includes(skill) ? filteredTests : filteredTests.slice((page - 1) * pageSize, page * pageSize)).map((test) => (
+              {(managedState ? filteredTests : filteredTests.slice((page - 1) * pageSize, page * pageSize)).map((test) => (
                 <div key={test.id} className={styles.testCard}>
                   <div className={styles.cardTop}>
                     <div className={styles.cardTitle}>{test.title}</div>
@@ -261,17 +346,17 @@ export default function TestListPage() {
                           <div className={styles.cardDesc} style={{ whiteSpace: 'pre-line' }}>{test.desc}</div>
                           <div className={styles.statsList}>
                             <div className={styles.statItem}>
-                              <span className={styles.statLabel}>Submitted:</span>
+                              <span className={styles.statLabel}>{t('common.submitted')}:</span>
                               <span className={styles.statValue}>{test.submitted}</span>
                             </div>
                             <div className={styles.statItem}>
-                              <span className={styles.statLabel}>Duration:</span>
+                              <span className={styles.statLabel}>{t('common.duration')}:</span>
                               <span className={styles.statValue}>{test.duration}</span>
                             </div>
                             <div className={styles.statItem}>
-                              <span className={styles.statLabel}>{skill === 'writing' ? 'Score:' : 'Accuracy:'}</span>
+                              <span className={styles.statLabel}>{skill === 'writing' ? `${t('common.score')}:` : `${t('common.accuracy')}:`}</span>
                               <span className={`${styles.statValue} ${test.accuracy == null ? '' : test.accuracy >= 80 ? styles.statValueSuccess : styles.statValueDanger}`}>
-                                {test.accuracy == null ? 'Awaiting score' : `${test.accuracy}%`}
+                                {test.accuracy == null ? t('common.awaitingScore') : `${test.accuracy}%`}
                               </span>
                             </div>
                           </div>
@@ -287,11 +372,11 @@ export default function TestListPage() {
                   <div className={styles.cardActions}>
                     {test.status === 'Completed' && (
                       <button className={styles.reviewBtn} onClick={() => handleReviewTest(test)}>
-                        <span className={styles.reviewBtnText}>Review</span>
+                        <span className={styles.reviewBtnText}>{t('common.review')}</span>
                       </button>
                     )}
-                    <button className={styles.doTestBtn} onClick={() => startTest(test)}>
-                      <span className={styles.doTestBtnText}>{test.status === 'In Progress' ? 'Continue test' : 'Do the test'}</span>
+                    <button className={styles.doTestBtn} onClick={() => void startTest(test)}>
+                      <span className={styles.doTestBtnText}>{test.status === 'In Progress' ? t('common.continue') : test.status === 'Completed' ? t('common.tryAgain') : t('common.start')}</span>
                     </button>
                   </div>
 
@@ -301,11 +386,11 @@ export default function TestListPage() {
 
                   {test.status === 'Completed' ? (
                     <div className={styles.statusBadgeCompleted}>
-                      <span className={styles.statusBadgeCompletedText}>Completed</span>
+                      <span className={styles.statusBadgeCompletedText}>{t('common.completed')}</span>
                     </div>
                   ) : (
                     <div className={styles.statusBadgeNotStarted}>
-                      <span className={styles.statusBadgeNotStartedText}>{test.status}</span>
+                      <span className={styles.statusBadgeNotStartedText}>{test.status === 'In Progress' ? t('common.inProgress') : t('common.notStarted')}</span>
                     </div>
                   )}
                 </div>
@@ -313,10 +398,9 @@ export default function TestListPage() {
             </div>
           </div>
           
-          {['grammar-vocab', 'writing'].includes(skill) && (skill === 'grammar-vocab' ? grammarState.loading : writingState.loading) && <p>Loading tests…</p>}
-          {skill === 'grammar-vocab' && grammarState.error && <p>{grammarState.error}</p>}
-          {skill === 'writing' && writingState.error && <p>{writingState.error}</p>}
-          <Pagination page={page} totalItems={skill === 'grammar-vocab' ? grammarState.totalItems : skill === 'writing' ? writingState.totalItems : filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          {managedState?.loading && <p>{t('common.loading')}</p>}
+          {managedState?.error && <p>{managedState.error}</p>}
+          <Pagination page={page} totalItems={managedState?.totalItems ?? filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper}>
             <CommentSection />
           </div>

@@ -45,7 +45,7 @@ export default function ListeningTestDetailsPage() {
   return <div className={styles.page}>
     <AdminValidationToast errors={errors} onClose={() => setErrors([])} />
     <AdminConfirmDialog open={confirm} title={test.id ? 'Save changes to this Listening test?' : 'Create Listening test?'} message="The test will be saved and displayed in both Test Management and the Listening test list." confirmLabel={test.id ? 'Save changes' : 'Create test'} onCancel={() => setConfirm(false)} onConfirm={persist} />
-    <AdminBreadcrumb current={test.details.title || 'New Listening test'} />
+    <AdminBreadcrumb current={test.details.title || 'New Listening test'} purpose={test.purpose} />
     <section className={styles.information}>
       <h2>INFORMATION TEST</h2>
       <div className={styles.infoGrid}>

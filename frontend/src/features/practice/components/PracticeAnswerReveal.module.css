@@ -1,0 +1,12 @@
+.reveal { margin: 10px 0 0; }
+.reveal > button { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; padding: 7px 11px; border: 1px solid #d8b4b7; border-radius: 8px; background: #fff; color: #b51620; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.reveal > button span { max-width: 0; overflow: hidden; opacity: 0; white-space: nowrap; transition: max-width .18s ease, opacity .18s ease; }
+.reveal > button:hover span, .reveal > button:focus-visible span, .reveal > button[aria-expanded="true"] span { max-width: 150px; opacity: 1; }
+.reveal > button:hover, .reveal > button:focus-visible { background: #fff1f2; border-color: #da1e21; outline: none; }
+.reveal > button:disabled { cursor: wait; opacity: .65; }
+.reveal svg { width: 17px; height: 17px; }
+.panel { display: grid; gap: 12px; margin-top: 9px; padding: 14px 16px; border: 1px solid #f0c8cb; border-left: 4px solid #da1e21; border-radius: 8px; background: #fff8f8; color: #242424; }
+.panel > div { display: grid; gap: 5px; }
+.panel strong { color: #a81620; font-size: 13px; }
+.panel p { margin: 0; line-height: 1.55; }
+@media (max-width: 700px) { .reveal > button { min-width: 40px; justify-content: center; } .reveal > button span { display: none; } .panel { padding: 12px; } }

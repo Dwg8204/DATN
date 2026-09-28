@@ -2,8 +2,14 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { ListeningTestMode, ListeningTestStatus } from '../types/listening-test.type';
+import { TestPurpose } from '../../../common/tests/test-purpose';
 
 export class ListListeningTestsQueryDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsIn(['EXAM', 'PRACTICE'])
+  purpose?: TestPurpose;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

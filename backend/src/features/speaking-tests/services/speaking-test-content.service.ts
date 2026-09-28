@@ -2,18 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { CreateSpeakingTestDto } from '../dto/save-speaking-test.dto';
 import { SpeakingTestAggregate } from '../types/speaking-test.type';
+import { defaultTestPurpose } from '../../../common/tests/test-purpose';
 
 @Injectable()
 export class SpeakingTestContentService {
   normalize(dto: CreateSpeakingTestDto): SpeakingTestAggregate {
     return {
       mode: dto.mode,
+      purpose: dto.purpose ?? defaultTestPurpose(dto.mode),
       details: { title: dto.details?.title?.trim() || 'Untitled Speaking Test', pictureUrl: dto.details?.pictureUrl },
       parts: dto.parts || {},
     };
   }
 
   assertDraftShape(aggregate: SpeakingTestAggregate): void {
+    if (aggregate.purpose === 'EXAM' && aggregate.mode !== 'full') {
+      throw new ApplicationError('SPEAKING_EXAM_SCOPE_INVALID', 'Exam tests must contain the full skill.', 400);
+    }
     if (!aggregate.details?.title?.trim()) {
       throw new ApplicationError('VALIDATION_FAILED', 'Title is required for draft', 400);
     }
@@ -30,6 +35,7 @@ export class SpeakingTestContentService {
       }
       p1.questions.forEach((q, idx) => {
         if (!q.text?.trim()) throw new ApplicationError('VALIDATION_FAILED', `Part 1 Question ${idx + 1} text is required`, 400);
+        this.assertGuidance(q.sampleAnswer, q.explanation, `Part 1 Question ${idx + 1}`);
       });
     }
 
@@ -41,6 +47,7 @@ export class SpeakingTestContentService {
       }
       p2.questions.forEach((q, idx) => {
         if (!q.text?.trim()) throw new ApplicationError('VALIDATION_FAILED', `Part 2 Question ${idx + 1} text is required`, 400);
+        this.assertGuidance(q.sampleAnswer, q.explanation, `Part 2 Question ${idx + 1}`);
       });
     }
 
@@ -52,6 +59,7 @@ export class SpeakingTestContentService {
       }
       p3.questions.forEach((q, idx) => {
         if (!q.text?.trim()) throw new ApplicationError('VALIDATION_FAILED', `Part 3 Question ${idx + 1} text is required`, 400);
+        this.assertGuidance(q.sampleAnswer, q.explanation, `Part 3 Question ${idx + 1}`);
       });
     }
 
@@ -65,11 +73,29 @@ export class SpeakingTestContentService {
       p4.questions.forEach((q, idx) => {
         if (!q.text?.trim()) throw new ApplicationError('VALIDATION_FAILED', `Part 4 Question ${idx + 1} text is required`, 400);
       });
+      this.assertGuidance(p4.sampleAnswer, p4.explanation, 'Part 4');
     }
   }
 
   learnerSafe(aggregate: SpeakingTestAggregate): SpeakingTestAggregate {
-    // Speaking questions do not contain answers, so we can return it as-is.
-    return aggregate;
+    const clone = structuredClone(aggregate);
+    for (const number of [1, 2, 3] as const) {
+      const part = clone.parts[number];
+      if (part) part.questions = part.questions.map(question => ({ ...question, sampleAnswer: undefined, explanation: undefined }));
+    }
+    if (clone.parts[4]) {
+      clone.parts[4].sampleAnswer = undefined;
+      clone.parts[4].explanation = undefined;
+    }
+    return clone;
+  }
+
+  private assertGuidance(sampleAnswer: string | undefined, explanation: string | undefined, label: string): void {
+    if ((sampleAnswer?.length ?? 0) > 10_000) {
+      throw new ApplicationError('VALIDATION_FAILED', `${label} sample answer is too long`, 400);
+    }
+    if ((explanation?.length ?? 0) > 5_000) {
+      throw new ApplicationError('VALIDATION_FAILED', `${label} explanation is too long`, 400);
+    }
   }
 }

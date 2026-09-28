@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { plainRichText, richTextWordCount, sanitizeRichText } from '../../../common/content/rich-text';
+import { defaultTestPurpose } from '../../../common/tests/test-purpose';
 import {
   GrammarCover,
   GrammarQuestion,
@@ -12,7 +13,7 @@ const LETTERS = 'ABCDEFGHIJ'.split('');
 
 @Injectable()
 export class GrammarTestContentService {
-  normalize(input: Pick<GrammarTestAggregate, 'mode' | 'details' | 'parts'>): GrammarTestAggregate {
+  normalize(input: Pick<GrammarTestAggregate, 'mode' | 'details' | 'parts'> & Partial<Pick<GrammarTestAggregate, 'purpose'>>): GrammarTestAggregate {
     const mode = input.mode;
     const parts: GrammarTestAggregate['parts'] = {};
     if (mode === 'part1' || mode === 'full') parts[1] = this.normalizePart1(input.parts?.[1]);
@@ -21,6 +22,7 @@ export class GrammarTestContentService {
     const cover = this.normalizeCover(input.details?.cover, input.details?.pictureUrl);
     return {
       mode,
+      purpose: input.purpose ?? defaultTestPurpose(mode),
       details: { title, pictureUrl: cover?.url ?? '', cover },
       parts,
     };
@@ -28,6 +30,7 @@ export class GrammarTestContentService {
 
   assertDraftShape(test: GrammarTestAggregate): void {
     if (!['part1', 'part2', 'full'].includes(test.mode)) this.invalid('Select a valid test mode.');
+    if (test.purpose === 'EXAM' && test.mode !== 'full') this.invalid('Exam tests must contain the full skill.');
     if (test.details.title.length > 120) this.invalid('Test title cannot exceed 120 characters.');
     if (test.mode === 'part1' || test.mode === 'full') {
       if (test.parts[1]?.questions.length !== 25) this.invalid('Part 1 must contain exactly 25 questions.');

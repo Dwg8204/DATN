@@ -1,6 +1,6 @@
-import { MoreVertical } from 'lucide-react';
+import { ChevronDown, MoreVertical } from 'lucide-react';
 import { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ADMIN_LOGOUT_ITEM, ADMIN_NAVIGATION } from '../config/adminNavigation';
 import styles from './AdminLayout.module.css';
 import { useAuth } from '../../../context/AuthContext';
@@ -22,6 +22,32 @@ function NavigationAction({ item, disabled, onClick }) {
       <Icon aria-hidden="true" /><span>{disabled ? 'Signing out...' : item.label}</span>
     </button>
   );
+}
+
+function NavigationGroup({ item, collapsed }) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const sectionActive = location.pathname.startsWith('/admin/tests');
+  const [open, setOpen] = useState(sectionActive);
+  const purpose = new URLSearchParams(location.search).get('purpose') || 'EXAM';
+  const Icon = item.icon;
+
+  if (collapsed) return <NavigationItem item={item} />;
+
+  return <div className={styles.navGroup}>
+    <button type="button" className={`${styles.navItem} ${styles.navGroupButton} ${sectionActive ? styles.navItemActive : ''}`}
+      aria-expanded={open} onClick={() => setOpen(value => !value)}>
+      <Icon aria-hidden="true" /><span>{item.label}</span><ChevronDown className={open ? styles.chevronOpen : ''} aria-hidden="true" />
+    </button>
+    {open && <div className={styles.navSubmenu}>
+      {item.children.map(child => {
+        const childPurpose = new URL(child.to, window.location.origin).searchParams.get('purpose');
+        const active = sectionActive && purpose === childPurpose;
+        return <button type="button" key={child.to} className={active ? styles.navSubmenuActive : ''}
+          onClick={() => navigate(child.to)}>{child.label}</button>;
+      })}
+    </div>}
+  </div>;
 }
 
 export default function AdminSidebar({ collapsed }) {
@@ -48,7 +74,9 @@ export default function AdminSidebar({ collapsed }) {
       <Link className={`${styles.brand} adminHomeBrand`} to="/" aria-label="Back to AptiMate home"><img src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png" alt="AptiMate" /></Link>
       <div className={styles.account}><div className={styles.avatar}>{initials}</div><div><strong title={displayName}>{displayName}</strong><span title={user?.email}>{user?.email}</span></div><MoreVertical /></div>
       <nav className={styles.navigation} aria-label="Admin navigation">
-        {visibleNavigation.map((item) => <NavigationItem item={item} key={item.to} />)}
+        {visibleNavigation.map((item) => item.children
+          ? <NavigationGroup item={item} collapsed={collapsed} key={item.to} />
+          : <NavigationItem item={item} key={item.to} />)}
       </nav>
       <NavigationAction item={ADMIN_LOGOUT_ITEM} disabled={signingOut} onClick={handleLogout} />
     </aside>

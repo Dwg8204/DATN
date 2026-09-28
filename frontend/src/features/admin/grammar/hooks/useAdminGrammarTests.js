@@ -8,7 +8,7 @@ function displayStatus(status) {
   return status === 'PUBLISHED' ? 'Published' : status === 'DRAFT' ? 'Draft' : 'Archived';
 }
 
-export default function useAdminGrammarTests({ enabled, search, mode, status, page, pageSize }) {
+export default function useAdminGrammarTests({ enabled, search, mode, purpose, status, page, pageSize }) {
   const [revision, setRevision] = useState(0);
   const [state, setState] = useState({ data: [], pagination: EMPTY, loading: false, error: '' });
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function useAdminGrammarTests({ enabled, search, mode, status, pa
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
       setState(current => ({ ...current, loading: true, error: '' }));
-      grammarTestsApi.listAdmin({ search, mode, status, page, pageSize, signal: controller.signal })
+      grammarTestsApi.listAdmin({ search, mode, purpose, status, page, pageSize, signal: controller.signal })
         .then(result => setState({
           data: (result.data ?? []).map(test => ({ ...test, status: displayStatus(test.status), details: true })),
           pagination: result.pagination ?? { ...EMPTY, page, pageSize },
@@ -28,7 +28,6 @@ export default function useAdminGrammarTests({ enabled, search, mode, status, pa
         });
     }, search?.trim() ? 300 : 0);
     return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [enabled, mode, page, pageSize, revision, search, status]);
+  }, [enabled, mode, page, pageSize, purpose, revision, search, status]);
   return { ...state, reload: () => setRevision(value => value + 1) };
 }
-

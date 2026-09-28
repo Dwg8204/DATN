@@ -66,7 +66,7 @@ export default function GrammarTestDetailsPage() {
 
   return <div className={styles.page}>
     <AdminConfirmDialog open={confirm} title={test.id ? 'Save changes to this test?' : 'Create this test?'} message={test.id ? 'Your changes will replace the saved Grammar & Vocabulary test.' : 'The test will be saved and displayed in the Grammar & Vocabulary test list.'} confirmLabel={test.id ? 'Save changes' : 'Create test'} onCancel={() => setConfirm(false)} onConfirm={persist} />
-    <AdminBreadcrumb current={test.details.title || 'New test'} />
+    <AdminBreadcrumb current={test.details.title || 'New test'} purpose={test.purpose} />
     <section className={styles.information} inert={busy ? '' : undefined} aria-busy={busy}>
       <h2>INFORMATION TEST</h2>
       <div className={styles.infoGrid}>

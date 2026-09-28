@@ -15,6 +15,7 @@ type TestRow = {
   id: string;
   created_by: string;
   title: string;
+  purpose: ListeningTestAggregate['purpose'];
   scope: 'PART' | 'FULL_SKILL';
   part_number: number | null;
   cover: { pictureUrl?: string } | null;
@@ -54,6 +55,10 @@ export class ListeningTestsRepository {
   async list(query: ListListeningTestsQueryDto, actor?: ListeningActor): Promise<{ tests: ListeningTestSummary[]; total: number }> {
     const values: unknown[] = ['LISTENING'];
     const where = ['t.component = $1'];
+    if (query.purpose) {
+      values.push(query.purpose);
+      where.push(`t.purpose = $${values.length}`);
+    }
     if (actor?.role === 'TEACHER') {
       values.push(actor.id);
       where.push(`t.created_by = $${values.length}`);
@@ -90,7 +95,7 @@ export class ListeningTestsRepository {
     const rows = await this.dataSource.query(
       `
       SELECT
-        t.id, t.title, t.scope, t.part_number, t.status, t.cover, t.version,
+        t.id, t.title, t.purpose, t.scope, t.part_number, t.status, t.cover, t.version,
         t.created_at, t.updated_at, t.created_by,
         u.first_name, u.last_name,
         (SELECT count(*) FROM test_attempts a WHERE a.component = 'LISTENING' AND (a.snapshot_id = t.published_snapshot_id OR (a.scope = t.scope AND a.part_number = t.part_number))) as attempts_count
@@ -111,6 +116,7 @@ export class ListeningTestsRepository {
           title: row.title,
           name: row.title,
           mode: mode as ListeningTestMode,
+          purpose: row.purpose,
           section: mode === 'full' ? 'Full Test' : `Part ${row.part_number}`,
           component: 'Listening',
           status: row.status,
@@ -130,7 +136,7 @@ export class ListeningTestsRepository {
   }
 
   async listPublished(query: ListListeningTestsQueryDto): Promise<{ tests: ListeningTestSummary[]; total: number }> {
-    return this.list({ ...query, status: 'PUBLISHED' });
+    return this.list({ ...query, purpose: query.purpose ?? 'EXAM', status: 'PUBLISHED' });
   }
 
   async findAggregate(id: string): Promise<ListeningTestAggregate | null> {
@@ -174,9 +180,9 @@ export class ListeningTestsRepository {
 
     await this.dataSource.transaction(async manager => {
       await manager.query(
-        `INSERT INTO tests (id, created_by, title, component, scope, part_number, cover, part_contents, version, status, updated_by)
-         VALUES ($1, $2, $3, 'LISTENING', $4, $5, $6, $7, 1, 'DRAFT', $2)`,
-        [id, actor.id, aggregate.details.title, scope, partNumber, cover, contents],
+        `INSERT INTO tests (id, created_by, title, component, purpose, scope, part_number, cover, part_contents, version, status, updated_by)
+         VALUES ($1, $2, $3, 'LISTENING', $4, $5, $6, $7, $8, 1, 'DRAFT', $2)`,
+        [id, actor.id, aggregate.details.title, aggregate.purpose, scope, partNumber, cover, contents],
       );
       await this.syncQuestions(manager, id, aggregate);
       await this.audit(manager, actor.id, 'CREATE_LISTENING_TEST', id, aggregate, audit);
@@ -276,6 +282,7 @@ export class ListeningTestsRepository {
     const aggregate: ListeningTestAggregate = {
       id: test.id,
       mode: mode as ListeningTestMode,
+      purpose: test.purpose,
       details: { title: test.title, pictureUrl: test.cover?.pictureUrl },
       parts: {},
       status: test.status,

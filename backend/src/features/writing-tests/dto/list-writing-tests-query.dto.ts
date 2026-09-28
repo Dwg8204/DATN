@@ -1,8 +1,13 @@
 import { IsIn, IsOptional, IsString, MaxLength } from 'class-validator';
 import { PaginationQueryDto } from '../../../common/pagination/pagination.dto';
 import { WritingTestMode, WritingTestStatus } from '../types/writing-test.type';
+import { TestPurpose } from '../../../common/tests/test-purpose';
 
 export class ListWritingTestsQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @IsIn(['EXAM', 'PRACTICE'])
+  purpose?: TestPurpose;
+
   @IsOptional()
   @IsString()
   @MaxLength(120)

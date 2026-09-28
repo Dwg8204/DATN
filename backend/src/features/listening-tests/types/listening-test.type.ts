@@ -1,4 +1,5 @@
 import { RoleCode } from '../../auth/types/auth-user.type';
+import { TestPurpose } from '../../../common/tests/test-purpose';
 
 export type ListeningTestMode = 'part1' | 'part2' | 'part3' | 'part4' | 'full';
 export type ListeningTestStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
@@ -47,6 +48,7 @@ export type ListeningPart4 = {
 export type ListeningTestAggregate = {
   id?: string;
   mode: ListeningTestMode;
+  purpose: TestPurpose;
   details: { title: string; pictureUrl?: string };
   parts: {
     1?: ListeningPart1;
@@ -65,6 +67,7 @@ export type ListeningTestSummary = {
   title: string;
   name: string;
   mode: ListeningTestMode;
+  purpose: TestPurpose;
   section: string;
   component: 'Listening';
   status: ListeningTestStatus;

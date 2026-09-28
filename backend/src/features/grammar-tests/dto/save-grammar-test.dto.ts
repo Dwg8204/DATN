@@ -1,7 +1,12 @@
-import { IsIn, IsInt, IsObject, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsObject, IsOptional, Max, Min } from 'class-validator';
+import { TestPurpose } from '../../../common/tests/test-purpose';
 import { GrammarTestAggregate, GrammarTestMode } from '../types/grammar-test.type';
 
 export class CreateGrammarTestDto {
+  @IsOptional()
+  @IsIn(['EXAM', 'PRACTICE'])
+  purpose?: TestPurpose;
+
   @IsIn(['part1', 'part2', 'full'])
   mode!: GrammarTestMode;
 

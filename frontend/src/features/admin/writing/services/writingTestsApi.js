@@ -5,6 +5,7 @@ const silent = { notifyOnError: false };
 
 function payload(test, includeVersion = false) {
   return {
+    purpose: test.purpose,
     mode: test.mode,
     details: { title: test.details?.title ?? '', pictureUrl: test.details?.pictureUrl ?? '' },
     parts: test.parts ?? {},
@@ -13,18 +14,18 @@ function payload(test, includeVersion = false) {
 }
 
 export const writingTestsApi = {
-  listAdmin: ({ search, mode, status, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.adminWritingTests.list, {
+  listAdmin: ({ search, mode, purpose, status, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.adminWritingTests.list, {
     ...silent, signal,
-    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), ...(status && status !== 'All' ? { status } : {}), page, pageSize },
+    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), ...(purpose ? { purpose } : {}), ...(status && status !== 'All' ? { status } : {}), page, pageSize },
   }).then(response => response.data),
   getAdmin: (id, signal) => api.get(API_ENDPOINTS.adminWritingTests.detail(id), { ...silent, signal }).then(response => response.data),
   create: test => api.post(API_ENDPOINTS.adminWritingTests.list, payload(test), silent).then(response => response.data),
   update: test => api.put(API_ENDPOINTS.adminWritingTests.detail(test.id), payload(test, true), silent).then(response => response.data),
   publish: id => api.post(API_ENDPOINTS.adminWritingTests.publish(id), undefined, silent).then(response => response.data),
   archive: id => api.delete(API_ENDPOINTS.adminWritingTests.detail(id), silent),
-  listPublished: ({ search, mode, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.writingTests.list, {
+  listPublished: ({ search, mode, purpose, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.writingTests.list, {
     ...silent, signal,
-    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), page, pageSize },
+    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), ...(purpose ? { purpose } : {}), page, pageSize },
   }).then(response => response.data),
   getPublished: (id, signal) => api.get(API_ENDPOINTS.writingTests.detail(id), { ...silent, signal }).then(response => response.data),
   uploadCover: file => {

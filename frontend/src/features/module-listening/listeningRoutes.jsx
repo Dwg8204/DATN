@@ -1,7 +1,7 @@
 import React from 'react';
 import ListeningOverviewPage from './pages/ListeningOverviewPage';
 import ListeningFeedPage from './pages/ListeningFeedPage';
-import ListeningTestListPage from './pages/ListeningTestListPage';
+import TestListPage from '../../pages/TestListPage';
 import TestLayout from '../../components/layout/TestLayout';
 import RoleGuard from '../auth/components/RoleGuard';
 import ListeningAttemptLayout from './components/ListeningAttemptLayout';
@@ -23,7 +23,7 @@ export const listeningMainRoutes = [
   },
   {
     path: 'listening/tests',
-    element: <ListeningTestListPage />,
+    element: <TestListPage purpose="EXAM" />,
   },
   {
     path: 'listening/result',

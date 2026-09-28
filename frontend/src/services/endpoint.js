@@ -59,9 +59,26 @@ export const API_ENDPOINTS = {
     history: '/test-attempts/history',
     states: '/test-attempts/states',
   },
+  practiceAttempts: {
+    list: '/practice-attempts',
+    detail: (id) => `/practice-attempts/${id}`,
+    reveal: (id) => `/practice-attempts/${id}/reveal`,
+    complete: (id) => `/practice-attempts/${id}/complete`,
+    abandon: (id) => `/practice-attempts/${id}/abandon`,
+    result: (id) => `/practice-attempts/${id}/result`,
+    partResult: (id, partNumber) => `/practice-attempts/${id}/result/parts/${partNumber}`,
+    history: '/practice-attempts/history',
+    states: '/practice-attempts/states',
+  },
   adminMedia: {
     testCovers: '/admin/media/test-covers',
     audio: '/admin/media/audio',
+  },
+  attemptMedia: {
+    audio: '/media/attempt-audio',
+  },
+  dictionary: {
+    lookup: (word) => `/dictionary/${encodeURIComponent(word)}`,
   },
   practiceExam: {
     list: '/practice-exams',

@@ -29,7 +29,7 @@ export default function GrammarTestPreviewPage() {
   return <div className={styles.page}>
     <AdminToast message={location.state?.toast} onClose={() => navigate(location.pathname, { replace: true, state: {} })} />
     <header>
-      <button onClick={() => navigate('/admin/tests')}><ArrowLeft />Back</button>
+      <button onClick={() => navigate(`/admin/tests?purpose=${test.purpose ?? 'EXAM'}`)}><ArrowLeft />Back</button>
       <div><span>GRAMMAR & VOCABULARY PREVIEW</span><h1>{test.details.title}</h1><p>{modeLabel}</p></div>
       <button className={styles.edit} onClick={() => navigate(`/admin/tests/grammar/${test.id}/edit`)}><Edit3 />Edit test</button>
     </header>

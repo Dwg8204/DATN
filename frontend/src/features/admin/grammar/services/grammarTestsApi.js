@@ -5,6 +5,7 @@ const silent = { notifyOnError: false };
 
 function payload(test, includeVersion = false) {
   return {
+    purpose: test.purpose,
     mode: test.mode,
     details: {
       title: test.details?.title ?? '',
@@ -17,12 +18,13 @@ function payload(test, includeVersion = false) {
 }
 
 export const grammarTestsApi = {
-  listAdmin: ({ search, mode, status, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.adminGrammarTests.list, {
+  listAdmin: ({ search, mode, purpose, status, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.adminGrammarTests.list, {
     ...silent,
     signal,
     params: {
       ...(search?.trim() ? { search: search.trim() } : {}),
       ...(mode ? { mode } : {}),
+      ...(purpose ? { purpose } : {}),
       ...(status && status !== 'All' ? { status } : {}),
       page,
       pageSize,
@@ -33,10 +35,10 @@ export const grammarTestsApi = {
   update: test => api.put(API_ENDPOINTS.adminGrammarTests.detail(test.id), payload(test, true), silent).then(response => response.data),
   publish: id => api.post(API_ENDPOINTS.adminGrammarTests.publish(id), undefined, silent).then(response => response.data),
   archive: id => api.delete(API_ENDPOINTS.adminGrammarTests.detail(id), silent),
-  listPublished: ({ search, mode, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.grammarTests.list, {
+  listPublished: ({ search, mode, purpose, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.grammarTests.list, {
     ...silent,
     signal,
-    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), page, pageSize },
+    params: { ...(search?.trim() ? { search: search.trim() } : {}), ...(mode ? { mode } : {}), ...(purpose ? { purpose } : {}), page, pageSize },
   }).then(response => response.data),
   getPublished: (id, signal) => api.get(API_ENDPOINTS.grammarTests.detail(id), { ...silent, signal }).then(response => response.data),
 };
