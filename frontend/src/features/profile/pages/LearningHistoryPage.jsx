@@ -20,6 +20,7 @@ const HISTORY_QUERY_SCHEMA = {
   sortOrder: { ...queryParam.enum(['desc', 'asc'], 'desc'), param: 'sort' },
   appliedSearch: { ...queryParam.string(''), param: 'q' },
   page: queryParam.positiveInt(1),
+  browserPage: queryParam.positiveInt(1),
   pageSize: { ...queryParam.positiveInt(() => window.innerWidth <= 700 ? 5 : 10, 100), param: 'size' },
 };
 
@@ -84,15 +85,16 @@ export default function LearningHistoryPage() {
   const { t, i18n } = useTranslation();
   const [history] = useState(() => getHistoryEntries());
   const [urlState, setUrlState] = useUrlQueryState(HISTORY_QUERY_SCHEMA);
-  const { page, pageSize, sortOrder, skillFilter, partFilter, appliedSearch, purpose } = urlState;
-  const [browserPage, setBrowserPage] = useState(1);
+  const { page, browserPage, pageSize, sortOrder, skillFilter, partFilter, appliedSearch, purpose } = urlState;
   const [searchDraft, setSearchDraft] = useState({ source: appliedSearch, value: appliedSearch });
   const searchInput = searchDraft.source === appliedSearch ? searchDraft.value : appliedSearch;
   const setSearchInput = value => setSearchDraft({ source: appliedSearch, value });
   const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setBrowserPage = next => setUrlState(current => ({
+    browserPage: typeof next === 'function' ? next(current.browserPage) : next,
+  }));
   const setPageSize = next => {
-    setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
-    setBrowserPage(1);
+    setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1, browserPage: 1 }));
   };
   const navigate = useNavigate();
   const [remote, setRemote] = useState({ requestKey: null, entries: [], total: 0, error: '' });
@@ -123,23 +125,19 @@ export default function LearningHistoryPage() {
     setUrlState({ sortOrder: e.target.value, page: 1 });
   };
   const handlePurposeChange = nextPurpose => {
-    setUrlState({ purpose: nextPurpose, partFilter: 'all', page: 1 });
-    setBrowserPage(1);
+    setUrlState({ purpose: nextPurpose, partFilter: 'all', page: 1, browserPage: 1 });
   };
   const handleSkillChange = (skill) => {
-    setUrlState({ skillFilter: skill, partFilter: 'all', appliedSearch: '', page: 1 });
-    setBrowserPage(1);
+    setUrlState({ skillFilter: skill, partFilter: 'all', appliedSearch: '', page: 1, browserPage: 1 });
     setSearchInput('');
   };
   const handlePartChange = (part) => {
-    setUrlState({ partFilter: part, appliedSearch: '', page: 1 });
-    setBrowserPage(1);
+    setUrlState({ partFilter: part, appliedSearch: '', page: 1, browserPage: 1 });
     setSearchInput('');
   };
 
   const handleSearch = () => {
-    setUrlState({ appliedSearch: searchInput, page: 1 });
-    setBrowserPage(1);
+    setUrlState({ appliedSearch: searchInput, page: 1, browserPage: 1 });
   };
 
   const handleKeyDown = (e) => {
@@ -275,7 +273,7 @@ export default function LearningHistoryPage() {
             <p>{t('history.legacyResults')}</p>
             <HistoryCards entries={browserEntries} navigate={navigate} t={t} locale={i18n.language === 'vi' ? 'vi-VN' : 'en-US'} />
             <Pagination page={browserPage} totalItems={localFilteredHistory.length} pageSize={pageSize}
-              onPageChange={setBrowserPage} />
+              onPageChange={setBrowserPage} onPageSizeChange={setPageSize} />
           </section>}
         </div>
       </div>
