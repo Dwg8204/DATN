@@ -105,10 +105,10 @@ export class TestAttemptsRepository {
 
   async complete(manager: EntityManager, attemptId: string, result: AssessmentResult, submittedAt?: Date, estimatedCefr?: string | null): Promise<LockedAttemptRow> {
     const rows = await manager.query<LockedAttemptRow[]>(
-      `UPDATE test_attempts SET status='SUBMITTED',grading_status=$2,
-       result=$3::jsonb,score=$4,max_score=$5,result_source=$6,
+      `UPDATE test_attempts SET status='SUBMITTED',grading_status=$2::grading_status,
+       result=$3::jsonb,score=$4,max_score=$5,result_source=$6::result_source,
        submitted_at=COALESCE($7::timestamptz,clock_timestamp()),
-       completed_at=CASE WHEN $2 IN ('COMPLETED','NOT_STARTED') THEN clock_timestamp() ELSE NULL END,
+       completed_at=CASE WHEN $2::grading_status IN ('COMPLETED','NOT_STARTED') THEN clock_timestamp() ELSE NULL END,
        estimated_cefr=$8,
        updated_at=clock_timestamp()
        WHERE id=$1 RETURNING *`,
