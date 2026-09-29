@@ -29,12 +29,14 @@
 .explanation { padding: 14px 18px; border-left: 4px solid #43b75d; background: #f4faf5; font-size: 15px; line-height: 24px; }
 .questionCard > .explanation { margin-left: 44px; }
 .matchingList { display: flex; flex-direction: column; gap: 20px; }
-.matchingItem { padding: 20px 24px; border: 1px solid #c8c8c8; border-radius: 10px; display: flex; flex-direction: column; gap: 10px; background: #FFFBF5; }
-.matchingRow { display: grid; grid-template-columns: minmax(100px, auto) minmax(230px, 1fr) 84px; align-items: center; gap: 16px; }
+.matchingItem { width: min(900px, 100%); padding: 20px 24px; border: 1px solid #c8c8c8; border-radius: 10px; display: flex; flex-direction: column; gap: 10px; background: #FFFBF5; box-sizing: border-box; }
+.matchingRow { display: grid; grid-template-columns: minmax(160px, .7fr) minmax(260px, 1.3fr) auto; align-items: center; gap: 16px; }
 .matchingCol { display: flex; flex-direction: column; gap: 12px; }
 .matchingColHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .targetWord { font-size: 16px; font-weight: 700; }
-.answerColumn { display: flex; flex-direction: column; gap: 8px; }
+.answerColumn { width: min(620px, 100%); display: flex; flex-direction: column; gap: 8px; }
+.answerEntry { display: grid; grid-template-columns: 100px minmax(0, 1fr); align-items: center; gap: 10px; }
+.answerEntry small { color: #666; font-size: 12px; font-weight: 700; }
 .answerField { min-height: 40px; padding: 8px 14px; border: 1px solid #000; border-radius: 4px; display: flex; align-items: center; font-weight: 600; overflow-wrap: anywhere; }
 .correctField { min-height: 40px; padding: 8px 14px; border: 1px solid #43b75d; border-radius: 4px; display: flex; align-items: center; background: #edf9f0; color: #237d36; font-weight: 600; overflow-wrap: anywhere; }
 .wrongField { border-color: #da1e21; background: #fff0f1; color: #b0182d; }
@@ -45,7 +47,7 @@
 .timeText { font-size: 16px; font-weight: 500; }
 .speedText { font-size: 16px; font-weight: 500; }
 @media (max-width: 1000px) { .content { padding-inline: 32px; } .contentRow { flex-direction: column; } }
-@media (max-width: 700px) { .content { padding: 24px 16px 40px; } .questionHeading { grid-template-columns: 32px 1fr; } .questionHeading .statusBadge { grid-column: 2; width: fit-content; } .optionsList { padding-left: 0; } .optionRow { min-height: 38px; padding: 7px 9px; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 13px; line-height: 20px; } .optionRow small { grid-column: 3; justify-self: end; margin-left: 0; width: auto; max-width: 100%; padding: 2px 7px; font-size: 9px; line-height: 16px; } .questionCard > .explainButton, .questionCard > .explanation { margin-left: 0; } .matchingRow { grid-template-columns: 1fr; } }
+@media (max-width: 700px) { .content { padding: 24px 16px 40px; } .questionHeading { grid-template-columns: 32px 1fr; } .questionHeading .statusBadge { grid-column: 2; width: fit-content; } .optionsList { padding-left: 0; } .optionRow { min-height: 38px; padding: 7px 9px; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 13px; line-height: 20px; } .optionRow small { grid-column: 3; justify-self: end; margin-left: 0; width: auto; max-width: 100%; padding: 2px 7px; font-size: 9px; line-height: 16px; } .questionCard > .explainButton, .questionCard > .explanation { margin-left: 0; } .matchingRow { grid-template-columns: 1fr; } .answerEntry { grid-template-columns: 1fr; gap: 4px; } }
 .optionRow > span { min-width: 0; overflow-wrap: anywhere; }
 .qaBox, .scriptBox { min-width: 0; overflow-wrap: anywhere; }
 @media (max-width: 700px) { .contentRow { flex-direction: column; } .scriptBox { min-height: 0; padding: 16px; } .questionCard { padding: 16px; } .partTabs { flex-wrap: wrap; gap: 8px; } .partTabs button { padding: 8px 12px; } }

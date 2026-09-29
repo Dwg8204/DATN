@@ -48,12 +48,19 @@ function Part2Review({ wordSet, itemMap }) {
       const selected = wordSet.options.find(option => option.id === item?.selectedAnswer?.optionId);
       const correct = wordSet.options.find(option => option.id === item?.correctAnswer);
       return <article className={styles.matchingItem} key={target.key}>
-        <div className={styles.matchingRow}>
-          <span className={styles.targetWord}>{target.word} =</span>
-          <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? `${selected.id}. ${selected.text}` : 'No answer'}</div>
+        <div className={styles.matchingPrompt}>
+          <span className={styles.targetWord}>{target.word}</span>
           <StatusBadge outcome={item?.outcome?.outcome} />
         </div>
-        {status !== 'correct' && correct && <div className={styles.correctField}>{correct.id}. {correct.text}</div>}
+        <div className={styles.answerComparison}>
+          <div className={styles.answerLine}>
+            <span>Your answer</span>
+            <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? `${selected.id}. ${selected.text}` : 'No answer'}</div>
+          </div>
+          {correct && <div className={styles.answerLine}>
+            <span>Correct answer</span><div className={styles.correctField}>{correct.id}. {correct.text}</div>
+          </div>}
+        </div>
         <AnswerExplanation text={item?.explanation} />
       </article>;
     })}</div>
@@ -109,7 +116,9 @@ export default function GrammarVocabResultDetailPage() {
 
   return <div className={styles.page}>
     <main className={styles.content}>
-      <AttemptScoreSummary score={summary.data?.score} maxScore={summary.data?.maxScore} title="Final score" subtitle="Grammar & Vocabulary" />
+      <div className={styles.scoreWrap}>
+        <AttemptScoreSummary score={summary.data?.score} maxScore={summary.data?.maxScore} title="Final score" subtitle="Grammar & Vocabulary" />
+      </div>
       {availableParts.length > 1 && <div className={styles.partTabs}>{availableParts.map(part => <button key={part} className={activePart === part ? styles.activeTab : ''} onClick={() => changePart(part)}>Part {part} · {part === 1 ? 'Grammar' : 'Vocabulary'}</button>)}</div>}
       <div className={styles.sectionHeader}>
         <strong>{isPart1 ? `Questions ${startIndex + 1}-${Math.min(startIndex + PART1_ITEMS_PER_PAGE, questions.length)}` : `Questions ${currentPage * 5 + 21}-${currentPage * 5 + 25}`}</strong>
