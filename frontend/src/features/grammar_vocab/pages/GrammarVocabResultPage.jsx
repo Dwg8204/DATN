@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AttemptPageState } from '../../test-attempts/components/AttemptPageState';
 import { useAttemptResult } from '../../test-attempts/hooks/useAttemptResult';
 import { formatDuration } from '../../test-attempts/utils/attemptTime';
+import { displaySelectedAnswer } from '../../test-attempts/utils/answerDisplay';
 import styles from './GrammarVocabResultPage.module.css';
 
 function AnswerStatusIcon({ status }) {
@@ -30,7 +31,8 @@ export default function GrammarVocabResultPage() {
     const maximum = Number(data.maxScore ?? 0);
     const percentage = maximum ? Math.round((score / maximum) * 100) : 0;
     const items = (data.result.items ?? []).map((item, index) => ({
-      ...item, number: index + 1, status: statusName(item.outcome), answer: item.outcome === 'SKIPPED' ? null : 'Answered',
+      ...item, number: index + 1, status: statusName(item.outcome),
+      answer: displaySelectedAnswer(item.selectedAnswer),
     }));
     const groups = (data.result.parts ?? []).map(part => ({
       label: part.partNumber === 1 ? 'Grammar' : 'Vocabulary',

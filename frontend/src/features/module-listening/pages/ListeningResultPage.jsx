@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AttemptPageState } from '../../test-attempts/components/AttemptPageState';
 import { useAttemptResult } from '../../test-attempts/hooks/useAttemptResult';
 import { formatDuration } from '../../test-attempts/utils/attemptTime';
+import { displaySelectedAnswer } from '../../test-attempts/utils/answerDisplay';
 import styles from './ListeningResultPage.module.css';
 
 function AnswerStatusIcon({ status }) {
@@ -61,7 +62,7 @@ export default function ListeningResultPage() {
       ...item,
       number: currentGlobalIdx++,
       status: item.outcome === 'CORRECT' ? 'correct' : item.outcome === 'INCORRECT' ? 'wrong' : 'skipped',
-      answer: item.outcome === 'SKIPPED' ? null : 'Answered',
+      answer: displaySelectedAnswer(item.selectedAnswer),
     }));
 
     return { score, maximum, percentage, parts, items, counts: data.result.counts,
