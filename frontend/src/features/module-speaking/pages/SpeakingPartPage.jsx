@@ -12,6 +12,7 @@ import styles from './SpeakingPartPage.module.css';
 import { useToast } from '../../../context/ToastContext.jsx';
 import { attemptMediaApi } from '../../test-attempts/services/attemptMediaApi.js';
 import { getApiError } from '../../../services/apiError.js';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState.js';
 
 const RECORD_SECONDS = { 1: 30, 2: 45, 3: 45, 4: 120 };
 const TITLES = {
@@ -20,6 +21,7 @@ const TITLES = {
   3: 'Compare two pictures and explain your opinion',
   4: 'Speak on a given topic',
 };
+const QUESTION_QUERY_SCHEMA = { question: queryParam.positiveInt(1) };
 
 export default function SpeakingPartPage({ partNumber }) {
   const navigate = useNavigate();
@@ -27,7 +29,7 @@ export default function SpeakingPartPage({ partNumber }) {
   const [searchParams] = useSearchParams();
   const { attemptId, paper, answers, loading, loadError, saveStatus, isPractice,
     setAnswer, flush, submit, approveNavigation } = useTestAttempt();
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [urlState, setUrlState] = useUrlQueryState(QUESTION_QUERY_SCHEMA);
   const [recording, setRecording] = useState(false);
   const [finished, setFinished] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(RECORD_SECONDS[partNumber]);
@@ -43,6 +45,12 @@ export default function SpeakingPartPage({ partNumber }) {
     if (partNumber === 4) return [{ key: part.responseKey, text: part.topic, prompts: part.questions }];
     return part.questions ?? [];
   }, [part, partNumber]);
+  const currentIndex = Math.min(Math.max(0, urlState.question - 1), Math.max(0, questions.length - 1));
+  const setCurrentIndex = next => setUrlState(currentState => {
+    const currentValue = Math.min(Math.max(0, currentState.question - 1), Math.max(0, questions.length - 1));
+    const index = typeof next === 'function' ? next(currentValue) : next;
+    return { question: Math.min(Math.max(0, index), Math.max(0, questions.length - 1)) + 1 };
+  });
   const current = questions[currentIndex];
   const isFull = paper?.mode === 'full';
 
@@ -122,6 +130,7 @@ export default function SpeakingPartPage({ partNumber }) {
     await flush();
     const params = new URLSearchParams(searchParams);
     params.set('attemptId', attemptId);
+    params.set('question', '1');
     navigate(`/speaking/test/part${partNumber + 1}?${params.toString()}`);
   };
   const primaryAction = () => {

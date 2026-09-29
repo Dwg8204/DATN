@@ -9,18 +9,24 @@ import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal
 import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
 import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
 import styles from './Part1GrammarPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const ITEMS_PER_PAGE = 3;
+const PAGE_QUERY_SCHEMA = { currentPage: { ...queryParam.positiveInt(1), param: 'page' } };
 
 export default function Part1GrammarPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [urlState, setUrlState] = useUrlQueryState(PAGE_QUERY_SCHEMA);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const questions = useMemo(() => paper?.parts?.['1']?.questions ?? [], [paper]);
   const isFullTest = paper?.mode === 'full';
   const totalPages = Math.max(1, Math.ceil(questions.length / ITEMS_PER_PAGE));
+  const currentPage = Math.min(urlState.currentPage, totalPages);
+  const setCurrentPage = next => setUrlState({
+    currentPage: typeof next === 'function' ? next(currentPage) : next,
+  });
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const currentQuestions = questions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
   const footerQuestions = useMemo(() => questions.map((question, index) => ({
@@ -35,6 +41,7 @@ export default function Part1GrammarPage() {
     const params = new URLSearchParams(searchParams);
     params.set('attemptId', attemptId);
     params.set('isFull', 'true');
+    params.set('page', '1');
     navigate(`/grammar-vocab/test/part2?${params.toString()}`);
   };
 

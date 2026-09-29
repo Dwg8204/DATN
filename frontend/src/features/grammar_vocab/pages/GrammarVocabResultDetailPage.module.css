@@ -1,17 +1,19 @@
 .page { min-height: calc(100vh - 72px); display: flex; flex-direction: column; background: #fff; color: #000; }
 .content { flex: 1; padding: 32px 72px 48px; display: flex; flex-direction: column; gap: 32px; }
-.partTabs { display: flex; gap: 12px; }
+.scoreWrap { width: min(1120px, 100%); margin-inline: auto; }
+.scoreWrap > section { width: 100%; }
+.partTabs { width: min(1120px, 100%); margin-inline: auto; display: flex; gap: 12px; }
 .partTabs button { padding: 10px 20px; border: 1px solid #868686; border-radius: 8px; background: #fff; cursor: pointer; font-weight: 700; }
 .partTabs .activeTab { border-color: var(--button-primary); background: var(--button-primary); color: #fff; }
-.sectionHeader { display: flex; flex-direction: column; gap: 4px; font-size: 16px; line-height: 28px; }
+.sectionHeader { width: min(1120px, 100%); margin-inline: auto; display: flex; flex-direction: column; gap: 4px; font-size: 16px; line-height: 28px; }
 .sectionHeader strong { font-size: 18px; line-height: 32px; }
-.part1List { display: flex; flex-direction: column; gap: 24px; }
-.questionCard { position: relative; padding: 20px 24px; border: 1px solid #c8c8c8; border-radius: 10px; display: flex; flex-direction: column; gap: 16px; }
+.part1List { width: min(1120px, 100%); margin-inline: auto; display: flex; flex-direction: column; gap: 24px; }
+.questionCard { position: relative; box-sizing: border-box; padding: 20px 24px; border: 1px solid #c8c8c8; border-radius: 10px; display: flex; flex-direction: column; gap: 16px; }
 .questionHeading { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; align-items: start; gap: 12px; }
 .questionHeading p { margin: 0; font-size: 16px; line-height: 28px; }
 .questionNumber { width: 30px; height: 30px; display: grid; place-items: center; border: 2px solid #0095ff; border-radius: 5px; background: #e6f4ff; font-weight: 700; }
-.part1Options { display: flex; flex-direction: column; gap: 8px; padding-left: 44px; }
-.optionRow { min-height: 40px; padding: 6px 12px; display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 12px; border: 1px solid transparent; border-radius: 6px; }
+.part1Options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding-left: 44px; }
+.optionRow { min-height: 40px; padding: 6px 12px; display: grid; grid-template-columns: 28px minmax(0, 1fr); align-items: center; gap: 12px; border: 1px solid #b8b8b8; border-radius: 6px; background: #fff; }
 .optionLetter { font-weight: 700; }
 .optionRow small { padding: 3px 9px; border-radius: 999px; background: rgba(0,0,0,.06); line-height: 18px; white-space: nowrap; }
 .correctOption { border-color: #43b75d; background: #edf9f0; }
@@ -24,19 +26,22 @@
 .questionCard > .explainButton { margin-left: 44px; }
 .explanation { padding: 14px 18px; border-left: 4px solid #43b75d; background: #f4faf5; font-size: 15px; line-height: 24px; }
 .questionCard > .explanation { margin-left: 44px; }
-.part2Layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 44%); gap: 64px; align-items: start; }
+.part2Layout { width: min(1120px, 100%); margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 32%); gap: 32px; align-items: start; }
 .matchingList { display: flex; flex-direction: column; gap: 20px; }
-.matchingItem { display: flex; flex-direction: column; gap: 10px; }
-.matchingRow { display: grid; grid-template-columns: 100px minmax(230px, 1fr) 84px 100px; align-items: center; gap: 16px; }
-.targetWord { font-size: 16px; }
-.answerField { min-height: 40px; padding: 8px 14px; border: 1px solid #000; border-radius: 4px; }
-.correctField { border-color: #43b75d; background: #edf9f0; }
+.matchingItem { display: flex; flex-direction: column; gap: 14px; padding: 18px 20px; border: 1px solid #dedede; border-radius: 10px; background: #fff; }
+.matchingPrompt { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.targetWord { font-size: 17px; font-weight: 700; overflow-wrap: anywhere; }
+.answerComparison { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; }
+.answerLine { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.answerLine > span { width: 112px; color: #666; font-size: 13px; font-weight: 700; }
+.answerField, .correctField { width: fit-content; max-width: 100%; min-height: 0; padding: 4px 11px; border: 1px solid #868686; border-radius: 999px; box-sizing: border-box; line-height: 20px; overflow-wrap: anywhere; }
+.correctField { border-color: #43b75d; background: #edf9f0; color: #237d36; }
 .wrongField { border-color: #da1e21; background: #fff0f1; }
 .skippedField { border-color: #868686; color: #686868; }
-.optionBank { padding: 20px 32px; border: 1px solid #000; display: flex; flex-direction: column; gap: 10px; }
+.optionBank { position: sticky; top: 92px; align-self: start; padding: 20px 32px; border: 1px solid #000; display: flex; flex-direction: column; gap: 10px; }
 .optionBank h2 { margin: 0 0 8px; text-align: center; font-size: 18px; }
 .optionBank > div { display: grid; grid-template-columns: 28px 1fr; gap: 24px; font-size: 16px; line-height: 26px; }
-@media (max-width: 1000px) { .content { padding-inline: 32px; } .part2Layout { grid-template-columns: 1fr; gap: 32px; } }
+@media (max-width: 1000px) { .content { padding-inline: 32px; } .part2Layout { grid-template-columns: 1fr; gap: 32px; } .optionBank { position: static; } }
 @media (max-width: 700px) {
   .content { padding: 22px 14px 32px; gap: 24px; }
   .partTabs { width: 100%; gap: 8px; }
@@ -49,7 +54,7 @@
   .questionHeading p { font-size: 14px; line-height: 21px; overflow-wrap: anywhere; }
   .questionNumber { width: 26px; height: 26px; box-sizing: border-box; font-size: 13px; }
   .questionHeading .statusBadge { grid-column: 3; width: fit-content; min-width: 58px; }
-  .part1Options { padding-left: 0; gap: 6px; }
+  .part1Options { grid-template-columns: 1fr; padding-left: 0; gap: 6px; }
   .optionRow { min-height: 38px; padding: 7px 9px; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; font-size: 13px; line-height: 20px; }
   .optionRow small { grid-column: 3; justify-self: end; width: auto; max-width: 100%; padding: 2px 7px; font-size: 9px; line-height: 16px; }
   .statusBadge { min-width: 72px; padding: 3px 9px; font-size: 11px; }
@@ -58,13 +63,13 @@
   .explanation { padding: 12px 13px; font-size: 12px; line-height: 19px; overflow-wrap: anywhere; }
   .part2Layout { gap: 22px; }
   .matchingList { gap: 16px; }
-  .matchingRow { grid-template-columns: 76px minmax(0, 1fr); gap: 8px; }
+  .matchingPrompt { align-items: flex-start; }
   .targetWord, .answerField { font-size: 13px; line-height: 20px; }
-  .answerField { min-width: 0; min-height: 38px; padding: 8px 10px; box-sizing: border-box; overflow-wrap: anywhere; }
-  .matchingRow .statusBadge, .matchingRow .explainButton { grid-column: 2; }
+  .answerField, .correctField { min-width: 0; padding: 4px 9px; box-sizing: border-box; overflow-wrap: anywhere; }
+  .answerLine { align-items: flex-start; gap: 5px 8px; }
+  .answerLine > span { width: 100%; }
   .optionBank { padding: 16px; gap: 8px; }
   .optionBank h2 { font-size: 16px; }
   .optionBank > div { grid-template-columns: 22px minmax(0, 1fr); gap: 10px; font-size: 13px; line-height: 20px; }
 }
-.matchingItem > .correctField { margin-top: 10px; padding: 10px 12px; border: 1px solid #43b75d; border-radius: 6px; overflow-wrap: anywhere; }
 .optionRow > span { min-width: 0; overflow-wrap: anywhere; }

@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import AnswerExplanation from '../../../components/common/AnswerExplanation';
 import RichTextContent from '../../../components/common/RichTextContent';
 import AudioPlayer from '../../../components/shared/AudioPlayer/AudioPlayer';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -46,7 +45,7 @@ function Part1Review({ questions, itemMap }) {
 function Part2Review({ speakers, options, itemMap }) {
   return <div className={styles.contentRow}>
     <div className={styles.qaBox} style={{ flex: 1 }}>
-      <div className={styles.matchingList}>{speakers.map((speaker, index) => {
+      <div className={styles.matchingList}>{speakers.map(speaker => {
         const item = itemMap.get(speaker.key);
         const status = statusName(item?.outcome?.outcome);
         const selected = options.find(option => option.id === item?.selectedAnswer?.optionId);
@@ -55,8 +54,8 @@ function Part2Review({ speakers, options, itemMap }) {
           <div className={styles.matchingRow}>
             <span className={styles.targetWord}>{speaker.name} =</span>
             <div className={styles.answerColumn}>
-              <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? selected.text : 'No answer'}</div>
-              {status !== 'correct' && correct && <div className={styles.correctField}><strong>{correct.text}</strong></div>}
+              <div className={styles.answerEntry}><small>Your answer</small><div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? selected.text : 'No answer'}</div></div>
+              {status !== 'correct' && correct && <div className={styles.answerEntry}><small>Correct answer</small><div className={styles.correctField}><strong>{correct.text}</strong></div></div>}
             </div>
             <StatusBadge outcome={item?.outcome?.outcome} />
           </div>
@@ -81,8 +80,8 @@ function Part3Review({ statements, options, itemMap }) {
               <StatusBadge outcome={item?.outcome?.outcome} />
             </div>
             <div className={styles.answerColumn}>
-              <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? selected.text : 'No answer'}</div>
-              {status !== 'correct' && correct && <div className={styles.correctField}><strong>{correct.text}</strong></div>}
+              <div className={styles.answerEntry}><small>Your answer</small><div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? selected.text : 'No answer'}</div></div>
+              {status !== 'correct' && correct && <div className={styles.answerEntry}><small>Correct answer</small><div className={styles.correctField}><strong>{correct.text}</strong></div></div>}
             </div>
           </div>
         </article>;

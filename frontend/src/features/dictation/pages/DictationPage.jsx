@@ -9,6 +9,10 @@ import { useToast } from '../../../context/ToastContext';
 import styles from './DictationPage.module.css';
 
 const normalize = (value) => value.toLowerCase().replace(/[^a-z0-9'\s]/g, '').replace(/\s+/g, ' ').trim();
+const positiveQueryInt = (value, fallback, maximum = 100) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isInteger(parsed) && parsed > 0 && parsed <= maximum ? parsed : fallback;
+};
 
 function compareAnswer(answer, transcript) {
   const typedWords = normalize(answer).split(' ').filter(Boolean);
@@ -24,6 +28,15 @@ export default function DictationPage() {
   const requestedMode = searchParams.get('mode');
   const mode = ['flashcard', 'notebook'].includes(requestedMode) ? requestedMode : 'dictation';
   const requestedTopic = searchParams.get('topic');
+  const notebookPage = positiveQueryInt(searchParams.get('page'), 1, Number.MAX_SAFE_INTEGER);
+  const itemsPerPage = positiveQueryInt(searchParams.get('size'), 4);
+  const setNotebookPagination = patch => setSearchParams(current => {
+    const next = new URLSearchParams(current);
+    Object.entries(patch).forEach(([key, value]) => next.set(key, String(value)));
+    return next;
+  }, { replace: true });
+  const setNotebookPage = page => setNotebookPagination({ page });
+  const setItemsPerPage = size => setNotebookPagination({ size, page: 1 });
   const setMode = (nextMode) => setSearchParams(nextMode === 'dictation' ? {} : { mode: nextMode });
   const [exerciseIndex, setExerciseIndex] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -40,7 +53,6 @@ export default function DictationPage() {
   const [notebookTab, setNotebookTab] = useState('words');
   const [notebookQuery, setNotebookQuery] = useState('');
   const [notebookTopic, setNotebookTopic] = useState('All topics');
-  const [notebookPage, setNotebookPage] = useState(1);
   const [savedWords, setSavedWords] = useState(() => {
     try {
       const stored = JSON.parse(window.localStorage.getItem('aptimate.dictation.savedWords') || 'null');
@@ -130,7 +142,6 @@ export default function DictationPage() {
 
   const currentProgress = progress[exercise.id];
   const currentCard = activeFlashcards[cardIndex] || DICTATION_FLASHCARDS[0];
-  const [itemsPerPage, setItemsPerPage] = useState(4);
   const notebookItems = notebookTab === 'sentences'
     ? [...DICTATION_EXERCISES.map((item) => ({ ...item, word: item.title, meaning: item.transcript, type: item.topic })), ...customSentences]
     : [...DICTATION_FLASHCARDS, ...customWords].filter((item) => savedWords.includes(item.id));
@@ -140,7 +151,8 @@ export default function DictationPage() {
     return matchesQuery && (notebookTopic === 'All topics' || itemTopic === notebookTopic);
   });
   const notebookPageCount = Math.max(1, Math.ceil(filteredNotebookItems.length / itemsPerPage));
-  const visibleNotebookItems = filteredNotebookItems.slice((notebookPage - 1) * itemsPerPage, notebookPage * itemsPerPage);
+  const currentNotebookPage = Math.min(notebookPage, notebookPageCount);
+  const visibleNotebookItems = filteredNotebookItems.slice((currentNotebookPage - 1) * itemsPerPage, currentNotebookPage * itemsPerPage);
 
   const rateCard = (rating) => {
     const nextRatings = { ...cardRatings, [currentCard.id]: rating };
@@ -449,7 +461,7 @@ export default function DictationPage() {
                 </article>
               )) : <div className={styles.emptyNotebook}><Search size={34} /><h3>No matching items</h3><p>Try another keyword or add a new word to your notebook.</p></div>}
 
-              <Pagination page={notebookPage} totalItems={filteredNotebookItems.length} pageSize={itemsPerPage} onPageChange={setNotebookPage} onPageSizeChange={setItemsPerPage} />
+              <Pagination page={currentNotebookPage} totalItems={filteredNotebookItems.length} pageSize={itemsPerPage} onPageChange={setNotebookPage} onPageSizeChange={setItemsPerPage} />
             </section>
 
             <aside className={styles.notebookStats}>

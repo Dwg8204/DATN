@@ -67,7 +67,15 @@ export type ProgressRow = {
 };
 export type SavedProgressRow = Pick<ProgressRow, 'revision' | 'saved_at' | 'progress'>;
 
-export type ItemOutcome = { key: string; partNumber: number; outcome: 'CORRECT' | 'INCORRECT' | 'SKIPPED' | 'PENDING'; score: number; maxScore: number };
+export type ItemOutcome = {
+  key: string;
+  partNumber: number;
+  outcome: 'CORRECT' | 'INCORRECT' | 'SKIPPED' | 'PENDING';
+  score: number;
+  maxScore: number;
+  /** Response-only field. Answers remain canonical in attempt_progress.answers. */
+  selectedAnswer?: Answer | null;
+};
 export type AssessmentResult = {
   schemaVersion: 1;
   method: 'OBJECTIVE' | 'PENDING_AI' | 'UNASSESSED';

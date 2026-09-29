@@ -114,6 +114,29 @@ describe('shared test attempt regressions', () => {
     expect(repository.progress).not.toHaveBeenCalled();
   });
 
+  it('includes the learner choice in an objective result response without changing the stored result', async () => {
+    const storedResult = {
+      schemaVersion: 1, method: 'OBJECTIVE', score: 0, maxScore: 2,
+      counts: { correct: 0, incorrect: 1, skipped: 0 },
+      parts: [{ partNumber: 1, score: 0, maxScore: 2 }],
+      items: [{ key: 'p1:q1', partNumber: 1, outcome: 'INCORRECT', score: 0, maxScore: 2 }],
+    };
+    const repository = {
+      findSummary: jest.fn(async () => ({
+        id: 'attempt-result', test_id: 'test-1', component: 'GRAMMAR_VOCAB', purpose: 'EXAM',
+        scope: 'FULL_SKILL', part_number: null, status: 'SUBMITTED', grading_status: 'COMPLETED',
+        assessment_revision: 0, result: storedResult, score: '0', max_score: '2', estimated_cefr: 'A1',
+        started_at: new Date(), submitted_at: new Date(), completed_at: new Date(), expires_at: null,
+      })),
+      progress: jest.fn(async () => ({ answers: { 'p1:q1': { kind: 'CHOICE', optionId: 'o2' } } })),
+    };
+
+    const response = await service(repository).result('attempt-result', actor);
+
+    expect(response.result?.items[0]).toMatchObject({ selectedAnswer: { kind: 'CHOICE', optionId: 'o2' } });
+    expect(storedResult.items[0]).not.toHaveProperty('selectedAnswer');
+  });
+
   it('seals an expired attempt even when the client revision is stale', async () => {
     const expiredAt = new Date('2026-01-01T10:00:00.000Z');
     const serverTime = new Date('2026-01-01T10:00:01.000Z');

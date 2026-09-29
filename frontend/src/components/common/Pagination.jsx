@@ -13,17 +13,12 @@ export default function Pagination({ page, totalItems, pageSize, onPageChange, o
 
   useEffect(() => setTarget(String(current)), [current]);
   useEffect(() => setSize(String(pageSize)), [pageSize]);
-  useEffect(() => {
-    if (current !== page) onPageChange(current);
-  }, [current, page, onPageChange]);
-
   const validPage = isValidPageInput(target, total);
   const validSize = isValidPageInput(size, MAX_PAGE_SIZE);
   const changeSize = event => {
     event.preventDefault();
     if (!validSize) return;
     onPageSizeChange(Number(size));
-    onPageChange(1);
   };
   const goToPage = event => {
     event.preventDefault();

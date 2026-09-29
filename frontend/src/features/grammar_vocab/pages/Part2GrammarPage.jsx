@@ -9,16 +9,22 @@ import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal
 import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
 import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
 import styles from './Part2GrammarPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const SETS_PER_PAGE = 2;
+const PAGE_QUERY_SCHEMA = { currentPage: { ...queryParam.positiveInt(1), param: 'page' } };
 
 export default function Part2GrammarPage() {
   const navigate = useNavigate();
   const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, submit, approveNavigation } = useTestAttempt();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [urlState, setUrlState] = useUrlQueryState(PAGE_QUERY_SCHEMA);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const sets = useMemo(() => paper?.parts?.['2']?.sets ?? [], [paper]);
   const totalPages = Math.max(1, Math.ceil(sets.length / SETS_PER_PAGE));
+  const currentPage = Math.min(urlState.currentPage, totalPages);
+  const setCurrentPage = next => setUrlState({
+    currentPage: typeof next === 'function' ? next(currentPage) : next,
+  });
   const startIndex = (currentPage - 1) * SETS_PER_PAGE;
   const currentSets = sets.slice(startIndex, startIndex + SETS_PER_PAGE);
   const allQuestions = useMemo(() => sets.flatMap(set => set.targetWords).map((target, index) => ({

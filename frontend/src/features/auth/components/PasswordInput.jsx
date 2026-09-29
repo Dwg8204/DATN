@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styles from '../pages/Auth.module.css';
 
 export default function PasswordInput({ className = '', ...inputProps }) {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
 
   return (
@@ -15,7 +17,7 @@ export default function PasswordInput({ className = '', ...inputProps }) {
         type="button"
         className={styles.passwordToggle}
         onClick={() => setIsVisible((visible) => !visible)}
-        aria-label={isVisible ? 'Hide password' : 'Show password'}
+        aria-label={isVisible ? t('auth.hidePassword') : t('auth.showPassword')}
         aria-pressed={isVisible}
       >
         {isVisible ? (
