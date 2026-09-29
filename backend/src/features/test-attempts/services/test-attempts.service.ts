@@ -8,9 +8,10 @@ import { ObjectiveGraderService } from '../assessments/objective-grader.service'
 import { isLegacyListeningResult, legacyListeningAnswers, normalizeLegacyListeningResult } from '../assessments/legacy-listening.adapter';
 import { AttemptHistoryQueryDto, SaveProgressDto, SubmitAttemptDto } from '../dto/attempt.dto';
 import { TestAttemptsRepository } from '../repositories/test-attempts.repository';
-import { AssessmentPaper, AttemptRow, LockedAttemptRow, ProgressRow, SkillComponent } from '../types/attempt.type';
+import { AssessmentPaper, AssessmentResult, AttemptRow, LockedAttemptRow, ProgressRow, SkillComponent } from '../types/attempt.type';
 import { examDurationMinutes } from '../policies/exam-time.policy';
 import { estimateCefr } from '../policies/exam-cefr.policy';
+import { presentAssessmentResult } from '../assessments/result-presentation';
 
 const COMPONENTS: SkillComponent[] = ['GRAMMAR_VOCAB', 'READING', 'LISTENING', 'WRITING', 'SPEAKING'];
 
@@ -107,7 +108,7 @@ export class TestAttemptsService {
       const progress = await this.repository.progress(attemptId, manager, true);
       const attempt = await this.repository.lockAttempt(attemptId, actor.id, manager);
       if (!progress || !attempt) this.notFound();
-      if (attempt.status === 'SUBMITTED') return this.resultSummary(attempt);
+      if (attempt.status === 'SUBMITTED') return this.resultSummary(attempt, progress.answers);
       if (attempt.status !== 'IN_PROGRESS' || progress.sealed_at) this.conflict('This test has already been submitted.');
       if (attempt.snapshot_id !== metadata.snapshot_id) this.conflict('This test changed while submitting.');
       const serverTime = await this.repository.serverTime(manager);
@@ -124,14 +125,15 @@ export class TestAttemptsService {
       const submittedAt = expired ? attempt.expires_at ?? serverTime : serverTime;
       const completed = await this.repository.complete(manager, attemptId, result, submittedAt,
         this.estimatedCefr(metadata.component, result.score, result.maxScore));
-      return this.resultSummary(completed);
+      return this.resultSummary(completed, answers);
     });
   }
 
   async result(attemptId: string, actor: AuthUser) {
     const attempt = await this.ownedSummary(attemptId, actor);
     if (attempt.status !== 'SUBMITTED') throw new ApplicationError('ATTEMPT_NOT_SUBMITTED', 'Submit this test before viewing its result.', 409);
-    return this.resultSummary(attempt);
+    const progress = await this.repository.progress(attemptId);
+    return this.resultSummary(attempt, progress?.answers);
   }
 
   async details(attemptId: string, partNumber: number, actor: AuthUser) {
@@ -249,7 +251,7 @@ export class TestAttemptsService {
         ({ key, partNumber, kind, optionIds, ...(maxCharacters ? { maxCharacters } : {}) })) };
   }
 
-  private resultSummary(attempt: LockedAttemptRow) {
+  private resultSummary(attempt: LockedAttemptRow, answers?: ProgressRow['answers']) {
     const result = attempt.component === 'LISTENING' && isLegacyListeningResult(attempt.result)
       ? normalizeLegacyListeningResult(attempt.result) : attempt.result;
     return { attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null, component: attempt.component,
@@ -258,7 +260,8 @@ export class TestAttemptsService {
       status: attempt.status, gradingStatus: attempt.grading_status,
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
-      estimatedCefr: attempt.estimated_cefr, result, submittedAt: attempt.submitted_at,
+      estimatedCefr: attempt.estimated_cefr,
+      result: presentAssessmentResult(result as AssessmentResult | null, answers), submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: attempt.expires_at,
       submittedAfterExpiry: !!attempt.expires_at && !!attempt.submitted_at &&
         new Date(attempt.submitted_at).getTime() >= new Date(attempt.expires_at).getTime() };

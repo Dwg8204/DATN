@@ -92,6 +92,7 @@ describe('PracticeAttemptsService', () => {
     }, actor);
 
     expect(completed).toMatchObject({ purpose: 'PRACTICE', status: 'SUBMITTED', estimatedCefr: null });
+    expect(completed.result?.items[0]).toMatchObject({ selectedAnswer: { kind: 'CHOICE', optionId: 'o1' } });
     expect(manager.query).toHaveBeenCalledWith(expect.stringContaining('INSERT INTO attempt_progress'),
       expect.arrayContaining([attemptId]));
     expect(repository.complete.mock.calls[0][2]).toMatchObject({ assistance: { revealedKeys: ['p1:q1'] } });

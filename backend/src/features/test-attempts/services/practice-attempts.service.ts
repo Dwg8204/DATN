@@ -4,11 +4,12 @@ import { paginate } from '../../../common/pagination/pagination.dto';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { AssessmentPaperFactory } from '../assessments/assessment-paper.factory';
 import { applyAnswerChanges } from '../assessments/answer-policy';
+import { presentAssessmentResult } from '../assessments/result-presentation';
 import { ObjectiveGraderService } from '../assessments/objective-grader.service';
 import { AttemptHistoryQueryDto } from '../dto/attempt.dto';
 import { CompletePracticeAttemptDto, StartPracticeAttemptDto } from '../dto/practice-attempt.dto';
 import { TestAttemptsRepository } from '../repositories/test-attempts.repository';
-import { AssessmentPaper, AssessmentResult, AttemptRow, LockedAttemptRow, SkillComponent } from '../types/attempt.type';
+import { Answers, AssessmentPaper, AssessmentResult, AttemptRow, LockedAttemptRow, SkillComponent } from '../types/attempt.type';
 
 const COMPONENTS: SkillComponent[] = ['GRAMMAR_VOCAB', 'READING', 'LISTENING', 'WRITING', 'SPEAKING'];
 
@@ -101,7 +102,10 @@ export class PracticeAttemptsService {
       const attempt = await this.repository.lockAttempt(attemptId, actor.id, manager);
       if (!attempt) this.notFound();
       if (attempt.purpose !== 'PRACTICE') this.conflict('This attempt belongs to the exam flow.');
-      if (attempt.status === 'SUBMITTED') return this.summary(attempt);
+      if (attempt.status === 'SUBMITTED') {
+        const progress = await this.repository.progress(attemptId, manager);
+        return this.summary(attempt, progress?.answers);
+      }
       if (attempt.status !== 'IN_PROGRESS') this.conflict('This practice attempt is no longer active.');
       const graded = this.grader.grade(paper.items, answers);
       const result: AssessmentResult = {
@@ -115,7 +119,7 @@ export class PracticeAttemptsService {
         [attemptId, JSON.stringify(answers)],
       );
       const completed = await this.repository.complete(manager, attemptId, result, undefined, null);
-      return this.summary(completed);
+      return this.summary(completed, answers);
     });
   }
 
@@ -139,7 +143,8 @@ export class PracticeAttemptsService {
     if (attempt.status !== 'SUBMITTED') {
       throw new ApplicationError('PRACTICE_NOT_COMPLETED', 'Complete this practice test before viewing its result.', 409);
     }
-    return this.summary(attempt);
+    const progress = await this.repository.progress(attemptId);
+    return this.summary(attempt, progress?.answers);
   }
 
   async details(attemptId: string, partNumber: number, actor: AuthUser) {
@@ -200,14 +205,16 @@ export class PracticeAttemptsService {
         ({ key, partNumber, kind, optionIds, ...(maxCharacters ? { maxCharacters } : {}) })) };
   }
 
-  private summary(attempt: LockedAttemptRow) {
+  private summary(attempt: LockedAttemptRow, answers?: Answers) {
     return {
       attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null,
       purpose: 'PRACTICE', component: attempt.component, scope: attempt.scope, partNumber: attempt.part_number,
       status: attempt.status, gradingStatus: attempt.grading_status,
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
-      estimatedCefr: null, result: attempt.result, submittedAt: attempt.submitted_at,
+      estimatedCefr: null,
+      result: attempt.result ? presentAssessmentResult(this.assessmentResult(attempt.result), answers) : null,
+      submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: null,
     };
   }

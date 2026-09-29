@@ -1,4 +1,4 @@
-import { Answers, AssessmentResult } from '../types/attempt.type';
+import { Answers, AssessmentResult, ItemOutcome } from '../types/attempt.type';
 
 type LegacyItem = {
   userAnswer?: string | number | null;
@@ -21,9 +21,13 @@ export function normalizeLegacyListeningResult(result: LegacyResult): Assessment
   const items = Object.entries(result.partBreakdown).flatMap(([part, rows]) => {
     const partNumber = Number(part.replace('part', ''));
     return rows.map((row, index) => {
-      const outcome = row.isSkipped ? 'SKIPPED' : row.isCorrect ? 'CORRECT' : 'INCORRECT';
+      const outcome: ItemOutcome['outcome'] = row.isSkipped ? 'SKIPPED' : row.isCorrect ? 'CORRECT' : 'INCORRECT';
       return { key: partNumber === 2 || partNumber === 3 ? `p${partNumber}:s${index + 1}` : `p${partNumber}:q${index + 1}`,
-        partNumber, outcome, score: row.isCorrect ? 2 : 0, maxScore: 2 } as const;
+        partNumber, outcome, score: row.isCorrect ? 2 : 0, maxScore: 2,
+        selectedAnswer: row.isSkipped || row.userAnswer === null || row.userAnswer === undefined || row.userAnswer === ''
+          ? null
+          : { kind: partNumber === 2 || partNumber === 3 ? 'MATCH' as const : 'CHOICE' as const,
+            optionId: typeof row.userAnswer === 'number' ? `o${row.userAnswer}` : String(row.userAnswer) } };
     });
   });
   const partNumbers = [...new Set(items.map(item => item.partNumber))].sort((a, b) => a - b);
