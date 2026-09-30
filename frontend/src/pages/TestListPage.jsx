@@ -264,14 +264,15 @@ export default function TestListPage({ purpose = 'EXAM' }) {
 
   const handleReviewTest = (test) => {
     const apiResultPaths = {
-      'grammar-vocab': '/grammar-vocab/result-detail',
-      writing: '/writing/result-detail',
-      listening: '/listening/detail-result',
-      reading: '/reading/detail-result',
-      speaking: '/speaking/detail-result',
+      'grammar-vocab': { overview: '/grammar-vocab/result', detail: '/grammar-vocab/result-detail' },
+      writing: { overview: '/writing/result', detail: '/writing/result-detail' },
+      listening: { overview: '/listening/result', detail: '/listening/detail-result' },
+      reading: { overview: '/reading/result', detail: '/reading/detail-result' },
+      speaking: { overview: '/speaking/result', detail: '/speaking/detail-result' },
     };
     if (apiResultPaths[skill] && test.attemptId) {
-      navigate(`${apiResultPaths[skill]}?attemptId=${test.attemptId}${purpose === 'PRACTICE' ? '&practice=true' : ''}`);
+      const resultPath = purpose === 'PRACTICE' ? apiResultPaths[skill].detail : apiResultPaths[skill].overview;
+      navigate(`${resultPath}?attemptId=${test.attemptId}${purpose === 'PRACTICE' ? '&practice=true' : ''}`);
       return;
     }
     const resultDetailPath = currentConfig.resultDetailPath || `/${skill}/result-detail`;

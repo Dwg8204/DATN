@@ -112,7 +112,7 @@ export class TestAttemptsRepository {
        estimated_cefr=$8,
        updated_at=clock_timestamp()
        WHERE id=$1 RETURNING *`,
-      [attemptId, result.method === 'OBJECTIVE' ? 'COMPLETED' : result.method === 'UNASSESSED' ? 'NOT_STARTED' : 'QUEUED', JSON.stringify(result),
+      [attemptId, result.method === 'OBJECTIVE' || result.method === 'SIMULATED' ? 'COMPLETED' : result.method === 'UNASSESSED' ? 'NOT_STARTED' : 'QUEUED', JSON.stringify(result),
         result.score, result.maxScore, result.method === 'OBJECTIVE' ? 'AUTOMATIC' : null, submittedAt ?? null, estimatedCefr ?? null]);
     const completed = firstMutationRow<LockedAttemptRow>(rows);
     return completed;

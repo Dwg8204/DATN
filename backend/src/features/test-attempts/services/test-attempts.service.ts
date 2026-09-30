@@ -120,7 +120,7 @@ export class TestAttemptsService {
       if (!expired && dto.finalChanges && Object.keys(dto.finalChanges).length) {
         await this.repository.saveProgress(manager, attemptId, answers, progress.revision + 1, progress.progress);
       }
-      const result = this.grader.grade(paper.items, answers);
+      const result = this.grader.grade(paper.items, answers, metadata.component);
       await manager.query('UPDATE attempt_progress SET sealed_at=now() WHERE attempt_id=$1 AND sealed_at IS NULL', [attemptId]);
       const submittedAt = expired ? attempt.expires_at ?? serverTime : serverTime;
       const completed = await this.repository.complete(manager, attemptId, result, submittedAt,
@@ -201,7 +201,7 @@ export class TestAttemptsService {
           if (!attempt || attempt.status !== 'IN_PROGRESS') return true;
           const paper = await this.paperFactory.getOrBuild(attempt.snapshot_id, attempt.component,
             () => this.repository.snapshot(attempt.snapshot_id, manager));
-          const result = this.grader.grade(paper.items, progress.answers);
+          const result = this.grader.grade(paper.items, progress.answers, attempt.component);
           await manager.query('UPDATE attempt_progress SET sealed_at=now() WHERE attempt_id=$1', [attempt.id]);
           await this.repository.complete(manager, attempt.id, result, attempt.expires_at ?? undefined,
             this.estimatedCefr(attempt.component, result.score, result.maxScore));

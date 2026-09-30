@@ -13,6 +13,7 @@ import { useToast } from '../../../context/ToastContext.jsx';
 import { attemptMediaApi } from '../../test-attempts/services/attemptMediaApi.js';
 import { getApiError } from '../../../services/apiError.js';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState.js';
+import useSpeakingNarration from '../hooks/useSpeakingNarration.js';
 
 const RECORD_SECONDS = { 1: 30, 2: 45, 3: 45, 4: 120 };
 const TITLES = {
@@ -35,6 +36,7 @@ export default function SpeakingPartPage({ partNumber }) {
   const [secondsLeft, setSecondsLeft] = useState(RECORD_SECONDS[partNumber]);
   const [showSubmit, setShowSubmit] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [preparingRecording, setPreparingRecording] = useState(false);
   const timerRef = useRef(null);
   const recorderRef = useRef(null);
   const streamRef = useRef(null);
@@ -53,6 +55,10 @@ export default function SpeakingPartPage({ partNumber }) {
   });
   const current = questions[currentIndex];
   const isFull = paper?.mode === 'full';
+  const narration = useSpeakingNarration({ attemptId, partNumber, question: current,
+    questionIndex: currentIndex, questionCount: questions.length, testTitle: paper?.title,
+    instruction: `${TITLES[partNumber]}. Record your response when you are ready.`,
+    enabled: !loading && !preparingRecording && !recording && !uploading && !showSubmit });
 
   useEffect(() => () => {
     window.clearInterval(timerRef.current);
@@ -74,7 +80,9 @@ export default function SpeakingPartPage({ partNumber }) {
     if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
   };
   const startRecording = async () => {
-    if (uploading || recording) return;
+    if (uploading || recording || narration.speaking || preparingRecording) return;
+    setPreparingRecording(true);
+    narration.stop();
     try {
       if (!window.MediaRecorder) throw new Error('This browser does not support audio recording.');
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -105,6 +113,7 @@ export default function SpeakingPartPage({ partNumber }) {
         }
       };
       recorder.start(1_000);
+      setPreparingRecording(false);
       setRecording(true);
       setFinished(false);
       setSecondsLeft(RECORD_SECONDS[partNumber]);
@@ -119,6 +128,7 @@ export default function SpeakingPartPage({ partNumber }) {
         });
       }, 1000);
     } catch (error) {
+      setPreparingRecording(false);
       streamRef.current?.getTracks().forEach(track => track.stop());
       showError(error?.name === 'NotAllowedError'
         ? 'Microphone access was denied. Allow it in your browser settings and try again.'
@@ -159,6 +169,8 @@ export default function SpeakingPartPage({ partNumber }) {
       <InstructionBlock title={`Question ${currentIndex + 1} of ${questions.length}`}>
         {TITLES[partNumber]}. Record your response when you are ready.
       </InstructionBlock>
+      {narration.speaking && <p role="status">Reading the instructions and question…</p>}
+      {narration.needsGesture && <button type="button" onClick={narration.retry}>Read question aloud</button>}
       <section className={styles.workspace}>
         <div className={styles.promptColumn}>
           <article className={styles.prompt}>
@@ -174,7 +186,7 @@ export default function SpeakingPartPage({ partNumber }) {
         </div>
         <div className={styles.recorder}>
           <MockAudioRecorder isRecording={recording} isFinished={finished} timeLeft={secondsLeft}
-            maxTime={RECORD_SECONDS[partNumber]} onStartRecord={() => void startRecording()} onStopRecord={finishRecording} disabled={uploading} />
+            maxTime={RECORD_SECONDS[partNumber]} onStartRecord={() => void startRecording()} onStopRecord={finishRecording} disabled={uploading || narration.speaking} />
           {uploading && <p className={styles.uploading} role="status">Uploading recording…</p>}
         </div>
       </section>
