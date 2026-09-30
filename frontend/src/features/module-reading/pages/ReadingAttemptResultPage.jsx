@@ -23,7 +23,7 @@ export default function ReadingAttemptResultPage() {
       <div><dt>Correct</dt><dd>{counts.correct}</dd></div><div><dt>Incorrect</dt><dd>{counts.incorrect}</dd></div>
       <div><dt>Skipped</dt><dd>{counts.skipped}</dd></div><div><dt>Time spent</dt><dd>{duration}</dd></div>
     </dl></section>
-    <div className={styles.actions}><button onClick={() => navigate(`/reading/detail-result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}>View detailed result</button>
+    <div className={styles.actions}><button onClick={() => navigate(`/reading/detail-result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}>View detail result</button>
       <button className={styles.secondary} onClick={() => navigate(isPractice ? '/reading/practice' : '/reading/tests')}>Take another</button></div>
   </main></div>;
 }

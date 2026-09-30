@@ -70,7 +70,7 @@ export type SavedProgressRow = Pick<ProgressRow, 'revision' | 'saved_at' | 'prog
 export type ItemOutcome = {
   key: string;
   partNumber: number;
-  outcome: 'CORRECT' | 'INCORRECT' | 'SKIPPED' | 'PENDING';
+  outcome: 'CORRECT' | 'INCORRECT' | 'SKIPPED' | 'PENDING' | 'ASSESSED';
   score: number;
   maxScore: number;
   /** Response-only field. Answers remain canonical in attempt_progress.answers. */
@@ -78,11 +78,16 @@ export type ItemOutcome = {
 };
 export type AssessmentResult = {
   schemaVersion: 1;
-  method: 'OBJECTIVE' | 'PENDING_AI' | 'UNASSESSED';
+  method: 'OBJECTIVE' | 'PENDING_AI' | 'UNASSESSED' | 'SIMULATED';
   score: number | null;
   maxScore: number | null;
   counts: { correct: number; incorrect: number; skipped: number };
   parts: Array<{ partNumber: number; score: number | null; maxScore: number | null }>;
   items: ItemOutcome[];
   assistance?: { revealedKeys: string[] };
+  speaking?: {
+    provider: 'RANDOM' | 'LLM'; version: string; assessedAt: string;
+    criteria: { grammarVocabulary: number; pronunciation: number; fluency: number; taskFulfillment: number };
+    averagePercentage: number;
+  };
 };

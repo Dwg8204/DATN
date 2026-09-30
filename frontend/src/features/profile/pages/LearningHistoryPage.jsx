@@ -28,17 +28,19 @@ const REMOTE_SKILLS = new Set(['all', 'grammar', 'writing', 'listening', 'readin
 const BROWSER_SKILLS = new Set(['reading']);
 const REMOTE_COMPONENTS = { grammar: 'GRAMMAR_VOCAB', writing: 'WRITING', listening: 'LISTENING', reading: 'READING', speaking: 'SPEAKING' };
 const COMPONENT_SKILLS = {
-  GRAMMAR_VOCAB: { skill: 'grammar', resultPath: '/grammar-vocab/result-detail', fallbackTitle: 'Grammar & Vocabulary Test' },
-  WRITING: { skill: 'writing', resultPath: '/writing/result-detail', fallbackTitle: 'Writing Test' },
-  LISTENING: { skill: 'listening', resultPath: '/listening/detail-result', fallbackTitle: 'Listening Test' },
-  READING: { skill: 'reading', resultPath: '/reading/detail-result', fallbackTitle: 'Reading Test' },
-  SPEAKING: { skill: 'speaking', resultPath: '/speaking/detail-result', fallbackTitle: 'Speaking Test' },
+  GRAMMAR_VOCAB: { skill: 'grammar', overviewPath: '/grammar-vocab/result', detailPath: '/grammar-vocab/result-detail', fallbackTitle: 'Grammar & Vocabulary Test' },
+  WRITING: { skill: 'writing', overviewPath: '/writing/result', detailPath: '/writing/result-detail', fallbackTitle: 'Writing Test' },
+  LISTENING: { skill: 'listening', overviewPath: '/listening/result', detailPath: '/listening/detail-result', fallbackTitle: 'Listening Test' },
+  READING: { skill: 'reading', overviewPath: '/reading/result', detailPath: '/reading/detail-result', fallbackTitle: 'Reading Test' },
+  SPEAKING: { skill: 'speaking', overviewPath: '/speaking/result', detailPath: '/speaking/detail-result', fallbackTitle: 'Speaking Test' },
 };
 
 function remoteHistoryEntry(attempt) {
   const metadata = COMPONENT_SKILLS[attempt.component] ?? {
-    skill: attempt.component?.toLowerCase() ?? 'unknown', resultPath: null, fallbackTitle: 'Test result',
+    skill: attempt.component?.toLowerCase() ?? 'unknown', overviewPath: null, detailPath: null, fallbackTitle: 'Test result',
   };
+  const isPractice = attempt.purpose === 'PRACTICE';
+  const resultPath = isPractice ? metadata.detailPath : metadata.overviewPath;
   return {
     id: attempt.attemptId,
     skill: metadata.skill,
@@ -47,7 +49,7 @@ function remoteHistoryEntry(attempt) {
     submittedAt: attempt.submittedAt,
     timeSpent: attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : '--:--:--',
     purpose: attempt.purpose ?? 'EXAM',
-    reviewUrl: metadata.resultPath ? `${metadata.resultPath}?attemptId=${attempt.attemptId}${attempt.purpose === 'PRACTICE' ? '&practice=true' : ''}` : null,
+    reviewUrl: resultPath ? `${resultPath}?attemptId=${attempt.attemptId}${isPractice ? '&practice=true' : ''}` : null,
     assessmentPending: ['WRITING', 'SPEAKING'].includes(attempt.component) && attempt.gradingStatus !== 'COMPLETED',
     cefrLevel: attempt.estimatedCefr,
   };

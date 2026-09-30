@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Answers, AssessableItem, AssessmentResult, ItemOutcome } from '../types/attempt.type';
+import { Answers, AssessableItem, AssessmentResult, ItemOutcome, SkillComponent } from '../types/attempt.type';
+import { assessSpeaking } from './speaking-assessment';
 
 @Injectable()
 export class ObjectiveGraderService {
-  grade(items: AssessableItem[], answers: Answers): AssessmentResult {
+  grade(items: AssessableItem[], answers: Answers, component?: SkillComponent): AssessmentResult {
+    if (component === 'SPEAKING') return assessSpeaking(items, answers);
     const pending = items.some(item => item.kind === 'TEXT' || item.kind === 'AUDIO');
     const outcomes: ItemOutcome[] = items.map(item => {
       const answer = answers[item.key];

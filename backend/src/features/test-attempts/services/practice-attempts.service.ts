@@ -6,6 +6,7 @@ import { AssessmentPaperFactory } from '../assessments/assessment-paper.factory'
 import { applyAnswerChanges } from '../assessments/answer-policy';
 import { presentAssessmentResult } from '../assessments/result-presentation';
 import { ObjectiveGraderService } from '../assessments/objective-grader.service';
+import { estimateCefr } from '../policies/exam-cefr.policy';
 import { AttemptHistoryQueryDto } from '../dto/attempt.dto';
 import { CompletePracticeAttemptDto, StartPracticeAttemptDto } from '../dto/practice-attempt.dto';
 import { TestAttemptsRepository } from '../repositories/test-attempts.repository';
@@ -107,7 +108,7 @@ export class PracticeAttemptsService {
         return this.summary(attempt, progress?.answers);
       }
       if (attempt.status !== 'IN_PROGRESS') this.conflict('This practice attempt is no longer active.');
-      const graded = this.grader.grade(paper.items, answers);
+      const graded = this.grader.grade(paper.items, answers, metadata.component);
       const result: AssessmentResult = {
         ...graded,
         method: graded.method === 'PENDING_AI' ? 'UNASSESSED' : graded.method,
@@ -118,7 +119,9 @@ export class PracticeAttemptsService {
          VALUES($1,$2::jsonb,'{}'::jsonb,0,clock_timestamp(),clock_timestamp())`,
         [attemptId, JSON.stringify(answers)],
       );
-      const completed = await this.repository.complete(manager, attemptId, result, undefined, null);
+      const cefr = metadata.component === 'SPEAKING' && result.score != null && result.maxScore != null
+        ? estimateCefr(metadata.component, result.score, result.maxScore) : null;
+      const completed = await this.repository.complete(manager, attemptId, result, undefined, cefr);
       return this.summary(completed, answers);
     });
   }
@@ -212,7 +215,7 @@ export class PracticeAttemptsService {
       status: attempt.status, gradingStatus: attempt.grading_status,
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
-      estimatedCefr: null,
+      estimatedCefr: attempt.component === 'SPEAKING' ? attempt.estimated_cefr : null,
       result: attempt.result ? presentAssessmentResult(this.assessmentResult(attempt.result), answers) : null,
       submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: null,
