@@ -45,3 +45,17 @@
   .actions { flex-direction: column; }
   .actions button { width: 100%; }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .page h1 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .panel { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .panel h2 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .panel > p { color: var(--text-primary); }
+:global([data-theme="dark"]) .pending { background: var(--warning-bg); border-color: var(--warning); }
+:global([data-theme="dark"]) .pending h2 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .pending p { color: var(--text-secondary); }
+:global([data-theme="dark"]) .notice { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
+:global([data-theme="dark"]) .summaryList > div { border-bottom-color: var(--border); }
+:global([data-theme="dark"]) .actions button { background: var(--bg-surface); color: var(--brand-hover); border-color: var(--brand-hover); }
+:global([data-theme="dark"]) .actions button:first-child { background: var(--brand); color: var(--bg-surface); border-color: var(--brand); }

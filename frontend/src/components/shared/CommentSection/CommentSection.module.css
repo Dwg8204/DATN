@@ -260,3 +260,29 @@
   .repliesContainer { width: auto; padding-left: 28px; }
   .sendBtn { width: 34px; height: 34px; }
 }
+
+
+/* Specific Dark Mode Corrections from User */
+:global([data-theme="dark"]) .authorName {
+  color: var(--text-primary) !important;
+}
+:global([data-theme="dark"]) .commentContent {
+  color: var(--text-primary) !important;
+}
+:global([data-theme="dark"]) .replyBtn {
+  color: var(--text-primary) !important;
+}
+:global([data-theme="dark"]) .time {
+  color: var(--text-primary) !important;
+}
+:global([data-theme="dark"]) .replyInput {
+  color: var(--text-primary) !important;
+}
+:global([data-theme="dark"]) .inputWrap {
+  background: #334155 !important;
+}
+
+:global([data-theme="dark"]) .iconShape {
+  background: white !important;
+  border-color: white !important;
+}

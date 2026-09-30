@@ -8,3 +8,11 @@
 .recording { color: #21843f; font-weight: 700; }.sample { padding: 14px; background: #f5f8f5; border-left: 3px solid #43b75d; }
 .back { justify-self: center; border: 0; border-radius: 9px; padding: 12px 28px; background: #da1e21; color: #fff; font-weight: 700; cursor: pointer; }
 @media (max-width: 600px) { .page header { align-items: stretch; flex-direction: column; }.cards article { padding: 16px; } }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .page header span { color: var(--brand-hover); }
+:global([data-theme="dark"]) .notice { background: var(--warning-bg); border-color: var(--warning); }
+:global([data-theme="dark"]) .cards article { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .recording { color: var(--success); }
+:global([data-theme="dark"]) .sample { background: var(--success-bg); border-left-color: var(--success); }

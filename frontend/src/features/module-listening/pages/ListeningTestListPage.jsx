@@ -100,7 +100,7 @@ export default function ListeningTestListPage() {
           Choose part
           <div className={styles.tabsIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M7 10L12 15L17 10" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M7 10L12 15L17 10" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
         </div>
@@ -123,8 +123,8 @@ export default function ListeningTestListPage() {
             <div className={styles.searchInputContainer}>
               <div className={styles.searchInputWrapper}>
                 <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="11" cy="11" r="7" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M20 20L16 16" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
                 <input type="text" className={styles.searchInput} placeholder="Search by test name." value={query} onChange={e => setQuery(e.target.value)} />
               </div>

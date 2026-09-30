@@ -2,3 +2,29 @@
 /* Align the wide desktop popover with the complete account-actions area. */
 @media(min-width:701px){.container{position:static}.panel{right:0!important}.panel:before{right:calc(var(--profile-area-width, 132px) + 15px)!important}}
 .message span svg{width:11px;height:11px;display:inline;vertical-align:-2px}
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .bellButton {
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .badge {
+  border: 2px solid var(--warning-bg);
+  color: var(--bg-surface);
+  background: var(--brand);
+}
+
+:global([data-theme="dark"]) .panel {
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  box-shadow: 0 14px 45px var(--shadow-sm);
+}
+
+:global([data-theme="dark"]) .activeFilter {
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .icon {
+  color: var(--bg-surface);
+}

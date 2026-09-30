@@ -16,10 +16,7 @@ export const readingMainRoutes = [
     path: 'reading',
     element: <ReadingOverviewPage />,
   },
-  {
-    path: 'reading/tests',
-    element: <TestListPage purpose="EXAM" />,
-  },
+
   {
     path: 'reading/choose',
     element: <Navigate to="/reading/tests" replace />,

@@ -33,3 +33,13 @@
   height: 24px;
   object-fit: fill;
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .bar {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .text {
+  color: var(--text-primary);
+}

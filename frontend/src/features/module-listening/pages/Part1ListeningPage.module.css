@@ -325,3 +325,90 @@
     min-width: 160px;
   }
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page {
+  background: var(--bg-page);
+}
+
+:global([data-theme="dark"]) .headerBlock {
+  background: var(--success-bg);
+  border: 1px solid var(--overlay);
+}
+
+:global([data-theme="dark"]) .partTitle {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .skillTitle {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .instructionBlock {
+  background: var(--warning-bg);
+  border: 1px solid var(--text-primary);
+}
+
+:global([data-theme="dark"]) .instructionTitle {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .instructionText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .questionNumberBox {
+  background: var(--info-bg);
+  outline: 2px solid var(--info);
+}
+
+:global([data-theme="dark"]) .questionNumber {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .questionText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .optionBtn {
+  background: var(--bg-surface);
+  border: 1px solid var(--text-primary);
+}
+
+:global([data-theme="dark"]) .optionBtnSelected {
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .optionText {
+  background: var(--warning);
+}
+
+:global([data-theme="dark"]) .audioMock {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+:global([data-theme="dark"]) .audioPlaceholder {
+  background: var(--border);
+}
+
+:global([data-theme="dark"]) .audioControlsRow {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .volumeTrack {
+  background: var(--border);
+}
+
+:global([data-theme="dark"]) .volumeFill {
+  background: var(--warning);
+}
+
+:global([data-theme="dark"]) .playBtn {
+  background: var(--brand);
+}
+
+:global([data-theme="dark"]) .speedControl {
+  border: 1px solid var(--text-primary);
+}

@@ -466,3 +466,109 @@
   font-weight: 700;
   line-height: 16px;
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page {
+  background: var(--bg-page);
+}
+
+:global([data-theme="dark"]) .title {
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .tabsBox {
+  background: var(--warning);
+}
+
+:global([data-theme="dark"]) .tabsLabel {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .tabItemActive {
+  background: var(--brand);
+}
+
+:global([data-theme="dark"]) .tabText {
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .tabItemInactive {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .searchInputContainer {
+  outline: 1px solid var(--overlay);
+}
+
+:global([data-theme="dark"]) .searchInput {
+  color: var(--text-secondary);
+}
+
+:global([data-theme="dark"]) .searchBtn {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .testCard {
+  background: var(--bg-surface-warm);
+  outline: 2px solid var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .cardTitle {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .cardDesc {
+  color: var(--overlay);
+}
+
+:global([data-theme="dark"]) .statLabel {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .statValue {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .statValueSuccess {
+  color: var(--success);
+}
+
+:global([data-theme="dark"]) .statValueDanger {
+  color: var(--brand);
+}
+
+:global([data-theme="dark"]) .reviewBtn {
+  background: var(--brand);
+}
+
+:global([data-theme="dark"]) .reviewBtnText {
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .doTestBtn {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .partBadge {
+  background: var(--warning);
+}
+
+:global([data-theme="dark"]) .partBadgeText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .statusBadgeCompleted {
+  background: var(--success);
+}
+
+:global([data-theme="dark"]) .statusBadgeCompletedText {
+  color: var(--success);
+}
+
+:global([data-theme="dark"]) .statusBadgeNotStarted {
+  background: var(--border);
+}
+
+:global([data-theme="dark"]) .statusBadgeNotStartedText {
+  color: var(--text-muted);
+}

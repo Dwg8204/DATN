@@ -14,3 +14,13 @@
 .actions button { border: 1px solid #da1e21; border-radius: 9px; padding: 12px 24px; background: #da1e21; color: #fff; font-weight: 700; cursor: pointer; }
 .actions .secondary { background: #fff; color: #b10f2e; }
 @media (max-width: 600px) { .summary dl { grid-template-columns: 1fr; }.actions { flex-direction: column; }.actions button { width: 100%; } }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .eyebrow { color: var(--brand-hover); }
+:global([data-theme="dark"]) .pending { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .pending p { color: var(--text-muted); }
+:global([data-theme="dark"]) .summary { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .summary dl div { background: var(--bg-hover); }
+:global([data-theme="dark"]) .summary dt { color: var(--text-muted); }
+:global([data-theme="dark"]) .actions .secondary { background: var(--bg-surface); color: var(--brand-hover); border-color: var(--brand-hover); }

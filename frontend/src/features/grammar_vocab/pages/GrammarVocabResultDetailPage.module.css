@@ -73,3 +73,21 @@
   .optionBank > div { grid-template-columns: 22px minmax(0, 1fr); gap: 10px; font-size: 13px; line-height: 20px; }
 }
 .optionRow > span { min-width: 0; overflow-wrap: anywhere; }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-surface); color: var(--text-primary); }
+:global([data-theme="dark"]) .partTabs button { color: #000000 !important; }
+:global([data-theme="dark"]) .activeTab { color: var(--bg-surface) !important; }
+:global([data-theme="dark"]) .questionCard { border-color: var(--text-disabled); background: var(--bg-surface); }
+:global([data-theme="dark"]) .questionNumber { border-color: var(--info); background: var(--info-bg); color: var(--text-primary); }
+:global([data-theme="dark"]) .optionRow { background: var(--bg-hover); border-color: var(--border); }
+:global([data-theme="dark"]) .correctOption { background: var(--success-bg) !important; border-color: var(--success) !important; }
+:global([data-theme="dark"]) .wrongOption { background: var(--brand-active-bg) !important; border-color: var(--brand) !important; }
+:global([data-theme="dark"]) .explanation { background: var(--success-bg); border-left-color: var(--success); color: var(--text-primary); }
+:global([data-theme="dark"]) .matchingItem { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .answerField { border-color: var(--text-primary); }
+:global([data-theme="dark"]) .correctField { border-color: var(--success); background: var(--success-bg); color: var(--success); }
+:global([data-theme="dark"]) .wrongField { border-color: var(--brand); background: var(--brand-active-bg); }
+:global([data-theme="dark"]) .skippedField { border-color: var(--text-muted); color: var(--text-muted); }
+:global([data-theme="dark"]) .optionBank { background: var(--bg-surface); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .answerLine > span { color: var(--text-muted); }

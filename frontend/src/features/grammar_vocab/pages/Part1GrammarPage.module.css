@@ -205,3 +205,17 @@
     line-height: 22px;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .headerBlock { background: var(--bg-surface-warm); outline-color: var(--border); }
+:global([data-theme="dark"]) .partTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .skillTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .instructionTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .instructionText { color: var(--text-primary); }
+:global([data-theme="dark"]) .questionNumber { color: var(--text-primary); }
+:global([data-theme="dark"]) .questionText { color: var(--text-primary); }
+:global([data-theme="dark"]) .questionNumberBox { background: var(--info-bg); outline-color: var(--info); }
+:global([data-theme="dark"]) .optionText { color: var(--text-primary); }
+:global([data-theme="dark"]) .radioOuter { background: var(--bg-hover); border-color: var(--border); }
+:global([data-theme="dark"]) .questionItem { border-color: var(--border); background: var(--bg-surface); padding: 24px; border-radius: 12px; }

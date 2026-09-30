@@ -83,3 +83,22 @@
   .taskCard input, .taskCard textarea { padding: 9px 10px; font-size: 13px; line-height: 20px; }
   .wordCount { font-size: 10px; }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .heading { background: var(--bg-surface-warm); border-color: var(--border); }
+:global([data-theme="dark"]) .heading strong { color: var(--text-primary); }
+:global([data-theme="dark"]) .heading span { color: var(--text-muted); }
+:global([data-theme="dark"]) .taskCard { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .taskCard label { color: var(--text-primary); }
+:global([data-theme="dark"]) .number { border-color: var(--info); color: var(--text-primary); }
+:global([data-theme="dark"]) .taskCard input,
+:global([data-theme="dark"]) .taskCard textarea { 
+  background: var(--bg-hover); 
+  border-color: var(--border); 
+  color: var(--text-primary); 
+}
+:global([data-theme="dark"]) .taskCard input:disabled,
+:global([data-theme="dark"]) .taskCard textarea:disabled { background: var(--bg-surface); }
+:global([data-theme="dark"]) .wordCount { color: var(--text-muted); }
+:global([data-theme="dark"]) .wordCount strong { color: var(--text-primary); }

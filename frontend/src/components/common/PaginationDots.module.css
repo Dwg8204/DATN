@@ -18,3 +18,13 @@
   width: 15px;
   background: #00000066;
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .dotActive {
+  background: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .dotInactive {
+  background: var(--border);
+}

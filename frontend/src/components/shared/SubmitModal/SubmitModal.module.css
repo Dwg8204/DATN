@@ -77,3 +77,22 @@
     font-size: 14px;
   }
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .modalOverlay {
+  background: var(--overlay);
+}
+
+:global([data-theme="dark"]) .submitModal {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .modalText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .nextBtn {
+  background: var(--text-primary);
+  color: var(--bg-surface);
+}

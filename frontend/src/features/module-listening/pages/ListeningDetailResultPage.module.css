@@ -51,3 +51,102 @@
 .optionRow > span { min-width: 0; overflow-wrap: anywhere; }
 .qaBox, .scriptBox { min-width: 0; overflow-wrap: anywhere; }
 @media (max-width: 700px) { .contentRow { flex-direction: column; } .scriptBox { min-height: 0; padding: 16px; } .questionCard { padding: 16px; } .partTabs { flex-wrap: wrap; gap: 8px; } .partTabs button { padding: 8px 12px; } }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .activeTab {
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .scriptBox {
+  border: 1px solid var(--text-disabled);
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .questionCard {
+  border: 1px solid var(--text-disabled);
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .questionNumber {
+  border: 2px solid var(--info);
+  background: var(--info-bg);
+}
+
+:global([data-theme="dark"]) .correctOption {
+  border-color: var(--success);
+  background: var(--success-bg);
+}
+
+:global([data-theme="dark"]) .wrongOption {
+  border-color: var(--brand);
+  background: var(--brand-active-bg);
+}
+
+:global([data-theme="dark"]) .correct {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+:global([data-theme="dark"]) .wrong {
+  background: var(--brand-subtle);
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .skipped {
+  background: var(--border);
+  color: var(--text-muted);
+}
+
+:global([data-theme="dark"]) .explainButton {
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .explanation {
+  border-left: 4px solid var(--success);
+  background: var(--success-bg);
+}
+
+:global([data-theme="dark"]) .matchingItem {
+  border: 1px solid var(--text-disabled);
+  background: var(--bg-surface-warm);
+}
+
+:global([data-theme="dark"]) .answerField {
+  border: 1px solid var(--text-primary);
+}
+
+:global([data-theme="dark"]) .correctField {
+  border: 1px solid var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+:global([data-theme="dark"]) .wrongField {
+  border-color: var(--brand);
+  background: var(--brand-active-bg);
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .skippedField {
+  border-color: var(--text-muted);
+  color: var(--text-muted);
+}
+
+:global([data-theme="dark"]) .audioBar {
+  background: var(--warning-bg);
+  border: 1px solid var(--text-disabled);
+}
+
+:global([data-theme="dark"]) .audioMock {
+  background: var(--border);
+}
+
+:global([data-theme="dark"]) .partTabs button {
+  color: #000000 !important;
+}

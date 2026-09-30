@@ -37,3 +37,15 @@
   .icon { width: 32px; height: 32px; }
 }
 @media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .toast {
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .closeBtn {
+  color: var(--text-muted);
+}
