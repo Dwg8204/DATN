@@ -110,3 +110,8 @@
     gap: 4px;
   }
 }
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); }
+:global([data-theme="dark"]) .partTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .questionText { color: #fff; }
+:global([data-theme="dark"]) .questionNumber { color: #131927; }

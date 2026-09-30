@@ -335,3 +335,96 @@
     font-size: 14px;
   }
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page {
+  background: var(--bg-page);
+}
+
+:global([data-theme="dark"]) .headerBlock {
+  background: var(--success-bg);
+  border: 1px solid var(--overlay);
+}
+
+:global([data-theme="dark"]) .partTitle {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .skillTitle {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .instructionBlock {
+  background: var(--warning-bg);
+  border: 1px solid var(--text-primary);
+}
+
+:global([data-theme="dark"]) .instructionTitle {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .instructionText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .dropdownTrigger {
+  border: 1px solid var(--info);
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .hasValue {
+  background: var(--warning);
+  border-color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .dropdownPlaceholder {
+  color: var(--text-muted);
+}
+
+:global([data-theme="dark"]) .dropdownMenu {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px var(--shadow-sm);
+}
+
+:global([data-theme="dark"]) .dropdownItem {
+  border-bottom: 1px solid var(--border);
+}
+
+:global([data-theme="dark"]) .dropdownItem:hover {
+  background: var(--bg-hover);
+}
+
+:global([data-theme="dark"]) .dropdownItemSelected {
+  background: var(--warning);
+}
+
+:global([data-theme="dark"]) .audioMock {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+}
+
+:global([data-theme="dark"]) .audioPlaceholder {
+  background: var(--border);
+}
+
+:global([data-theme="dark"]) .audioControlsRow {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .volumeTrack {
+  background: var(--border);
+}
+
+:global([data-theme="dark"]) .volumeFill {
+  background: var(--warning);
+}
+
+:global([data-theme="dark"]) .playBtn {
+  background: var(--brand);
+}
+
+:global([data-theme="dark"]) .speedControl {
+  border: 1px solid var(--text-primary);
+}

@@ -22,10 +22,6 @@ export const listeningMainRoutes = [
     element: <ListeningFeedPage />,
   },
   {
-    path: 'listening/tests',
-    element: <TestListPage purpose="EXAM" />,
-  },
-  {
     path: 'listening/result',
     element: <RoleGuard allowedRoles={['STUDENT']}><ListeningResultPage /></RoleGuard>,
   }

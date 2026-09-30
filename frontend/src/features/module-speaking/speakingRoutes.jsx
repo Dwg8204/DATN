@@ -18,10 +18,7 @@ export const speakingMainRoutes = [
     path: 'speaking/feed',
     element: <SpeakingFeedPage />,
   },
-  {
-    path: 'speaking/tests',
-    element: <TestListPage purpose="EXAM" />,
-  },
+
   {
     path: 'speaking/result',
     element: <RoleGuard allowedRoles={['STUDENT']}><SpeakingAttemptResultPage /></RoleGuard>,

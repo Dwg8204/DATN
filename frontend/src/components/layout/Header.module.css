@@ -7,12 +7,12 @@
   grid-template-columns: auto minmax(0, 1fr) auto;
   column-gap: clamp(20px, 3vw, 56px);
   align-items: center;
-  background: #FFF9F1;
+  background: var(--bg-surface-warm);
   padding-left: 72px;
   padding-right: 72px;
   box-sizing: border-box;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 10px var(--shadow-sm);
 }
 
 .logoWrap {
@@ -52,7 +52,7 @@
 }
 
 .navLabel {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 16px;
   white-space: nowrap;
 }
@@ -68,7 +68,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background: #DA1E21;
+  background: var(--brand);
   border-radius: 50px;
   border: none;
   padding: 8px 43px;
@@ -81,7 +81,7 @@
 }
 
 .signInText {
-  color: #FFFFFF;
+  color: var(--bg-surface);
   font-size: 14px;
   font-weight: bold;
 }
@@ -99,8 +99,8 @@
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #FFFFFF;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.14);
+  background-color: var(--bg-surface);
+  box-shadow: 0 8px 20px var(--shadow-sm);
   z-index: 100;
   width: max-content;
   min-width: max(100%, 112px);
@@ -115,7 +115,7 @@
 }
 
 .dropdownItem {
-  color: black;
+  color: var(--text-primary);
   width: 100%;
   min-width: 0;
   padding: 10px 14px;
@@ -133,7 +133,7 @@
 }
 
 .dropdownItem:hover {
-  background-color: #f1f1f1;
+  background-color: var(--bg-hover);
 }
 
 .userMenuContainer {
@@ -163,7 +163,7 @@
 }
 
 .userProfileBtn:hover {
-  background-color: rgba(0,0,0,0.05);
+  background-color: var(--bg-hover);
 }
 
 .userAvatar {
@@ -176,7 +176,7 @@
 .userName {
   font-size: 16px;
   font-weight: 500;
-  color: #333;
+  color: var(--text-secondary);
 }
 
 .userDropdown {
@@ -185,8 +185,8 @@
   position: absolute;
   top: 100%;
   right: 0;
-  background-color: #FFFFFF;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  background-color: var(--bg-surface);
+  box-shadow: 0px 8px 16px 0px var(--shadow-sm);
   z-index: 100;
   min-width: 200px;
   border-radius: 8px;
@@ -312,8 +312,8 @@
     gap: 0;
     padding: 0 3px;
     overflow: hidden;
-    background: #fff9f1;
-    border-top: 1px solid #e1e1e1;
+    background: var(--bg-surface-warm);
+    border-top: 1px solid var(--border);
     box-sizing: border-box;
   }
 
@@ -330,7 +330,7 @@
     align-items: center;
     gap: 2px;
     padding: 7px 1px 4px;
-    color: #131927;
+    color: var(--text-primary);
     font-size: 10px;
     font-weight: 500;
     line-height: 14px;
@@ -358,7 +358,7 @@
   }
 
   .mobileNavItemActive {
-    color: #da1e21;
+    color: var(--brand);
     font-weight: 700;
   }
 

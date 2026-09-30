@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../context/ThemeContext';
+
+const LOGO_LIGHT = 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png';
+const LOGO_DARK  = 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1790742935/aptimate/branding/logo_white_text_transparent_v2.png';
 
 const footerLinks = [
   { key: 'about', to: '/#about-us' },
@@ -18,13 +22,14 @@ const contactItems = [
 
 export default function Footer() {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
     <footer className={styles.footer}>
       <div className={styles.footerLeft}>
         <div className={styles.brandCol}>
           <Link to="/">
             <img
-              src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png"
+              src={theme === 'dark' ? LOGO_DARK : LOGO_LIGHT}
               alt="AptiMate Logo"
               className={styles.footerLogo}
             />

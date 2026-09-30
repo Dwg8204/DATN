@@ -16,7 +16,7 @@
 }
 
 .skillsTitle {
-  color: #A11D33;
+  color: var(--brand-hover);
   font-size: 40px;
   font-weight: bold;
 }
@@ -98,7 +98,7 @@
 }
 
 .reviewTitle {
-  color: #A11D33;
+  color: var(--brand-hover);
   font-size: 40px;
   font-weight: bold;
 }
@@ -157,17 +157,17 @@
   place-items: center;
   padding: 0;
   transform: translateY(-50%);
-  border: 1px solid #e1e1e1;
+  border: 1px solid var(--border);
   border-radius: 50%;
-  background: #fff;
-  color: #a11d33;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+  background: var(--bg-surface);
+  color: var(--brand-hover);
+  box-shadow: 0 3px 12px var(--shadow-sm);
   cursor: pointer;
 }
 
 .reviewArrow:hover {
   background: var(--button-primary);
-  color: #fff;
+  color: var(--bg-surface);
 }
 
 .reviewArrow svg {

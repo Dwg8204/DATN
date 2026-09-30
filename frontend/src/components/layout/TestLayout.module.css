@@ -21,3 +21,13 @@
   flex-direction: column;
   min-width: 0;
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .shell {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .layout {
+  background: var(--bg-surface-warm);
+}

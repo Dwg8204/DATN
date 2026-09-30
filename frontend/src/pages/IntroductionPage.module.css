@@ -146,3 +146,42 @@
   .card { padding-inline: 18px; }
   .title { font-size: 18px; line-height: 26px; }
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .card {
+  background: var(--bg-surface);
+  border: 1px solid var(--text-primary);
+}
+
+:global([data-theme="dark"]) .title {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .time {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .infoTitle {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .infoText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .infoTextWide {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .warning {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .startBtn {
+  background: var(--brand);
+}
+
+:global([data-theme="dark"]) .startBtnText {
+  color: var(--bg-surface);
+}

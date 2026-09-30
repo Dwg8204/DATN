@@ -5,12 +5,12 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background: #FFF9F1;
+  background: var(--warning-bg);
   border-radius: 20px;
-  border: 1px solid #E1E1E1;
+  border: 1px solid var(--border);
   padding: 23px 14px;
   gap: 8px;
-  box-shadow: 0px 4px 10px #00000040;
+  box-shadow: 0px 4px 10px var(--shadow-sm);
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -36,12 +36,12 @@
 }
 
 .userName {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 16px;
 }
 
 .userDate {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
@@ -58,12 +58,12 @@
 }
 
 .ratingValue {
-  color: #6C6C6C;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
 .comment {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
   width: 100%;
   max-width: 387px;

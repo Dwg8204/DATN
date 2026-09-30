@@ -295,3 +295,52 @@
     width: 84px;
   }
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .testHeader {
+  background: var(--warning-bg);
+  border-bottom: 1px solid var(--shadow-sm);
+}
+
+:global([data-theme="dark"]) .testTakerLabel {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .timeLabel {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .timeValue {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .exitBtn {
+  background: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .exitBtnText {
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .modalOverlay {
+  background: var(--overlay);
+}
+
+:global([data-theme="dark"]) .exitModal {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .modalText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .stayBtn {
+  background: var(--brand);
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .confirmExitBtn {
+  background: var(--text-primary);
+  color: var(--bg-surface);
+}

@@ -3,7 +3,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  background: #FFF9F1;
+  background: var(--warning-bg);
   padding: 48px clamp(24px, 5vw, 72px);
   gap: clamp(48px, 7vw, 96px);
   box-sizing: border-box;
@@ -29,7 +29,7 @@
 .brandDescription {
   max-width: 340px;
   margin: 0;
-  color: rgba(0, 0, 0, 0.65);
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 22px;
 }
@@ -50,7 +50,7 @@
 }
 
 .linkItem {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
   margin-bottom: 0;
   cursor: pointer;
@@ -79,7 +79,7 @@
 }
 
 .contactTitle {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
   font-weight: bold;
   margin-right: 47px;
@@ -97,7 +97,7 @@
   display: grid;
   grid-template-columns: 72px minmax(0, 1fr);
   gap: 10px;
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
   line-height: 20px;
   text-decoration: none;
@@ -108,11 +108,11 @@
 }
 
 .contactItem span {
-  color: rgba(0, 0, 0, 0.68);
+  color: var(--text-secondary);
 }
 
 .contactItem:hover span {
-  color: #a11d33;
+  color: var(--brand-hover);
 }
 
 .footerRight {
@@ -128,7 +128,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  background: #DA1E21;
+  background: var(--brand);
   border-radius: 50px;
   border: none;
   padding: 8px 38px;
@@ -143,13 +143,13 @@
 }
 
 .feedbackBtnText {
-  color: #FFFFFF;
+  color: var(--bg-surface);
   font-size: 14px;
   font-weight: bold;
 }
 
 .copyright {
-  color: #000000;
+  color: var(--text-primary);
   font-size: 14px;
 }
 
@@ -242,4 +242,10 @@
     font-size: 12px;
     line-height: 18px;
   }
+}
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .footer {
+  background: var(--bg-surface-warm) !important;
 }

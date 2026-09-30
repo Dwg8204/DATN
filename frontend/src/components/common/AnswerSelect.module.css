@@ -137,3 +137,44 @@
     line-height: 18px;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .select {
+  border: 1px solid var(--text-primary);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .select:hover {
+  background-color: var(--bg-hover);
+}
+
+:global([data-theme="dark"]) .hasValue {
+  background-color: var(--warning);
+}
+
+:global([data-theme="dark"]) .correct {
+  border-color: var(--success);
+  background-color: var(--success-bg);
+}
+
+:global([data-theme="dark"]) .incorrect {
+  border: 2px solid var(--brand);
+  background-color: var(--brand-active-bg);
+}
+
+:global([data-theme="dark"]) .menu {
+  border: 1px solid var(--text-disabled);
+  background: var(--bg-surface);
+  box-shadow: 0 8px 20px var(--shadow-sm);
+}
+
+:global([data-theme="dark"]) .option {
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .optionSelected {
+  background: var(--info);
+}

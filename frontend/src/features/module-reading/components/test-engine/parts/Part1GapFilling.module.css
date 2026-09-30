@@ -68,3 +68,6 @@
     width: 132px;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .passage { color: var(--text-primary); }

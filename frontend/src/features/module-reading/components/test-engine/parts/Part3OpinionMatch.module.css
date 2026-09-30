@@ -115,3 +115,14 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .postsPanel { border-right-color: var(--border); }
+:global([data-theme="dark"]) .panelTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .passage { color: var(--text-primary); }
+:global([data-theme="dark"]) .questionRow { background: var(--bg-surface-warm); border-color: var(--border); }
+:global([data-theme="dark"]) .questionCopy p { color: var(--text-primary); }
+:global([data-theme="dark"]) .questionNumber { background: var(--bg-hover); color: var(--text-primary); }
+@media (max-width: 920px) {
+  :global([data-theme="dark"]) .postsPanel { border-bottom-color: var(--border); }
+}

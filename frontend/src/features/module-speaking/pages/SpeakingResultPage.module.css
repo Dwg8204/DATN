@@ -405,3 +405,33 @@
     width: 100%;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .instructionBox { background: var(--bg-surface-warm); border-color: var(--border); }
+:global([data-theme="dark"]) .partName { color: var(--text-primary); }
+:global([data-theme="dark"]) .instructionText { color: var(--text-primary); }
+:global([data-theme="dark"]) .pageTitle { color: var(--brand-hover); }
+:global([data-theme="dark"]) .cefrBox { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .cefrLabel { color: var(--brand-hover); }
+:global([data-theme="dark"]) .cefrValue { color: var(--brand-hover); }
+:global([data-theme="dark"]) .reportBox { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .reportTitle { color: var(--brand-hover); }
+:global([data-theme="dark"]) .reportSub { color: var(--text-primary); }
+:global([data-theme="dark"]) .divider { background: var(--border); }
+:global([data-theme="dark"]) .criteriaName { color: var(--text-primary); }
+:global([data-theme="dark"]) .criteriaPctText { color: #000000; }
+:global([data-theme="dark"]) .tabsContainer { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .tabItemActive { background: var(--bg-hover); border-color: var(--brand-hover); }
+:global([data-theme="dark"]) .tabText { color: var(--brand-hover); }
+:global([data-theme="dark"]) .tabTextInactive { color: var(--text-primary); }
+:global([data-theme="dark"]) .transcriptCol { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .transcriptBadge { background: var(--warning); color: #000; }
+:global([data-theme="dark"]) .qnaPair { background: var(--bg-surface-warm); border-color: var(--border); }
+:global([data-theme="dark"]) .examinerText { background: var(--brand-subtle); color: var(--text-primary); }
+:global([data-theme="dark"]) .candidateText { color: var(--text-primary); }
+:global([data-theme="dark"]) .feedbackCol { background: var(--brand-subtle); }
+:global([data-theme="dark"]) .fbTab { background: var(--brand-subtle); color: var(--brand-hover); }
+:global([data-theme="dark"]) .feedbackCard { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .feedbackText { color: var(--text-primary); }
+:global([data-theme="dark"]) .backBtn { background: var(--bg-surface); color: var(--text-primary); border-color: var(--border); }

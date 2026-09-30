@@ -26,3 +26,11 @@
   .prompt { padding: 16px; font-size: 16px; }
   .imageGrid { grid-template-columns: 1fr; }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .heading strong { color: var(--text-primary); }
+:global([data-theme="dark"]) .heading span { color: var(--text-muted); }
+:global([data-theme="dark"]) .prompt { background: var(--bg-surface); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .singleImage { border-color: var(--border); }
+:global([data-theme="dark"]) .imageGrid img { border-color: var(--border); }

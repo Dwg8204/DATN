@@ -6,6 +6,11 @@ import styles from './Header.module.css';
 import { useAuth } from '../../context/AuthContext';
 import UserNotifications from './UserNotifications';
 import LanguageSelector from './LanguageSelector';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '../../context/ThemeContext';
+
+const LOGO_LIGHT = 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png';
+const LOGO_DARK  = 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1790742935/aptimate/branding/logo_white_text_transparent_v2.png';
 
 const navItems = [
   {
@@ -104,6 +109,7 @@ export default function Header() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
+  const { theme } = useTheme();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
 
@@ -125,7 +131,7 @@ export default function Header() {
       <div className={styles.logoWrap}>
         <Link to="/">
           <img
-            src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png"
+            src={theme === 'dark' ? LOGO_DARK : LOGO_LIGHT}
             alt="AptiMate Logo"
             className={styles.logo}
           />
@@ -158,6 +164,7 @@ export default function Header() {
         ))}
       </nav>
       <div className={styles.headerActions}>
+        <ThemeToggle />
         <LanguageSelector />
         <UserNotifications />
         {isAuthenticated ? (
