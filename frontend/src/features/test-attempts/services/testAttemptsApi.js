@@ -20,6 +20,9 @@ export const testAttemptsApi = {
     ...silent, signal, params: { page, pageSize, ...(component ? { component } : {}),
       ...(mode && mode !== 'all' ? { mode } : {}), ...(search?.trim() ? { search: search.trim() } : {}), ...(sort ? { sort } : {}) },
   }).then(response => response.data),
+  dashboard: ({ skill = 'all', part = 'all', range = 'all', signal } = {}) =>
+    api.get(API_ENDPOINTS.testAttempts.dashboard, { ...silent, signal, params: { skill, part, range } })
+      .then(response => response.data),
   states: (testIds, signal) => api.get(API_ENDPOINTS.testAttempts.states, {
     ...silent, signal, params: { testIds: testIds.join(',') },
   }).then(response => response.data),

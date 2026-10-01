@@ -1,15 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import ProfileSidebar from '../components/ProfileSidebar';
-import { getHistoryEntries } from '../../../utils/historyStorage';
-import {
-  getFilteredEntries,
-  calcSkillDistribution,
-  calcScoreOverTime,
-  calcStreak,
-  calcAvgBand,
-  calcBestSkill,
-  calcWeakSkill
-} from '../../../utils/dashboardUtils';
+import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { TotalTestsIcon, AvgScoreIcon, AvgBandIcon, StreakIcon, BestSkillIcon, WeakSkillIcon } from '../components/DashboardIcons';
 import styles from './DashboardPage.module.css';
@@ -32,7 +23,8 @@ const SKILL_COLORS = {
 
 export default function DashboardPage() {
   const { t } = useTranslation();
-  const [entries, setEntries] = useState([]);
+  const [dashboard, setDashboard] = useState(null);
+  const [loadError, setLoadError] = useState('');
   const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
   const { skillFilter, partFilter, dateFilter } = urlState;
   const setSkillFilter = value => setUrlState({ skillFilter: value });
@@ -40,55 +32,23 @@ export default function DashboardPage() {
   const setDateFilter = value => setUrlState({ dateFilter: value });
 
   useEffect(() => {
-    setEntries(getHistoryEntries());
-  }, []);
+    const controller = new AbortController();
+    testAttemptsApi.dashboard({ skill: skillFilter, part: partFilter, range: dateFilter, signal: controller.signal })
+      .then(result => { setDashboard(result); setLoadError(''); })
+      .catch(error => { if (error.code !== 'ERR_CANCELED') { setDashboard(null); setLoadError(t('dashboard.loadError')); } });
+    return () => controller.abort();
+  }, [skillFilter, partFilter, dateFilter, t]);
 
-  const filteredEntries = useMemo(() => {
-    return getFilteredEntries(entries, { skill: skillFilter, part: partFilter, dateRange: dateFilter });
-  }, [entries, skillFilter, partFilter, dateFilter]);
-
-  // Derived stats (overall, independent of filters except when specified)
-  const totalTests = entries.length;
-  const streak = calcStreak(entries);
-  const avgBand = calcAvgBand(entries);
-  const bestSkill = calcBestSkill(entries);
-  const weakSkill = calcWeakSkill(entries);
-
-  // Criteria average
-  const criteriaEntries = entries.filter(e => ['speaking', 'writing'].includes(e.skill));
-  const avgCriteriaScore = criteriaEntries.length > 0
-    ? Math.round(criteriaEntries.reduce((sum, e) => {
-      const avg = e.criteria?.reduce((s, c) => s + c.score, 0) / (e.criteria?.length || 1) || 0;
-      return sum + avg;
-    }, 0) / criteriaEntries.length)
-    : 0;
-
-  // Chart data (uses filters)
-  const scoreOverTimeData = useMemo(() => calcScoreOverTime(filteredEntries, skillFilter), [filteredEntries, skillFilter]);
-
-  // Skill dist always shows all skills, ignores skill/part filter, but respects date filter
-  const dateFilteredOnly = useMemo(() => {
-    return getFilteredEntries(entries, { skill: 'all', part: 'all', dateRange: dateFilter });
-  }, [entries, dateFilter]);
-  const skillDistData = useMemo(() => calcSkillDistribution(dateFilteredOnly), [dateFilteredOnly]);
-
-  // Calculate how many entries for each skill to show in pill badges
-  const skillCounts = useMemo(() => {
-    const counts = { all: entries.length, listening: 0, reading: 0, writing: 0, speaking: 0, grammar: 0 };
-    entries.forEach(e => {
-      if (counts[e.skill] !== undefined) counts[e.skill]++;
-    });
-    return counts;
-  }, [entries]);
-
-  const partCounts = useMemo(() => {
-    const counts = {};
-    const relevantHistory = skillFilter === 'all' ? entries : entries.filter(e => e.skill === skillFilter);
-    relevantHistory.forEach(entry => {
-      counts[entry.mode] = (counts[entry.mode] || 0) + 1;
-    });
-    return counts;
-  }, [entries, skillFilter]);
+  const totalTests = dashboard?.totalTests ?? 0;
+  const streak = dashboard?.streak ?? 0;
+  const avgBand = dashboard?.averageBand ?? 'N/A';
+  const bestSkill = dashboard?.bestSkill?.name ? dashboard.bestSkill : { name: 'N/A', band: '' };
+  const weakSkill = dashboard?.weakSkill?.name ? dashboard.weakSkill : { name: 'N/A', band: '' };
+  const avgCriteriaScore = dashboard?.averageScore ?? null;
+  const scoreOverTimeData = dashboard?.scoreOverTime ?? [];
+  const skillDistData = dashboard?.skillDistribution ?? [];
+  const skillCounts = dashboard?.skillCounts ?? { all: 0, listening: 0, reading: 0, writing: 0, speaking: 0, grammar: 0 };
+  const partCounts = dashboard?.partCounts ?? {};
 
   return (
     <div className={styles.page}>
@@ -103,6 +63,7 @@ export default function DashboardPage() {
                 <span className={styles.badge}>{t('dashboard.exam')}</span>
               </div>
               <p className={styles.subtitle}>{t('dashboard.subtitle')}</p>
+              {loadError && <p role="alert">{loadError}</p>}
             </div>
             <div className={styles.headerActions}>
             </div>
@@ -129,10 +90,10 @@ export default function DashboardPage() {
               <div className={styles.kpiInfo}>
                 <div className={styles.kpiLabel} style={{ color: '#d97706', opacity: 0.85 }}>{t('dashboard.averageScore')}</div>
                 <div className={styles.kpiValueRow}>
-                  <span className={styles.kpiValue}>{avgCriteriaScore}%</span>
+                  <span className={styles.kpiValue}>{avgCriteriaScore == null ? 'N/A' : `${avgCriteriaScore}%`}</span>
                 </div>
                 <div className={styles.kpiProgressBar}>
-                  <div className={styles.kpiProgressFill} style={{ width: `${avgCriteriaScore}%`, background: '#f59e0b' }}></div>
+                  <div className={styles.kpiProgressFill} style={{ width: `${avgCriteriaScore ?? 0}%`, background: '#f59e0b' }}></div>
                 </div>
               </div>
             </div>

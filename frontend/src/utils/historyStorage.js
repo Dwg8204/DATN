@@ -62,6 +62,27 @@ export function getHistoryEntries() {
   }
 }
 
+/** Remove only legacy Reading results kept on this device. Server attempts are unaffected. */
+export function purgeLegacyReadingHistory() {
+  try {
+    const existing = readHistory();
+    const reading = existing.filter(entry => entry?.skill === 'reading');
+    if (!reading.length) return 0;
+    for (const entry of reading) {
+      if (typeof entry.id === 'string' && /^hist_[\w-]+$/.test(entry.id)) {
+        localStorage.removeItem(`history_data_${entry.id}`);
+      }
+      const sessionId = typeof entry.reviewUrl === 'string'
+        ? /^\/reading\/result\/(sess-[\w-]+)$/.exec(entry.reviewUrl)?.[1] : null;
+      if (sessionId) localStorage.removeItem(sessionId);
+    }
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(existing.filter(entry => entry?.skill !== 'reading')));
+    return reading.length;
+  } catch {
+    return 0;
+  }
+}
+
 export function clearHistory() {
   return writeHistory(() => localStorage.removeItem(HISTORY_KEY));
 }

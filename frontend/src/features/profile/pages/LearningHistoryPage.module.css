@@ -94,17 +94,14 @@
   font-size: 14px;
   outline: none;
 }
+.select.select :global(button) { background: #fff; color: #000; }
+.select.select :global(button:hover) { background: #fff; }
 
 .historyList {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
-
-.sourceNote, .browserHistory > p { color: var(--text-secondary); font-size: 14px; }
-.browserHistory { margin-top: 32px; padding-top: 20px; border-top: 1px solid #e2e8f0; }
-.browserHistory h3 { margin: 0 0 8px; font-size: 18px; }
-.browserHistory > p { margin: 0 0 16px; }
 
 .card {
   border: 1px solid #e2e8f0;
