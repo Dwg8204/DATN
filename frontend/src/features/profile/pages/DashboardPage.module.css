@@ -455,3 +455,26 @@
   height: 300px;
   width: 100%;
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); }
+:global([data-theme="dark"]) .title { color: var(--text-primary); }
+:global([data-theme="dark"]) .badge { background: var(--bg-hover); color: var(--text-muted); }
+:global([data-theme="dark"]) .subtitle { color: var(--text-muted); }
+:global([data-theme="dark"]) .btnExport { background: var(--bg-surface); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .btnExport:hover { background: var(--bg-hover); }
+:global([data-theme="dark"]) .kpiCard { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .kpiLabel { color: var(--text-muted); }
+:global([data-theme="dark"]) .kpiDesc { color: var(--text-muted); }
+:global([data-theme="dark"]) .kpiProgressBar { background: var(--bg-hover); }
+:global([data-theme="dark"]) .filterBar { background: var(--bg-surface); }
+:global([data-theme="dark"]) .filterLabel { color: var(--text-muted); }
+:global([data-theme="dark"]) .searchInput { background: var(--bg-hover); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .filterSelect { background: var(--bg-hover); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .filterBtn { background: var(--bg-hover); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .filterBtn:hover { background: var(--bg-surface); }
+:global([data-theme="dark"]) .pillLabel { color: var(--text-muted); }
+:global([data-theme="dark"]) .skillPill { background: var(--bg-hover); color: var(--text-primary); }
+:global([data-theme="dark"]) .skillPill:hover { background: var(--border); }
+:global([data-theme="dark"]) .chartContainerFull { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .chartContainerFull h3 { color: var(--text-primary); }

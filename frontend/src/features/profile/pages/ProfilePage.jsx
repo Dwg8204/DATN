@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { useAuth } from '../../../context/AuthContext';
@@ -24,6 +24,15 @@ export default function ProfilePage() {
   const [avatarBase64, setAvatarBase64] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName || '');
+      setLastName(user.lastName || '');
+      setBio(user.bio || '');
+      setPhone(user.phone || '');
+    }
+  }, [user]);
 
   const [showConfirm, setShowConfirm] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
