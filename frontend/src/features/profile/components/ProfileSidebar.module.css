@@ -1,0 +1,260 @@
+.sidebar {
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 80px;
+  align-self: flex-start;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 6px 0;
+}
+
+.avatar {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.userDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+.name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+  line-height: 32px;
+}
+
+.email {
+  font-size: 16px;
+  color: #4F4F4F;
+  line-height: 28px;
+}
+
+.divider {
+  height: 1px;
+  background-color: #f1f5f9;
+  margin: 16px 0;
+}
+
+.goalGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.goalTile {
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #f1f5f9;
+  text-align: left;
+}
+
+.goalTileTitle {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.goalTileValuePrimary {
+  font-size: 14px;
+  font-weight: 800;
+  color: #bd1f36;
+}
+
+.goalTileValue {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.goalTileUnit {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  font-family: sans-serif;
+}
+
+.btnSetGoal {
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px;
+  background-color: #bd1f36;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btnSetGoal:hover {
+  background-color: #a11a2e;
+}
+
+.navMenu {
+  display: none;
+}
+
+.navItem {
+  width: 100%;
+  height: 52px;
+  border-radius: 4px;
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  cursor: pointer;
+  color: #4F4F4F;
+  font-size: 16px;
+  font-weight: 400;
+  text-align: left;
+}
+
+.navItem:hover {
+  background-color: rgba(0,0,0,0.05);
+}
+
+.active {
+  background-color: #FFF9F1;
+  color: #85182a;
+  font-weight: 700;
+}
+
+.navIcon {
+  margin-right: 16px;
+}
+
+.mobileHeader {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+    position: static;
+    overflow: visible;
+  }
+  .mobileHidden {
+    display: none !important;
+  }
+  .navMenu {
+    display: none !important;
+  }
+  .mobileHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #FFFFFF;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 16px;
+  }
+  .mobileTitle {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+  }
+  .mobileMenuContainer {
+    position: relative;
+  }
+  .mobileMenuBtn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #4b5563;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mobileDropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    min-width: 220px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+  }
+  .open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  .dropdownItem {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    background: transparent;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4b5563;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+  .dropdownItem:hover, .dropdownItem.active {
+    background: #f1f5f9;
+    color: #bd1f36;
+  }
+}
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .sidebar { background: transparent; }
+:global([data-theme="dark"]) .name { color: var(--text-primary); }
+:global([data-theme="dark"]) .email { color: var(--text-muted); }
+:global([data-theme="dark"]) .divider { background-color: var(--border); }
+:global([data-theme="dark"]) .goalGrid { border-top-color: var(--border); }
+:global([data-theme="dark"]) .goalTile { background: var(--bg-hover); border-color: var(--border); }
+:global([data-theme="dark"]) .goalTileTitle { color: var(--text-muted); }
+:global([data-theme="dark"]) .goalTileValuePrimary { color: var(--brand-hover); }
+:global([data-theme="dark"]) .goalTileValue { color: var(--text-primary); }
+:global([data-theme="dark"]) .goalTileUnit { color: var(--text-muted); }
+:global([data-theme="dark"]) .btnSetGoal { background-color: var(--brand); }
+:global([data-theme="dark"]) .navItem { color: var(--text-muted); }
+:global([data-theme="dark"]) .navItem:hover { background-color: var(--bg-hover); }
+:global([data-theme="dark"]) .active { background-color: var(--brand-subtle); color: var(--brand-hover); }
+:global([data-theme="dark"]) .mobileHeader { background: var(--bg-surface); }
+:global([data-theme="dark"]) .mobileTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .mobileMenuBtn { color: var(--text-muted); }
+:global([data-theme="dark"]) .mobileDropdown { background: var(--bg-surface); }
+:global([data-theme="dark"]) .dropdownItem { color: var(--text-muted); }
+:global([data-theme="dark"]) .dropdownItem:hover { background: var(--bg-hover); color: var(--brand-hover); }

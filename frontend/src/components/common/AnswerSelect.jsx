@@ -12,6 +12,7 @@ export default function AnswerSelect({
   ariaLabel = 'Select an answer',
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const rootRef = useRef(null);
   const normalizedOptions = useMemo(() => options.map((option) => (
     typeof option === 'object' ? option : { value: option, label: option }
@@ -30,6 +31,11 @@ export default function AnswerSelect({
     onChange?.({ target: { value: nextValue } });
     setIsOpen(false);
   };
+  const openAtSelection = () => {
+    const selectedIndex = normalizedOptions.findIndex(option => String(option.value) === String(value));
+    setActiveIndex(Math.max(0, selectedIndex));
+    setIsOpen(true);
+  };
 
   return (
     <div ref={rootRef} className={`${styles.selectRoot} ${className}`}>
@@ -40,9 +46,16 @@ export default function AnswerSelect({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         className={`${styles.select} ${value !== '' ? styles.hasValue : ''} ${styles[status] || ''}`}
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={() => isOpen ? setIsOpen(false) : openAtSelection()}
         onKeyDown={(event) => {
-          if (event.key === 'Escape') setIsOpen(false);
+          if (event.key === 'Escape') { setIsOpen(false); return; }
+          if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+            event.preventDefault();
+            if (!normalizedOptions.length) return;
+            if (!isOpen) return openAtSelection();
+            setActiveIndex(index => (index + (event.key === 'ArrowDown' ? 1 : -1) + normalizedOptions.length) % normalizedOptions.length);
+          }
+          if ((event.key === 'Enter' || event.key === ' ') && isOpen) { event.preventDefault(); handleSelect(normalizedOptions[activeIndex]?.value); }
         }}
       >
         <span className={`${styles.selectedText} ${!selectedOption ? styles.placeholder : ''}`}>
@@ -52,7 +65,7 @@ export default function AnswerSelect({
       </button>
       {isOpen && !disabled && (
         <div className={styles.menu} role="listbox" aria-label={ariaLabel}>
-          {normalizedOptions.map((option) => {
+          {normalizedOptions.map((option, index) => {
             const isSelected = String(option.value) === String(value);
             return (
               <button
@@ -60,7 +73,8 @@ export default function AnswerSelect({
                 role="option"
                 aria-selected={isSelected}
                 key={String(option.value)}
-                className={`${styles.option} ${isSelected ? styles.optionSelected : ''}`}
+                className={`${styles.option} ${isSelected || index === activeIndex ? styles.optionSelected : ''}`}
+                onMouseEnter={() => setActiveIndex(index)}
                 onClick={() => handleSelect(option.value)}
               >
                 {option.label}

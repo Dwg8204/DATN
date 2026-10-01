@@ -34,3 +34,9 @@
     line-height: 22px;
   }
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .instructionText {
+  color: var(--text-primary);
+}

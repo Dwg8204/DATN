@@ -1,45 +1,27 @@
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { SKILL_NAVIGATION, skillMenuItems } from '../../config/skillNavigation';
 import styles from './SkillSubNavigation.module.css';
 
-const skillNavigation = [
-  {
-    pathPrefix: '/writing',
-    label: 'Writing',
+const auxiliaryNavigation = [{
+    pathPrefix: '/dictation',
+    label: 'Dictation',
     items: [
-      { label: 'Writing Overview', to: '/writing/overview' },
-      { label: 'Writing Test', to: '/writing/tests' },
+      { labelKey: 'common.practice', to: '/dictation', mode: 'dictation' },
+      { labelKey: 'nav.flashcard', to: '/dictation?mode=flashcard', mode: 'flashcard' },
+      { labelKey: 'nav.vocabularyNotebook', to: '/dictation?mode=notebook', mode: 'notebook' },
     ],
-  },
-  {
-    pathPrefix: '/grammar-vocab',
-    label: 'Grammar & Vocabulary',
-    items: [
-      { label: 'Grammar & Vocab Overview', to: '/grammar-vocab/overview' },
-      { label: 'Grammar & Vocab Test', to: '/grammar-vocab/tests' },
-    ],
-  },
-  {
-    pathPrefix: '/reading',
-    label: 'Reading',
-    items: [
-      { label: 'Reading Overview', to: '/reading' },
-      { label: 'Reading Test', to: '/reading/tests' },
-    ],
-  },
-  {
-    pathPrefix: '/listening',
-    label: 'Listening',
-    items: [
-      { label: 'Listening Overview', to: '/listening/overview' },
-      { label: 'Listening Feed', to: '/listening/feed' },
-      { label: 'Listening Test', to: '/listening/tests' },
-    ],
-  },
-];
+  }];
 
 export default function SkillSubNavigation() {
-  const { pathname } = useLocation();
-  const navigation = skillNavigation.find(({ pathPrefix }) => pathname.startsWith(pathPrefix));
+  const { t } = useTranslation();
+  const { pathname, search } = useLocation();
+  const skill = SKILL_NAVIGATION.find(({ pathPrefix }) => pathname.startsWith(pathPrefix));
+  const navigation = skill
+    ? { ...skill, label: t(`nav.${skill.key}`), items: skillMenuItems(skill, t) }
+    : auxiliaryNavigation.find(({ pathPrefix }) => pathname.startsWith(pathPrefix));
+  const requestedMode = new URLSearchParams(search).get('mode');
+  const dictationMode = ['flashcard', 'notebook'].includes(requestedMode) ? requestedMode : 'dictation';
 
   if (!navigation) return null;
 
@@ -50,9 +32,9 @@ export default function SkillSubNavigation() {
           key={item.to}
           to={item.to}
           end={item.to === '/reading'}
-          className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}
+          className={({ isActive }) => `${styles.link} ${navigation.pathPrefix === '/dictation' ? dictationMode === item.mode ? styles.active : '' : isActive ? styles.active : ''}`}
         >
-          {item.label}
+          {item.labelKey ? t(item.labelKey) : item.label}
         </NavLink>
       ))}
     </nav>

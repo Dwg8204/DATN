@@ -7,6 +7,7 @@ import FeatureShowcase from '../components/shared/FeatureShowcase/FeatureShowcas
 import ReviewCard from '../components/shared/ReviewCard/ReviewCard';
 import PaginationDots from '../components/common/PaginationDots';
 import styles from './HomePage.module.css';
+import { useTranslation } from 'react-i18next';
 
 const skillCards = [
   {
@@ -112,6 +113,7 @@ const reviews = [
 ];
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeReview, setActiveReview] = useState(0);
   const reviewCarouselRef = useRef(null);
@@ -153,11 +155,11 @@ export default function HomePage() {
   return (
     <div className={styles.page}>
       {/* Hero Banner */}
-      <HeroBanner buttonText={null} />
+      <HeroBanner title={t('home.heroTitle')} description={t('home.heroDescription')} buttonText={null} />
 
       {/* Choose a Skill to Practice */}
       <div className={styles.skillsSection}>
-        <span className={styles.skillsTitle}>Choose a Skill to Practice</span>
+        <span className={styles.skillsTitle}>{t('home.chooseSkill')}</span>
         <div className={styles.skillsGrid}>
           {skillCards.map((card) => (
             <SkillCard
@@ -171,24 +173,28 @@ export default function HomePage() {
       </div>
 
       {/* Key Features */}
-      <FeatureShowcase />
+      <FeatureShowcase sectionTitle={t('home.keyFeatures')} features={[
+        { title: t('home.feature1Title'), description: t('home.feature1Description'), image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/jie2waj6_expires_30_days.png' },
+        { title: t('home.feature2Title'), description: t('home.feature2Description'), image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/jie2waj6_expires_30_days.png' },
+        { title: t('home.feature3Title'), description: t('home.feature3Description'), image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/jie2waj6_expires_30_days.png' },
+      ]} />
 
       {/* Review Section */}
       <div className={styles.reviewSection}>
         <div className={styles.reviewContent}>
-          <span className={styles.reviewTitle}>Review</span>
+          <span className={styles.reviewTitle}>{t('home.reviews')}</span>
           <div className={styles.reviewCarouselFrame}>
-            <button type="button" className={`${styles.reviewArrow} ${styles.reviewArrowPrevious}`} aria-label="Previous review" onClick={() => goToReview(activeReview - 1)}>
+            <button type="button" className={`${styles.reviewArrow} ${styles.reviewArrowPrevious}`} aria-label={t('home.previousReview')} onClick={() => goToReview(activeReview - 1)}>
               <ChevronLeft aria-hidden="true" />
             </button>
             <div ref={reviewCarouselRef} className={styles.reviewList} onScroll={handleReviewScroll}>
-              {reviews.map((review) => (
+              {reviews.map((review, index) => (
                 <div key={review.name} className={styles.reviewSlide}>
-                  <ReviewCard {...review} />
+                  <ReviewCard {...review} comment={t(`home.review${index + 1}`)} />
                 </div>
               ))}
             </div>
-            <button type="button" className={`${styles.reviewArrow} ${styles.reviewArrowNext}`} aria-label="Next review" onClick={() => goToReview(activeReview + 1)}>
+            <button type="button" className={`${styles.reviewArrow} ${styles.reviewArrowNext}`} aria-label={t('home.nextReview')} onClick={() => goToReview(activeReview + 1)}>
               <ChevronRight aria-hidden="true" />
             </button>
           </div>

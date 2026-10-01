@@ -115,3 +115,13 @@
     padding: 11px 20px;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .titleContainer h1 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .divider { background: var(--text-primary); }
+:global([data-theme="dark"]) .contentBlock h2 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .contentBlock h3 { color: var(--text-primary); }
+:global([data-theme="dark"]) .contentBlock p { color: var(--text-primary); }
+:global([data-theme="dark"]) .documents span { color: var(--brand-hover); }
+:global([data-theme="dark"]) .testButton { background: var(--brand); }

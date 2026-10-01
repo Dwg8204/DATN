@@ -1,0 +1,1 @@
+.steps { margin-bottom: 20px; display: flex; gap: 8px; overflow-x: auto; }.steps button { min-width: 100px; padding: 9px 14px; border: 1px solid #ddd; border-radius: 8px; background: #fff; font-weight: 700; cursor: pointer; }.steps .active { color: #fff; border-color: var(--button-primary); background: var(--button-primary); }

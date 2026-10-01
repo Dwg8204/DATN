@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { createListeningDraft } from '../src/features/admin/listening/data/listeningTestModel.js';
+import { validateListeningPart, validateListeningTest } from '../src/features/admin/listening/validation/listeningValidation.js';
+import { deleteStoredListeningTest, getStoredListeningTests, saveStoredListeningTest } from '../src/features/admin/listening/data/listeningTestStorage.js';
+
+function complete(mode='full') {
+  const draft=createListeningDraft(mode);draft.details.title='Listening QA';
+  draft.parts[1].questions=draft.parts[1].questions.map((q,i)=>({...q,audioUrl:'data:audio/mp3;base64,QA',text:`Question ${i+1}?`,options:['First','Second','Third'],correctAnswer:i%3}));
+  Object.assign(draft.parts[2],{audioUrl:'data:audio/mp3;base64,QA',options:['One','Two','Three','Four','Five'],answers:['One','Two','Three','Four']});
+  Object.assign(draft.parts[3],{audioUrl:'data:audio/mp3;base64,QA',context:'Listen to two speakers.'});draft.parts[3].statements=draft.parts[3].statements.map((s,i)=>({...s,text:`Opinion ${i+1}`,answer:draft.parts[3].options[i%3]}));
+  draft.parts[4].recordings=draft.parts[4].recordings.map((r,i)=>({...r,audioUrl:'data:audio/mp3;base64,QA',context:`Context ${i+1}`,subQuestions:r.subQuestions.map((q,j)=>({...q,text:`Question ${i+1}.${j+1}`,options:['First','Second','Third'],correctAnswer:j}))}));return draft;
+}
+test('empty Listening draft is rejected',()=>assert.ok(validateListeningTest(createListeningDraft()).length));
+test('each part and full test accepts the Listening exam schema',()=>{for(const mode of ['part1','part2','part3','part4','full'])assert.deepEqual(validateListeningTest(complete(mode)),[])});
+test('Part 1 reports only the first incomplete question',()=>{const draft=complete();draft.parts[1].questions[3].audioUrl='';draft.parts[1].questions[5].text='';assert.deepEqual(validateListeningPart(1,draft.parts[1]),['Question 4: add a valid audio URL or upload an audio file.'])});
+test('Part 2 requires unique mappings and keeps one unused statement',()=>{const draft=complete();draft.parts[2].answers[3]='One';assert.ok(validateListeningPart(2,draft.parts[2])[0].includes('different statement'))});
+test('all Listening parts enforce their fixed item counts',()=>{const draft=complete();draft.parts[1].questions.pop();assert.ok(validateListeningPart(1,draft.parts[1])[0].includes('exactly 13'));draft.parts[2].options.pop();assert.ok(validateListeningPart(2,draft.parts[2])[0].includes('exactly five'));draft.parts[3].statements.pop();assert.ok(validateListeningPart(3,draft.parts[3])[0].includes('exactly four'));draft.parts[4].recordings.pop();assert.ok(validateListeningPart(4,draft.parts[4])[0].includes('exactly two'))});
+test('Listening validation rejects malformed media, duplicate content and invalid answer indexes',()=>{const invalidAudio=complete('part1');invalidAudio.parts[1].questions[0].audioUrl='not-an-audio-location';assert.ok(validateListeningTest(invalidAudio)[0].includes('valid audio'));const duplicate=complete('part3');duplicate.parts[3].statements[1].text=duplicate.parts[3].statements[0].text;assert.ok(validateListeningTest(duplicate)[0].includes('must not be duplicated'));const answer=complete('part4');answer.parts[4].recordings[0].subQuestions[0].correctAnswer=8;assert.ok(validateListeningTest(answer)[0].includes('valid correct answer'))});
+test('storage creates, updates and deletes Listening tests',()=>{const memory=new Map();globalThis.localStorage={getItem:key=>memory.get(key)||null,setItem:(key,value)=>memory.set(key,value)};globalThis.window={dispatchEvent:()=>{}};const saved=saveStoredListeningTest(complete('part4'));assert.equal(saved.section,'Part 4');assert.equal(getStoredListeningTests().length,1);saveStoredListeningTest({...saved,details:{...saved.details,title:'Edited Listening'}});assert.equal(getStoredListeningTests()[0].name,'Edited Listening');deleteStoredListeningTest(saved.id);assert.equal(getStoredListeningTests().length,0)});

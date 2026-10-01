@@ -48,6 +48,8 @@
   cursor: pointer;
 }
 
+.backBtn:disabled, .nextBtn:disabled { cursor: not-allowed; opacity: .6; }
+
 @media (max-width: 700px) {
   .submitModal {
     width: calc(100% - 32px);
@@ -74,4 +76,23 @@
     padding: 10px 16px;
     font-size: 14px;
   }
+}
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .modalOverlay {
+  background: var(--overlay);
+}
+
+:global([data-theme="dark"]) .submitModal {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .modalText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .nextBtn {
+  background: var(--text-primary);
+  color: var(--bg-surface);
 }

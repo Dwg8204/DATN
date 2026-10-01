@@ -1,16 +1,25 @@
+import Pagination from '../../../components/common/Pagination';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
 import { getCompletedSpeakingTests } from '../utils/speakingSessionStorage';
+import { getAdminSpeakingList } from '../services/speakingTestRepository';
 import styles from './SpeakingTestListPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const TABS = [
   { id: 'part1', label: 'Part 1' },
   { id: 'part2', label: 'Part 2' },
   { id: 'part3', label: 'Part 3' },
   { id: 'part4', label: 'Part 4' },
-  { id: 'full', label: 'Full Speaking test' },
+  { id: 'full', label: 'Full test' },
 ];
+const LIST_QUERY_SCHEMA = {
+  activeTab: { ...queryParam.enum(TABS.map(tab => tab.id), 'part1'), param: 'part' },
+  query: { ...queryParam.string(''), param: 'q' },
+  page: queryParam.positiveInt(1),
+  pageSize: { ...queryParam.positiveInt(() => window.innerWidth <= 700 ? 5 : 10, 100), param: 'size' },
+};
 
 const MOCK_TESTS = [
   {
@@ -52,11 +61,21 @@ const MOCK_TESTS = [
 
 export default function SpeakingTestListPage() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('part1');
+  const [urlState, setUrlState] = useUrlQueryState(LIST_QUERY_SCHEMA);
+  const { activeTab, page, pageSize, query } = urlState;
+  const setActiveTab = value => setUrlState({ activeTab: value, page: 1 });
+  const setQuery = value => setUrlState({ query: value, page: 1 });
+  const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   const [completedTests, setCompletedTests] = useState({});
+  const [adminTests, setAdminTests] = useState(getAdminSpeakingList);
 
   useEffect(() => {
     setCompletedTests(getCompletedSpeakingTests());
+    const refresh = () => setAdminTests(getAdminSpeakingList());
+    window.addEventListener('speaking-tests-updated', refresh);
+    window.addEventListener('storage', refresh);
+    return () => { window.removeEventListener('speaking-tests-updated', refresh); window.removeEventListener('storage', refresh); };
   }, []);
 
   const handleDoTestPart = (testId, partNum) => {
@@ -73,7 +92,7 @@ export default function SpeakingTestListPage() {
     navigate(`/speaking/detail-result?testId=${test.id}&isFull=${isFull}${!isFull ? `&part=${partNum}` : ''}`);
   };
 
-  const filteredTests = MOCK_TESTS.filter(test => test.tabId === activeTab);
+  const filteredTests = [...adminTests, ...MOCK_TESTS].filter(test => test.tabId === activeTab && test.title.toLowerCase().includes(query.trim().toLowerCase()));
 
   const testsToRender = filteredTests.map(test => {
     const comp = completedTests[test.id];
@@ -106,11 +125,11 @@ export default function SpeakingTestListPage() {
             </svg>
           </div>
         </div>
-        <div className={styles.tabsGrid}>
+        <div className={styles.tabsContainer}>
           {TABS.map((tab) => (
             <div
               key={tab.id}
-              className={`${styles.tabItem} ${tab.id === 'full' ? styles.tabItemSpan2 : ''} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
+              className={`${styles.tabItem} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
               onClick={() => setActiveTab(tab.id)}
             >
               <span className={styles.tabText}>{tab.label}</span>
@@ -128,7 +147,7 @@ export default function SpeakingTestListPage() {
                   <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <input type="text" className={styles.searchInput} placeholder="Search by test name." />
+                <input type="text" className={styles.searchInput} placeholder="Search by test name." value={query} onChange={e => setQuery(e.target.value)} />
               </div>
             </div>
             <button className={styles.searchBtn}>
@@ -143,13 +162,13 @@ export default function SpeakingTestListPage() {
                   No tests available for this part yet.
                 </div>
               ) : (
-                testsToRender.map((test) => (
+                testsToRender.slice((page - 1) * pageSize, page * pageSize).map((test) => (
                   <div key={test.id} className={styles.testCard}>
                     <div className={styles.cardTop}>
                       <div className={styles.cardTitle}>{test.title}</div>
                       <div className={styles.cardInfoRow}>
                         <div className={styles.cardImageWrapper}>
-                          <img className={styles.cardImage} src="https://placehold.co/157x79" alt="Thumbnail" />
+                          <img className={styles.cardImage} src={test.thumbnail || 'https://placehold.co/157x79'} alt="Thumbnail" />
                         </div>
                         {test.status === 'Completed' ? (
                           <div className={styles.cardDetails}>
@@ -216,6 +235,7 @@ export default function SpeakingTestListPage() {
             </div>
           </div>
 
+          <Pagination page={page} totalItems={filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper} style={{ marginTop: '32px' }}>
             <CommentSection />
           </div>

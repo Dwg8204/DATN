@@ -1,0 +1,61 @@
+.page { padding: 38px 24px 64px; background: #fffefc; }
+.page main { width: min(1000px, 100%); margin: auto; display: grid; gap: 24px; }
+.notice { padding: 13px 17px; border: 1px solid #e0b94f; border-radius: 8px; color: #664d03; background: #fff5d6; }
+.page h1 { margin: 0 0 8px; color: #a11d33; text-align: center; font-size: 30px; }
+.panel, .pending {
+  padding: 22px 24px;
+  border: 1px solid #868686;
+  border-radius: 10px;
+  background: #fff;
+}
+.panel { display: grid; gap: 16px; }
+.panel h2, .pending h2 { margin: 0; color: #a11d33; font-size: 20px; }
+.panel > p, .pending p { margin: 0; font-size: 16px; line-height: 27px; }
+.pending { display: flex; align-items: center; gap: 18px; border-color: #e0b94f; background: #fff9e9; }
+.pendingIcon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #da1e21;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+}
+.pending p { margin-top: 6px; color: #5f6368; }
+.summaryList { margin: 0; display: grid; gap: 12px; }
+.summaryList > div { padding-bottom: 10px; display: flex; justify-content: space-between; gap: 24px; border-bottom: 1px solid #eee; }
+.summaryList > div:last-child { padding-bottom: 0; border-bottom: 0; }
+.summaryList dt { font-weight: 700; }
+.summaryList dd { margin: 0; text-align: right; }
+.actions { display: flex; justify-content: center; gap: 14px; }
+.actions button { min-height: 44px; padding: 10px 26px; border: 2px solid #da1e21; border-radius: 8px; color: #da1e21; background: #fff; font-weight: 700; cursor: pointer; }
+.actions button:first-child { color: #fff; background: #da1e21; }
+@media (max-width: 600px) {
+  .page { padding: 24px 12px 82px; }
+  .page main { gap: 18px; }
+  .page h1 { font-size: 24px; line-height: 32px; }
+  .panel, .pending { padding: 17px; }
+  .pending { align-items: flex-start; }
+  .summaryList > div { flex-direction: column; gap: 4px; }
+  .summaryList dd { text-align: left; }
+  .actions { flex-direction: column; }
+  .actions button { width: 100%; }
+}
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .page h1 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .panel { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .panel h2 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .panel > p { color: var(--text-primary); }
+:global([data-theme="dark"]) .pending { background: var(--warning-bg); border-color: var(--warning); }
+:global([data-theme="dark"]) .pending h2 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .pending p { color: var(--text-secondary); }
+:global([data-theme="dark"]) .notice { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
+:global([data-theme="dark"]) .summaryList > div { border-bottom-color: var(--border); }
+:global([data-theme="dark"]) .actions button { background: var(--bg-surface); color: var(--brand-hover); border-color: var(--brand-hover); }
+:global([data-theme="dark"]) .actions button:first-child { background: var(--brand); color: var(--bg-surface); border-color: var(--brand); }

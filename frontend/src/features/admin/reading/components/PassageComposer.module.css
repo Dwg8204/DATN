@@ -1,0 +1,21 @@
+.composer { margin: 20px 0; border: 1px solid #d9d9d9; border-radius: 9px; background: #fff; overflow: hidden; }
+.composer > header { padding: 14px 16px; background: #f6f6f2; }
+.composer > header div { display: grid; gap: 4px; }
+.composer > header span,
+.composer > small { color: #687181; font-size: 12px; }
+.toolbar { padding: 8px; display: flex; gap: 5px; overflow-x: auto; border-block: 1px solid #e2e2e2; background: #fafafa; }
+.toolbar button { width: 36px; height: 36px; flex: 0 0 auto; display: grid; place-items: center; border: 1px solid transparent; border-radius: 5px; background: #fff; color: #333; cursor: pointer; }
+.toolbar button:hover { border-color: #da1e21; color: #a91d31; }
+.toolbar svg { width: 17px; }
+.toolbar .gapButton { width: auto; margin-left: auto; padding: 0 14px; color: #fff; background: #da1e21; font-weight: 700; white-space: nowrap; }
+.editor { min-height: 260px; padding: 20px; outline: 0; font-size: 16px; line-height: 1.75; white-space: pre-wrap; overflow-wrap: anywhere; }
+.editor p { margin: 0 0 1em; }
+.editor blockquote { margin: 10px 0; padding-left: 24px; border-left: 3px solid #ddd; }
+.editor:empty::before { content: attr(data-placeholder); color: #999; }
+.editor [data-gap] { display: inline-block; margin: 2px 5px; padding: 3px 9px; border: 1px solid #da1e21; border-radius: 999px; background: #fff0f1; color: #a91d31; font-size: 13px; font-weight: 700; user-select: all; }
+.composer > small { display: block; padding: 0 16px 14px; }
+@media (max-width: 700px) {
+  .editor { min-height: 220px; padding: 15px; font-size: 16px; }
+  .toolbar .gapButton { margin-left: 0; }
+  .composer > header { padding: 12px; }
+}

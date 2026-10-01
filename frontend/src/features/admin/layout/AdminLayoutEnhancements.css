@@ -1,0 +1,22 @@
+.adminHomeBrand { text-decoration: none; cursor: pointer; }
+.adminHomeBrand img { transition: transform .2s ease, opacity .2s ease; }
+.adminHomeBrand:hover img { transform: scale(1.05); opacity: .8; }
+.adminHomeBrand:focus-visible { outline: 2px solid #e51d2a; outline-offset: -3px; }
+.adminTopbarTitle { display: flex; align-items: center; gap: 12px; }
+.adminMenuToggle { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid #ddd; border-radius: 7px; background: #fff; cursor: pointer; }
+.adminMenuToggle:hover { color: #e51d2a; background: #fff5f5; }
+.adminMenuToggle svg { width: 19px; }
+.adminShellCollapsed { grid-template-columns: 76px minmax(0, 1fr) !important; }
+.adminSidebarCollapsed .adminHomeBrand { height: 68px; padding-inline: 10px; }
+.adminSidebarCollapsed .adminHomeBrand img { width: 56px; }
+.adminSidebarCollapsed [class*="_account_"] { display: none; }
+.adminSidebarCollapsed [class*="_navigation_"] { padding-inline: 10px; }
+.adminSidebarCollapsed [class*="_navItem_"] { padding-inline: 0; justify-content: center; }
+.adminSidebarCollapsed [class*="_navItem_"] span,
+.adminSidebarCollapsed [class*="_subnav_"] { display: none; }
+@media(max-width:600px){
+  .adminShellCollapsed { grid-template-columns: 0 minmax(0,1fr) !important; }
+  .adminSidebarCollapsed { width: 0; overflow: hidden; border: 0; }
+  .adminTopbarTitle { gap: 7px; }
+  .adminMenuToggle { width: 34px; height: 34px; }
+}

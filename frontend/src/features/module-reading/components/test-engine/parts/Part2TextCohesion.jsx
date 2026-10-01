@@ -1,4 +1,5 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
+import { shuffleSentences } from '../../../utils/shuffleSentences';
 import { ReadingTestContext } from '../../../context/ReadingTestContext';
 import {
   DndContext,
@@ -11,6 +12,7 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
+import RichTextContent from '../../../../../components/common/RichTextContent';
 
 const DraggableSentence = ({ id, sentence, isSelected, onSelect }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -32,7 +34,7 @@ const DraggableSentence = ({ id, sentence, isSelected, onSelect }) => {
         isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300'
       }`}
     >
-      <span className="text-sm font-medium text-gray-800 flex-1">{sentence.content}</span>
+      <RichTextContent className="text-sm font-medium text-gray-800 flex-1" value={sentence.content}/>
       <GripVertical className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" />
     </div>
   );
@@ -86,7 +88,7 @@ const DroppableGap = ({
           isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-black'
         }`}
       >
-        <span className="text-sm font-semibold text-black flex-1">{droppedSentence.content}</span>
+        <RichTextContent className="text-sm font-semibold text-black flex-1" value={droppedSentence.content}/>
       </div>
     );
   }
@@ -105,7 +107,8 @@ const DroppableGap = ({
 };
 
 const Part2TextCohesion = ({ data }) => {
-  const { answers, handleAnswerChange } = useContext(ReadingTestContext);
+  const shuffled = useMemo(() => shuffleSentences(data?.sentences || []), [data?.sentences]);
+  const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   const [activeId, setActiveId] = useState(null);
   const [selectedSentenceId, setSelectedSentenceId] = useState(null);
   const sensors = useSensors(
@@ -154,7 +157,8 @@ const Part2TextCohesion = ({ data }) => {
   };
 
   const activeSentence = activeId ? data.sentences.find(s => s.id === activeId) : null;
-  const availableSentences = data.sentences.filter(s => !answers[s.id]);
+  const openingSentence = data.sentences.find(s => s.correctPosition === 1);
+  const availableSentences = shuffled.filter(s => !answers[s.id]);
 
   return (
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -165,7 +169,7 @@ const Part2TextCohesion = ({ data }) => {
           {/* Left: Gaps */}
           <div className="w-full md:w-1/2 flex flex-col">
             <div className="mb-4">
-              <h3 className="font-bold text-gray-900 mb-1">Question 2 of 5</h3>
+              <h3 className="font-bold text-gray-900 mb-1">Questions 6–10</h3>
               <p className="font-bold text-gray-800 text-sm">{data.title || "Report on the noise level"}</p>
               <p className="mt-2 text-xs text-gray-600 md:hidden">
                 On mobile, tap a sentence, then tap a position. Tap a placed sentence and another position to swap them.
@@ -173,9 +177,9 @@ const Part2TextCohesion = ({ data }) => {
             </div>
             
             <div className="flex-1 w-full space-y-2">
-              {/* Fake first sentence done for you */}
+              {/* The opening sentence is fixed and is not a draggable answer. */}
               <div className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 min-h-[60px] w-full flex items-center shadow-inner my-3">
-                <span className="text-sm font-medium text-gray-800">{data.sentences[0]?.content || "The report provides information about the really problems on the current road."}</span>
+                <RichTextContent className="text-sm font-medium text-gray-800" value={openingSentence?.content}/>
               </div>
               
               {/* Droppable gaps */}
@@ -193,6 +197,7 @@ const Part2TextCohesion = ({ data }) => {
                       hasSelectedSentence={Boolean(selectedSentenceId)}
                       isSelected={selectedSentenceId === sentence?.id}
                     />
+                    {renderAnswerReveal?.(position)}
                   </div>
                 );
               })}
@@ -226,7 +231,7 @@ const Part2TextCohesion = ({ data }) => {
       <DragOverlay>
         {activeSentence ? (
           <div className="bg-white border-2 border-blue-400 shadow-xl rounded-lg p-4 flex items-center opacity-90 scale-105 cursor-grabbing min-h-[60px] w-[min(400px,calc(100vw-32px))]">
-            <span className="text-sm font-medium text-gray-900 flex-1">{activeSentence.content}</span>
+            <RichTextContent className="text-sm font-medium text-gray-900 flex-1" value={activeSentence.content}/>
             <GripVertical className="w-4 h-4 text-blue-500 ml-2 flex-shrink-0" />
           </div>
         ) : null}

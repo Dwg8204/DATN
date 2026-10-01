@@ -152,6 +152,8 @@
   opacity: 1;
 }
 
+.submitBtn:disabled { cursor: not-allowed; opacity: .6; }
+
 @media (max-width: 700px) {
   .testFooter {
     flex-direction: column;
@@ -225,4 +227,57 @@
     font-size: 12px;
     line-height: 18px;
   }
+}
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .testFooter {
+  background: var(--bg-surface-warm);
+  border-top: 1px solid var(--shadow-sm);
+  box-shadow: 0 -2px 10px var(--shadow-sm);
+}
+
+:global([data-theme="dark"]) .leftSection {
+  background: var(--warning-bg);
+  outline: 1px solid var(--overlay);
+}
+
+:global([data-theme="dark"]) .partLabel {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .questionNode {
+  background: var(--info);
+  outline: 1px solid var(--text-primary);
+}
+
+:global([data-theme="dark"]) .nodeCurrentPage {
+  background: var(--info);
+  color: var(--bg-surface);
+  outline: 2px solid var(--text-primary);
+}
+
+:global([data-theme="dark"]) .nodeAnswered {
+  background: var(--warning);
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .arrowBtnPrev {
+  background: #334155 !important;
+}
+
+:global([data-theme="dark"]) .arrowBtnNext {
+  background: #334155 !important;
+}
+
+:global([data-theme="dark"]) .submitBtn {
+  background: var(--brand);
+}
+
+:global([data-theme="dark"]) .submitBtnText {
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .arrowBtnDisabled {
+  background: var(--text-disabled);
 }

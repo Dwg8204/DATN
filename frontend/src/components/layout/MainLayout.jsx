@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import SkillSubNavigation from './SkillSubNavigation';
+import ChatAssistantWidget from '../../features/ai-chatbot/components/ChatAssistantWidget';
 import styles from './MainLayout.module.css';
 
 export default function MainLayout() {
@@ -14,6 +15,7 @@ export default function MainLayout() {
           <Outlet />
         </main>
         <Footer />
+        <ChatAssistantWidget />
       </div>
     </div>
   );

@@ -1,11 +1,16 @@
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../context/ThemeContext';
+
+const LOGO_LIGHT = 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png';
+const LOGO_DARK  = 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1790742935/aptimate/branding/logo_white_text_transparent_v2.png';
 
 const footerLinks = [
-  { label: 'About us', to: '/#about-us' },
-  { label: 'Privacy Policy', to: '/#privacy-policy' },
-  { label: 'Terms of use', to: '/#terms-of-use' },
-  { label: 'Disclaimer', to: '/#disclaimer' },
+  { key: 'about', to: '/#about-us' },
+  { key: 'privacy', to: '/#privacy-policy' },
+  { key: 'terms', to: '/#terms-of-use' },
+  { key: 'disclaimer', to: '/#disclaimer' },
 ];
 
 const contactItems = [
@@ -16,37 +21,39 @@ const contactItems = [
 ];
 
 export default function Footer() {
+  const { t } = useTranslation();
+  const { theme } = useTheme();
   return (
     <footer className={styles.footer}>
       <div className={styles.footerLeft}>
         <div className={styles.brandCol}>
           <Link to="/">
             <img
-              src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png"
+              src={theme === 'dark' ? LOGO_DARK : LOGO_LIGHT}
               alt="AptiMate Logo"
               className={styles.footerLogo}
             />
           </Link>
           <p className={styles.brandDescription}>
-            Online Aptis preparation with realistic practice tests, instant results, and detailed answer reviews.
+            {t('footer.description')}
           </p>
           <div className={styles.linkList}>
             {footerLinks.map((link) => (
-              <Link key={link.label} to={link.to} className={styles.linkItem}>
-                {link.label}
+              <Link key={link.key} to={link.to} className={styles.linkItem}>
+                {t(`footer.${link.key}`)}
               </Link>
             ))}
           </div>
         </div>
 
         <div className={styles.contactCol}>
-          <span className={styles.contactTitle}>CONTACT</span>
+          <span className={styles.contactTitle}>{t('footer.contact')}</span>
           <div className={styles.contactList}>
             {contactItems.map((item) => {
               const content = (
                 <>
-                  <strong>{item.label}</strong>
-                  <span>{item.value}</span>
+                  <strong>{t(`footer.${item.label.toLowerCase()}`)}</strong>
+                  <span>{item.label === 'Location' ? t('footer.locationValue') : item.value}</span>
                 </>
               );
 
@@ -66,10 +73,10 @@ export default function Footer() {
 
       <div className={styles.footerRight}>
         <a className={styles.feedbackBtn} href="mailto:support@aptimate.com?subject=AptiMate%20feedback">
-          <span className={styles.feedbackBtnText}>Leave us feedback</span>
+          <span className={styles.feedbackBtnText}>{t('footer.feedback')}</span>
         </a>
         <span className={styles.copyright}>
-          Copyright ©2026 AptiMate. All rights reserved.
+          {t('footer.copyright')}
         </span>
       </div>
     </footer>

@@ -3,16 +3,16 @@
   display: flex;
   flex-direction: column;
   overflow-x: clip;
-  background: #fff;
+  background: var(--bg-surface);
 }
 
 .layout {
   align-self: stretch;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 0;
   overflow-x: clip;
-  background: #fffefc;
+  background: var(--bg-page);
 }
 
 @media (max-width: 700px) {

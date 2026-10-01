@@ -1,0 +1,13 @@
+.page { min-height: 100%; padding: 40px 16px 90px; background: #fafafa; }.page main { width: min(900px,100%); margin: auto; display: grid; gap: 22px; }
+.eyebrow { color: #b10f2e; font-weight: 800; letter-spacing: .08em; }.page h1 { margin: 0; font-size: clamp(28px,4vw,42px); }
+.page section { background: #fff; border: 1px solid #ddd; border-radius: 14px; padding: 22px; }.page section h2 { margin-top: 0; }
+.page dl { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 0; }.page dl div { display: flex; justify-content: space-between; padding: 14px; background: #f7f7f7; border-radius: 8px; }.page dd { margin: 0; font-weight: 800; }
+.actions { display: flex; justify-content: center; gap: 12px; }.actions button { border: 1px solid #da1e21; border-radius: 9px; padding: 12px 24px; background: #da1e21; color: #fff; font-weight: 700; cursor: pointer; }.actions .secondary { color: #b10f2e; background: #fff; }
+@media(max-width:600px){.page dl{grid-template-columns:1fr}.actions{flex-direction:column}.actions button{width:100%}}
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .page section { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .page dl div { background: var(--bg-hover); }
+:global([data-theme="dark"]) .eyebrow { color: var(--brand-hover); }
+:global([data-theme="dark"]) .actions .secondary { background: var(--bg-surface); color: var(--brand-hover); border-color: var(--brand-hover); }

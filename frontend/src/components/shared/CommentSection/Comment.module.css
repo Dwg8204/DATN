@@ -34,3 +34,19 @@
   margin: 0;
   color: #1e293b;
 }
+
+
+/* Specific Dark Mode Corrections from User */
+:global([data-theme="dark"]) .commentItem {
+  background: #334155 !important;
+  border-color: var(--border) !important;
+}
+:global([data-theme="dark"]) .commentItem__author {
+  color: var(--text-primary) !important;
+}
+:global([data-theme="dark"]) .commentItem__content {
+  color: var(--text-primary) !important;
+}
+:global([data-theme="dark"]) .commentItem__meta {
+  color: var(--text-muted) !important;
+}

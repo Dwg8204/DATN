@@ -1,0 +1,6 @@
+const KEY='aptimate-admin-listening-tests';
+export const LISTENING_TESTS_EVENT='listening-tests-updated';
+export function getStoredListeningTests(){try{const value=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(value)?value:[]}catch{return[]}}
+export function getStoredListeningTest(id){return getStoredListeningTests().find(test=>String(test.id)===String(id))||null}
+export function saveStoredListeningTest(test){const now=new Date().toISOString();const saved={...test,id:test.id||`listening-${crypto.randomUUID()}`,title:test.details.title.trim(),name:test.details.title.trim(),component:'Listening',section:test.mode==='full'?'Full Test':test.mode.replace('part','Part '),status:'Done',dateAdded:test.dateAdded||now,updatedAt:now,attempts:test.attempts||0,questionType:'Listening'};const list=getStoredListeningTests();const index=list.findIndex(item=>item.id===saved.id);if(index<0)list.unshift(saved);else list[index]=saved;localStorage.setItem(KEY,JSON.stringify(list));window.dispatchEvent(new Event(LISTENING_TESTS_EVENT));return saved}
+export function deleteStoredListeningTest(id){localStorage.setItem(KEY,JSON.stringify(getStoredListeningTests().filter(test=>test.id!==id)));window.dispatchEvent(new Event(LISTENING_TESTS_EVENT))}

@@ -6,6 +6,7 @@ export default function MultipleChoice({
   onChange,
   name,
   className = '',
+  disabled = false,
 }) {
   return (
     <div className={`${styles.optionsList} ${className}`}>
@@ -23,6 +24,7 @@ export default function MultipleChoice({
               name={name}
               value={normalized.value}
               checked={isSelected}
+              disabled={disabled}
               onChange={() => onChange(normalized.value)}
             />
             <span className={`${styles.radioOuter} ${isSelected ? styles.radioOuterSelected : ''}`}>

@@ -1,0 +1,15 @@
+.root { display: grid; gap: 10px; }
+.option { display: grid !important; grid-template-columns: 20px 24px minmax(0, 1fr) !important; align-items: center; gap: 10px; color: #555; font-weight: 700; }
+.option input,
+.picker input { width: 17px !important; height: 17px !important; margin: 0; accent-color: #da1e21; }
+.option textarea { width: 100%; min-width: 0; min-height: 52px; padding: 10px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; resize: vertical; font: inherit; line-height: 1.45; overflow-wrap: anywhere; }
+.option textarea:focus { outline: 2px solid #f2bcc1; border-color: #da1e21; }
+.picker { display: grid; gap: 7px; }
+.picker label { display: grid; grid-template-columns: 20px 24px minmax(0, 1fr); align-items: center; gap: 9px; padding: 9px 11px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; }
+.picker label:has(input:checked) { border-color: #da1e21; background: #fff5f5; }
+.picker span { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .option { grid-template-columns: 18px 20px minmax(0, 1fr) !important; gap: 7px; }
+  .option textarea { font-size: 16px; }
+  .picker label { grid-template-columns: 18px 20px minmax(0, 1fr); }
+}

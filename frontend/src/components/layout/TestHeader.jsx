@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './TestHeader.module.css';
-import { getGrammarVocabRemainingSeconds } from '../../features/grammar_vocab/utils/grammarVocabSessionStorage';
-import { getListeningRemainingSeconds } from '../../features/module-listening/utils/listeningSessionStorage';
 import { getReadingRemainingSeconds } from '../../features/module-reading/utils/readingSessionStorage';
-import { getWritingRemainingSeconds } from '../../features/writing/utils/writingSessionStorage';
+import { useTranslation } from 'react-i18next';
 
 function formatRemainingTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -12,61 +10,40 @@ function formatRemainingTime(totalSeconds) {
   return `${minutes}:${seconds}`;
 }
 
-export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, showTimer = true, showExit = true }) {
+export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, controlledTimer = false,
+  onConfirmExit, showTimer = true, showExit = true, finalizingExpired = false, exitMode = 'exam' }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const location = useLocation();
-  const [searchParams] = useSearchParams();
   const [showExitModal, setShowExitModal] = useState(false);
-  const isGrammarVocabTest = location.pathname.startsWith('/grammar-vocab/test/');
-  const isListeningTest = location.pathname.startsWith('/listening/test/');
+  const [exiting, setExiting] = useState(false);
   const isReadingTest = location.pathname.startsWith('/reading/test/');
-  const isWritingTest = location.pathname.startsWith('/writing/test/');
   const [remainingSeconds, setRemainingSeconds] = useState(() => {
-    if (isGrammarVocabTest) return getGrammarVocabRemainingSeconds();
-    if (isListeningTest) return getListeningRemainingSeconds();
     if (isReadingTest) return getReadingRemainingSeconds();
-    if (isWritingTest) return getWritingRemainingSeconds();
     return null;
   });
 
   useEffect(() => {
-    if (!isGrammarVocabTest && !isListeningTest && !isReadingTest && !isWritingTest) return undefined;
+    if (controlledTimer) return undefined;
+    if (!isReadingTest) return undefined;
 
     const updateTimer = () => {
       let remaining = null;
-      if (isGrammarVocabTest) {
-        remaining = getGrammarVocabRemainingSeconds();
-      } else if (isListeningTest) {
-        remaining = getListeningRemainingSeconds();
-      } else if (isReadingTest) {
+      if (isReadingTest) {
         remaining = getReadingRemainingSeconds();
-      } else if (isWritingTest) {
-        remaining = getWritingRemainingSeconds();
       }
       setRemainingSeconds(remaining);
 
-      if (remaining === 0) {
-        const testId = searchParams.get('testId') || '1';
-        const isFull = searchParams.get('isFull') === 'true';
-        if (isGrammarVocabTest) {
-          const part = location.pathname.endsWith('/part2') ? '2' : '1';
-          navigate(`/grammar-vocab/result?testId=${testId}&isFull=${isFull}&part=${part}&timedOut=true`, { replace: true });
-        } else if (isListeningTest) {
-          // For listening test, when timeout always redirect to full test results because we want to see the total score
-          navigate(`/listening/result?testId=${testId}&isFull=true&timedOut=true`, { replace: true });
-        } else if (isWritingTest) {
-          navigate('/writing/tests', { replace: true });
-        }
-      }
     };
 
     updateTimer();
     const intervalId = window.setInterval(updateTimer, 1000);
     return () => window.clearInterval(intervalId);
-  }, [isGrammarVocabTest, isListeningTest, isReadingTest, isWritingTest, location.pathname, navigate, searchParams]);
+  }, [controlledTimer, isReadingTest]);
 
-  const displayedTime = timeRemaining
-    || (remainingSeconds === null ? '' : formatRemainingTime(remainingSeconds));
+  const displayedTime = controlledTimer
+    ? (timeRemaining ?? '--:--')
+    : (timeRemaining || (remainingSeconds === null ? '' : formatRemainingTime(remainingSeconds)));
 
   const handleExitClick = () => {
     setShowExitModal(true);
@@ -76,15 +53,24 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
     setShowExitModal(false);
   };
 
-  const handleConfirmExit = () => {
-    navigate('/');
+  const handleConfirmExit = async () => {
+    if (exiting) return;
+    setExiting(true);
+    try {
+      const destination = onConfirmExit ? await onConfirmExit() : '/';
+      if (destination !== false) navigate(typeof destination === 'string' ? destination : '/');
+    } catch {
+      // The attempt flow displays the API error and keeps the learner in the test.
+    } finally {
+      setExiting(false);
+    }
   };
 
   return (
     <header className={styles.testHeader}>
       <div className={styles.inner}>
         <div className={styles.leftSide}>
-          <button className={styles.logoBtn} onClick={handleExitClick} title="Exit test">
+          <button className={styles.logoBtn} onClick={handleExitClick} title={t('test.exit')} disabled={finalizingExpired}>
             <img
               src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png"
               alt="AptiMate Logo"
@@ -98,19 +84,19 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
 
         <div className={styles.rightSide}>
           {showTimer && <div className={styles.timeWrap}>
-            <div className={styles.timeLabel}>Time remaining</div>
+            <div className={styles.timeLabel}>{finalizingExpired ? t('test.finalizing') : t('test.timeRemaining')}</div>
             <div className={styles.timeRow}>
               <div className={styles.timeIconWrap}>
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#131927" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M12 6V12L16 14" stroke="#131927" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M12 6V12L16 14" stroke="var(--text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <div className={styles.timeValue}>{displayedTime}</div>
             </div>
           </div>}
-          {showExit && <button className={styles.exitBtn} onClick={handleExitClick}>
-            <span className={styles.exitBtnText}>Exit test</span>
+          {showExit && <button className={styles.exitBtn} onClick={handleExitClick} disabled={finalizingExpired}>
+            <span className={styles.exitBtnText}>{t('test.exit')}</span>
           </button>}
         </div>
       </div>
@@ -120,17 +106,19 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
           <div className={styles.exitModal}>
             <div className={styles.closeIcon} onClick={handleCloseModal}>
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" width="16" height="16">
-                <path d="M0.750453 11.2348L5.99309 5.99219M11.2357 0.749547L5.99309 5.99219M5.99309 5.99219L0.750453 0.749547M5.99309 5.99219L11.2357 11.2348" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M0.750453 11.2348L5.99309 5.99219M11.2357 0.749547L5.99309 5.99219M5.99309 5.99219L0.750453 0.749547M5.99309 5.99219L11.2357 11.2348" stroke="var(--text-primary)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
             <p className={styles.modalText}>
-              Are you sure you want to exit the test?<br /><br />
-              Your progress will not be saved if you leave now.<br />
-              Do you still want to exit?
+              {t('test.exitQuestion')}<br /><br />
+              {exitMode === 'practice'
+                ? t('practice.exitMessage')
+                : controlledTimer ? t('test.examExitMessage') : 'Your progress will not be saved if you leave now.'}<br />
+              {t('test.stillExit')}
             </p>
             <div className={styles.modalActions}>
-              <button className={styles.stayBtn} onClick={handleCloseModal}>Stay in test</button>
-              <button className={styles.confirmExitBtn} onClick={handleConfirmExit}>Exit anyway</button>
+              <button className={styles.stayBtn} onClick={handleCloseModal} disabled={exiting}>{exitMode === 'practice' ? t('practice.stay') : t('test.stay')}</button>
+              <button className={styles.confirmExitBtn} onClick={handleConfirmExit} disabled={exiting || finalizingExpired}>{exiting ? t('test.leaving') : exitMode === 'practice' ? t('practice.leave') : t('test.submitAndExit')}</button>
             </div>
           </div>
         </div>

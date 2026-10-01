@@ -1,0 +1,103 @@
+import { lazy, Suspense } from 'react';
+import { Navigate } from 'react-router-dom';
+import AdminLayout from './layout/AdminLayout';
+import AdminPlaceholderPage from './components/AdminPlaceholderPage';
+import RoleGuard from '../auth/components/RoleGuard';
+import { useAuth } from '../../context/AuthContext';
+import { getAdminLandingPath } from '../auth/utils/authorization';
+
+const AdminDashboardPage = lazy(() => import('./dashboard/AdminDashboardPage'));
+const TestManagerPage = lazy(() => import('./tests/TestManagerPage'));
+const UserManagementPage = lazy(() => import('./users/UserManagementPage'));
+const WritingBuilderLayout = lazy(() => import('./writing/components/WritingBuilderLayout'));
+const WritingPartEditorPage = lazy(() => import('./writing/WritingPartEditorPage'));
+const WritingTestDetailsPage = lazy(() => import('./writing/WritingTestDetailsPage'));
+const WritingTestPreviewPage = lazy(() => import('./writing/WritingTestPreviewPage'));
+const GrammarBuilderLayout = lazy(() => import('./grammar/components/GrammarBuilderLayout'));
+const GrammarTestDetailsPage = lazy(() => import('./grammar/GrammarTestDetailsPage'));
+const GrammarPartEditorPage = lazy(() => import('./grammar/GrammarPartEditorPage'));
+const GrammarTestPreviewPage = lazy(() => import('./grammar/GrammarTestPreviewPage'));
+const ReadingBuilderLayout = lazy(() => import('./reading/context/ReadingBuilderContext'));
+const ReadingTestDetailsPage = lazy(() => import('./reading/ReadingTestDetailsPage'));
+const ReadingPartEditorPage = lazy(() => import('./reading/ReadingPartEditorPage'));
+const ReadingTestPreviewPage = lazy(() => import('./reading/ReadingTestPreviewPage'));
+const NotificationPage = lazy(() => import('./notifications/NotificationPage'));
+const ListeningBuilderLayout = lazy(() => import('./listening/context/ListeningBuilderContext'));
+const ListeningTestDetailsPage = lazy(() => import('./listening/ListeningTestDetailsPage'));
+const ListeningPartEditorPage = lazy(() => import('./listening/ListeningPartEditorPage'));
+const ListeningTestPreviewPage = lazy(() => import('./listening/ListeningTestPreviewPage'));
+const SpeakingBuilderLayout = lazy(() => import('./speaking/context/SpeakingBuilderContext'));
+const SpeakingTestDetailsPage = lazy(() => import('./speaking/SpeakingTestDetailsPage'));
+const SpeakingPartEditorPage = lazy(() => import('./speaking/SpeakingPartEditorPage'));
+const SpeakingTestPreviewPage = lazy(() => import('./speaking/SpeakingTestPreviewPage'));
+const load = (element) => <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>{element}</Suspense>;
+const adminOnly = (element) => <RoleGuard allowedRoles={['ADMIN']}>{element}</RoleGuard>;
+
+function AdminHomeRedirect() {
+  const { user } = useAuth();
+  return <Navigate to={getAdminLandingPath(user?.role)} replace />;
+}
+
+export const adminRoutes = [
+  {
+    path: '/admin',
+    element: <RoleGuard allowedRoles={['ADMIN', 'TEACHER']}><AdminLayout /></RoleGuard>,
+    children: [
+      { index: true, element: <AdminHomeRedirect /> },
+      { path: 'dashboard', element: adminOnly(load(<AdminDashboardPage />)) },
+      { path: 'tests', element: load(<TestManagerPage />) },
+      { path: 'tests/reading/:testId/preview', element: load(<ReadingTestPreviewPage />) },
+      { path: 'tests/listening/:testId/preview', element: load(<ListeningTestPreviewPage />) },
+      { path: 'tests/speaking/:testId/preview', element: load(<SpeakingTestPreviewPage />) },
+      ...['tests/new/speaking', 'tests/speaking/:testId/edit'].map(path => ({ path, element: load(<SpeakingBuilderLayout />), children: [
+        { index: true, element: load(<SpeakingTestDetailsPage />) },
+        { path: 'part/:partNumber', element: load(<SpeakingPartEditorPage />) },
+      ] })),
+      ...['tests/new/listening', 'tests/listening/:testId/edit'].map(path => ({ path, element: load(<ListeningBuilderLayout />), children: [
+        { index: true, element: load(<ListeningTestDetailsPage />) },
+        { path: 'part/:partNumber', element: load(<ListeningPartEditorPage />) },
+      ] })),
+      ...['tests/new/reading', 'tests/reading/:testId/edit'].map(path => ({ path, element: load(<ReadingBuilderLayout />), children: [
+        { index: true, element: load(<ReadingTestDetailsPage />) },
+        { path: 'part/:partNumber', element: load(<ReadingPartEditorPage />) },
+      ] })),
+      { path: 'tests/writing/:testId/preview', element: load(<WritingTestPreviewPage />) },
+      { path: 'tests/grammar/:testId/preview', element: load(<GrammarTestPreviewPage />) },
+      { path: 'users', element: adminOnly(load(<UserManagementPage />)) },
+      { path: 'feedback', element: adminOnly(<AdminPlaceholderPage title="Feedback" />) },
+      { path: 'notifications', element: adminOnly(load(<NotificationPage />)) },
+      {
+        path: 'tests/new/writing',
+        element: load(<WritingBuilderLayout />),
+        children: [
+          { index: true, element: load(<WritingTestDetailsPage />) },
+          { path: 'part/:partNumber', element: load(<WritingPartEditorPage />) },
+        ],
+      },
+      {
+        path: 'tests/writing/:testId/edit',
+        element: load(<WritingBuilderLayout />),
+        children: [
+          { index: true, element: load(<WritingTestDetailsPage />) },
+          { path: 'part/:partNumber', element: load(<WritingPartEditorPage />) },
+        ],
+      },
+      {
+        path: 'tests/new/grammar',
+        element: load(<GrammarBuilderLayout />),
+        children: [
+          { index: true, element: load(<GrammarTestDetailsPage />) },
+          { path: 'part/:partNumber', element: load(<GrammarPartEditorPage />) },
+        ],
+      },
+      {
+        path: 'tests/grammar/:testId/edit',
+        element: load(<GrammarBuilderLayout />),
+        children: [
+          { index: true, element: load(<GrammarTestDetailsPage />) },
+          { path: 'part/:partNumber', element: load(<GrammarPartEditorPage />) },
+        ],
+      },
+    ],
+  },
+];

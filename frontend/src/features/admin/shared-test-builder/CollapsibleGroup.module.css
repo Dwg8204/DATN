@@ -1,0 +1,54 @@
+.toolbar {
+  margin: 18px 0 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.toolbar button {
+  padding: 8px 13px;
+  border: 1px solid #d3d3d3;
+  border-radius: 6px;
+  background: #fff;
+  color: #555;
+  font-weight: 600;
+  cursor: pointer;
+}
+.toolbar button:hover { border-color: #da1e21; color: #a91d31; }
+.group { overflow: visible; border: 1px solid #ddd; border-radius: 9px; background: #fff; }
+.group + .group { margin-top: 12px; }
+.group > summary {
+  min-height: 62px;
+  padding: 12px 16px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 24px;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  background: #f6f6f2;
+  border-radius: 8px;
+  list-style: none;
+}
+.group[open] > summary { border-radius: 8px 8px 0 0; }
+.group > summary::-webkit-details-marker { display: none; }
+.group > summary > div { min-width: 0; display: grid; gap: 4px; }
+.group > summary strong,
+.group > summary span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.group > summary span { color: #666; font-size: 12px; }
+.group > summary small { padding: 4px 8px; border-radius: 999px; white-space: nowrap; }
+.complete { background: #eef8f1; color: #28733b; }
+.incomplete { background: #fff0f1; color: #b21e35; }
+.icons { position: relative; width: 20px; height: 20px; color: #b21e35 !important; }
+.icons svg { position: absolute; inset: 0; width: 20px; }
+.minus { display: none; }
+.group[open] .plus { display: none; }
+.group[open] .minus { display: block; }
+.body { padding: 16px; min-width: 0; }
+@media (max-width: 700px) {
+  .toolbar { justify-content: stretch; }
+  .toolbar button { flex: 1; min-height: 40px; }
+  .group > summary { padding: 11px 12px; grid-template-columns: minmax(0, 1fr) auto 21px; }
+  .group > summary strong { font-size: 14px; }
+  .group > summary small { font-size: 10px; }
+  .body { padding: 11px; }
+}

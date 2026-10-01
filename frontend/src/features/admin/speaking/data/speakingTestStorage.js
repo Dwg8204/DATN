@@ -1,0 +1,6 @@
+const KEY = 'aptimate-admin-speaking-tests';
+export const SPEAKING_TESTS_EVENT = 'speaking-tests-updated';
+export function getStoredSpeakingTests(){try{const data=JSON.parse(localStorage.getItem(KEY)||'[]');return Array.isArray(data)?data:[]}catch{return[]}}
+export const getStoredSpeakingTest = id => getStoredSpeakingTests().find(test => String(test.id) === String(id)) || null;
+export function saveStoredSpeakingTest(test){const now=new Date().toISOString();const saved={...test,id:test.id||`speaking-${crypto.randomUUID()}`,title:test.details.title.trim(),name:test.details.title.trim(),component:'Speaking',section:test.mode==='full'?'Full Test':test.mode.replace('part','Part '),status:'Done',dateAdded:test.dateAdded||now,updatedAt:now,attempts:test.attempts||0,questionType:'Recorded Response'};const tests=getStoredSpeakingTests();const index=tests.findIndex(item=>item.id===saved.id);if(index<0)tests.unshift(saved);else tests[index]=saved;localStorage.setItem(KEY,JSON.stringify(tests));window.dispatchEvent(new Event(SPEAKING_TESTS_EVENT));return saved}
+export function deleteStoredSpeakingTest(id){localStorage.setItem(KEY,JSON.stringify(getStoredSpeakingTests().filter(test=>test.id!==id)));window.dispatchEvent(new Event(SPEAKING_TESTS_EVENT))}

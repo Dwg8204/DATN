@@ -226,25 +226,29 @@
 
 .submitBtn {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  width: 635px;
+  box-sizing: border-box;
   background: #DA1E21;
   border-radius: 8px;
   border: none;
-  padding: 10px 289px;
-  text-align: left;
+  padding: 10px 24px;
+  text-align: center;
   cursor: pointer;
 }
 
 .submitBtnSignup {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  width: 635px;
+  box-sizing: border-box;
   background: #DA1E21;
   border-radius: 8px;
   border: none;
-  padding: 10px 283px;
-  text-align: left;
+  padding: 10px 24px;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -252,10 +256,43 @@
   opacity: 0.9;
 }
 
+.submitBtn:disabled,
+.submitBtnSignup:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .submitBtnText {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
   color: #FFFFFF;
   font-size: 18px;
   font-weight: bold;
+}
+
+.loadingIcon {
+  width: 19px;
+  height: 19px;
+  animation: authSpin 0.8s linear infinite;
+}
+
+.loadingHint {
+  width: 100%;
+  margin: -8px 0 0;
+  color: #5f6368;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@keyframes authSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingIcon { animation-duration: 1.6s; }
 }
 
 .orText {

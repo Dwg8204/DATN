@@ -71,22 +71,29 @@
 .targetWordsColumn {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   width: 100%;
-  max-width: 500px;
+  max-width: 920px;
   min-width: 0;
 }
 
 .matchingRow {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(320px, 1.35fr);
   align-items: center;
-  gap: 24px;
+  gap: 20px;
+  padding: 16px 18px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fff;
 }
 
 .targetWordText {
   font-size: 16px;
+  line-height: 24px;
   color: #000;
-  width: 100px;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .dropdownContainer {
@@ -197,8 +204,7 @@
   }
 
   .matchingRow {
-    display: grid;
-    grid-template-columns: minmax(72px, 0.75fr) minmax(0, 1.7fr);
+    grid-template-columns: 1fr;
     gap: 10px;
     align-items: center;
     padding: 12px;
@@ -220,8 +226,19 @@
   }
 }
 
-@media (max-width: 380px) {
-  .matchingRow {
-    grid-template-columns: 1fr;
-  }
-}
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .headerBlock { background: var(--bg-surface-warm); border-color: var(--border); }
+:global([data-theme="dark"]) .partTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .skillTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .instructionTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .instructionText { color: var(--text-primary); }
+:global([data-theme="dark"]) .matchingRow { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .targetWordText { color: var(--text-primary); }
+:global([data-theme="dark"]) .dropdownTrigger { background: var(--bg-hover); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .dropdownPlaceholder { color: var(--text-primary); }
+:global([data-theme="dark"]) .hasValue { background: var(--warning-bg) !important; border-color: var(--warning) !important; }
+:global([data-theme="dark"]) .dropdownMenu { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .dropdownItem { border-bottom-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .dropdownItem:hover { background: var(--bg-hover); }
+:global([data-theme="dark"]) .dropdownItemSelected { background: var(--warning-bg) !important; }

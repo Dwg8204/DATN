@@ -1,0 +1,3 @@
+import {getStoredReadingTest,getStoredReadingTests} from '../../admin/reading/data/readingTestStorage';
+export async function loadReadingTest(id){const saved=getStoredReadingTest(id);if(saved)return saved;const data=await import('./mockData/testData.json');return data.default||data}
+export function getAdminReadingList(){return getStoredReadingTests().map(test=>({id:test.id,title:test.title,mode:test.mode,type:test.mode==='full'?'full':'part',thumbnail:test.details.pictureUrl||'https://placehold.co/157x79?text=Reading',duration:test.mode==='full'?35:({part1:5,part2:6,part3:10,part4:14}[test.mode]),level:'Aptis Practice'}))}

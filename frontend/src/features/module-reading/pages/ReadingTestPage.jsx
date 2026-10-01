@@ -5,6 +5,7 @@ import TestFooter from '../../../components/layout/TestFooter';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import { getReadingRemainingSeconds, getReadingDuration } from '../utils/readingSessionStorage';
+import { saveHistoryEntry } from '../../../utils/historyStorage';
 
 import Part1GapFilling from '../components/test-engine/parts/Part1GapFilling';
 import Part2TextCohesion from '../components/test-engine/parts/Part2TextCohesion';
@@ -12,11 +13,16 @@ import Part3OpinionMatch from '../components/test-engine/parts/Part3OpinionMatch
 import Part4MatchHeading from '../components/test-engine/parts/Part4MatchHeading';
 
 import styles from './ReadingTestPage.module.css';
+import {loadReadingTest} from '../services/readingTestRepository';
+import { useToast } from '../../../context/ToastContext';
+import DataLoadError from '../../../components/common/DataLoadError';
 
 export default function ReadingTestPage() {
+  const { showError } = useToast();
   const { testId } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const hasPartParam = searchParams.has('part');
   const mode = searchParams.get('mode') || 'full';
 
   const { 
@@ -27,14 +33,18 @@ export default function ReadingTestPage() {
   } = useContext(ReadingTestContext);
 
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [showSubmitModal, setShowSubmitModal] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     const fetchTestData = async () => {
+      setLoading(true);
+      setLoadError('');
       try {
-        const data = await import('../services/mockData/testData.json');
-        setTimeout(() => {
-          setTestData(data.default || data);
+        const data = await loadReadingTest(testId);
+        if (cancelled) return;
+          setTestData(data);
           setIsStarted(true);
           
           let initialPart = 1;
@@ -43,11 +53,14 @@ export default function ReadingTestPage() {
           else if (mode === 'part3') initialPart = 3;
           else if (mode === 'part4') initialPart = 4;
           
-          setCurrentPart(initialPart);
+          if (!hasPartParam) setCurrentPart(initialPart);
           setLoading(false);
-        }, 400);
-      } catch (error) {
-        console.error("Failed to load test data", error);
+      } catch {
+        if (cancelled) return;
+        const message = 'We could not load this Reading test. Please refresh the page and try again.';
+        setLoadError(message);
+        setIsStarted(false);
+        showError(message);
         setLoading(false);
       }
     };
@@ -55,12 +68,14 @@ export default function ReadingTestPage() {
     fetchTestData();
 
     return () => {
+      cancelled = true;
       setIsStarted(false);
     };
-  }, [testId, setTestData, setIsStarted, setCurrentPart, mode]);
+  }, [hasPartParam, mode, setCurrentPart, setIsStarted, setTestData, showError, testId]);
 
   // Dynamic automatic timeout submission
   useEffect(() => {
+    if (loading || loadError || !testData) return;
     const checkTimer = setInterval(() => {
       const remaining = getReadingRemainingSeconds();
       if (remaining === 0) {
@@ -69,7 +84,7 @@ export default function ReadingTestPage() {
       }
     }, 1000);
     return () => clearInterval(checkTimer);
-  }, [answers, mode, testId]);
+  }, [answers, mode, testId, loading, loadError, testData]);
 
   const handleSubmit = () => {
     setShowSubmitModal(true);
@@ -79,15 +94,41 @@ export default function ReadingTestPage() {
     const fakeSessionId = 'sess-' + Math.random().toString(36).substr(2, 9);
     const duration = getReadingDuration(mode);
     const timeLeft = getReadingRemainingSeconds();
+    const historyId = `hist_${Date.now()}_${fakeSessionId}`;
 
     const sessionData = {
+      testSnapshot: testData,
       testId: testId || 'apt-r-001',
       answers: answers,
       timeSpent: duration - timeLeft,
       mode: mode,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      historyId
     };
-    localStorage.setItem(fakeSessionId, JSON.stringify(sessionData));
+    try {
+      localStorage.setItem(fakeSessionId, JSON.stringify(sessionData));
+    } catch {
+      showError('Your answers could not be saved on this browser. Free some browser storage and submit again. Keep this page open to avoid losing your work.');
+      return;
+    }
+
+    // Save draft history entry (missing correct/wrong scores)
+    saveHistoryEntry({
+      id: historyId,
+      skill: 'reading',
+      testId: String(sessionData.testId),
+      testName: `Aptis Reading Test ${sessionData.testId}`,
+      mode: mode,
+      submittedAt: sessionData.timestamp,
+      timeSpent: 'Pending...',
+      correct: 0,
+      wrong: 0,
+      skipped: 0,
+      total: 0,
+      partScores: [],
+      reviewUrl: `/reading/result/${fakeSessionId}`
+    });
+
     setShowSubmitModal(false);
     navigate(`/reading/result/${fakeSessionId}`);
   };
@@ -202,6 +243,10 @@ export default function ReadingTestPage() {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#A11D33]"></div>
       </div>
     );
+  }
+
+  if (loadError || !testData) {
+    return <DataLoadError title="Reading test is unavailable" message={loadError || 'This test could not be found. Please return to the test list.'} />;
   }
 
   const { footerQuestions, currentQuestionIds, answeredIds } = getFooterData();

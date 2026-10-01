@@ -1,0 +1,39 @@
+import AnswerExplanation from '../../../components/common/AnswerExplanation';
+import { ArrowLeft, Edit3 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { AdminToast } from '../components/AdminFeedback';
+import { grammarTestsApi } from './services/grammarTestsApi';
+import { getApiError } from '../../../services/apiError';
+import styles from './GrammarTestPreviewPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
+
+export default function GrammarTestPreviewPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { testId } = useParams();
+  const [state, setState] = useState({ test: null, loading: true, error: '' });
+  useEffect(() => {
+    const controller = new AbortController();
+    grammarTestsApi.getAdmin(testId, controller.signal)
+      .then(test => setState({ test, loading: false, error: '' }))
+      .catch(error => { if (error.code !== 'ERR_CANCELED') setState({ test: null, loading: false, error: getApiError(error, 'Unable to load the preview.') }); });
+    return () => controller.abort();
+  }, [testId]);
+  if (state.loading) return <div style={{ padding: 32 }}>Loading preview…</div>;
+  if (!state.test) return <div style={{ padding: 32 }}>{state.error || 'Test not found.'}</div>;
+  const test = state.test;
+  const parts = test.mode === 'full' ? [1, 2] : [Number(test.mode.replace('part', ''))];
+  const modeLabel = test.mode === 'full' ? 'Full Test' : test.mode.replace('part', 'Part ');
+
+  return <div className={styles.page}>
+    <AdminToast message={location.state?.toast} onClose={() => navigate(location.pathname, { replace: true, state: {} })} />
+    <header>
+      <button onClick={() => navigate(`/admin/tests?purpose=${test.purpose ?? 'EXAM'}`)}><ArrowLeft />Back</button>
+      <div><span>GRAMMAR & VOCABULARY PREVIEW</span><h1>{test.details.title}</h1><p>{modeLabel}</p></div>
+      <button className={styles.edit} onClick={() => navigate(`/admin/tests/grammar/${test.id}/edit`)}><Edit3 />Edit test</button>
+    </header>
+    {parts.includes(1) && <section><h2>Part 1 · Grammar</h2><RichTextContent value={test.parts[1].instruction}/><div className={styles.questions}>{test.parts[1].questions.map((question, index) => <article key={question.id}><div><b>{index + 1}. </b><RichTextContent value={question.text}/></div>{question.options.map((option, optionIndex) => <span className={optionIndex === question.correctAnswer ? styles.correct : ''} key={optionIndex}>{String.fromCharCode(65 + optionIndex)}. {option}</span>)}<AnswerExplanation text={question.explanation} /></article>)}</div></section>}
+    {parts.includes(2) && <section><h2>Part 2 · Vocabulary</h2>{test.parts[2].sets.map((set, index) => <article className={styles.set} key={set.setId}><h3>Questions {26 + index * 5}–{30 + index * 5}</h3><RichTextContent value={set.instruction}/><div>{set.targetWords.map(target => <div key={target.id}><b>{target.word}</b> = {target.correctAnswer}. {set.options.find(option => option.label === target.correctAnswer)?.text}<AnswerExplanation text={target.explanation} /></div>)}</div></article>)}</section>}
+  </div>;
+}

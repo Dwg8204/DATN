@@ -44,14 +44,12 @@
   overflow: hidden;
 }
 
-.tabsGrid {
+.tabsContainer {
   display: flex;
   align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
-}
-
-.tabItemSpan2 {
+  flex-wrap: nowrap;
+  overflow-x: auto;
 }
 
 .tabItem {
@@ -59,9 +57,9 @@
   border-radius: 10px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .tabItemActive {
@@ -107,15 +105,17 @@
     height: 20px;
   }
 
-  .tabsGrid {
+  .tabsContainer {
     gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
 
   .tabItem {
     flex: 1 1 auto;
     justify-content: center;
     padding: 5px 10px;
-    font-size: 12px;
+    white-space: nowrap;
   }
 
   .testCard {
@@ -155,6 +155,17 @@
     width: 100%;
     margin-top: 8px;
   }
+
+  .commentSectionWrapper {
+    min-width: 0;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 380px) {
+  .searchBtn { padding-inline: 12px; }
+  .tabItem { padding-inline: 10px; }
+  .cardActions { flex-direction: column; align-items: stretch; }
 }
 
 
@@ -454,4 +465,110 @@
   font-size: 12px;
   font-weight: 700;
   line-height: 16px;
+}
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page {
+  background: var(--bg-page);
+}
+
+:global([data-theme="dark"]) .title {
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .tabsBox {
+  background: var(--warning);
+}
+
+:global([data-theme="dark"]) .tabsLabel {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .tabItemActive {
+  background: var(--brand);
+}
+
+:global([data-theme="dark"]) .tabText {
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .tabItemInactive {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .searchInputContainer {
+  outline: 1px solid var(--overlay);
+}
+
+:global([data-theme="dark"]) .searchInput {
+  color: var(--text-secondary);
+}
+
+:global([data-theme="dark"]) .searchBtn {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .testCard {
+  background: var(--bg-surface-warm);
+  outline: 2px solid var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .cardTitle {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .cardDesc {
+  color: var(--overlay);
+}
+
+:global([data-theme="dark"]) .statLabel {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .statValue {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .statValueSuccess {
+  color: var(--success);
+}
+
+:global([data-theme="dark"]) .statValueDanger {
+  color: var(--brand);
+}
+
+:global([data-theme="dark"]) .reviewBtn {
+  background: var(--brand);
+}
+
+:global([data-theme="dark"]) .reviewBtnText {
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .doTestBtn {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .partBadge {
+  background: var(--warning);
+}
+
+:global([data-theme="dark"]) .partBadgeText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .statusBadgeCompleted {
+  background: var(--success);
+}
+
+:global([data-theme="dark"]) .statusBadgeCompletedText {
+  color: var(--success);
+}
+
+:global([data-theme="dark"]) .statusBadgeNotStarted {
+  background: var(--border);
+}
+
+:global([data-theme="dark"]) .statusBadgeNotStartedText {
+  color: var(--text-muted);
 }

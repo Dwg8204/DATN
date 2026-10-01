@@ -1,21 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Flame, Clock, FileText, Star } from 'lucide-react';
+import { Clock, FileText, Star } from 'lucide-react';
+import { useToast } from '../../../../context/ToastContext';
+import DataLoadError from '../../../../components/common/DataLoadError';
 
 const ReadingPopularSection = () => {
+  const { showError } = useToast();
   const navigate = useNavigate();
   const [popularTests, setPopularTests] = useState([]);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
+    let cancelled = false;
     // Giả lập fetch data
     import('../../services/mockData/testList.json')
       .then((data) => {
+        if (cancelled) return;
         // Lấy 3 đề nổi bật nhất (giả sử có rating cao)
-        const sorted = data.tests.sort((a, b) => b.rating - a.rating).slice(0, 3);
+        const sorted = [...data.tests].sort((a, b) => b.rating - a.rating).slice(0, 3);
         setPopularTests(sorted);
       })
-      .catch(err => console.error("Failed to load tests", err));
-  }, []);
+      .catch(() => {
+        if (cancelled) return;
+        const message = 'Popular Reading tests could not be loaded. Please refresh the page and try again.';
+        setLoadError(message);
+        showError(message);
+      });
+    return () => { cancelled = true; };
+  }, [showError]);
 
   return (
     <div className="mt-12">
@@ -23,6 +35,7 @@ const ReadingPopularSection = () => {
         <h2 className="text-xl md:text-2xl font-bold text-red-600 uppercase tracking-wide">MOST POPULAR</h2>
       </div>
 
+      {loadError && <DataLoadError title="Popular tests are unavailable" message={loadError} />}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {popularTests.map((test) => (
           <div 

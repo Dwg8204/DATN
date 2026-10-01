@@ -4,9 +4,10 @@ import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MockAudioRecorder from '../../../components/shared/MockAudioRecorder/MockAudioRecorder';
-import { PART1_QUESTIONS } from '../data/part1SpeakingMockData';
+import { getSpeakingTestParts } from '../services/speakingTestRepository';
 import { saveSpeakingPartAnswers } from '../utils/speakingSessionStorage';
 import styles from './Part1SpeakingPage.module.css';
+import RichTextContent from '../../../components/common/RichTextContent';
 
 const QUESTION_VISIBLE_DURATION = 10000; // 10 seconds
 const MAX_RECORD_TIME = 30; // seconds
@@ -16,6 +17,7 @@ export default function Part1SpeakingPage() {
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
   const isFullTest = searchParams.get('isFull') === 'true';
+  const PART1_QUESTIONS = getSpeakingTestParts(testId).part1.questions;
 
   const [currentPage, setCurrentPage] = useState(1);
   const [answers, setAnswers] = useState({});
@@ -127,7 +129,7 @@ export default function Part1SpeakingPage() {
   const handleSubmit = () => setShowSubmitModal(true);
 
   const handleConfirmSubmit = () => {
-    saveSpeakingPartAnswers('part1', answers);
+    if (!saveSpeakingPartAnswers('part1', answers)) return;
     setShowSubmitModal(false);
     if (isFullTest) {
       navigate(`/speaking/test/part2?testId=${testId}&isFull=true`);
@@ -159,7 +161,7 @@ export default function Part1SpeakingPage() {
               <span className={styles.questionNumber}>{currentQuestion.id}</span>
             </div>
             {showQuestionText ? (
-              <div className={styles.questionText}>{currentQuestion.text}</div>
+              <RichTextContent className={styles.questionText} value={currentQuestion.text}/>
             ) : (
               <button className={styles.showQuestionBtn} onClick={handleShowQuestion}>
                 Show question

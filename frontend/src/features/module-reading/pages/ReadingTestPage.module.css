@@ -76,3 +76,12 @@
   .instructionTitle, .instructionText { font-size: 14px; line-height: 22px; }
   .mainArea { width: 100%; }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); }
+:global([data-theme="dark"]) .headerBlock { background: var(--bg-surface-warm); border-color: var(--border); }
+:global([data-theme="dark"]) .partTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .skillTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .instructionBlock { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .instructionTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .instructionText { color: var(--text-primary); }
