@@ -12,8 +12,8 @@ export function saveDictationAttempt(exerciseId, result) {
   const progress = loadDictationProgress();
   const previous = progress[exerciseId] || { attempts: 0, bestAccuracy: 0 };
   progress[exerciseId] = {
-    attempts: previous.attempts + 1,
-    bestAccuracy: Math.max(previous.bestAccuracy, result.accuracy),
+    attempts: (previous.attempts || 0) + 1,
+    bestAccuracy: Math.max(previous.bestAccuracy || 0, result.accuracy),
     lastAccuracy: result.accuracy,
     updatedAt: new Date().toISOString(),
   };
