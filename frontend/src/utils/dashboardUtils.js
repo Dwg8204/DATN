@@ -67,23 +67,7 @@ export function calcScoreOverTime(entries, skillFilter = 'all') {
     return dataPoint;
   });
 
-  // Inject fake data from 01/09 to 03/09 for visualization purposes
-  let fakeData = [
-    { date: '01/09', listening: 62, reading: 55 },
-    { date: '02/09', speaking: 70, writing: 65 },
-    { date: '03/09', grammar: 58, listening: 68 },
-  ];
-
-  if (skillFilter !== 'all') {
-    fakeData = fakeData.map(item => {
-      const newItem = { date: item.date };
-      if (item[skillFilter] !== undefined) newItem[skillFilter] = item[skillFilter];
-      return newItem;
-    });
-  }
-  
-  // Merge fake data with real data (prepend fake data)
-  return [...fakeData, ...chartData];
+  return chartData;
 }
 
 export function calcAvgBand(entries) {

@@ -7,6 +7,8 @@ import { RolesGuard } from '../../auth/guards/roles.guard';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { AttemptHistoryQueryDto, AttemptStatesQueryDto, SaveProgressDto, StartAttemptDto, SubmitAttemptDto } from '../dto/attempt.dto';
 import { TestAttemptsService } from '../services/test-attempts.service';
+import { StudentDashboardQueryDto } from '../dto/student-dashboard-query.dto';
+import { StudentDashboardService } from '../services/student-dashboard.service';
 
 @ApiTags('Test Attempts')
 @ApiCookieAuth('aptimate_access_token')
@@ -14,7 +16,7 @@ import { TestAttemptsService } from '../services/test-attempts.service';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('STUDENT')
 export class TestAttemptsController {
-  constructor(private readonly attempts: TestAttemptsService) {}
+  constructor(private readonly attempts: TestAttemptsService, private readonly dashboard: StudentDashboardService) {}
 
   @Post()
   start(@Body() dto: StartAttemptDto, @CurrentUser() actor: AuthUser) {
@@ -24,6 +26,11 @@ export class TestAttemptsController {
   @Get('history')
   history(@Query() query: AttemptHistoryQueryDto, @CurrentUser() actor: AuthUser) {
     return this.attempts.history(actor, query);
+  }
+
+  @Get('dashboard')
+  dashboardSummary(@Query() query: StudentDashboardQueryDto, @CurrentUser() actor: AuthUser) {
+    return this.dashboard.get(actor, query);
   }
 
   @Get('states')

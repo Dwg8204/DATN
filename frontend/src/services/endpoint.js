@@ -57,6 +57,7 @@ export const API_ENDPOINTS = {
     result: (id) => `/test-attempts/${id}/result`,
     partResult: (id, partNumber) => `/test-attempts/${id}/result/parts/${partNumber}`,
     history: '/test-attempts/history',
+    dashboard: '/test-attempts/dashboard',
     states: '/test-attempts/states',
   },
   practiceAttempts: {

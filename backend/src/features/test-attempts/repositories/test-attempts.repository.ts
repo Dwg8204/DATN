@@ -10,6 +10,15 @@ type PublishedTest = {
   snapshot_id: string; version: number; schema_version: number;
 };
 
+export type DashboardAttemptRow = {
+  component: SkillComponent;
+  submittedAt: Date;
+  score: number | null;
+  maxScore: number | null;
+  estimatedCefr: string | null;
+  result: Pick<AssessmentResult, 'method' | 'parts'> | null;
+};
+
 @Injectable()
 export class TestAttemptsRepository {
   constructor(readonly dataSource: DataSource) {}
@@ -122,6 +131,7 @@ export class TestAttemptsRepository {
     mode?: string, search?: string, sort = 'desc', purpose: AttemptPurpose = 'EXAM') {
     const values: unknown[] = [studentId, purpose];
     const filters = ["a.status='SUBMITTED'", 'a.purpose=$2'];
+    if (purpose === 'EXAM') filters.push("a.scope='FULL_SKILL'");
     if (component) { values.push(component); filters.push(`a.component=$${values.length}`); }
     if (mode === 'full') filters.push("a.scope='FULL_SKILL'");
     else if (/^part[1-4]$/.test(mode ?? '')) {
@@ -138,7 +148,7 @@ export class TestAttemptsRepository {
       `SELECT a.id AS "attemptId",s.test_id AS "testId",s.version,
               s.snapshot #>> '{details,title}' AS title,a.component,a.purpose,a.scope,a.part_number AS "partNumber",
                a.status,a.grading_status AS "gradingStatus",a.score::float8 AS score,a.max_score::float8 AS "maxScore",
-              a.estimated_cefr AS "estimatedCefr",a.started_at AS "startedAt",
+              a.estimated_cefr AS "estimatedCefr",a.result->>'method' AS "assessmentMethod",a.started_at AS "startedAt",
               a.submitted_at AS "submittedAt",a.completed_at AS "completedAt"
        FROM test_attempts a JOIN test_snapshots s ON s.id=a.snapshot_id
        WHERE a.student_id=$1 ${filter} ORDER BY a.started_at ${direction},a.id ${direction}
@@ -148,6 +158,18 @@ export class TestAttemptsRepository {
       `SELECT count(*)::text AS total FROM test_attempts a JOIN test_snapshots s ON s.id=a.snapshot_id
        WHERE a.student_id=$1 ${filter}`, values);
     return { rows, total: Number(count[0]?.total ?? 0) };
+  }
+
+  async dashboardAttempts(studentId: string): Promise<DashboardAttemptRow[]> {
+    return this.dataSource.query<DashboardAttemptRow[]>(
+      `SELECT component,submitted_at AS "submittedAt",score::float8 AS score,
+              max_score::float8 AS "maxScore",estimated_cefr AS "estimatedCefr",
+              CASE WHEN result IS NULL THEN NULL ELSE jsonb_build_object(
+                'method',result->>'method','parts',result->'parts') END AS result
+       FROM test_attempts
+       WHERE student_id=$1 AND purpose='EXAM' AND scope='FULL_SKILL'
+         AND status='SUBMITTED' AND submitted_at IS NOT NULL
+       ORDER BY submitted_at ASC`, [studentId]);
   }
 
   async states(studentId: string, testIds: string[], purpose: AttemptPurpose = 'EXAM') {
