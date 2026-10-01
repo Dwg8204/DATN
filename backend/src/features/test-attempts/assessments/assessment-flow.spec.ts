@@ -117,6 +117,28 @@ describe('shared attempt assessment', () => {
       counts: { correct: 1, incorrect: 0, skipped: 4 } });
   });
 
+  it('accepts both Reading Part 2 texts as ten ordering questions', () => {
+    const texts = Array.from({ length: 2 }, (_, textIndex) => ({
+      id: `text-${textIndex + 1}`,
+      title: `Text ${textIndex + 1}`,
+      sentences: Array.from({ length: 6 }, (_, sentenceIndex) => ({
+        id: `t${textIndex + 1}-s${sentenceIndex + 1}`,
+        content: `Sentence ${sentenceIndex + 1}`,
+        correctPosition: sentenceIndex + 1,
+        explanation: sentenceIndex === 1 ? `Reason ${textIndex + 1}` : '',
+      })),
+    }));
+    const paper = factory.build('READING', { mode: 'part2', details: { title: 'Reading Part 2' }, parts: {
+      2: { texts },
+    } });
+
+    expect(paper.items).toHaveLength(10);
+    expect(paper.items[0]).toMatchObject({ key: 'p2:q1', partNumber: 2, explanation: 'Reason 1' });
+    expect(paper.items[5]).toMatchObject({ key: 'p2:q6', partNumber: 2, explanation: 'Reason 2' });
+    expect((paper.parts['2'] as { texts: unknown[] }).texts).toHaveLength(2);
+    expect(JSON.stringify(paper.parts)).not.toContain('Reason 1');
+  });
+
   it('treats one Speaking Part 4 recording as an unassessed response', () => {
     const paper = factory.build('SPEAKING', { mode: 'part4', details: { title: 'Speaking' }, parts: {
       4: { topic: 'Technology', imageUrl: 'https://example.com/image.jpg',

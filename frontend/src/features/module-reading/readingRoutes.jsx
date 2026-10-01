@@ -23,7 +23,7 @@ export const readingMainRoutes = [
   },
   {
     path: 'reading/result',
-    element: <RoleGuard allowedRoles={['STUDENT']}><ReadingAttemptResultPage /></RoleGuard>,
+    element: <RoleGuard allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}><ReadingAttemptResultPage /></RoleGuard>,
   },
   {
     path: 'reading/result/:sessionId',
@@ -36,15 +36,12 @@ export const readingTestRoutes = [
     path: 'reading/test',
     element: <ReadingAttemptLayout />,
     children: [
-      { path: 'part1', element: <ReadingAttemptPage /> },
-      { path: 'part2', element: <ReadingAttemptPage /> },
-      { path: 'part3', element: <ReadingAttemptPage /> },
-      { path: 'part4', element: <ReadingAttemptPage /> },
+      { path: ':part', element: <ReadingAttemptPage /> },
     ],
   },
   {
     path: 'reading/detail-result',
-    element: <RoleGuard allowedRoles={['STUDENT']}><TestLayout headerProps={{ showTimer: false, showExit: false }} /></RoleGuard>,
+    element: <RoleGuard allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}><TestLayout headerProps={{ showTimer: false, showExit: false }} /></RoleGuard>,
     children: [{ index: true, element: <ReadingAttemptDetailPage /> }],
   },
   {

@@ -12,14 +12,31 @@
     ]
   },
   "part2": {
-    "title": "A History of the Potato",
-    "sentences": [
-      { "id": "s1", "content": "The potato was first cultivated by humans in the Andes region of South America.", "correctPosition": 1 },
-      { "id": "s2", "content": "It was grown by indigenous farmers for thousands of years before the arrival of Europeans.", "correctPosition": 2, "explanation": "‘It’ refers back to the potato in the opening sentence, and this sentence continues the early South American history." },
-      { "id": "s3", "content": "In the late 16th century, Spanish explorers introduced the vegetable to Europe.", "correctPosition": 3, "explanation": "After its cultivation in South America, the next chronological event is the potato’s introduction to Europe." },
-      { "id": "s4", "content": "Initially, many Europeans were suspicious of the strange underground tuber.", "correctPosition": 4, "explanation": "‘Initially’ describes the first European reaction, so it follows the sentence explaining when the potato arrived in Europe." },
-      { "id": "s5", "content": "However, it soon became a staple food crop across the continent due to its high nutritional value.", "correctPosition": 5, "explanation": "‘However’ contrasts the initial suspicion with the potato’s later acceptance as an important food crop." },
-      { "id": "s6", "content": "Today, it is the world's fourth-largest food crop after maize, wheat, and rice.", "correctPosition": 6, "explanation": "‘Today’ signals the final stage of the timeline and summarizes the potato’s present global importance." }
+    "texts": [
+      {
+        "id": "p2-text1",
+        "title": "A History of the Potato",
+        "sentences": [
+          { "id": "s1", "content": "The potato was first cultivated by humans in the Andes region of South America.", "correctPosition": 1 },
+          { "id": "s2", "content": "It was grown by indigenous farmers for thousands of years before the arrival of Europeans.", "correctPosition": 2, "explanation": "‘It’ refers back to the potato in the opening sentence, and this sentence continues the early South American history." },
+          { "id": "s3", "content": "In the late 16th century, Spanish explorers introduced the vegetable to Europe.", "correctPosition": 3, "explanation": "After its cultivation in South America, the next chronological event is the potato’s introduction to Europe." },
+          { "id": "s4", "content": "Initially, many Europeans were suspicious of the strange underground tuber.", "correctPosition": 4, "explanation": "‘Initially’ describes the first European reaction, so it follows the sentence explaining when the potato arrived in Europe." },
+          { "id": "s5", "content": "However, it soon became a staple food crop across the continent due to its high nutritional value.", "correctPosition": 5, "explanation": "‘However’ contrasts the initial suspicion with the potato’s later acceptance as an important food crop." },
+          { "id": "s6", "content": "Today, it is the world's fourth-largest food crop after maize, wheat, and rice.", "correctPosition": 6, "explanation": "‘Today’ signals the final stage of the timeline and summarizes the potato’s present global importance." }
+        ]
+      },
+      {
+        "id": "p2-text2",
+        "title": "Starting a Community Garden",
+        "sentences": [
+          { "id": "s7", "content": "Last spring, residents in our neighbourhood decided to create a community garden.", "correctPosition": 1 },
+          { "id": "s8", "content": "First, they asked the local council for permission to use an empty piece of land.", "correctPosition": 2, "explanation": "‘First’ introduces the earliest practical step after the residents made their decision." },
+          { "id": "s9", "content": "Once permission was granted, volunteers cleared the rubbish and prepared the soil.", "correctPosition": 3, "explanation": "‘Once permission was granted’ directly follows the request to the council and moves the process forward." },
+          { "id": "s10", "content": "They then divided the area into small plots and planted vegetables, herbs, and flowers.", "correctPosition": 4, "explanation": "‘Then’ continues the sequence after the land had been cleared and prepared." },
+          { "id": "s11", "content": "As the plants grew, the garden became a popular meeting place for families and older residents.", "correctPosition": 5, "explanation": "This sentence describes what happened after planting, signalled by ‘As the plants grew’." },
+          { "id": "s12", "content": "The project is now so successful that the group plans to create another garden next year.", "correctPosition": 6, "explanation": "‘Now’ and the future plan provide the conclusion to the story of the successful project." }
+        ]
+      }
     ]
   },
   "part3": {

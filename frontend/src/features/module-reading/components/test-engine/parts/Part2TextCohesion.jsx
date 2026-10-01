@@ -13,6 +13,7 @@ import {
 } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
 import RichTextContent from '../../../../../components/common/RichTextContent';
+import { getPart2Texts } from '../../../utils/part2Texts';
 
 const DraggableSentence = ({ id, sentence, isSelected, onSelect }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
@@ -106,7 +107,7 @@ const DroppableGap = ({
   );
 };
 
-const Part2TextCohesion = ({ data }) => {
+const CohesionText = ({ data, questionStart }) => {
   const shuffled = useMemo(() => shuffleSentences(data?.sentences || []), [data?.sentences]);
   const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   const [activeId, setActiveId] = useState(null);
@@ -125,7 +126,8 @@ const Part2TextCohesion = ({ data }) => {
   const placeSentence = (sentenceId, position) => {
     if (!sentenceId) return;
 
-    const existingSentenceId = Object.keys(answers).find(key => answers[key] === position);
+    const sentenceIds = new Set(data.sentences.map(sentence => sentence.id));
+    const existingSentenceId = Object.keys(answers).find(key => sentenceIds.has(key) && answers[key] === position);
     const previousPosition = answers[sentenceId];
 
     if (existingSentenceId === sentenceId) {
@@ -169,7 +171,7 @@ const Part2TextCohesion = ({ data }) => {
           {/* Left: Gaps */}
           <div className="w-full md:w-1/2 flex flex-col">
             <div className="mb-4">
-              <h3 className="font-bold text-gray-900 mb-1">Questions 6–10</h3>
+              <h3 className="font-bold text-gray-900 mb-1">Questions {questionStart}–{questionStart + 4}</h3>
               <p className="font-bold text-gray-800 text-sm">{data.title || "Report on the noise level"}</p>
               <p className="mt-2 text-xs text-gray-600 md:hidden">
                 On mobile, tap a sentence, then tap a position. Tap a placed sentence and another position to swap them.
@@ -186,7 +188,7 @@ const Part2TextCohesion = ({ data }) => {
               {[2, 3, 4, 5, 6].map(position => {
                 const sentenceId = Object.keys(answers).find(key => answers[key] === position);
                 const sentence = data.sentences.find(s => s.id === sentenceId);
-                const questionId = position + 4;
+                const questionId = questionStart + position - 2;
                 return (
                   <div key={position} id={`question-${questionId}`} className="transition-all duration-300 rounded p-1">
                     <DroppableGap
@@ -197,7 +199,7 @@ const Part2TextCohesion = ({ data }) => {
                       hasSelectedSentence={Boolean(selectedSentenceId)}
                       isSelected={selectedSentenceId === sentence?.id}
                     />
-                    {renderAnswerReveal?.(position)}
+                    {renderAnswerReveal?.({ position, sentenceId: sentence?.id, textId: data.id })}
                   </div>
                 );
               })}
@@ -237,6 +239,17 @@ const Part2TextCohesion = ({ data }) => {
         ) : null}
       </DragOverlay>
     </DndContext>
+  );
+};
+
+const Part2TextCohesion = ({ data }) => {
+  const texts = getPart2Texts(data);
+  return (
+    <div className="flex flex-col gap-10">
+      {texts.map((text, index) => (
+        <CohesionText key={text.id || index} data={text} questionStart={6 + index * 5} />
+      ))}
+    </div>
   );
 };
 

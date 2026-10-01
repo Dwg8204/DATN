@@ -24,23 +24,24 @@ function PracticeAttemptSession({ attemptId, expectedComponent, children }) {
   const mountedRef = useRef(true);
 
   useEffect(() => {
+    let active = true;
     mountedRef.current = true;
-    if (!attemptId) return () => { mountedRef.current = false; };
+    if (!attemptId) return () => { active = false; mountedRef.current = false; };
     const controller = new AbortController();
     setLoading(true);
     practiceAttemptsApi.get(attemptId, controller.signal).then(data => {
       if (expectedComponent && data.component !== expectedComponent) throw new Error('This practice belongs to another skill.');
-      if (!mountedRef.current) return;
+      if (!active) return;
       setAttempt(data);
       setAnswers({});
       setLoadError('');
     }).catch(error => {
-      if (!mountedRef.current || error.code === 'ERR_CANCELED') return;
+      if (!active || error.code === 'ERR_CANCELED') return;
       const message = normalizeApiError(error, error.message || 'Unable to load this practice.').message;
       setLoadError(message);
       showError(message);
-    }).finally(() => { if (mountedRef.current) setLoading(false); });
-    return () => { mountedRef.current = false; controller.abort(); };
+    }).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; mountedRef.current = false; controller.abort(); };
   }, [attemptId, expectedComponent, showError]);
 
   const setAnswer = useCallback((key, answer) => {

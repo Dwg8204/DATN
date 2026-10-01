@@ -15,7 +15,7 @@ import styles from './ReadingAttemptPage.module.css';
 
 const instructions = {
   1: 'Read the passage and choose the correct word for each gap.',
-  2: 'Put sentences 2–6 in the correct order. The opening sentence is fixed.',
+  2: 'Arrange sentences 2–6 in both texts. The opening sentence of each text is fixed.',
   3: 'Read the four opinions and match each statement to the correct speaker.',
   4: 'Choose one heading for each paragraph.',
 };
@@ -23,16 +23,28 @@ const instructions = {
 function legacyPart(number, part) {
   if (number === 1) return { ...part, questions: part.questions.map(question => ({ ...question, id: question.key,
     options: question.options.map(option => option.text) })) };
-  if (number === 2) return { title: part.title, sentences: [
-    { id: 'opening', content: part.openingSentence, correctPosition: 1 },
-    ...part.options.map((option, index) => ({ id: option.id, content: option.text, correctPosition: index + 2 })),
-  ] };
+  if (number === 2) {
+    const texts = Array.isArray(part.texts) ? part.texts : [{ id: 'p2-text1', ...part }];
+    return { texts: texts.map((text, textIndex) => ({ id: text.id || `p2-text${textIndex + 1}`, title: text.title, sentences: [
+      { id: `${text.id || `p2-text${textIndex + 1}`}-opening`, content: text.openingSentence, correctPosition: 1 },
+      ...text.options.map((option, index) => ({ id: option.id, content: option.text, correctPosition: index + 2 })),
+    ] })) };
+  }
   if (number === 3) return { speakers: part.speakers.map(speaker => speaker.name),
     posts: part.speakers.map(speaker => speaker.post), passage: part.speakers.map(speaker => `${speaker.name}: ${speaker.post}`).join('\n\n'),
     questions: part.questions.map(question => ({ id: question.key, statement: question.statement })) };
   return { title: part.title, headings: part.headings, paragraphs: part.paragraphs.map(paragraph => ({
     id: paragraph.id, label: paragraph.label, content: paragraph.content, key: paragraph.key,
   })) };
+}
+
+function findPaperPart(paper, number) {
+  const parts = paper?.parts;
+  if (!parts) return null;
+  if (Array.isArray(parts)) {
+    return parts.find(candidate => Number(candidate?.partNumber ?? candidate?.number) === number) ?? null;
+  }
+  return parts[String(number)] ?? parts[`part${number}`] ?? null;
 }
 
 export default function ReadingAttemptPage() {
@@ -43,7 +55,7 @@ export default function ReadingAttemptPage() {
   const { attemptId, paper, answers, loading, loadError, saveStatus, isPractice,
     setAnswer, flush, submit, approveNavigation } = useTestAttempt();
   const [showSubmit, setShowSubmit] = useState(false);
-  const current = paper?.parts?.[String(number)];
+  const current = findPaperPart(paper, number);
   const data = useMemo(() => current ? legacyPart(number, current) : null, [current, number]);
   const isFull = paper?.mode === 'full';
 
@@ -53,10 +65,13 @@ export default function ReadingAttemptPage() {
       const selected = question.options.find(option => option.id === answers[question.key]?.optionId);
       return [question.key, selected?.text ?? ''];
     }));
-    if (number === 2) return Object.fromEntries(current.positions.flatMap(position => {
-      const sentenceId = answers[position.key]?.optionId;
-      return sentenceId ? [[sentenceId, position.position]] : [];
-    }));
+    if (number === 2) {
+      const texts = Array.isArray(current.texts) ? current.texts : [{ id: 'p2-text1', ...current }];
+      return Object.fromEntries(texts.flatMap(text => text.positions.flatMap(position => {
+        const sentenceId = answers[position.key]?.optionId;
+        return sentenceId ? [[sentenceId, position.position]] : [];
+      })));
+    }
     if (number === 3) return Object.fromEntries(current.questions.map(question => {
       const selected = current.speakers.find(speaker => speaker.id === answers[question.key]?.optionId);
       return [question.key, selected?.name ?? ''];
@@ -73,9 +88,11 @@ export default function ReadingAttemptPage() {
       const option = question.options.find(item => item.text === value);
       setAnswer(key, option ? { kind: 'CHOICE', optionId: option.id } : null);
     } else if (number === 2) {
-      const position = current.positions.find(item => item.position === value);
+      const texts = Array.isArray(current.texts) ? current.texts : [{ id: 'p2-text1', ...current }];
+      const text = texts.find(item => item.options.some(option => option.id === key));
+      const position = text?.positions.find(item => item.position === value);
       if (position) setAnswer(position.key, { kind: 'MATCH', optionId: key });
-      for (const item of current.positions) {
+      for (const item of text?.positions || []) {
         if (item.position !== value && answers[item.key]?.optionId === key) setAnswer(item.key, null);
       }
     } else if (number === 3) {
@@ -100,14 +117,15 @@ export default function ReadingAttemptPage() {
     } catch { /* Provider displays the API error. */ }
   };
   const revealItems = number === 1 ? current.questions.map(item => ({ ...item, options: item.options }))
-    : number === 2 ? current.positions.map(item => ({ ...item, options: current.options }))
+    : number === 2 ? (Array.isArray(current.texts) ? current.texts : [{ id: 'p2-text1', ...current }])
+      .flatMap(text => text.positions.map(item => ({ ...item, textId: text.id, options: text.options })))
       : number === 3 ? current.questions.map(item => ({ ...item, options: current.speakers.map(speaker => ({ id: speaker.id, text: speaker.name })) }))
         : current.paragraphs.map(item => ({ ...item, options: current.headings }));
   const questionIds = revealItems.map(item => item.key);
   const answeredIds = questionIds.filter(key => answers[key]);
   const renderAnswerReveal = legacyKey => {
     const item = number === 2
-      ? revealItems.find(candidate => candidate.position === legacyKey)
+      ? revealItems.find(candidate => candidate.position === legacyKey.position && candidate.textId === legacyKey.textId)
       : number === 4
         ? revealItems.find(candidate => candidate.id === legacyKey)
         : revealItems.find(candidate => candidate.key === legacyKey);

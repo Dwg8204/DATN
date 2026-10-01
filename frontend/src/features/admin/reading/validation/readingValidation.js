@@ -1,6 +1,7 @@
 import { validateExplanations } from '../../shared-test-builder/explanationValidation.js';
 import { withinTextLimit } from '../utils/textLimits.js';
 import { hasRichTextContent } from '../../../../components/common/richText.js';
+import { getPart2Texts } from '../../../module-reading/utils/part2Texts.js';
 const filled = hasRichTextContent;
 export function validateReadingPart(number, part) {
   const explanationError = validateExplanations(part);
@@ -19,10 +20,15 @@ export function validateReadingPart(number, part) {
     if (part.questions.some(q => q.options.some(o => !filled(o)) || new Set(q.options.map(o => o.trim().toLowerCase())).size !== 3 || !q.options.includes(q.answer) || !filled(q.answer))) errors.push('Each gap needs three different options and one correct answer.');
   }
   if (number === 2) {
-    limit(part.title, 50, 'Title');
-    part.sentences.forEach((s, i) => limit(s.content, 100, `Sentence ${i + 1}`));
-    if (!filled(part.title) || part.sentences.some(s => !filled(s.content))) errors.push('Complete the title and all six sentences.');
-    if (part.sentences[0]?.correctPosition !== 1 || part.sentences.some(s => !Number.isInteger(s.correctPosition) || s.correctPosition < 1 || s.correctPosition > 6) || new Set(part.sentences.map(s => s.correctPosition)).size !== 6) errors.push('Keep the opening sentence first and assign each remaining position (2–6) exactly once.');
+    const texts = getPart2Texts(part);
+    if (texts.length !== 2) errors.push('Part 2 must contain exactly two texts.');
+    texts.forEach((text, textIndex) => {
+      limit(text.title, 50, `Text ${textIndex + 1} title`);
+      text.sentences.forEach((sentence, sentenceIndex) => limit(sentence.content, 100, `Text ${textIndex + 1}, sentence ${sentenceIndex + 1}`));
+      if (!filled(text.title) || text.sentences.length !== 6 || text.sentences.some(sentence => !filled(sentence.content))) errors.push(`Complete the title and all six sentences for text ${textIndex + 1}.`);
+      const positions = text.sentences.map(sentence => sentence.correctPosition);
+      if (text.sentences[0]?.correctPosition !== 1 || positions.some(position => !Number.isInteger(position) || position < 1 || position > 6) || new Set(positions).size !== 6) errors.push(`Text ${textIndex + 1}: keep the opening sentence first and assign each remaining position (2–6) exactly once.`);
+    });
   }
   if (number === 3) {
     part.speakers.forEach(name => limit(name, 50, 'Speaker name'));

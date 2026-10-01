@@ -70,7 +70,7 @@ export class AssessmentPaperFactory {
       }
     }
     if (component === 'READING') {
-      const required: Record<number, number> = { 1: 5, 2: 5, 3: 7, 4: 7 };
+      const required: Record<number, number> = { 1: 5, 2: 10, 3: 7, 4: 7 };
       if (actualParts.some(part => items.filter(item => item.partNumber === part).length !== required[part])) {
         throw this.invalidSnapshot();
       }

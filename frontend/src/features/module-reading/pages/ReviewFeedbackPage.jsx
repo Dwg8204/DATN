@@ -7,6 +7,7 @@ import TestFooter from '../../../components/layout/TestFooter';
 import { useToast } from '../../../context/ToastContext';
 import DataLoadError from '../../../components/common/DataLoadError';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+import { getPart2Texts } from '../utils/part2Texts';
 
 const REVIEW_QUERY_SCHEMA = { currentPart: { ...queryParam.positiveInt(1, 4), param: 'part' } };
 
@@ -197,12 +198,14 @@ const ReviewFeedbackPage = () => {
     if (currentPart === 2) {
       return (
         <div className="flex flex-col gap-6">
-          {testData.part2.sentences.filter((sentence) => sentence.correctPosition > 1).map((sentence, index) => {
+          {getPart2Texts(testData.part2).flatMap((text, textIndex) => text.sentences
+            .filter((sentence) => sentence.correctPosition > 1)
+            .map(sentence => ({ ...sentence, textTitle: text.title, textIndex }))).map((sentence, index) => {
             const detail = results.part2.details.find((item) => item.id === sentence.id);
             return renderReviewCard({
-              id: `p2-${sentence.correctPosition}`,
+              id: `p2-${sentence.textIndex + 1}-${sentence.correctPosition}`,
               number: index + 1,
-              title: `Sentence for gap [${sentence.correctPosition}]: ${sentence.content}`,
+              title: `Text ${sentence.textIndex + 1} (${sentence.textTitle}) · Gap [${sentence.correctPosition}]: ${sentence.content}`,
               detail,
             });
           })}

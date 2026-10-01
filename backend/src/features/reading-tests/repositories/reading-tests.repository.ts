@@ -153,8 +153,18 @@ export class ReadingTestsRepository {
     if (p1) for (const [index, question] of p1.questions.entries()) await insert(1, index + 1, 'READING_GAP_CHOICE',
       { options: question.options }, { answer: question.answer }, question.explanation);
     const p2 = test.parts['2'];
-    if (p2) for (const [index, sentence] of p2.sentences.slice(1).entries()) await insert(2, index + 1, 'READING_ORDER',
-      { sentenceId: sentence.id, text: sentence.content }, { position: sentence.correctPosition }, sentence.explanation);
+    if (p2) {
+      const texts = Array.isArray(p2.texts) ? p2.texts : [{ id: 'p2-text1', title: p2.title, sentences: p2.sentences }];
+      let questionPosition = 0;
+      for (const [textIndex, text] of texts.entries()) {
+        for (const sentence of text.sentences.slice(1)) {
+          questionPosition += 1;
+          await insert(2, questionPosition, 'READING_ORDER',
+            { textId: text.id || `p2-text${textIndex + 1}`, textTitle: text.title, sentenceId: sentence.id, text: sentence.content },
+            { position: sentence.correctPosition }, sentence.explanation);
+        }
+      }
+    }
     const p3 = test.parts['3'];
     if (p3) for (const [index, question] of p3.questions.entries()) await insert(3, index + 1, 'READING_OPINION_MATCH',
       { statement: question.statement }, { speaker: question.answer }, question.explanation);

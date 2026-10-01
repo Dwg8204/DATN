@@ -5,7 +5,7 @@ export const READING_PARTS = [{
 }, {
   number: 2,
   title: 'Text cohesion',
-  summary: 'An opening sentence and 5 sentences to arrange.'
+  summary: 'Two texts, each with an opening sentence and 5 sentences to arrange.'
 }, {
   number: 3,
   title: 'Opinion matching',
@@ -38,14 +38,15 @@ export function createReadingDraft(mode = 'full', purpose = mode === 'full' ? 'E
       }))
     },
     part2: {
-      title: '',
-      sentences: Array.from({
-        length: 6
-      }, (_, i) => ({
-        id: `s${i + 1}`,
-        content: '',
-        correctPosition: i + 1,
-        explanation: ''
+      texts: Array.from({ length: 2 }, (_, textIndex) => ({
+        id: `p2-text${textIndex + 1}`,
+        title: '',
+        sentences: Array.from({ length: 6 }, (_, sentenceIndex) => ({
+          id: `p2-t${textIndex + 1}-s${sentenceIndex + 1}`,
+          content: '',
+          correctPosition: sentenceIndex + 1,
+          explanation: ''
+        }))
       }))
     },
     part3: {

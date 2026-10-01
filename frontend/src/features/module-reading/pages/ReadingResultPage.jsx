@@ -111,8 +111,8 @@ const ReadingResultPage = () => {
     const questions = [
       ...results.part1.details.map((d, index) => ({ id: index + 1, answer: d.userAnswer, isCorrect: d.isCorrect })),
       ...results.part2.details.map((d, index) => ({ id: index + 6, answer: d.userAnswer, isCorrect: d.isCorrect })),
-      ...results.part3.details.map((d, index) => ({ id: index + 11, answer: d.userAnswer, isCorrect: d.isCorrect })),
-      ...results.part4.details.map((d, index) => ({ id: index + 18, answer: d.userAnswer, isCorrect: d.isCorrect })),
+      ...results.part3.details.map((d, index) => ({ id: index + 16, answer: d.userAnswer, isCorrect: d.isCorrect })),
+      ...results.part4.details.map((d, index) => ({ id: index + 23, answer: d.userAnswer, isCorrect: d.isCorrect })),
     ].map(item => {
       const isSkipped = !item.answer || item.answer === '' || item.answer === '(No answer)';
       return {

@@ -16,6 +16,7 @@ import styles from './ReadingTestPage.module.css';
 import {loadReadingTest} from '../services/readingTestRepository';
 import { useToast } from '../../../context/ToastContext';
 import DataLoadError from '../../../components/common/DataLoadError';
+import { getPart2Texts } from '../utils/part2Texts';
 
 export default function ReadingTestPage() {
   const { showError } = useToast();
@@ -171,26 +172,23 @@ export default function ReadingTestPage() {
         .filter(idx => answers[`p1-q${idx}`])
         .map(String);
     } else if (currentPart === 2) {
-      footerQuestions = [6, 7, 8, 9, 10].map(id => ({ id }));
-      currentQuestionIds = [6, 7, 8, 9, 10];
-      const part2Answers = [2, 3, 4, 5, 6].map(pos => {
-        const sentenceId = Object.keys(answers).find(key => key.startsWith('s') && answers[key] === pos);
-        return sentenceId ? true : false;
-      });
-      answeredIds = [6, 7, 8, 9, 10]
-        .filter((_, idx) => part2Answers[idx])
+      const gapSentences = getPart2Texts(testData.part2).flatMap(text => text.sentences.filter(sentence => sentence.correctPosition > 1));
+      footerQuestions = gapSentences.map((_, index) => ({ id: index + 6 }));
+      currentQuestionIds = footerQuestions.map(question => question.id);
+      answeredIds = currentQuestionIds
+        .filter((_, index) => answers[gapSentences[index].id])
         .map(String);
     } else if (currentPart === 3) {
-      footerQuestions = [11, 12, 13, 14, 15, 16, 17].map(id => ({ id }));
-      currentQuestionIds = [11, 12, 13, 14, 15, 16, 17];
-      answeredIds = [11, 12, 13, 14, 15, 16, 17]
-        .filter(id => answers[`p3-q${id - 10}`])
+      footerQuestions = [16, 17, 18, 19, 20, 21, 22].map(id => ({ id }));
+      currentQuestionIds = [16, 17, 18, 19, 20, 21, 22];
+      answeredIds = currentQuestionIds
+        .filter(id => answers[`p3-q${id - 15}`])
         .map(String);
     } else if (currentPart === 4) {
-      footerQuestions = [18, 19, 20, 21, 22, 23, 24].map(id => ({ id }));
-      currentQuestionIds = [18, 19, 20, 21, 22, 23, 24];
-      answeredIds = [18, 19, 20, 21, 22, 23, 24]
-        .filter(id => answers[`para${id - 17}`])
+      footerQuestions = [23, 24, 25, 26, 27, 28, 29].map(id => ({ id }));
+      currentQuestionIds = [23, 24, 25, 26, 27, 28, 29];
+      answeredIds = currentQuestionIds
+        .filter(id => answers[`para${id - 22}`])
         .map(String);
     }
 
@@ -210,21 +208,21 @@ export default function ReadingTestPage() {
         return {
           title: 'Part 2',
           skill: 'Reading Test',
-          range: 'Questions 6-10',
-          instruction: 'The sentences below are from a report. Put the sentences in the right order. The first sentence is done for you.'
+          range: 'Questions 6-15',
+          instruction: 'Arrange the sentences in each of the two texts. The first sentence of each text is done for you.'
         };
       case 3:
         return {
           title: 'Part 3',
           skill: 'Reading Test',
-          range: 'Questions 11-17',
+          range: 'Questions 16-22',
           instruction: 'Four people respond in the comments section of an online magazine article about advanced level tests. Read the texts and then answer the questions below.'
         };
       case 4:
         return {
           title: 'Part 4',
           skill: 'Reading Test',
-          range: 'Questions 18-24',
+          range: 'Questions 23-29',
           instruction: 'Read the passage quickly. Choose a heading for each numbered paragraph (1 - 7) from the drop-down box. There is one more heading than you need.'
         };
       default:

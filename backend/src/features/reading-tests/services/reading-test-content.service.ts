@@ -40,10 +40,15 @@ export class ReadingTestContentService {
         }
       }
       if (number === 2) {
-        const positions = part.sentences?.map((item: any) => item.correctPosition) ?? [];
-        if (!part.title?.trim() || part.sentences?.length !== 6 || part.sentences.some((item: any) => !item.content?.trim()) ||
-          positions.some((position: unknown) => !Number.isInteger(position) || Number(position) < 1 || Number(position) > 6) ||
-          new Set(positions).size !== 6) this.invalid(2);
+        const hasTextCollection = Array.isArray(part.texts);
+        const texts = hasTextCollection ? part.texts : [{ id: 'p2-text1', title: part.title, sentences: part.sentences }];
+        if (hasTextCollection && texts.length !== 2) this.invalid(2);
+        for (const text of texts) {
+          const positions = text.sentences?.map((item: any) => item.correctPosition) ?? [];
+          if (!text.title?.trim() || text.sentences?.length !== 6 || text.sentences.some((item: any) => !item.content?.trim()) ||
+            positions.some((position: unknown) => !Number.isInteger(position) || Number(position) < 1 || Number(position) > 6) ||
+            new Set(positions).size !== 6) this.invalid(2);
+        }
       }
       if (number === 3 && (part.speakers?.length !== 4 || part.posts?.length !== 4 || part.questions?.length !== 7 ||
         part.speakers.some((value: string) => !value.trim()) || new Set(part.speakers.map((value: string) => value.trim().toLowerCase())).size !== 4 ||
@@ -65,7 +70,11 @@ export class ReadingTestContentService {
     const p1 = clone.parts['1'];
     if (p1) p1.questions = p1.questions.map((question: any) => ({ ...question, answer: undefined, explanation: undefined }));
     const p2 = clone.parts['2'];
-    if (p2) p2.sentences = p2.sentences.map((sentence: any) => ({ ...sentence, correctPosition: undefined, explanation: undefined }));
+    if (p2) {
+      if (Array.isArray(p2.texts)) p2.texts = p2.texts.map((text: any) => ({ ...text,
+        sentences: text.sentences.map((sentence: any) => ({ ...sentence, correctPosition: undefined, explanation: undefined })) }));
+      else p2.sentences = p2.sentences.map((sentence: any) => ({ ...sentence, correctPosition: undefined, explanation: undefined }));
+    }
     const p3 = clone.parts['3'];
     if (p3) p3.questions = p3.questions.map((question: any) => ({ ...question, answer: undefined, explanation: undefined }));
     const p4 = clone.parts['4'];

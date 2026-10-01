@@ -21,15 +21,22 @@ export const readingPaperAdapter: PaperAdapter = snapshot => {
 
   const p2 = test.parts['2'];
   if (p2) {
-    const sentences = [...p2.sentences].sort((a: any, b: any) => a.correctPosition - b.correctPosition);
-    const options = sentences.slice(1).map((sentence: any) => ({ id: sentence.id, text: sentence.content }));
-    const positions = sentences.slice(1).map((sentence: any, index: number) => {
-      const key = `p2:q${index + 1}`;
-      items.push({ key, partNumber: 2, kind: 'MATCH', optionIds: options.map((option: any) => option.id),
-        correctOptionId: sentence.id, points: 1, explanation: sentence.explanation });
-      return { key, position: index + 2 };
+    const sourceTexts = Array.isArray(p2.texts) ? p2.texts : [{ id: 'p2-text1', title: p2.title, sentences: p2.sentences }];
+    let questionIndex = 0;
+    const texts = sourceTexts.map((text: any, textIndex: number) => {
+      const sentences = [...text.sentences].sort((a: any, b: any) => a.correctPosition - b.correctPosition);
+      const options = sentences.slice(1).map((sentence: any) => ({ id: sentence.id, text: sentence.content }));
+      const positions = sentences.slice(1).map((sentence: any, index: number) => {
+        questionIndex += 1;
+        const key = `p2:q${questionIndex}`;
+        items.push({ key, partNumber: 2, kind: 'MATCH', optionIds: options.map((option: any) => option.id),
+          correctOptionId: sentence.id, points: 1, explanation: sentence.explanation });
+        return { key, position: index + 2 };
+      });
+      return { id: text.id || `p2-text${textIndex + 1}`, title: text.title,
+        openingSentence: sentences[0]?.content ?? '', options, positions };
     });
-    parts['2'] = { title: p2.title, openingSentence: sentences[0]?.content ?? '', options, positions };
+    parts['2'] = { texts };
   }
 
   const p3 = test.parts['3'];

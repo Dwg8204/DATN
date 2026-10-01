@@ -1,4 +1,5 @@
 import { hasRichTextContent } from '../../../components/common/richText';
+import { getPart2Texts } from '../utils/part2Texts';
 
 const withFallbackExplanation = (explanation, fallback) => {
   if (hasRichTextContent(explanation)) return explanation;
@@ -45,10 +46,10 @@ export const calculateScore = (answers, testData, mode = 'full') => {
   }
 
   // Part 2
-  if (showPart2 && testData.part2 && testData.part2.sentences) {
-    // Only sentences with correctPosition are actually gaps
-    const gapSentences = testData.part2.sentences.filter(s => s.correctPosition && s.correctPosition > 1);
-    gapSentences.forEach(s => {
+  if (showPart2 && testData.part2) {
+    getPart2Texts(testData.part2).forEach((text, textIndex) => {
+      const gapSentences = text.sentences.filter(s => s.correctPosition && s.correctPosition > 1);
+      gapSentences.forEach(s => {
       const userPosition = answers[s.id];
       const isCorrect = userPosition === s.correctPosition;
       if (isCorrect) results.part2.score++;
@@ -56,7 +57,7 @@ export const calculateScore = (answers, testData, mode = 'full') => {
 
       results.part2.details.push({
         id: s.id,
-        question: `Sentence for Gap [${s.correctPosition}]`,
+        question: `Text ${textIndex + 1} · Sentence for Gap [${s.correctPosition}]`,
         userAnswer: userPosition ? `Position ${userPosition}` : '(No answer)',
         correctAnswer: `Position ${s.correctPosition}`,
         isCorrect,
@@ -64,6 +65,7 @@ export const calculateScore = (answers, testData, mode = 'full') => {
           s.explanation,
           `This sentence belongs in position ${s.correctPosition}. Its references and linking words connect logically with the ideas immediately before and after that position.`
         )
+      });
       });
     });
   }
