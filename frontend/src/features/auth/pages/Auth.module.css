@@ -458,3 +458,18 @@
     line-height: 24px;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .wrapper { background: var(--bg-page); }
+:global([data-theme="dark"]) .signupWrapper { background: var(--bg-page); }
+:global([data-theme="dark"]) .label { color: var(--text-primary); }
+:global([data-theme="dark"]) .input { background: var(--bg-hover); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .forgotPassword { color: var(--text-primary); }
+:global([data-theme="dark"]) .orText { color: var(--text-primary); }
+:global([data-theme="dark"]) .bottomText { color: var(--text-primary); }
+:global([data-theme="dark"]) .emailText { color: var(--text-primary); }
+:global([data-theme="dark"]) .emailButton { background: var(--bg-hover); border-color: var(--border); }
+:global([data-theme="dark"]) .verifyEmailButton { background: var(--bg-hover); border-color: var(--border); }
+:global([data-theme="dark"]) .passwordToggle { color: var(--text-muted); }
+:global([data-theme="dark"]) .loadingHint { color: var(--text-muted); }
+:global([data-theme="dark"]) .warningText { color: var(--brand-hover); }

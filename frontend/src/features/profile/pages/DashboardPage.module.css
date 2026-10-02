@@ -478,3 +478,6 @@
 :global([data-theme="dark"]) .skillPill:hover { background: var(--border); }
 :global([data-theme="dark"]) .chartContainerFull { background: var(--bg-surface); border-color: var(--border); }
 :global([data-theme="dark"]) .chartContainerFull h3 { color: var(--text-primary); }
+
+:global([data-theme="dark"]) .filterBtn.active { background: var(--brand) !important; color: #fff !important; border-color: var(--brand) !important; }
+:global([data-theme="dark"]) .skillPill.active { background: var(--brand) !important; color: #fff !important; box-shadow: 0 4px 10px rgba(201, 42, 42, 0.25) !important; }
