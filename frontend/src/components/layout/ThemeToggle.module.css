@@ -2,8 +2,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
   padding: 0;
   border-radius: 50%;
   border: 1px solid var(--brand-border);
@@ -29,4 +30,13 @@
 .icon {
   display: block;
   stroke-width: 2.25px;
+}
+
+
+@media (max-width: 700px) {
+  .toggle {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+  }
 }

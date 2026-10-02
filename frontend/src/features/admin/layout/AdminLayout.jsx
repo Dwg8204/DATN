@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import AdminTopbar from './AdminTopbar';
@@ -7,6 +7,20 @@ import './AdminLayoutEnhancements.css';
 
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const prevTheme = document.documentElement.getAttribute('data-theme');
+    document.documentElement.setAttribute('data-theme', 'light');
+    
+    return () => {
+      if (prevTheme) {
+        document.documentElement.setAttribute('data-theme', prevTheme);
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    };
+  }, []);
+
   return (
     <div className={`${styles.shell} ${collapsed ? 'adminShellCollapsed' : ''}`}>
       <AdminSidebar collapsed={collapsed} />
