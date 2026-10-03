@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { MatchingSetEditor, MultipleChoiceQuestionEditor, QuestionGroup } from '../shared-test-builder/ObjectiveQuestionEditors';
 import { AdminValidationToast } from '../components/AdminFeedback';
 import { useGrammarTestBuilder } from './context/GrammarTestBuilderContext';
@@ -10,13 +10,12 @@ import { revealFirstEditorError } from '../shared-test-builder/editorNavigation'
 import EditorBackButton from '../shared-test-builder/EditorBackButton';
 
 export default function GrammarPartEditorPage() {
-  const navigate = useNavigate();
   const { partNumber: raw } = useParams();
   const partNumber = Number(raw) === 2 ? 2 : 1;
-  const { test, updatePart, basePath } = useGrammarTestBuilder();
+  const { test, updatePart, goTo } = useGrammarTestBuilder();
   const [errors, setErrors] = useState([]);
   const scopeRef = useRef(null);
-  const close = () => navigate(test.id ? basePath : `${basePath}?mode=${test.mode}`);
+  const close = () => goTo();
   const updateQuestion = (index, value) => {
     setErrors([]);
     updatePart(1, { ...test.parts[1], questions: test.parts[1].questions.map((question, current) => current === index ? value : question) });

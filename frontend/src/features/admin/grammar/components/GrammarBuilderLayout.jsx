@@ -1,39 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
-import { Outlet, useParams, useSearchParams } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import { GrammarTestBuilderProvider } from '../context/GrammarTestBuilderContext';
-import { createGrammarTestDraft } from '../data/grammarTestData';
-import { grammarTestsApi } from '../services/grammarTestsApi';
-import { getApiError } from '../../../../services/apiError';
+import usePersistentBuilder from '../../shared-test-builder/usePersistentBuilder';
+import BuilderDraftStatus from '../../shared-test-builder/BuilderDraftStatus';
 
 export default function GrammarBuilderLayout() {
-  const { testId } = useParams();
-  const [params] = useSearchParams();
-  const mode = ['part1', 'part2', 'full'].includes(params.get('mode')) ? params.get('mode') : 'full';
-  const purpose = params.get('purpose') === 'PRACTICE' ? 'PRACTICE' : 'EXAM';
-  const newDraft = () => ({ ...createGrammarTestDraft(purpose === 'EXAM' ? 'full' : mode), purpose });
-  const [state, setState] = useState(() => testId
-    ? { test: null, loading: true, error: '' }
-    : { test: newDraft(), loading: false, error: '' });
-
-  useEffect(() => {
-    if (!testId) {
-      setState({ test: newDraft(), loading: false, error: '' });
-      return undefined;
-    }
-    const controller = new AbortController();
-    setState({ test: null, loading: true, error: '' });
-    grammarTestsApi.getAdmin(testId, controller.signal)
-      .then(test => setState({ test, loading: false, error: '' }))
-      .catch(error => {
-        if (error.code !== 'ERR_CANCELED') setState({ test: null, loading: false, error: getApiError(error, 'Unable to load this test.') });
-      });
-    return () => controller.abort();
-  }, [mode, purpose, testId]);
-
-  const syncPersistedTest = useCallback(test => setState({ test, loading: false, error: '' }), []);
-
-  if (state.loading) return <div style={{ padding: 32 }}>Loading Grammar &amp; Vocabulary test…</div>;
-  if (state.error || !state.test) return <div style={{ padding: 32 }}><h2>Test not found</h2><p>{state.error || 'This test is unavailable.'}</p></div>;
-  const basePath = testId ? `/admin/tests/grammar/${testId}/edit` : '/admin/tests/new/grammar';
-  return <GrammarTestBuilderProvider key={testId || `${purpose}-${mode}`} initialTest={state.test} basePath={basePath} onTestChange={syncPersistedTest}><Outlet /></GrammarTestBuilderProvider>;
+  const builder = usePersistentBuilder('grammar');
+  return <BuilderDraftStatus builder={builder}>
+    <GrammarTestBuilderProvider builder={builder}><Outlet /></GrammarTestBuilderProvider>
+  </BuilderDraftStatus>;
 }

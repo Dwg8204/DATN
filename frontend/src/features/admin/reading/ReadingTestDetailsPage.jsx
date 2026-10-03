@@ -6,7 +6,6 @@ import ImageField from '../shared-test-builder/ImageField';
 import PartSummaryCard from '../writing/components/PartSummaryCard';
 import { useReadingBuilder } from './context/ReadingBuilderContext';
 import { READING_PARTS } from './data/readingTestModel';
-import { readingTestsApi } from './services/readingTestsApi';
 import { getApiError } from '../../../services/apiError';
 import { validateReadingTest } from './validation/readingValidation';
 import styles from '../writing/WritingTestDetailsPage.module.css';
@@ -15,7 +14,9 @@ export default function ReadingTestDetailsPage() {
   const {
     test,
     setTest,
-    basePath
+    goTo,
+    saveDraft,
+    publishTest
   } = useReadingBuilder();
   const navigate = useNavigate();
   const [errors, setErrors] = useState([]);
@@ -29,6 +30,7 @@ export default function ReadingTestDetailsPage() {
     }
   }));
   const requestSave = () => {
+    if (saving) return;
     const next = validateReadingTest(test);
     setErrors(next);
     if (!next.length) setConfirm(true);
@@ -37,8 +39,7 @@ export default function ReadingTestDetailsPage() {
     if (saving) return;
     setSaving(true);
     try {
-      const draft = test.id ? await readingTestsApi.update(test.id, test) : await readingTestsApi.create(test);
-      const saved = await readingTestsApi.publish(draft.id, draft.version);
+      const saved = await publishTest();
       navigate(`/admin/tests/reading/${saved.id}/preview`, {
         state: {
           toast: test.id ? 'Reading test updated successfully.' : 'Reading test created successfully.'
@@ -50,6 +51,13 @@ export default function ReadingTestDetailsPage() {
       setConfirm(false);
       setSaving(false);
     }
+  };
+  const saveInformation = async () => {
+    if (saving) return;
+    setSaving(true);
+    try { await saveDraft(); await goTo(); }
+    catch (error) { setErrors([getApiError(error, 'Unable to save the draft. Your local changes are preserved.')]); }
+    finally { setSaving(false); }
   };
   const parts = READING_PARTS.filter(p => test.mode === 'full' || test.mode === `part${p.number}`);
   return (
@@ -64,12 +72,13 @@ export default function ReadingTestDetailsPage() {
         onConfirm={persist}
       />
       <AdminBreadcrumb current={test.details.title || 'New Reading test'} purpose={test.purpose} />
-      <section className={styles.information}>
+      <section className={styles.information} inert={saving ? '' : undefined}>
         <h2>INFORMATION TEST</h2>
         <div className={styles.infoGrid}>
           <div className={styles.fields}>
             <Field label="Title" value={test.details.title} onChange={value => detail('title', value)} />
             <ImageField label="Test cover" value={test.details.pictureUrl} onChange={value => detail('pictureUrl', value)} />
+            <button className={styles.saveInfo} disabled={saving} onClick={saveInformation}>Save draft</button>
           </div>
           <aside>
             <b>Preview</b>
@@ -83,14 +92,14 @@ export default function ReadingTestDetailsPage() {
           </aside>
         </div>
       </section>
-      <section className={styles.content}>
+      <section className={styles.content} inert={saving ? '' : undefined}>
         <h2>CONTENT TEST</h2>
         <div>
           {parts.map(part => (
-            <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}`)} />
+            <PartSummaryCard key={part.number} part={part} onEdit={() => goTo(part.number)} />
           ))}
         </div>
-        <button className={styles.saveAll} onClick={requestSave}>
+        <button className={styles.saveAll} onClick={requestSave} disabled={saving}>
           {test.id ? 'Update test & preview' : 'Save test & preview'}
         </button>
       </section>

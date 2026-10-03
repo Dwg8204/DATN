@@ -158,10 +158,10 @@ export default function TestManagerPage() {
     if (!publishTest) return;
     try {
       if (publishTest.component === 'Grammar & Vocab') {
-        await grammarTestsApi.publish(publishTest.id);
+        await grammarTestsApi.publish(publishTest);
         grammar.reload();
       } else if (publishTest.component === 'Writing') {
-        await writingTestsApi.publish(publishTest.id);
+        await writingTestsApi.publish(publishTest);
         writing.reload();
       } else if (publishTest.component === 'Reading') {
         await readingTestsApi.publish(publishTest.id, publishTest.version);

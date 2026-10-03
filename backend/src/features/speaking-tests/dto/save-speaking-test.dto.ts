@@ -1,8 +1,10 @@
-import { IsIn, IsInt, IsObject, IsOptional, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsObject, IsOptional, IsUUID, Max, Min } from 'class-validator';
 import { TestPurpose } from '../../../common/tests/test-purpose';
 import { SpeakingTestAggregate, SpeakingTestMode } from '../types/speaking-test.type';
 
 export class CreateSpeakingTestDto {
+  @IsOptional() @IsUUID() creationRequestId?: string;
+
   @IsOptional()
   @IsIn(['EXAM', 'PRACTICE'])
   purpose?: TestPurpose;

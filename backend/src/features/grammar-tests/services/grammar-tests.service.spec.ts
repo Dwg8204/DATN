@@ -14,6 +14,13 @@ describe('GrammarTestsService', () => {
 
   beforeEach(() => jest.clearAllMocks());
 
+  it('rejects publishing when the saved client revision is stale', async () => {
+    repository.findAggregate.mockResolvedValue({ id: 'id', version: 8, purpose: 'PRACTICE', mode: 'part1', details: { title: 'Draft' }, parts: {}, status: 'DRAFT' });
+    repository.findOwner.mockResolvedValue({ createdBy: actor.id, status: 'DRAFT' });
+    await expect(service.publish('id', actor, {}, 7)).rejects.toMatchObject({ code: 'GRAMMAR_TEST_VERSION_CONFLICT', statusCode: 409 });
+    expect(repository.publish).not.toHaveBeenCalled();
+  });
+
   it('maps an optimistic concurrency conflict to a stable API error', async () => {
     repository.update.mockResolvedValue({ outcome: 'VERSION_CONFLICT' });
     await expect(service.update('id', actor, {
@@ -28,7 +35,7 @@ describe('GrammarTestsService', () => {
     await expect(service.get('id', actor)).rejects.toMatchObject({ code: 'GRAMMAR_TEST_FORBIDDEN', statusCode: 403 });
   });
 
-  it('publishes the current persisted version without trusting a client version', async () => {
+  it('publishes the version the client saved when it remains current', async () => {
     const aggregate = {
       id: 'id', version: 7, status: 'DRAFT' as const, purpose: 'PRACTICE' as const, mode: 'part1' as const,
       details: { title: 'Complete grammar test' },
@@ -40,7 +47,7 @@ describe('GrammarTestsService', () => {
     repository.findOwner.mockResolvedValue({ createdBy: actor.id, status: 'DRAFT' });
     repository.publish.mockResolvedValue({ outcome: 'SUCCESS', value: { ...aggregate, status: 'PUBLISHED' } });
 
-    await expect(service.publish('id', actor, {})).resolves.toMatchObject({ status: 'PUBLISHED' });
+    await expect(service.publish('id', actor, {}, 7)).resolves.toMatchObject({ status: 'PUBLISHED' });
     expect(repository.publish).toHaveBeenCalledWith('id', actor, 7, aggregate, {});
   });
 });

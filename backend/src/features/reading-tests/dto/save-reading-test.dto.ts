@@ -1,8 +1,10 @@
-import { IsIn, IsInt, IsObject, IsOptional, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsObject, IsOptional, IsUUID, Max, Min } from 'class-validator';
 import { TestPurpose } from '../../../common/tests/test-purpose';
 import { ReadingTestAggregate, ReadingTestMode } from '../types/reading-test.type';
 
 export class CreateReadingTestDto {
+  @IsOptional() @IsUUID() creationRequestId?: string;
+
   @IsOptional() @IsIn(['EXAM', 'PRACTICE']) purpose?: TestPurpose;
   @IsIn(['part1', 'part2', 'part3', 'part4', 'full']) mode!: ReadingTestMode;
   @IsObject() details!: ReadingTestAggregate['details'];

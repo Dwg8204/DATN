@@ -1,3 +1,4 @@
+import { findCreatedTest, testCreationId } from '../../../common/tests/test-creation';
 import { randomUUID, createHash } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
@@ -170,8 +171,9 @@ export class ListeningTestsRepository {
     return { createdBy: rows[0].created_by, status: rows[0].status };
   }
 
-  async create(actor: ListeningActor, aggregate: ListeningTestAggregate, audit: ListeningAudit): Promise<ListeningTestAggregate> {
-    const id = randomUUID();
+  async create(actor: ListeningActor, aggregate: ListeningTestAggregate, audit: ListeningAudit, creationRequestId?: string): Promise<ListeningTestAggregate> {
+    const id = testCreationId(actor.id, 'LISTENING', creationRequestId);
+    let replayed = false;
     const mode = aggregate.mode;
     const scope = mode === 'full' ? 'FULL_SKILL' : 'PART';
     const partNumber = mode === 'full' ? null : parseInt(mode.replace('part', ''), 10);
@@ -179,6 +181,7 @@ export class ListeningTestsRepository {
     const contents = this.buildPartContents(aggregate);
 
     await this.dataSource.transaction(async manager => {
+      if (await findCreatedTest(manager, id, creationRequestId)) { replayed = true; return; }
       await manager.query(
         `INSERT INTO tests (id, created_by, title, component, purpose, scope, part_number, cover, part_contents, version, status, updated_by)
          VALUES ($1, $2, $3, 'LISTENING', $4, $5, $6, $7, $8, 1, 'DRAFT', $2)`,
@@ -187,7 +190,8 @@ export class ListeningTestsRepository {
       await this.syncQuestions(manager, id, aggregate);
       await this.audit(manager, actor.id, 'CREATE_LISTENING_TEST', id, aggregate, audit);
     });
-    return (await this.findAggregate(id))!;
+    const saved = (await this.findAggregate(id))!;
+    return replayed ? { ...saved, creationReplayed: true } : saved;
   }
 
   async update(id: string, actor: ListeningActor, version: number, aggregate: ListeningTestAggregate, audit: ListeningAudit): Promise<RepositoryMutation> {

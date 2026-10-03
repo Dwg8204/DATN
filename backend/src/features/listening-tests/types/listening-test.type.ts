@@ -46,6 +46,7 @@ export type ListeningPart4 = {
 };
 
 export type ListeningTestAggregate = {
+  creationReplayed?: boolean;
   id?: string;
   mode: ListeningTestMode;
   purpose: TestPurpose;

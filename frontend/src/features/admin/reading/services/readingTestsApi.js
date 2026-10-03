@@ -17,7 +17,7 @@ export const readingTestsApi = {
   listPublished: ({ signal, ...params } = {}) => api.get('/reading-tests/published', { params, signal }).then(response => response.data),
   getOne: id => api.get(`/reading-tests/${id}`).then(response => fromApi(response.data)),
   getPublished: id => api.get(`/reading-tests/published/${id}`).then(response => fromApi(response.data)),
-  create: test => api.post('/reading-tests', toApi(test)).then(response => fromApi(response.data)),
+  create: test => api.post('/reading-tests', { ...toApi(test), ...(test.creationRequestId ? { creationRequestId: test.creationRequestId } : {}) }).then(response => fromApi(response.data)),
   update: (id, test) => api.patch(`/reading-tests/${id}`, { ...toApi(test), version: test.version }).then(response => fromApi(response.data)),
   publish: (id, version) => api.post(`/reading-tests/${id}/publish`, { version }).then(response => fromApi(response.data)),
   archive: id => api.delete(`/reading-tests/${id}`),

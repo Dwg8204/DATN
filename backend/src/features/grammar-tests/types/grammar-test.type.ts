@@ -36,6 +36,7 @@ export type VocabularySet = {
 };
 
 export type GrammarTestAggregate = {
+  creationReplayed?: boolean;
   id?: string;
   mode: GrammarTestMode;
   purpose: TestPurpose;
