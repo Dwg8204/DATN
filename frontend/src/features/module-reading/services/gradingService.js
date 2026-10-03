@@ -1,5 +1,5 @@
-import { hasRichTextContent } from '../../../components/common/richText';
-import { getPart2Texts } from '../utils/part2Texts';
+import { hasRichTextContent } from '../../../components/common/richText.js';
+import { getPart2Texts } from '../utils/part2Texts.js';
 
 const withFallbackExplanation = (explanation, fallback) => {
   if (hasRichTextContent(explanation)) return explanation;
