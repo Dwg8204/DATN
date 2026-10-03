@@ -15,7 +15,7 @@ import { writingTestsApi } from './services/writingTestsApi';
 
 export default function WritingTestDetailsPage() {
   const navigate = useNavigate();
-  const { test, updateDetails, basePath, saveDraft, replaceTest } = useWritingTestBuilder();
+  const { test, updateDetails, goTo, saveDraft, publishTest } = useWritingTestBuilder();
   const { showError, showSuccess, dismissToast } = useToast();
   const [confirmSave, setConfirmSave] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -27,9 +27,9 @@ export default function WritingTestDetailsPage() {
     if (saving) return;
     setSaving(true);
     try {
-      const saved = await saveDraft();
+      await saveDraft();
       showSuccess('Writing test draft saved.');
-      if (!test.id) navigate(`/admin/tests/writing/${saved.id}/edit`, { replace: true });
+      await goTo();
     } catch (error) {
       showError(getApiError(error, 'Unable to save this Writing test draft.'));
     } finally {
@@ -59,16 +59,12 @@ export default function WritingTestDetailsPage() {
     if (saving) return;
     setConfirmSave(false);
     setSaving(true);
-    let draft;
     try {
-      draft = await saveDraft(test);
-      const published = await writingTestsApi.publish(draft.id);
-      replaceTest(published);
+      const published = await publishTest();
       showSuccess(test.id ? 'Writing test updated and published.' : 'Writing test created and published.');
       navigate(`/admin/tests/writing/${published.id}/preview`);
     } catch (error) {
       showError(getApiError(error, 'Unable to save or publish this Writing test. Your draft is preserved when it was saved successfully.'));
-      if (draft && !test.id) navigate(`/admin/tests/writing/${draft.id}/edit`, { replace: true });
     } finally {
       setSaving(false);
     }
@@ -89,6 +85,6 @@ export default function WritingTestDetailsPage() {
       <ImageField label="Test cover" value={test.details.pictureUrl} onChange={(value) => updateDetails('pictureUrl', value)} uploadFile={writingTestsApi.uploadCover}/>
       <button className={styles.saveInfo} onClick={saveInformation} disabled={saving}>{saving ? 'Saving…' : 'Save draft'}</button>
     </div><aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>{test.status === 'PUBLISHED' ? 'Published' : 'Draft'}</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview"/> : <strong>AptiMate<br/><em>Writing</em></strong>}<button onClick={requestSave} disabled={saving}>{test.status === 'PUBLISHED' ? 'Update & preview' : 'Publish & preview'}</button></div></aside></div></section>
-    <section className={styles.content} inert={saving ? '' : undefined}><h2>CONTENT TEST</h2><div>{visibleParts.map((part) => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}${test.id ? '' : `?mode=${test.mode}`}`)}/>)}</div><button className={styles.saveAll} onClick={requestSave} disabled={saving}>{saving ? 'Saving…' : test.status === 'PUBLISHED' ? 'Update & publish test' : 'Publish test & preview'}</button></section>
+    <section className={styles.content} inert={saving ? '' : undefined}><h2>CONTENT TEST</h2><div>{visibleParts.map((part) => <PartSummaryCard key={part.number} part={part} onEdit={() => goTo(part.number)}/>)}</div><button className={styles.saveAll} onClick={requestSave} disabled={saving}>{saving ? 'Saving…' : test.status === 'PUBLISHED' ? 'Update & publish test' : 'Publish test & preview'}</button></section>
   </div>;
 }

@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { hasRichTextContent, richTextToPlainText } from '../../../components/common/richText';
 import { AdminValidationToast } from '../components/AdminFeedback';
 import CollapsibleGroup, { CollapsibleToolbar } from '../shared-test-builder/CollapsibleGroup';
@@ -55,17 +55,16 @@ function Part4({ part, update }) {
 }
 
 export default function WritingPartEditorPage() {
-  const navigate = useNavigate();
   const { partNumber: rawPartNumber } = useParams();
   const partNumber = Math.min(4, Math.max(1, Number(rawPartNumber) || 1));
-  const { test, updatePart, basePath, saveDraft } = useWritingTestBuilder();
+  const { test, updatePart, goTo, flushDraft } = useWritingTestBuilder();
   const { showError, showSuccess } = useToast();
   const part = test.parts[partNumber];
   const meta = WRITING_PART_META[partNumber - 1];
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
   const update = (field, value) => updatePart(partNumber, field, value);
-  const close = () => navigate(test.id ? basePath : `${basePath}?mode=${test.mode}`);
+  const close = () => goTo();
   const save = async () => {
     if (saving) return;
     const nextErrors = validateWritingPart(partNumber, part);
@@ -73,9 +72,9 @@ export default function WritingPartEditorPage() {
     if (hasValidationErrors(nextErrors)) return revealFirstEditorError(nextErrors);
     setSaving(true);
     try {
-      const saved = await saveDraft();
-      showSuccess(`Part ${partNumber} draft saved.`);
-      navigate(saved.id ? `/admin/tests/writing/${saved.id}/edit` : basePath);
+      await flushDraft();
+      showSuccess(`Part ${partNumber} saved on this device.`);
+      await goTo();
     } catch (error) {
       showError(getApiError(error, `Unable to save Part ${partNumber}.`));
     } finally {
