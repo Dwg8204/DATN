@@ -1,8 +1,10 @@
-import { IsIn, IsInt, IsObject, IsOptional, Max, Min } from 'class-validator';
+import { IsIn, IsInt, IsObject, IsOptional, IsUUID, Max, Min } from 'class-validator';
 import { TestPurpose } from '../../../common/tests/test-purpose';
 import { WritingTestAggregate, WritingTestMode } from '../types/writing-test.type';
 
 export class CreateWritingTestDto {
+  @IsOptional() @IsUUID() creationRequestId?: string;
+
   @IsOptional()
   @IsIn(['EXAM', 'PRACTICE'])
   purpose?: TestPurpose;
@@ -18,6 +20,13 @@ export class CreateWritingTestDto {
 }
 
 export class UpdateWritingTestDto extends CreateWritingTestDto {
+  @IsInt()
+  @Min(1)
+  @Max(2_147_483_647)
+  version!: number;
+}
+
+export class PublishWritingTestDto {
   @IsInt()
   @Min(1)
   @Max(2_147_483_647)

@@ -1,3 +1,4 @@
+import { findCreatedTest, testCreationId } from '../../../common/tests/test-creation';
 import { createHash, randomUUID } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
@@ -68,10 +69,12 @@ export class ReadingTestsRepository {
     return row ? { createdBy: row.created_by, status: row.status } : null;
   }
 
-  async create(actor: ReadingActor, aggregate: ReadingTestAggregate, audit: ReadingAudit) {
-    const id = randomUUID();
+  async create(actor: ReadingActor, aggregate: ReadingTestAggregate, audit: ReadingAudit, creationRequestId?: string) {
+    const id = testCreationId(actor.id, 'READING', creationRequestId);
+    let replayed = false;
     const { scope, partNumber } = this.scope(aggregate.mode);
     await this.dataSource.transaction(async manager => {
+      if (await findCreatedTest(manager, id, creationRequestId)) { replayed = true; return; }
       await manager.query(
         `INSERT INTO tests(id,created_by,title,component,purpose,scope,part_number,cover,part_contents,version,status,updated_by)
          VALUES($1,$2,$3,'READING',$4,$5,$6,$7,$8,1,'DRAFT',$2)`,
@@ -80,7 +83,8 @@ export class ReadingTestsRepository {
       await this.syncQuestions(manager, id, aggregate);
       await this.audit(manager, actor.id, 'CREATE_READING_TEST', id, aggregate, audit);
     });
-    return (await this.findAggregate(id))!;
+    const saved = (await this.findAggregate(id))!;
+    return replayed ? { ...saved, creationReplayed: true } : saved;
   }
 
   async update(id: string, actor: ReadingActor, version: number, aggregate: ReadingTestAggregate, audit: ReadingAudit): Promise<Mutation> {

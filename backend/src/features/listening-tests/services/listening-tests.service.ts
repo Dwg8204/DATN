@@ -41,7 +41,7 @@ export class ListeningTestsService {
   async create(actor: AuthUser, dto: CreateListeningTestDto, audit: ListeningAudit): Promise<ListeningTestAggregate> {
     const aggregate = this.content.normalize(dto);
     this.content.assertDraftShape(aggregate);
-    return this.repository.create(actor, aggregate, audit);
+    return this.repository.create(actor, aggregate, audit, dto.creationRequestId);
   }
 
   async update(id: string, actor: AuthUser, dto: UpdateListeningTestDto, audit: ListeningAudit): Promise<ListeningTestAggregate> {

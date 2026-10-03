@@ -24,7 +24,7 @@ export class ReadingTestsService {
   }
   async create(dto: CreateReadingTestDto, actor: ReadingActor, audit: ReadingAudit) {
     const test = this.content.normalize(dto); this.content.assertDraftShape(test);
-    return this.repository.create(actor, test, audit);
+    return this.repository.create(actor, test, audit, dto.creationRequestId);
   }
   async update(id: string, dto: UpdateReadingTestDto, actor: ReadingActor, audit: ReadingAudit) {
     const test = this.content.normalize(dto); this.content.assertDraftShape(test);

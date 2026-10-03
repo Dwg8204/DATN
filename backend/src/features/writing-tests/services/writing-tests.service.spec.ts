@@ -13,6 +13,13 @@ describe('WritingTestsService', () => {
 
   beforeEach(() => jest.clearAllMocks());
 
+  it('does not publish another revision that changed after the client saved its draft', async () => {
+    repository.findAggregate.mockResolvedValue({ id: 'test-id', version: 7, purpose: 'PRACTICE', mode: 'part1', details: { title: 'Draft' }, parts: {}, status: 'DRAFT' });
+    repository.findOwner.mockResolvedValue({ createdBy: actor.id, status: 'DRAFT' });
+    await expect(service.publish('test-id', actor, {}, 6)).rejects.toMatchObject({ code: 'WRITING_TEST_VERSION_CONFLICT', statusCode: 409 });
+    expect(repository.publish).not.toHaveBeenCalled();
+  });
+
   it('returns a conflict when a stale test version is saved', async () => {
     repository.update.mockResolvedValue({ outcome: 'VERSION_CONFLICT' });
     const dto = {
@@ -30,7 +37,7 @@ describe('WritingTestsService', () => {
     await expect(service.get('test-id', actor)).rejects.toMatchObject({ code: 'WRITING_TEST_FORBIDDEN', statusCode: 403 });
   });
 
-  it('publishes the current persisted version without a version in the request body', async () => {
+  it('publishes when the client and persisted versions agree', async () => {
     const aggregate = {
       id: 'test-id', version: 6, status: 'DRAFT' as const, purpose: 'PRACTICE' as const, mode: 'part1' as const,
       details: { title: 'Complete writing test', pictureUrl: '' },
@@ -44,7 +51,7 @@ describe('WritingTestsService', () => {
     repository.findOwner.mockResolvedValue({ createdBy: actor.id, status: 'DRAFT' });
     repository.publish.mockResolvedValue({ outcome: 'SUCCESS', value: { ...aggregate, status: 'PUBLISHED' } });
 
-    await expect(service.publish('test-id', actor, {})).resolves.toMatchObject({ status: 'PUBLISHED' });
+    await expect(service.publish('test-id', actor, {}, 6)).resolves.toMatchObject({ status: 'PUBLISHED' });
     expect(repository.publish).toHaveBeenCalledWith('test-id', actor, 6, aggregate, {});
   });
 });

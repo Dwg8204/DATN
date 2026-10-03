@@ -41,7 +41,7 @@ export class GrammarTestsService {
   async create(actor: AuthUser, dto: CreateGrammarTestDto, audit: GrammarAudit): Promise<GrammarTestAggregate> {
     const aggregate = this.content.normalize(dto);
     this.content.assertDraftShape(aggregate);
-    return this.repository.create(actor, aggregate, audit);
+    return this.repository.create(actor, aggregate, audit, dto.creationRequestId);
   }
 
   async update(id: string, actor: AuthUser, dto: UpdateGrammarTestDto, audit: GrammarAudit): Promise<GrammarTestAggregate> {
@@ -50,10 +50,11 @@ export class GrammarTestsService {
     return this.unwrap(await this.repository.update(id, actor, dto.version, aggregate, audit));
   }
 
-  async publish(id: string, actor: AuthUser, audit: GrammarAudit): Promise<GrammarTestAggregate> {
+  async publish(id: string, actor: AuthUser, audit: GrammarAudit, expectedVersion: number): Promise<GrammarTestAggregate> {
     const aggregate = await this.repository.findAggregate(id);
     if (!aggregate || aggregate.status === 'ARCHIVED') this.notFound();
     await this.assertOwner(id, actor);
+    if (expectedVersion !== aggregate.version) this.versionConflict();
     this.content.assertPublishable(aggregate);
     return this.unwrap(await this.repository.publish(id, actor, aggregate.version!, aggregate, audit));
   }

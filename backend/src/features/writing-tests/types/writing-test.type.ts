@@ -28,6 +28,7 @@ export type WritingPart4 = {
 };
 
 export type WritingTestAggregate = {
+  creationReplayed?: boolean;
   id?: string;
   mode: WritingTestMode;
   purpose: TestPurpose;

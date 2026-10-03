@@ -34,6 +34,7 @@ export type SpeakingPart4 = {
 };
 
 export type SpeakingTestAggregate = {
+  creationReplayed?: boolean;
   id?: string;
   mode: SpeakingTestMode;
   purpose: TestPurpose;
