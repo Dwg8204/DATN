@@ -15,9 +15,13 @@ function normalizeProfile(profile) {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [authConnectionError, setAuthConnectionError] = useState(false);
+  const [authCheckRevision, setAuthCheckRevision] = useState(0);
   const authMutation = useRef(0);
 
   useEffect(() => {
+    setIsAuthReady(false);
+    setAuthConnectionError(false);
     window.localStorage.removeItem('aptimate.auth.token');
     let active = true;
     const initialRevision = authMutation.current;
@@ -29,13 +33,19 @@ export function AuthProvider({ children }) {
     profileApi.getProfile()
       .catch(() => authApi.me())
       .then(profile => { if (active && authMutation.current === initialRevision) setUser(normalizeProfile(profile)); })
-      .catch(() => { if (active && authMutation.current === initialRevision) setUser(null); })
+      .catch(error => {
+        if (!active || authMutation.current !== initialRevision) return;
+        // A connection failure cannot establish that the session expired. Keep the
+        // requested builder URL and its local draft until access can be checked again.
+        if (!error.response || error.response.status >= 500 || [408, 429].includes(error.response.status)) setAuthConnectionError(true);
+        else setUser(null);
+      })
       .finally(() => { if (active) setIsAuthReady(true); });
     return () => {
       active = false;
       window.removeEventListener('aptimate:session-expired', clearSession);
     };
-  }, []);
+  }, [authCheckRevision]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -53,10 +63,13 @@ export function AuthProvider({ children }) {
     () => ({
       user,
       isAuthReady,
+      authConnectionError,
+      retryAuth: () => setAuthCheckRevision(revision => revision + 1),
       isAuthenticated: isAuthReady && Boolean(user),
       login: ({ profile }) => {
         authMutation.current += 1;
         setUser(normalizeProfile(profile));
+        setAuthConnectionError(false);
         setIsAuthReady(true);
         if (profile) {
           profileApi.getProfile().then(fullProfile => setUser(fullProfile)).catch(() => {});
@@ -74,7 +87,7 @@ export function AuthProvider({ children }) {
         setUser(updatedUser);
       },
     }),
-    [isAuthReady, user],
+    [isAuthReady, user, authConnectionError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
