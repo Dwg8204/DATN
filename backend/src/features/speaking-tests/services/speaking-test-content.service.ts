@@ -3,6 +3,7 @@ import { ApplicationError } from '../../../common/errors/application.error';
 import { CreateSpeakingTestDto } from '../dto/save-speaking-test.dto';
 import { SpeakingTestAggregate } from '../types/speaking-test.type';
 import { defaultTestPurpose } from '../../../common/tests/test-purpose';
+import { assertDraftCollection, assertDraftParts } from '../../../common/tests/draft-shape';
 
 @Injectable()
 export class SpeakingTestContentService {
@@ -22,7 +23,15 @@ export class SpeakingTestContentService {
     if (!aggregate.details?.title?.trim()) {
       throw new ApplicationError('VALIDATION_FAILED', 'Title is required for draft', 400);
     }
-    this.assertPublishable(aggregate); // Enforce complete structure even for drafts for simplicity
+    assertDraftParts(aggregate.parts);
+    for (const [number, part] of Object.entries(aggregate.parts)) {
+      assertDraftCollection(part.questions, 3, `Speaking Part ${number} questions`);
+      for (const question of part.questions) this.assertGuidance(question.sampleAnswer, question.explanation, `Speaking Part ${number}`);
+    }
+    const p3 = aggregate.parts[3];
+    if (p3) assertDraftCollection(p3.imageUrls, 2, 'Speaking Part 3 images', false);
+    const p4 = aggregate.parts[4];
+    if (p4) this.assertGuidance(p4.sampleAnswer, p4.explanation, 'Speaking Part 4');
   }
 
   assertPublishable(aggregate: SpeakingTestAggregate): void {

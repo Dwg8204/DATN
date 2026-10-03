@@ -23,6 +23,20 @@ const validPart4 = (): SpeakingTestAggregate => ({
 describe('SpeakingTestContentService', () => {
   const service = new SpeakingTestContentService();
 
+  it('saves blank prompts and an unselected image as a draft only', () => {
+    const test = validPart4();
+    test.parts[4]!.questions[0].text = '';
+    test.parts[4]!.imageUrl = '';
+    expect(() => service.assertDraftShape(test)).not.toThrow();
+    expect(() => service.assertPublishable(test)).toThrow();
+  });
+
+  it('rejects malformed question arrays while saving a draft', () => {
+    const test = validPart4();
+    test.parts[4]!.questions = [];
+    expect(() => service.assertDraftShape(test)).toThrow('invalid draft structure');
+  });
+
   it('keeps optional answer guidance in the authoring aggregate', () => {
     const test = validPart4();
     expect(() => service.assertPublishable(test)).not.toThrow();

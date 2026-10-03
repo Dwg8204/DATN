@@ -3,6 +3,7 @@ import { ApplicationError } from '../../../common/errors/application.error';
 import { ListeningTestAggregate } from '../types/listening-test.type';
 import { CreateListeningTestDto, UpdateListeningTestDto } from '../dto/save-listening-test.dto';
 import { defaultTestPurpose } from '../../../common/tests/test-purpose';
+import { assertDraftCollection, assertDraftParts } from '../../../common/tests/draft-shape';
 
 @Injectable()
 export class ListeningTestContentService {
@@ -25,8 +26,31 @@ export class ListeningTestContentService {
     if (!aggregate.details.title) {
       throw new ApplicationError('LISTENING_TITLE_REQUIRED', 'Test title is required.', 400);
     }
-    // Thực thi validation khắt khe (bao gồm cả Audio) ngay từ lúc tạo/lưu draft
-    this.assertPublishable(aggregate);
+    assertDraftParts(aggregate.parts);
+    const p1 = aggregate.parts[1];
+    if (p1) {
+      assertDraftCollection(p1.questions, 13, 'Listening Part 1 questions');
+      for (const question of p1.questions) assertDraftCollection(question.options, 3, 'Listening Part 1 options', false);
+    }
+    const p2 = aggregate.parts[2];
+    if (p2) {
+      assertDraftCollection(p2.speakers, 4, 'Listening Part 2 speakers', false);
+      assertDraftCollection(p2.options, 5, 'Listening Part 2 options', false);
+      assertDraftCollection(p2.answers, 4, 'Listening Part 2 answers', false);
+    }
+    const p3 = aggregate.parts[3];
+    if (p3) {
+      assertDraftCollection(p3.options, 3, 'Listening Part 3 options', false);
+      assertDraftCollection(p3.statements, 4, 'Listening Part 3 statements');
+    }
+    const p4 = aggregate.parts[4];
+    if (p4) {
+      assertDraftCollection(p4.recordings, 2, 'Listening Part 4 recordings');
+      for (const recording of p4.recordings) {
+        assertDraftCollection(recording.subQuestions, 2, 'Listening Part 4 questions');
+        for (const question of recording.subQuestions) assertDraftCollection(question.options, 3, 'Listening Part 4 options', false);
+      }
+    }
   }
 
   assertPublishable(aggregate: ListeningTestAggregate): void {

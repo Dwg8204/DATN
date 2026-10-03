@@ -3,6 +3,7 @@ import { ApplicationError } from '../../../common/errors/application.error';
 import { defaultTestPurpose } from '../../../common/tests/test-purpose';
 import { CreateReadingTestDto } from '../dto/save-reading-test.dto';
 import { ReadingTestAggregate } from '../types/reading-test.type';
+import { assertDraftCollection, assertDraftParts } from '../../../common/tests/draft-shape';
 
 @Injectable()
 export class ReadingTestContentService {
@@ -17,7 +18,29 @@ export class ReadingTestContentService {
       throw new ApplicationError('READING_EXAM_SCOPE_INVALID', 'Exam tests must contain the full skill.', 400);
     }
     if (!test.details.title.trim()) throw new ApplicationError('VALIDATION_FAILED', 'Title is required.', 400);
-    this.assertPublishable(test);
+    assertDraftParts(test.parts);
+    const p1 = test.parts[1];
+    if (p1) {
+      assertDraftCollection(p1.questions, 5, 'Reading Part 1 questions');
+      for (const question of p1.questions) assertDraftCollection(question.options, 3, 'Reading Part 1 options', false);
+    }
+    const p2 = test.parts[2];
+    if (p2) {
+      const texts = Array.isArray(p2.texts) ? p2.texts : [{ sentences: p2.sentences }];
+      if (Array.isArray(p2.texts)) assertDraftCollection(texts, 2, 'Reading Part 2 texts');
+      for (const text of texts) assertDraftCollection(text.sentences, 6, 'Reading Part 2 sentences');
+    }
+    const p3 = test.parts[3];
+    if (p3) {
+      assertDraftCollection(p3.speakers, 4, 'Reading Part 3 speakers', false);
+      assertDraftCollection(p3.posts, 4, 'Reading Part 3 posts', false);
+      assertDraftCollection(p3.questions, 7, 'Reading Part 3 questions');
+    }
+    const p4 = test.parts[4];
+    if (p4) {
+      assertDraftCollection(p4.paragraphs, 7, 'Reading Part 4 paragraphs');
+      assertDraftCollection(p4.headings, 7, 'Reading Part 4 headings');
+    }
   }
 
   assertPublishable(test: ReadingTestAggregate): void {
