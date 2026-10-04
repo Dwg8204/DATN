@@ -59,13 +59,13 @@ export class WritingTestsController {
 @ApiTags('Writing Tests')
 @ApiCookieAuth('aptimate_access_token')
 @Controller('writing-tests')
-@UseGuards(JwtAuthGuard)
 export class PublishedWritingTestsController {
   constructor(private readonly tests: WritingTestsService) {}
 
   @Get()
   list(@Query() query: ListWritingTestsQueryDto) { return this.tests.listPublished(query); }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   get(@Param('id', new ParseUUIDPipe()) id: string) { return this.tests.getPublished(id); }
 }
