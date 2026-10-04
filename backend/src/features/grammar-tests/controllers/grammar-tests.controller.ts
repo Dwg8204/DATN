@@ -80,7 +80,6 @@ export class GrammarTestsController {
 @ApiTags('Grammar & Vocabulary Tests')
 @ApiCookieAuth('aptimate_access_token')
 @Controller('grammar-tests')
-@UseGuards(JwtAuthGuard)
 export class PublishedGrammarTestsController {
   constructor(private readonly tests: GrammarTestsService) {}
 
@@ -89,6 +88,7 @@ export class PublishedGrammarTestsController {
     return this.tests.listPublished(query);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   get(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.tests.getPublished(id);

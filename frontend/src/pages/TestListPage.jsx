@@ -1,6 +1,7 @@
+import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/common/Pagination';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import CommentSection from '../components/shared/CommentSection/CommentSection';
 import styles from './TestListPage.module.css';
 import { GRAMMAR_VOCAB_CONFIG } from '../features/grammar_vocab/config/grammarVocabConfig';
@@ -69,6 +70,9 @@ export default function TestListPage({ purpose = 'EXAM' }) {
   const { t } = useTranslation();
   const { skill } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, isAuthReady } = useAuth();
+  const isAuthenticated = isAuthReady && Boolean(user);
   const [urlState, setUrlState] = useUrlQueryState(useMemo(() => testListQuerySchema(purpose), [purpose]));
   const { activeTab, page, pageSize, query } = urlState;
   const setActiveTab = value => setUrlState({ activeTab: value, page: 1 });
@@ -92,7 +96,8 @@ export default function TestListPage({ purpose = 'EXAM' }) {
         .then(async result => {
         const ids = (result.data ?? []).map(test => test.id);
         const attemptsApi = purpose === 'PRACTICE' ? practiceAttemptsApi : testAttemptsApi;
-        const history = ids.length ? await attemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+        const history = isAuthenticated && ids.length ? await attemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+        if (controller.signal.aborted) return;
         const latestByTest = new Map();
         for (const attempt of history.data ?? []) {
           if (!latestByTest.has(attempt.testId)) latestByTest.set(attempt.testId, attempt);
@@ -125,7 +130,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
         });
     }, query.trim() ? 300 : 0);
     return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [activeTab, page, pageSize, purpose, query, skill]);
+  }, [activeTab, page, pageSize, purpose, query, skill, isAuthenticated, user?.id]);
 
   useEffect(() => {
     if (skill !== 'writing') return undefined;
@@ -136,7 +141,8 @@ export default function TestListPage({ purpose = 'EXAM' }) {
         .then(async result => {
           const ids = (result.data ?? []).map(test => test.id);
           const attemptsApi = purpose === 'PRACTICE' ? practiceAttemptsApi : testAttemptsApi;
-          const states = ids.length ? await attemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+          const states = isAuthenticated && ids.length ? await attemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+          if (controller.signal.aborted) return;
           const latestByTest = new Map((states.data ?? []).map(attempt => [attempt.testId, attempt]));
           setWritingState({
             tests: (result.data ?? []).map(test => {
@@ -167,7 +173,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
         });
     }, query.trim() ? 300 : 0);
     return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [activeTab, page, pageSize, purpose, query, skill]);
+  }, [activeTab, page, pageSize, purpose, query, skill, isAuthenticated, user?.id]);
 
   useEffect(() => {
     const catalog = skill === 'listening'
@@ -183,7 +189,8 @@ export default function TestListPage({ purpose = 'EXAM' }) {
           const rows = result.data ?? result.tests ?? [];
           const ids = rows.map(test => test.id);
           const attemptsApi = purpose === 'PRACTICE' ? practiceAttemptsApi : testAttemptsApi;
-          const states = ids.length ? await attemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+          const states = isAuthenticated && ids.length ? await attemptsApi.states(ids, controller.signal).catch(() => ({ data: [] })) : { data: [] };
+          if (controller.signal.aborted) return;
           const latest = new Map((states.data ?? []).map(attempt => [attempt.testId, attempt]));
           catalog.setState({
             tests: rows.map(test => {
@@ -205,7 +212,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
         });
     }, query.trim() ? 300 : 0);
     return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [activeTab, page, pageSize, purpose, query, skill]);
+  }, [activeTab, page, pageSize, purpose, query, skill, isAuthenticated, user?.id]);
 
   // Helper to get config based on skill
   const getConfig = () => {
@@ -226,7 +233,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
       ? t('common.fullTest') : t('common.part', { number: tab.id.replace('part', '') }) }));
   const managedState = skill === 'writing' ? writingState : skill === 'grammar-vocab' ? grammarState
     : skill === 'listening' ? listeningState : skill === 'speaking' ? speakingState : skill === 'reading' ? readingState : null;
-  const tests = managedState?.tests ?? currentConfig.tests ?? MOCK_TESTS;
+  const tests = (managedState?.tests ?? currentConfig.tests ?? MOCK_TESTS).map(test => isAuthenticated ? test : { ...test, status: null, attemptId: undefined });
   const filteredTests = managedState ? tests : tests.filter((test) => (!test.tabId || test.tabId === activeTab) && test.title.toLowerCase().includes(query.trim().toLowerCase()));
 
   // Helper to format skill name nicely
@@ -247,6 +254,12 @@ export default function TestListPage({ purpose = 'EXAM' }) {
   };
 
   const startTest = async test => {
+    if (!isAuthReady) return;
+    if (!user) {
+      const from = purpose === 'EXAM' ? '/' + skill + '/introduction?testId=' + test.id + '&mode=' + activeTab : location.pathname + location.search;
+      navigate('/login', { state: { from } });
+      return;
+    }
     if (purpose === 'EXAM') { handleDoTest(test.id); return; }
     try {
       const started = await practiceAttemptsApi.start({ testId: test.id, attemptId: crypto.randomUUID(), mode: test.mode || activeTab });
@@ -385,7 +398,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
                     <span className={styles.partBadgeText}>{test.part}</span>
                   </div>
 
-                  {test.status === 'Completed' ? (
+                  {isAuthenticated && (test.status === 'Completed' ? (
                     <div className={styles.statusBadgeCompleted}>
                       <span className={styles.statusBadgeCompletedText}>{t('common.completed')}</span>
                     </div>
@@ -393,7 +406,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
                     <div className={styles.statusBadgeNotStarted}>
                       <span className={styles.statusBadgeNotStartedText}>{test.status === 'In Progress' ? t('common.inProgress') : t('common.notStarted')}</span>
                     </div>
-                  )}
+                  ))}
                 </div>
               ))}
             </div>

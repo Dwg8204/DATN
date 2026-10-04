@@ -94,7 +94,7 @@ export const appRoutes = [
       },
       {
         path: ':skill/practice',
-        element: <RoleGuard allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}><TestListPage purpose="PRACTICE" /></RoleGuard>,
+        element: <TestListPage purpose="PRACTICE" />,
       },
       ...listeningMainRoutes,
       ...speakingMainRoutes,

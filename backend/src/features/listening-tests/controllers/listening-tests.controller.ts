@@ -81,7 +81,6 @@ export class ListeningTestsController {
 @ApiTags('Listening Tests')
 @ApiCookieAuth('aptimate_access_token')
 @Controller('listening-tests')
-@UseGuards(JwtAuthGuard)
 export class PublishedListeningTestsController {
   constructor(
     private readonly tests: ListeningTestsService,
@@ -96,6 +95,7 @@ export class PublishedListeningTestsController {
 
   @ApiOperation({ summary: 'Lấy chi tiết đề thi (Published)' })
   @ApiParam({ name: 'id', description: 'ID của bài Listening' })
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   get(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.tests.getPublished(id);
@@ -104,6 +104,7 @@ export class PublishedListeningTestsController {
   @ApiOperation({ summary: 'Bắt đầu một phiên làm bài' })
   @ApiParam({ name: 'id', description: 'ID của bài Listening' })
   @ApiQuery({ name: 'mode', required: false, description: 'Chế độ thi (VD: full, part1, part2,...)' })
+  @UseGuards(JwtAuthGuard)
   @Post(':id/attempts')
   @UseGuards(RolesGuard)
   @Roles('STUDENT')
