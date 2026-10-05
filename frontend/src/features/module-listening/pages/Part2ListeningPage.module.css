@@ -334,6 +334,13 @@
     padding: 10px 16px;
     font-size: 14px;
   }
+
+  :global([data-theme="dark"]) .questionItem {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border);
+    box-shadow: 0 2px 7px var(--shadow-sm);
+  }
 }
 
 

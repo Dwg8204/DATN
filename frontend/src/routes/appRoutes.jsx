@@ -25,6 +25,7 @@ import FlashcardPage from '../features/module-reading/pages/FlashcardPage';
 import { adminRoutes } from '../features/admin/adminRoutes';
 import { dictationRoutes } from '../features/dictation/dictationRoutes';
 import RoleGuard from '../features/auth/components/RoleGuard';
+import AttemptRoleGuard from '../features/test-attempts/components/AttemptRoleGuard.jsx';
 import DashboardRoute from '../features/profile/routes/DashboardRoute';
 
 export const appRoutes = [
@@ -82,7 +83,7 @@ export const appRoutes = [
       },
       {
         path: 'grammar-vocab/result',
-        element: <RoleGuard allowedRoles={['STUDENT']}><GrammarVocabResultPage /></RoleGuard>,
+        element: <AttemptRoleGuard><GrammarVocabResultPage /></AttemptRoleGuard>,
       },
       {
         path: 'vocab',

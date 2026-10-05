@@ -49,3 +49,7 @@
 :global([data-theme="dark"]) .closeBtn {
   color: var(--text-muted);
 }
+
+:global([data-theme="dark"]) .message p {
+  color: #fff;
+}
