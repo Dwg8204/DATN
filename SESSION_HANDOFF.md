@@ -1,6 +1,6 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
-Cập nhật: 04/10/2026, múi giờ Asia/Bangkok.
+Cập nhật: 05/10/2026, múi giờ Asia/Bangkok. Các snapshot repository ngày 04/10 ở dưới là lịch sử; xem mục 9 để biết thay đổi mới nhất.
 
 ## Cách sử dụng và mức độ tin cậy
 
@@ -249,3 +249,14 @@ Tách tập hiệu chỉnh và giữ riêng tập kiểm định theo người v
 5. Cập nhật file bàn giao khi hoàn thành task mới, ghi rõ thay đổi đã kiểm chứng và phần còn chờ.
 
 Các lệnh kiểm tra có sẵn (chạy trong thư mục tương ứng khi phù hợp với thay đổi): backend `npm run typecheck`, `npm test`, `npm run build`; frontend `npm test`, `npm run build`, `npm run lint`. E2E backend chỉ dùng database riêng `TEST_DATABASE_URL` có tên kết thúc `_test`, không chạy lên database phát triển thật. Không cần chạy toàn bộ kiểm thử chỉ cho việc thêm tài liệu này.
+
+## 9. Tiếp nối ngày 05/10/2026: commit và seed đề mẫu
+
+- Đã fetch và fast-forward `origin/develop` đến `d13bc2c`, không conflict. Nhánh vẫn là `feature/backend-writing-crud`.
+- Đã commit task danh sách đề công khai: `5195b15` — `feat: cho phép khách xem danh sách đề thi và luyện tập`. Khách xem catalog; khi bắt đầu làm bài chuyển đăng nhập; lịch sử/trạng thái chỉ lấy khi đã đăng nhập. Kiểm thử backend 7/7 đạt; trình duyệt 14/15 đạt, ca timeout đạt khi chạy lại riêng.
+- Đã commit bản bàn giao cũ: `a8d66cb` — `docs: bàn giao tiến độ AptiMate và định hướng AI Writing`. Chưa push trong phiên này.
+- Người dùng yêu cầu tạo file seed cho cả 5 kỹ năng, cung cấp một ảnh bìa chung, bốn ảnh Speaking và hai audio Listening. Khi được hỏi về giới hạn EXAM chỉ Full, người dùng chọn **giữ quy tắc hiện tại: 28 đề**, không mở rộng Tests thành từng Part.
+- Đã tạo `backend/src/database/seeds/seed-sample-tests.ts`, script `npm run db:seed:samples`, hướng dẫn `backend/src/database/seeds/SAMPLE_TESTS.md` và kiểm thử seed.
+- Bộ mẫu: 5 EXAM Full + 23 PRACTICE (mỗi kỹ năng một Full và mỗi Part một đề; Grammar có 2 Part, các kỹ năng khác 4 Part). Tạo và publish bằng repository hiện tại, ghi questions/snapshots/audit trong một transaction. Chạy lại cùng ADMIN bỏ qua đề đã có, giữ cả đề đã sửa/lưu trữ; cần ADMIN đang hoạt động. Không tạo tài khoản hay attempt.
+- Đã kiểm chứng: typecheck backend đạt, 5 kiểm thử seed đạt; `npm run db:seed:samples -- --dry-run` xác thực đủ 28 đề qua content validation, không kết nối database.
+- **Chưa chạy seed ghi vào database**, chưa kiểm chứng persistence bằng database thật. Task seed được commit riêng theo yêu cầu người dùng ngày 05/10/2026; tài liệu bàn giao được commit riêng, chưa push. Listening là câu hỏi/đáp án fixture, chưa đối chiếu nội dung các audio; Speaking có câu hỏi mô tả/so sánh tổng quát. Không gọi bộ mẫu này là đề chuẩn đánh giá năng lực.
