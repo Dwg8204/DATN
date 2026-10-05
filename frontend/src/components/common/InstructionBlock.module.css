@@ -46,6 +46,10 @@
 
 
 /* Dark Mode Overrides */
+:global([data-theme="dark"]) .instructionTitle {
+  color: #fff;
+}
+
 :global([data-theme="dark"]) .instructionText {
   color: var(--text-primary);
 }

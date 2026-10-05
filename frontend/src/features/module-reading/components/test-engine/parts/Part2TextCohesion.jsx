@@ -13,6 +13,7 @@ import {
 } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
 import RichTextContent from '../../../../../components/common/RichTextContent';
+import styles from './Part2TextCohesion.module.css';
 import { getPart2Texts } from '../../../utils/part2Texts';
 
 const DraggableSentence = ({ id, sentence, isSelected, onSelect }) => {
@@ -171,8 +172,8 @@ const CohesionText = ({ data, questionStart }) => {
           {/* Left: Gaps */}
           <div className="w-full md:w-1/2 flex flex-col">
             <div className="mb-4">
-              <h3 className="font-bold text-gray-900 mb-1">Questions {questionStart}–{questionStart + 4}</h3>
-              <p className="font-bold text-gray-800 text-sm">{data.title || "Report on the noise level"}</p>
+              <h3 className={`font-bold text-gray-900 mb-1 ${styles.taskTitle}`}>Questions {questionStart}–{questionStart + 4}</h3>
+              <p className={`font-bold text-gray-800 text-sm ${styles.taskTitle}`}>{data.title || "Report on the noise level"}</p>
               <p className="mt-2 text-xs text-gray-600 md:hidden">
                 On mobile, tap a sentence, then tap a position. Tap a placed sentence and another position to swap them.
               </p>
