@@ -19,7 +19,8 @@
     "db:migrate:revert": "typeorm-ts-node-commonjs migration:revert -d src/database/data-source.ts",
     "db:migrate:status": "typeorm-ts-node-commonjs migration:show -d src/database/data-source.ts",
     "db:migrate:generate": "typeorm-ts-node-commonjs migration:generate -d src/database/data-source.ts",
-    "db:seed": "ts-node src/database/seeds/run-seeds.ts"
+    "db:seed": "ts-node src/database/seeds/run-seeds.ts",
+    "db:seed:samples": "ts-node src/database/seeds/seed-sample-tests.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
