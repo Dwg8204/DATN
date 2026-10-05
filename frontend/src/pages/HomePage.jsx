@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import HeroBanner from '../components/shared/HeroBanner/HeroBanner';
 import SkillCard from '../components/shared/SkillCard/SkillCard';
@@ -11,34 +10,34 @@ import { useTranslation } from 'react-i18next';
 
 const skillCards = [
   {
-    image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/ab4jseam_expires_30_days.png',
+    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/f_auto,q_auto/v1791201131/aptimate/home/skills/listening-aa32623e9ab4.png',
     alt: 'Listening',
-    path: '/listening',
+    path: '/listening/overview',
   },
   {
-    image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/joqfqb3e_expires_30_days.png',
+    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/f_auto,q_auto/v1791201132/aptimate/home/skills/reading-2c935bd93738.png',
     alt: 'Reading',
     path: '/reading',
   },
   {
-    image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/3c94qbfj_expires_30_days.png',
+    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/f_auto,q_auto/v1791201133/aptimate/home/skills/writing-64b5af9d7cb7.png',
     alt: 'Writing',
     path: '/writing/overview',
   },
   {
-    image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/emndtqro_expires_30_days.png',
+    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/c_crop,g_north_west,h_512,w_512,x_160,y_0/f_auto,q_auto/v1791201134/aptimate/home/skills/speaking-277b42fafbd0.png',
     alt: 'Speaking',
     path: '/speaking/overview',
   },
   {
-    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1784102681/Gemini_Generated_Image_mc1u72mc1u72mc1u_1111_rys0cc.png',
+    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/c_limit,h_512,w_512/f_auto,q_auto/v1791201716/aptimate/home/skills/grammar-vocab-f4ad6ae5fcf6.png',
     alt: 'Grammar & Vocab',
     path: '/grammar-vocab/overview',
   },
   {
-    image: 'https://placehold.co/600x720/FFD3A8/A11D33?text=VOCABULARY',
-    alt: 'Vocabulary',
-    path: '/vocab',
+    image: 'https://res.cloudinary.com/dkrisyrlh/image/upload/c_crop,g_north_west,h_512,w_512,x_100,y_0/f_auto,q_auto/v1791201135/aptimate/home/skills/dictation-67d2cc5f3d5c.png',
+    alt: 'Dictation',
+    path: '/dictation',
   },
 ];
 
@@ -114,7 +113,6 @@ const reviews = [
 
 export default function HomePage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [activeReview, setActiveReview] = useState(0);
   const reviewCarouselRef = useRef(null);
 
@@ -166,7 +164,7 @@ export default function HomePage() {
               key={card.alt}
               image={card.image}
               alt={card.alt}
-              onClick={() => navigate(card.path)}
+              to={card.path}
             />
           ))}
         </div>
