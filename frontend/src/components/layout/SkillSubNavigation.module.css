@@ -30,4 +30,20 @@
     color: #fff;
     background: var(--button-primary);
   }
+
+  :global([data-theme="dark"]) .navigation {
+    background: var(--bg-page);
+  }
+
+  :global([data-theme="dark"]) .link {
+    color: var(--text-primary);
+    background: var(--bg-page);
+    border-color: var(--border);
+  }
+
+  :global([data-theme="dark"]) .active {
+    color: #fff;
+    background: var(--brand);
+    border-color: var(--brand);
+  }
 }

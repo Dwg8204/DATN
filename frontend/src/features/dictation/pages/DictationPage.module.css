@@ -201,7 +201,7 @@
 /* Dark Mode Overrides */
 :global([data-theme="dark"]) .page { background: var(--bg-page) !important; color: var(--text-primary) !important; }
 :global([data-theme="dark"]) .modeTabs { background: var(--bg-surface) !important; border-color: var(--border) !important; }
-:global([data-theme="dark"]) .modeTabs button { color: var(--text-muted) !important; background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .modeTabs button { color: #fff !important; background: var(--bg-hover) !important; }
 :global([data-theme="dark"]) .modeTabs .activeMode { color: #fff !important; background: var(--brand) !important; }
 :global([data-theme="dark"]) .lessonList { background: var(--bg-surface) !important; border-color: var(--border) !important; }
 :global([data-theme="dark"]) .lessonList h2 { color: var(--text-primary) !important; }
@@ -271,20 +271,31 @@
 :global([data-theme="dark"]) .topicCopy small { color: var(--text-muted) !important; }
 :global([data-theme="dark"]) .topicProgress { background: var(--border) !important; }
 :global([data-theme="dark"]) .topicModeTabs { background: var(--bg-hover) !important; }
-:global([data-theme="dark"]) .topicModeTabs button { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .topicModeTabs button { color: #fff !important; }
 :global([data-theme="dark"]) .topicSearch { background: var(--bg-hover) !important; border-color: var(--border) !important; }
 :global([data-theme="dark"]) .topicSearch input { color: var(--text-primary) !important; }
 :global([data-theme="dark"]) .selectedTopicHeader { background: var(--brand-subtle) !important; border-color: var(--brand-active-bg) !important; }
 :global([data-theme="dark"]) .selectedTopicTitle h1 { color: var(--text-primary) !important; }
 :global([data-theme="dark"]) .selectedTopicTitle span { color: var(--text-muted) !important; }
 :global([data-theme="dark"]) .selectedTopicModes { border-top-color: var(--border) !important; }
-:global([data-theme="dark"]) .selectedTopicModes button { color: var(--text-muted) !important; }
-:global([data-theme="dark"]) .selectedTopicModes button:hover { color: var(--brand-hover) !important; background: var(--brand-subtle) !important; }
+:global([data-theme="dark"]) .selectedTopicModes button { color: #fff !important; }
+:global([data-theme="dark"]) .selectedTopicModes button:hover { color: #fff !important; background: var(--brand-subtle) !important; }
 :global([data-theme="dark"]) .selectedTopicModes .activeStudyMode { color: #fff !important; background: var(--brand) !important; }
 :global([data-theme="dark"]) .modalBackdrop { background: rgba(0,0,0,0.7) !important; }
 :global([data-theme="dark"]) .createModal { background: var(--bg-surface) !important; }
+
+/* Scoped dropdown palette: do not change assessment answer states elsewhere. */
+:global([data-theme="dark"]) .topicFilter,
+:global([data-theme="dark"]) .createModal {
+  --select-bg: #1e2c43;
+  --select-border: #5275a5;
+  --select-hover: #263a57;
+  --select-focus: #668bc0;
+  --select-text: #fff;
+}
 :global([data-theme="dark"]) .createModalHeader h3 { color: var(--text-primary) !important; }
-:global([data-theme="dark"]) .createModal > label { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .createModal > label,
+:global([data-theme="dark"]) .createModal .formRow label { color: #fff !important; }
 :global([data-theme="dark"]) .createModal input { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
 :global([data-theme="dark"]) .createModal textarea { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
 :global([data-theme="dark"]) .createModal select { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }

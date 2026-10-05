@@ -33,6 +33,15 @@
     font-size: 14px;
     line-height: 22px;
   }
+
+  :global([data-theme="dark"]) .instructionBlock {
+    background: var(--warning-bg);
+    border-left-color: var(--brand);
+  }
+
+  :global([data-theme="dark"]) .instructionTitle {
+    color: var(--text-primary);
+  }
 }
 
 

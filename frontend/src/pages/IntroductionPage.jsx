@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
-import { listeningTestsApi } from '../features/admin/listening/services/listeningTestsApi';
 import { testAttemptsApi } from '../features/test-attempts/services/testAttemptsApi';
 import { resumePartFromAttempt } from '../features/writing/utils/writingAttemptPaper';
 import { useToast } from '../context/ToastContext';
@@ -123,14 +122,16 @@ export default function IntroductionPage({
           if (actualMode === 'full') params.set('isFull', 'true');
           navigate(`/${skill}/test/${firstPart}?${params.toString()}`);
         } else if (skill === 'listening') {
-          const { attemptId } = await listeningTestsApi.startAttempt(testId, mode);
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const actualMode = started.paper?.mode ?? mode;
+          const attemptId = started.attemptId;
           const params = new URLSearchParams({ attemptId });
           if (testId) params.set('testId', testId);
         
-          if (mode === 'full') {
+          if (actualMode === 'full') {
             navigate(`/${skill}/test/part1?${params.toString()}`);
           } else {
-            navigate(`/${skill}/test/${mode}?${params.toString()}`);
+            navigate(`/${skill}/test/${actualMode}?${params.toString()}`);
           }
         } else if (skill === 'reading') {
           const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
