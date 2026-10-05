@@ -28,3 +28,23 @@
 :global([data-theme="dark"]) .icon {
   color: var(--bg-surface);
 }
+
+:global([data-theme="dark"]) .panel:before { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .panel h2 { color: var(--text-primary); }
+:global([data-theme="dark"]) .panel>header button { background: var(--bg-hover); color: var(--text-muted); }
+:global([data-theme="dark"]) .panel>header button:hover:not(:disabled) { background: var(--brand-subtle); color: var(--brand-hover); }
+:global([data-theme="dark"]) .panel>nav { border-bottom-color: var(--border); }
+:global([data-theme="dark"]) .panel>nav button { color: var(--text-muted); }
+:global([data-theme="dark"]) .panel>nav button:hover { background: var(--bg-hover); }
+:global([data-theme="dark"]) .panel>nav .activeFilter { background: var(--brand-subtle); color: var(--brand-hover); }
+:global([data-theme="dark"]) .item:hover { background: var(--bg-hover); }
+:global([data-theme="dark"]) .unread { background: var(--brand-subtle); }
+:global([data-theme="dark"]) .unread:hover { background: var(--brand-active-bg); }
+:global([data-theme="dark"]) .message p { color: var(--text-primary); }
+:global([data-theme="dark"]) .item:not(.unread) .message span { color: var(--text-muted); }
+:global([data-theme="dark"]) .itemActions button { background: var(--bg-hover); color: var(--text-muted); }
+:global([data-theme="dark"]) .itemActions button:hover { color: var(--brand-hover); }
+:global([data-theme="dark"]) .empty h3 { color: var(--text-primary); }
+:global([data-theme="dark"]) .empty p { color: var(--text-muted); }
+:global([data-theme="dark"]) .panel>footer { border-top-color: var(--border); }
+:global([data-theme="dark"]) .panel>footer button { color: var(--brand-hover); }
