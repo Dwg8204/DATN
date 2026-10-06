@@ -8,6 +8,7 @@ import { DICTATION_EXERCISES, DICTATION_FLASHCARDS, DICTATION_TOPICS } from '../
 import { loadDictationProgress, saveDictationAttempt } from '../utils/dictationStorage';
 import { useToast } from '../../../context/ToastContext';
 import styles from './DictationPage.module.css';
+import VocabularyWordInput from '../components/VocabularyWordInput';
 
 const normalize = (value) => value.toLowerCase().replace(/[^a-z0-9'\s]/g, '').replace(/\s+/g, ' ').trim();
 const positiveQueryInt = (value, fallback, maximum = 100) => {
@@ -32,10 +33,13 @@ export default function DictationPage() {
   const mode = ['browse', 'flashcard', 'quiz', 'matching', 'notebook'].includes(requestedMode) ? requestedMode : 'dictation';
   const requestedTopic = searchParams.get('topic');
   const notebookPage = positiveQueryInt(searchParams.get('page'), 1, Number.MAX_SAFE_INTEGER);
-  const itemsPerPage = positiveQueryInt(searchParams.get('size'), 4);
+  const itemsPerPage = positiveQueryInt(searchParams.get('size'), mode === 'notebook' ? 4 : 6);
   const setNotebookPagination = patch => setSearchParams(current => {
     const next = new URLSearchParams(current);
-    Object.entries(patch).forEach(([key, value]) => next.set(key, String(value)));
+    Object.entries(patch).forEach(([key, value]) => {
+      if (value === '' || value == null) next.delete(key);
+      else next.set(key, String(value));
+    });
     return next;
   }, { replace: true });
   const setNotebookPage = page => setNotebookPagination({ page });
@@ -59,10 +63,10 @@ export default function DictationPage() {
   const [cardRatings, setCardRatings] = useState(() => {
     try { return JSON.parse(window.localStorage.getItem('aptimate.dictation.flashcards') || '{}'); } catch { return {}; }
   });
-  const [notebookTab, setNotebookTab] = useState('words');
-  const [topicQuery, setTopicQuery] = useState('');
-  const [notebookQuery, setNotebookQuery] = useState('');
-  const [notebookTopic, setNotebookTopic] = useState('All topics');
+  const notebookTab = searchParams.get('tab') === 'sentences' ? 'sentences' : 'words';
+  const topicQuery = searchParams.get('q') || '';
+  const notebookQuery = searchParams.get('q') || '';
+  const notebookTopic = searchParams.get('filterTopic') || 'All topics';
   const [savedWords, setSavedWords] = useState(() => {
     try {
       const stored = JSON.parse(window.localStorage.getItem('aptimate.dictation.savedWords') || 'null');
@@ -113,6 +117,9 @@ export default function DictationPage() {
     const searchableText = `${topic.name} ${topic.description || ''}`.toLowerCase();
     return searchableText.includes(topicQuery.trim().toLowerCase());
   });
+  const topicPageCount = Math.max(1, Math.ceil(visibleTopics.length / itemsPerPage));
+  const currentTopicPage = Math.min(notebookPage, topicPageCount);
+  const paginatedTopics = visibleTopics.slice((currentTopicPage - 1) * itemsPerPage, currentTopicPage * itemsPerPage);
   const exercise = activeExercises[exerciseIndex] || DICTATION_EXERCISES[0];
 
   const hint = useMemo(() => exercise.transcript.split(' ').map((word) => `${word[0]}${'_'.repeat(Math.max(1, word.length - 1))}`).join(' '), [exercise]);
@@ -428,8 +435,10 @@ export default function DictationPage() {
       const nextOverrides = { ...itemOverrides, [editingItemId]: { ...newItem, word: item.word, meaning: item.meaning, pronunciation: item.pronunciation, example: item.example } };
       setItemOverrides(nextOverrides);
       window.localStorage.setItem('aptimate.dictation.itemOverrides', JSON.stringify(nextOverrides));
-      if (notebookTopic !== 'All topics' && notebookTopic !== newItem.topic) setNotebookTopic(newItem.topic);
-      setNotebookPage(1);
+      setNotebookPagination({
+        page: 1,
+        ...(notebookTopic !== 'All topics' && notebookTopic !== newItem.topic ? { filterTopic: newItem.topic } : {}),
+      });
       setShowCreateForm(false);
       setEditingItemId(null);
       setNotebookNotice(t('dictation.itemUpdated', { name: item.word }));
@@ -442,16 +451,12 @@ export default function DictationPage() {
       setSavedWords(nextSaved);
       window.localStorage.setItem('aptimate.dictation.customWords', JSON.stringify(nextWords));
       window.localStorage.setItem('aptimate.dictation.savedWords', JSON.stringify(nextSaved));
-      setNotebookTab('words');
     } else {
       const nextSentences = [item, ...customSentences];
       setCustomSentences(nextSentences);
       window.localStorage.setItem('aptimate.dictation.customSentences', JSON.stringify(nextSentences));
-      setNotebookTab('sentences');
     }
-    setNotebookQuery('');
-    setNotebookTopic(item.topic);
-    setNotebookPage(1);
+    setNotebookPagination({ q: '', filterTopic: item.topic, tab: createType === 'word' ? 'words' : 'sentences', page: 1 });
     dismissToast();
     setShowCreateForm(false);
     setNotebookNotice(t(createType === 'word' ? 'dictation.wordAdded' : 'dictation.sentenceAdded', { topic: item.topic }));
@@ -479,16 +484,6 @@ export default function DictationPage() {
     <div className={`${styles.page} ${isTopicLanding ? styles.topicLandingPage : ''}`}>
       {mode !== 'notebook' && !selectedTopic ? (
         <main className={styles.topicLanding}>
-          <header className={styles.topicHero}>
-            <div className={styles.topicHeroInner}>
-              <span className={styles.topicHeroIcon}>{mode === 'dictation' ? <Headphones /> : <BookOpen />}</span>
-              <div>
-                <h1>{t(mode === 'dictation' ? 'dictation.dictationHeroTitle' : 'dictation.heroTitle')}</h1>
-                <p>{t(mode === 'dictation' ? 'dictation.dictationHeroDescription' : 'dictation.heroDescription')}</p>
-              </div>
-            </div>
-          </header>
-
           <div className={styles.topicContent}>
             <nav className={styles.topicModeTabs} aria-label={t('dictation.studyModes')}>
               <button type="button" className={mode === 'dictation' ? styles.activeTopicMode : ''} onClick={() => setMode('dictation')}>
@@ -506,14 +501,14 @@ export default function DictationPage() {
               <Search />
               <input
                 value={topicQuery}
-                onChange={(event) => setTopicQuery(event.target.value)}
+                onChange={(event) => setNotebookPagination({ q: event.target.value, page: 1 })}
                 placeholder={t('dictation.searchTopic')}
                 aria-label={t('dictation.searchTopicLabel')}
               />
             </label>
 
             <section className={styles.topicGrid} aria-label={`${mode} topics`}>
-            {visibleTopics.map((topic) => {
+            {paginatedTopics.map((topic) => {
               const lessons = allExercises.filter((item) => item.topic === topic.name);
               const cards = allFlashcards.filter((item) => item.topic === topic.name);
               const completedLessons = lessons.filter((item) => progress[item.id]).length;
@@ -542,6 +537,9 @@ export default function DictationPage() {
             })}
             </section>
             {!visibleTopics.length && <div className={styles.emptyTopicSearch}><Search /><strong>{t('dictation.noTopics')}</strong><span>{t('dictation.tryAnotherKeyword')}</span></div>}
+            {visibleTopics.length > 0 && <div className={styles.topicPagination}>
+              <Pagination page={currentTopicPage} totalItems={visibleTopics.length} pageSize={itemsPerPage} onPageChange={setNotebookPage} onPageSizeChange={setItemsPerPage} />
+            </div>}
           </div>
         </main>
       ) : mode === 'dictation' ? <>
@@ -729,16 +727,6 @@ export default function DictationPage() {
         </>
       ) : (
         <main className={styles.topicLanding}>
-          <header className={styles.topicHero}>
-            <div className={styles.topicHeroInner}>
-              <span className={styles.topicHeroIcon}><BookOpen /></span>
-              <div>
-                <h1>{t('dictation.heroTitle')}</h1>
-                <p>{t('dictation.heroDescription')}</p>
-              </div>
-            </div>
-          </header>
-
           <div className={styles.topicContent}>
             <nav className={styles.topicModeTabs} aria-label={t('dictation.studyModes')}>
               <button type="button" onClick={() => setMode('dictation')}>
@@ -756,15 +744,15 @@ export default function DictationPage() {
           <header className={styles.notebookHeader}>
             <div><span>{t('dictation.personalSpace')}</span><h2>{t('dictation.notebookTitle')}</h2></div>
             <div className={styles.notebookHeaderActions}>
-              <label className={styles.topicFilter}><FolderOpen size={17} /><AnswerSelect value={notebookTopic} onChange={(event) => { setNotebookTopic(event.target.value); setNotebookPage(1); }} options={[{ value: 'All topics', label: t('dictation.allTopics') }, ...availableTopics.map((topic) => topic.name), { value: 'Other', label: t('dictation.other') }]} ariaLabel={t('dictation.filterTopic')} /></label>
-              <label className={styles.notebookSearch}><Search size={17} /><input value={notebookQuery} onChange={(event) => { setNotebookQuery(event.target.value); setNotebookPage(1); }} placeholder={t('dictation.searchSaved')} /></label>
+              <label className={styles.topicFilter}><FolderOpen size={17} /><AnswerSelect value={notebookTopic} onChange={(event) => setNotebookPagination({ filterTopic: event.target.value === 'All topics' ? '' : event.target.value, page: 1 })} options={[{ value: 'All topics', label: t('dictation.allTopics') }, ...availableTopics.map((topic) => topic.name), { value: 'Other', label: t('dictation.other') }]} ariaLabel={t('dictation.filterTopic')} /></label>
+              <label className={styles.notebookSearch}><Search size={17} /><input value={notebookQuery} onChange={(event) => setNotebookPagination({ q: event.target.value, page: 1 })} placeholder={t('dictation.searchSaved')} aria-label={t('dictation.searchSaved')} /></label>
               <button className={styles.createButton} onClick={() => openCreateForm()}><Plus size={18} /> {t('dictation.addNew')}</button>
             </div>
           </header>
 
           <div className={styles.notebookTabs}>
-            <button className={notebookTab === 'words' ? styles.activeNotebookTab : ''} onClick={() => { setNotebookTab('words'); setNotebookPage(1); }}>{t('dictation.savedWords')}</button>
-            <button className={notebookTab === 'sentences' ? styles.activeNotebookTab : ''} onClick={() => { setNotebookTab('sentences'); setNotebookPage(1); }}>{t('dictation.savedSentences')}</button>
+            <button className={notebookTab === 'words' ? styles.activeNotebookTab : ''} onClick={() => setNotebookPagination({ tab: 'words', page: 1 })}>{t('dictation.savedWords')}</button>
+            <button className={notebookTab === 'sentences' ? styles.activeNotebookTab : ''} onClick={() => setNotebookPagination({ tab: 'sentences', page: 1 })}>{t('dictation.savedSentences')}</button>
           </div>
 
           {notebookNotice && <div className={styles.notebookNotice} role="status"><Check size={17} />{notebookNotice}<button type="button" onClick={() => setNotebookNotice('')} aria-label={t('dictation.dismiss')}><X size={15} /></button></div>}
@@ -804,7 +792,18 @@ export default function DictationPage() {
                 <button type="button" className={createType === 'word' ? styles.selectedType : ''} onClick={() => { setCreateType('word'); setNewItem((item) => ({ ...item, type: 'noun' })); }}>{t('dictation.word')}</button>
                 <button type="button" className={createType === 'sentence' ? styles.selectedType : ''} onClick={() => { setCreateType('sentence'); setNewItem((item) => ({ ...item, type: 'Custom sentence' })); }}>{t('dictation.sentence')}</button>
               </div>}
-              <label>{t(createType === 'word' ? 'dictation.englishWord' : 'dictation.title')}<input autoFocus required value={newItem.word} onChange={(event) => setNewItem({ ...newItem, word: event.target.value })} placeholder={t(createType === 'word' ? 'dictation.wordPlaceholder' : 'dictation.titlePlaceholder')} /></label>
+              {createType === 'word' ? <VocabularyWordInput item={newItem} knownWords={allFlashcards}
+                onChange={word => setNewItem(current => ({ ...current, word }))}
+                onResolved={(word, fields, snapshot) => setNewItem(current => {
+                  if (current.word.trim().toLowerCase() !== word) return current;
+                  const updated = { ...current };
+                  for (const key of ['pronunciation', 'type', 'meaning', 'example']) {
+                    if (fields[key] && current[key] === snapshot[key]) {
+                      updated[key] = key === 'type' && !['noun', 'verb', 'adjective', 'adverb', 'phrase'].includes(fields[key]) ? 'phrase' : fields[key];
+                    }
+                  }
+                  return updated;
+                })} /> : <label>{t('dictation.title')}<input autoFocus required value={newItem.word} onChange={(event) => setNewItem({ ...newItem, word: event.target.value })} placeholder={t('dictation.titlePlaceholder')} /></label>}
               {createType === 'word' && <div className={styles.formRow}><label>{t('dictation.pronunciation')}<input value={newItem.pronunciation} onChange={(event) => setNewItem({ ...newItem, pronunciation: event.target.value })} placeholder="/əˈtʃiːvmənt/" /></label><label>{t('dictation.wordType')}<AnswerSelect value={newItem.type} onChange={(event) => setNewItem({ ...newItem, type: event.target.value })} options={['noun','verb','adjective','adverb','phrase']} ariaLabel={t('dictation.wordType')}/></label></div>}
               <div className={styles.topicFormRow}>
                 <label>{t('dictation.topic')}<AnswerSelect value={newItem.topic} onChange={(event) => setNewItem({ ...newItem, topic: event.target.value })} options={availableTopics.map((topic) => topic.name)} placeholder={t(showTopicCreator ? 'dictation.addTopicBelow' : 'dictation.selectTopic')} disabled={showTopicCreator} ariaLabel={t('dictation.topic')} /></label>

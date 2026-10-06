@@ -79,6 +79,7 @@ export const API_ENDPOINTS = {
     audio: '/media/attempt-audio',
   },
   dictionary: {
+    suggestions: '/dictionary/suggestions',
     lookup: (word) => `/dictionary/${encodeURIComponent(word)}`,
   },
   practiceExam: {
