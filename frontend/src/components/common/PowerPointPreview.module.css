@@ -1,0 +1,6 @@
+.preview { width: 100%; min-height: 420px; align-self: stretch; overflow: auto; background: #dfe3e8; }
+.slides { width: max-content; min-width: 100%; padding: 24px; box-sizing: border-box; }
+.hidden { display: none; }
+.message { min-height: 420px; padding: 48px 24px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; color: #555; text-align: center; }
+.message svg { width: 44px; height: 44px; color: #d97706; }
+.message span { color: #777; font-size: 13px; }

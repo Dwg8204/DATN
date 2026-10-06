@@ -1,0 +1,46 @@
+.preview {
+  width: 100%;
+  min-height: 420px;
+  align-self: stretch;
+}
+
+.document {
+  width: 100%;
+  min-height: 420px;
+  padding: 24px;
+  box-sizing: border-box;
+  overflow: auto;
+}
+
+.document :global(.aptimate-docx-wrapper) {
+  padding: 20px 0;
+  background: #dfe3e8;
+}
+
+.hidden {
+  display: none;
+}
+
+.message {
+  min-height: 420px;
+  padding: 48px 24px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  color: #555;
+  text-align: center;
+}
+
+.message svg {
+  width: 44px;
+  height: 44px;
+  color: #b21f35;
+}
+
+.message span {
+  color: #777;
+  font-size: 13px;
+}
