@@ -1,0 +1,14 @@
+.field { position: relative; margin-top: 14px; }
+.field > label { display: block; color: #334155; font-size: 14px; font-weight: 600; }
+.inputRow { display: flex; align-items: center; gap: 8px; }
+.inputRow input { min-width: 0; flex: 1; }
+.inputRow > button { flex: 0 0 40px; height: 42px; margin-top: 7px; display: grid; place-items: center; border: 1px solid #efd0d4; border-radius: 9px; color: #da1e21; background: #fff7f8; cursor: pointer; }
+.inputRow > button:disabled { opacity: .45; cursor: not-allowed; }
+.suggestions { position: absolute; top: 71px; right: 48px; left: 0; z-index: 2; padding: 8px; border: 1px solid #efd0d4; border-radius: 10px; background: #fff; box-shadow: 0 10px 24px rgba(60,20,28,.15); }
+.heading { padding: 3px 8px 7px; color: #7f2637; font-size: 12px; font-weight: 700; }
+.suggestions ul { max-height: 220px; overflow-y: auto; margin: 0; padding: 0; list-style: none; }
+.suggestions li button { display: flex; flex-direction: column; gap: 3px; width: 100%; padding: 8px; border: 0; border-radius: 6px; color: #334155; background: #fff; font: inherit; text-align: left; cursor: pointer; }
+.suggestions li button:hover, .suggestions li button.active { background: #fff0f1; color: #b9181b; }
+.suggestions li span { color: #64748b; font-size: 12px; }
+.suggestions > small { display: block; padding: 6px 8px 2px; color: #64748b; font-size: 11px; }
+.status { margin: 5px 0 0; color: #64748b; font-size: 12px; line-height: 1.45; }

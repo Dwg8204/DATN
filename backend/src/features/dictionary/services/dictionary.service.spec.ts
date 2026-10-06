@@ -32,6 +32,32 @@ describe('DictionaryService', () => {
 
   afterEach(() => jest.restoreAllMocks());
 
+  it('returns safe, unique fuzzy word suggestions and caches successful requests', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(['achiev', [
+      'achieve', 'achievement', 'Achieve', 'achievement/translations', '<script>', 123,
+    ], [], []]));
+
+    expect(await service.suggest(' Achiev ')).toEqual({ words: ['achieve', 'achievement'], unavailable: false });
+    expect(await service.suggest('achiev')).toEqual({ words: ['achieve', 'achievement'], unavailable: false });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const url = new URL(String(fetchMock.mock.calls[0][0]));
+    expect(url.searchParams.get('search')).toBe('achiev');
+    expect(url.searchParams.get('profile')).toBe('fuzzy');
+  });
+
+  it('reports unavailable suggestions without poisoning the cache', async () => {
+    fetchMock.mockRejectedValueOnce(new Error('network unavailable'))
+      .mockResolvedValueOnce(jsonResponse(['effec', ['effective'], [], []]));
+
+    expect(await service.suggest('effec')).toEqual({ words: [], unavailable: true });
+    expect(await service.suggest('effec')).toEqual({ words: ['effective'], unavailable: false });
+  });
+
+  it('distinguishes an empty result from an upstream failure', async () => {
+    fetchMock.mockResolvedValue(jsonResponse(['unknownword', [], [], []]));
+    expect(await service.suggest('unknownword')).toEqual({ words: [], unavailable: false });
+  });
+
   it('uses Azure for meanings/examples and Wiktionary for IPA and synonyms', async () => {
     fetchMock.mockImplementation(async input => {
       const url = String(input);

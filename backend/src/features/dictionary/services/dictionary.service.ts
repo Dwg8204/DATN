@@ -37,8 +37,34 @@ const SUPPORTED_PARTS = new Set([
 @Injectable()
 export class DictionaryService {
   private readonly cache = new Map<string, CacheEntry>();
+  private readonly suggestionCache = new Map<string, { expiresAt: number; words: string[] }>();
 
   constructor(private readonly config: ConfigService = new ConfigService()) {}
+
+  async suggest(rawQuery: string): Promise<{ words: string[]; unavailable: boolean }> {
+    const query = rawQuery.trim().toLowerCase();
+    const cached = this.suggestionCache.get(query);
+    if (cached && cached.expiresAt > Date.now()) return { words: cached.words, unavailable: false };
+    try {
+      const params = new URLSearchParams({
+        action: 'opensearch', search: query, namespace: '0', limit: '12',
+        profile: 'fuzzy', redirects: 'resolve', format: 'json',
+      });
+      const response = await this.fetchJson(`https://en.wiktionary.org/w/api.php?${params}`, 2_500);
+      if (!Array.isArray(response) || !Array.isArray(response[1])) throw new Error('Invalid suggestions');
+      const words = [...new Set((response[1] as unknown[])
+        .filter((word): word is string => typeof word === 'string' && word.length <= 60
+          && /^[A-Za-z]+(?:[ '-][A-Za-z]+)*$/.test(word))
+        .map(word => word.toLowerCase()))].slice(0, 8);
+      if (this.suggestionCache.size >= MAX_CACHE_ENTRIES) {
+        this.suggestionCache.delete(this.suggestionCache.keys().next().value ?? '');
+      }
+      this.suggestionCache.set(query, { words, expiresAt: Date.now() + 10 * 60_000 });
+      return { words, unavailable: false };
+    } catch {
+      return { words: [], unavailable: true };
+    }
+  }
 
   async lookup(rawWord: string, forceRefresh = false): Promise<DictionaryResponse> {
     const word = rawWord.trim().toLowerCase();

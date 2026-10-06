@@ -121,7 +121,7 @@
 .topicHeroIcon svg { width: 27px; height: 27px; }
 .topicHero h1 { margin: 0; color: #151515; font-family: Inter, "Segoe UI", Arial, sans-serif; font-size: 27px; font-weight: 800; line-height: 1.2; }
 .topicHero p { margin: 5px 0 0; color: #756f71; font-size: 14px; }
-.topicContent { width: min(100% - 40px, 1040px); margin: 0 auto; padding: 22px 0 54px; }
+.topicContent { width: min(100% - 40px, 1240px); margin: 0 auto; padding: 30px 0 54px; }
 .topicModeTabs { width: fit-content; display: flex; padding: 4px; border-radius: 10px; background: #f4f4f4; }
 .topicModeTabs button { min-width: 170px; height: 34px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 16px; border: 0; border-radius: 8px; color: #555; background: transparent; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .topicModeTabs button svg { width: 14px; height: 14px; }
@@ -154,6 +154,7 @@
 .emptyTopicSearch svg { width: 25px; height: 25px; }
 .emptyTopicSearch strong { color: #4d3d40; }
 .emptyTopicSearch span { font-size: 13px; }
+.topicPagination { margin-top: 24px; padding-top: 18px; border-top: 1px solid #eee5e4; }
 .selectedTopicHeader { overflow: hidden; margin: -40px calc(-1 * max(24px, calc((100vw - 1240px) / 2))) 26px; padding: 0 max(24px, calc((100vw - 960px) / 2)); border-top: 1px solid #f0bdb6; border-bottom: 1px solid #edc1ba; background: radial-gradient(circle at 12% 25%, rgba(218,30,33,.12) 0 2px, transparent 3px), radial-gradient(circle at 70% 72%, rgba(218,30,33,.09) 0 2px, transparent 3px), linear-gradient(105deg, #f7d0ca 0%, #fff7f5 58%, #fff 100%); }
 .selectedTopicTitle { min-height: 62px; display: flex; align-items: center; gap: 12px; }
 .selectedTopicTitle > button { width: 28px; height: 28px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; color: #aa1d24; background: transparent; cursor: pointer; }

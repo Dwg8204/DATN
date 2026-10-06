@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { LookupWordParamsDto } from '../dto/lookup-word-params.dto';
 import { DictionaryService } from '../services/dictionary.service';
+import { SuggestWordsQueryDto } from '../dto/suggest-words-query.dto';
 
 @ApiTags('Dictionary')
 @ApiCookieAuth('aptimate_access_token')
@@ -14,6 +15,12 @@ import { DictionaryService } from '../services/dictionary.service';
 @Roles('STUDENT')
 export class DictionaryController {
   constructor(private readonly dictionary: DictionaryService) {}
+
+  @Get('suggestions')
+  @Throttle({ default: { limit: 120, ttl: 60_000 } })
+  suggest(@Query() query: SuggestWordsQueryDto) {
+    return this.dictionary.suggest(query.q);
+  }
 
   @Get(':word')
   @Throttle({ default: { limit: 60, ttl: 60_000 } })
