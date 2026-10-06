@@ -29,6 +29,20 @@ const valid = (): ReadingTestAggregate => ({
 describe('ReadingTestContentService', () => {
   const service = new ReadingTestContentService();
 
+  it('persists a partial draft without weakening publication validation', () => {
+    const test = valid();
+    test.parts[1].passage = '';
+    test.parts[1].questions[0].answer = '';
+    expect(() => service.assertDraftShape(test)).not.toThrow();
+    expect(() => service.assertPublishable(test)).toThrow();
+  });
+
+  it('rejects malformed draft collections before saving', () => {
+    const test = valid();
+    test.parts[2].sentences = null;
+    expect(() => service.assertDraftShape(test)).toThrow('invalid draft structure');
+  });
+
   it('accepts the fixed Aptis Reading structure with seven Part 4 headings', () => {
     expect(() => service.assertPublishable(valid())).not.toThrow();
   });

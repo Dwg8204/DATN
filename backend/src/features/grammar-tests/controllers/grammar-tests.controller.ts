@@ -9,7 +9,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { ListGrammarTestsQueryDto } from '../dto/list-grammar-tests-query.dto';
-import { CreateGrammarTestDto, UpdateGrammarTestDto } from '../dto/save-grammar-test.dto';
+import { CreateGrammarTestDto, PublishGrammarTestDto, UpdateGrammarTestDto } from '../dto/save-grammar-test.dto';
 import { GrammarTestsService } from '../services/grammar-tests.service';
 import { GrammarAudit } from '../types/grammar-test.type';
 
@@ -53,8 +53,9 @@ export class GrammarTestsController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @CurrentUser() actor: AuthUser,
     @Req() request: Request,
+    @Body() dto: PublishGrammarTestDto,
   ) {
-    return this.tests.publish(id, actor, this.audit(request));
+    return this.tests.publish(id, actor, this.audit(request), dto.version);
   }
 
   @Delete(':id')
@@ -79,7 +80,6 @@ export class GrammarTestsController {
 @ApiTags('Grammar & Vocabulary Tests')
 @ApiCookieAuth('aptimate_access_token')
 @Controller('grammar-tests')
-@UseGuards(JwtAuthGuard)
 export class PublishedGrammarTestsController {
   constructor(private readonly tests: GrammarTestsService) {}
 
@@ -88,6 +88,7 @@ export class PublishedGrammarTestsController {
     return this.tests.listPublished(query);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   get(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.tests.getPublished(id);

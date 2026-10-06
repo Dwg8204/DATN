@@ -5,7 +5,7 @@ import ReadingResultPage from './pages/ReadingResultPage';
 import ReviewFeedbackPage from './pages/ReviewFeedbackPage';
 import TestLayout from '../../components/layout/TestLayout';
 import TestListPage from '../../pages/TestListPage';
-import RoleGuard from '../auth/components/RoleGuard';
+import AttemptRoleGuard from '../test-attempts/components/AttemptRoleGuard.jsx';
 import ReadingAttemptLayout from './components/ReadingAttemptLayout';
 import ReadingAttemptPage from './pages/ReadingAttemptPage';
 import ReadingAttemptResultPage from './pages/ReadingAttemptResultPage';
@@ -23,7 +23,7 @@ export const readingMainRoutes = [
   },
   {
     path: 'reading/result',
-    element: <RoleGuard allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}><ReadingAttemptResultPage /></RoleGuard>,
+    element: <AttemptRoleGuard><ReadingAttemptResultPage /></AttemptRoleGuard>,
   },
   {
     path: 'reading/result/:sessionId',
@@ -41,7 +41,7 @@ export const readingTestRoutes = [
   },
   {
     path: 'reading/detail-result',
-    element: <RoleGuard allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}><TestLayout headerProps={{ showTimer: false, showExit: false }} /></RoleGuard>,
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
     children: [{ index: true, element: <ReadingAttemptDetailPage /> }],
   },
   {

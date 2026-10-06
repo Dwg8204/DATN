@@ -5,6 +5,7 @@ export type ReadingTestMode = 'part1' | 'part2' | 'part3' | 'part4' | 'full';
 export type ReadingTestStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
 export type ReadingTestAggregate = {
+  creationReplayed?: boolean;
   id?: string;
   mode: ReadingTestMode;
   purpose: TestPurpose;

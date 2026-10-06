@@ -61,7 +61,7 @@ test('Reading explanations survive storage and feed all four result details', ()
   const draft = createReadingDraft();
   draft.details.title = 'Explanation QA';
   draft.part1.questions[0].explanation = 'Gap explanation.';
-  draft.part2.sentences[1].explanation = 'Ordering explanation.';
+  draft.part2.texts[0].sentences[1].explanation = 'Ordering explanation.';
   draft.part3.questions[0].explanation = 'Opinion explanation.';
   draft.part4.headings[0].correctParagraph = draft.part4.paragraphs[0].id;
   draft.part4.headings[0].explanation = 'Heading explanation.';
@@ -72,5 +72,5 @@ test('Reading explanations survive storage and feed all four result details', ()
   assert.equal(results.part2.details[0].explanation, 'Ordering explanation.');
   assert.equal(results.part3.details[0].explanation, 'Opinion explanation.');
   assert.equal(results.part4.details[0].explanation, 'Heading explanation.');
-  assert.equal(results.part1.details[1].explanation, '');
+  assert.match(results.part1.details[1].explanation, /correct answer/);
 });

@@ -13,7 +13,7 @@ const Questions=({questions,seconds,showGuidance=true})=><div className={styles.
 </article>)}</div>;
 
 export default function SpeakingAnswerPreview({test,part}){const data=test.parts[part];return <section className={styles.preview}>
-  {part===4&&<div className={styles.topic}><b>Topic</b><p>{data.topic}</p><span>60 seconds preparation · 120 seconds response</span></div>}
+  {part===4&&<div className={styles.topic}><b>Topic</b><div dangerouslySetInnerHTML={{ __html: data.topic }} /><span>60 seconds preparation · 120 seconds response</span></div>}
   {part===2&&<ImageField readOnly label="Candidate picture" value={data.imageUrl}/>} 
   {part===3&&<div className={styles.images}>{data.imageUrls.map((url,index)=><ImageField readOnly key={index} label={`Candidate picture ${index+1}`} value={url}/>)}</div>}
   {part===4&&<ImageField readOnly label="Topic picture" value={data.imageUrl}/>} 

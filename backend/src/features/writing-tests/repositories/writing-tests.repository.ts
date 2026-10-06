@@ -1,3 +1,4 @@
+import { findCreatedTest, testCreationId } from '../../../common/tests/test-creation';
 import { createHash } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
@@ -150,15 +151,18 @@ export class WritingTestsRepository {
     return rows[0]?.snapshot ?? null;
   }
 
-  async create(actor: WritingActor, test: WritingTestAggregate, audit: WritingAudit): Promise<WritingTestAggregate> {
+  async create(actor: WritingActor, test: WritingTestAggregate, audit: WritingAudit, creationRequestId?: string): Promise<WritingTestAggregate> {
+    const id = testCreationId(actor.id, 'WRITING', creationRequestId);
     return this.dataSource.transaction(async manager => {
+      const existing = await findCreatedTest<TestRow>(manager, id, creationRequestId);
+      if (existing) return { ...await this.hydrate(existing, await this.loadQuestions(manager, existing.id)), creationReplayed: true };
       const mapping = this.modeColumns(test.mode);
       const rows = await manager.query<TestRow[]>(
-        `INSERT INTO tests(created_by,updated_by,title,component,purpose,scope,part_number,cover,part_contents,status)
-         VALUES($1,$1,$2,'WRITING',$3,$4,$5,$6::jsonb,$7::jsonb,'DRAFT') RETURNING *`,
+        `INSERT INTO tests(id,created_by,updated_by,title,component,purpose,scope,part_number,cover,part_contents,status)
+         VALUES($8,$1,$1,$2,'WRITING',$3,$4,$5,$6::jsonb,$7::jsonb,'DRAFT') RETURNING *`,
         [actor.id, test.details.title || 'Untitled Writing Test', test.purpose, mapping.scope, mapping.partNumber,
           JSON.stringify(test.details.pictureUrl ? { url: test.details.pictureUrl } : null),
-          JSON.stringify(this.partContents(test))],
+          JSON.stringify(this.partContents(test)), id],
       );
       const row = firstMutationRow<TestRow>(rows);
       await this.upsertQuestions(manager, row.id, this.toQuestions(test));

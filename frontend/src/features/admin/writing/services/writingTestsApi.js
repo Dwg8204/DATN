@@ -6,6 +6,7 @@ const silent = { notifyOnError: false };
 function payload(test, includeVersion = false) {
   return {
     purpose: test.purpose,
+    ...(!includeVersion && test.creationRequestId ? { creationRequestId: test.creationRequestId } : {}),
     mode: test.mode,
     details: { title: test.details?.title ?? '', pictureUrl: test.details?.pictureUrl ?? '' },
     parts: test.parts ?? {},
@@ -21,7 +22,7 @@ export const writingTestsApi = {
   getAdmin: (id, signal) => api.get(API_ENDPOINTS.adminWritingTests.detail(id), { ...silent, signal }).then(response => response.data),
   create: test => api.post(API_ENDPOINTS.adminWritingTests.list, payload(test), silent).then(response => response.data),
   update: test => api.put(API_ENDPOINTS.adminWritingTests.detail(test.id), payload(test, true), silent).then(response => response.data),
-  publish: id => api.post(API_ENDPOINTS.adminWritingTests.publish(id), undefined, silent).then(response => response.data),
+  publish: test => api.post(API_ENDPOINTS.adminWritingTests.publish(test.id), { version: test.version }, silent).then(response => response.data),
   archive: id => api.delete(API_ENDPOINTS.adminWritingTests.detail(id), silent),
   listPublished: ({ search, mode, purpose, page, pageSize, signal } = {}) => api.get(API_ENDPOINTS.writingTests.list, {
     ...silent, signal,

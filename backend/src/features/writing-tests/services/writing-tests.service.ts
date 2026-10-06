@@ -38,7 +38,7 @@ export class WritingTestsService {
   async create(actor: AuthUser, dto: CreateWritingTestDto, audit: WritingAudit): Promise<WritingTestAggregate> {
     const test = this.content.normalize(dto);
     this.content.assertDraftShape(test);
-    return this.repository.create(actor, test, audit);
+    return this.repository.create(actor, test, audit, dto.creationRequestId);
   }
 
   async update(id: string, actor: AuthUser, dto: UpdateWritingTestDto, audit: WritingAudit): Promise<WritingTestAggregate> {
@@ -47,10 +47,11 @@ export class WritingTestsService {
     return this.unwrap(await this.repository.update(id, actor, dto.version, test, audit));
   }
 
-  async publish(id: string, actor: AuthUser, audit: WritingAudit): Promise<WritingTestAggregate> {
+  async publish(id: string, actor: AuthUser, audit: WritingAudit, expectedVersion: number): Promise<WritingTestAggregate> {
     const test = await this.repository.findAggregate(id);
     if (!test || test.status === 'ARCHIVED') this.notFound();
     await this.assertOwner(id, actor);
+    if (expectedVersion !== test.version) this.conflict();
     this.content.assertPublishable(test);
     return this.unwrap(await this.repository.publish(id, actor, test.version!, test, audit));
   }

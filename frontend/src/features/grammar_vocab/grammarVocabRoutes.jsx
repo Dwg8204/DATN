@@ -4,7 +4,7 @@ import Part2GrammarPage from './pages/Part2GrammarPage';
 import GrammarVocabResultDetailPage from './pages/GrammarVocabResultDetailPage';
 import TestLayout from '../../components/layout/TestLayout';
 import GrammarAttemptLayout from './components/GrammarAttemptLayout';
-import RoleGuard from '../auth/components/RoleGuard';
+import AttemptRoleGuard from '../test-attempts/components/AttemptRoleGuard.jsx';
 
 export const grammarVocabRoutes = [
   {
@@ -17,7 +17,7 @@ export const grammarVocabRoutes = [
   },
   {
     path: '/grammar-vocab/result-detail',
-    element: <RoleGuard allowedRoles={['STUDENT']}><TestLayout headerProps={{ showTimer: false, showExit: false }} /></RoleGuard>,
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
     children: [
       { index: true, element: <GrammarVocabResultDetailPage /> },
     ],

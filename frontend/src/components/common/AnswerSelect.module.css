@@ -139,18 +139,22 @@
 }
 
 /* Dark Mode Overrides */
+:global([data-theme="dark"]) .selectedText {
+  color: var(--select-text, inherit);
+}
+
 :global([data-theme="dark"]) .select {
-  border: 1px solid var(--text-primary);
-  background: var(--bg-surface);
-  color: var(--text-primary);
+  border: 1px solid var(--select-border, var(--text-primary));
+  background: var(--select-bg, var(--bg-surface));
+  color: var(--select-text, var(--text-primary));
 }
 
 :global([data-theme="dark"]) .select:hover {
-  background-color: var(--bg-hover);
+  background-color: var(--select-hover, var(--bg-hover));
 }
 
 :global([data-theme="dark"]) .hasValue {
-  background-color: var(--warning);
+  background-color: var(--select-bg, var(--warning));
 }
 
 :global([data-theme="dark"]) .correct {
@@ -164,17 +168,27 @@
 }
 
 :global([data-theme="dark"]) .menu {
-  border: 1px solid var(--text-disabled);
-  background: var(--bg-surface);
+  border: 1px solid var(--select-border, var(--text-disabled));
+  background: var(--select-bg, var(--bg-surface));
   box-shadow: 0 8px 20px var(--shadow-sm);
 }
 
 :global([data-theme="dark"]) .option {
-  border-bottom: 1px solid var(--border);
-  background: var(--bg-surface);
-  color: var(--text-primary);
+  border-bottom: 1px solid var(--select-border, var(--border));
+  background: var(--select-bg, var(--bg-surface));
+  color: var(--select-text, var(--text-primary));
 }
 
 :global([data-theme="dark"]) .optionSelected {
-  background: var(--info);
+  background: var(--select-hover, var(--info));
+}
+
+:global([data-theme="dark"]) .select:focus-visible,
+:global([data-theme="dark"]) .select[aria-expanded="true"] {
+  border-color: var(--select-focus, var(--info));
+  box-shadow: 0 0 0 3px var(--select-hover, var(--info-bg));
+}
+
+:global([data-theme="dark"]) .option:hover {
+  background: var(--select-hover, var(--info));
 }

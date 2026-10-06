@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ImagePlus, Trash2 } from 'lucide-react';
 import { resizeImage } from '../../../utils/resizeImage';
 import { AdminToast } from '../components/AdminFeedback';
@@ -6,6 +6,10 @@ import styles from './ImageField.module.css';
 
 export default function ImageField({ label = 'Image', value = '', onChange, uploadFile, required = false, readOnly = false, tall = false }) {
   const inputRef = useRef(null);
+  const changeRef = useRef(onChange);
+  const activeRef = useRef(false);
+  useEffect(() => { changeRef.current = onChange; }, [onChange]);
+  useEffect(() => { activeRef.current = true; return () => { activeRef.current = false; }; }, []);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const upload = async event => {
@@ -15,14 +19,16 @@ export default function ImageField({ label = 'Image', value = '', onChange, uplo
     if (file.size > 10 * 1024 * 1024) return setError('Image must be 10 MB or smaller.');
     setBusy(true);
     try {
+      // Preserve the selected cover before a network upload, including while offline.
+      const localImage = await resizeImage(file, 1600, 1200, { output: 'dataURL', mimeType: 'image/jpeg', quality: .82 });
+      if (!activeRef.current) return;
+      changeRef.current(localImage);
       if (uploadFile) {
         const result = await uploadFile(file);
-        onChange(result.url);
-      } else {
-        onChange(await resizeImage(file, 1600, 1200, { output: 'dataURL', mimeType: 'image/jpeg', quality: .82 }));
+        if (activeRef.current) changeRef.current(result.url);
       }
     } catch (uploadError) {
-      setError(uploadError?.response?.data?.error?.message || 'Unable to process this image.');
+      setError(uploadError?.response?.data?.error?.message || 'Unable to upload the image. A processed image is kept in your draft if it was read successfully.');
     } finally {
       setBusy(false);
     }

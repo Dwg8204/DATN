@@ -3,7 +3,7 @@ import ListeningOverviewPage from './pages/ListeningOverviewPage';
 import ListeningFeedPage from './pages/ListeningFeedPage';
 import TestListPage from '../../pages/TestListPage';
 import TestLayout from '../../components/layout/TestLayout';
-import RoleGuard from '../auth/components/RoleGuard';
+import AttemptRoleGuard from '../test-attempts/components/AttemptRoleGuard.jsx';
 import ListeningAttemptLayout from './components/ListeningAttemptLayout';
 import Part1ListeningPage from './pages/Part1ListeningPage';
 import Part2ListeningPage from './pages/Part2ListeningPage';
@@ -23,7 +23,7 @@ export const listeningMainRoutes = [
   },
   {
     path: 'listening/result',
-    element: <RoleGuard allowedRoles={['STUDENT']}><ListeningResultPage /></RoleGuard>,
+    element: <AttemptRoleGuard><ListeningResultPage /></AttemptRoleGuard>,
   }
 ];
 
@@ -40,7 +40,7 @@ export const listeningTestRoutes = [
   },
   {
     path: 'listening/detail-result',
-    element: <RoleGuard allowedRoles={['STUDENT']}><TestLayout headerProps={{ showTimer: false, showExit: false }} /></RoleGuard>,
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
     children: [
       { index: true, element: <ListeningDetailResultPage /> },
     ],

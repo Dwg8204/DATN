@@ -3,7 +3,7 @@ import SpeakingOverviewPage from './pages/SpeakingOverviewPage';
 import SpeakingFeedPage from './pages/SpeakingFeedPage';
 import TestListPage from '../../pages/TestListPage';
 import TestLayout from '../../components/layout/TestLayout';
-import RoleGuard from '../auth/components/RoleGuard';
+import AttemptRoleGuard from '../test-attempts/components/AttemptRoleGuard.jsx';
 import SpeakingAttemptLayout from './components/SpeakingAttemptLayout';
 import SpeakingPartPage from './pages/SpeakingPartPage';
 import SpeakingAttemptResultPage from './pages/SpeakingAttemptResultPage';
@@ -21,7 +21,7 @@ export const speakingMainRoutes = [
 
   {
     path: 'speaking/result',
-    element: <RoleGuard allowedRoles={['STUDENT']}><SpeakingAttemptResultPage /></RoleGuard>,
+    element: <AttemptRoleGuard><SpeakingAttemptResultPage /></AttemptRoleGuard>,
   }
 ];
 
@@ -38,7 +38,7 @@ export const speakingTestRoutes = [
   },
   {
     path: 'speaking/detail-result',
-    element: <RoleGuard allowedRoles={['STUDENT']}><TestLayout headerProps={{ showTimer: false, showExit: false }} /></RoleGuard>,
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
     children: [
       { index: true, element: <SpeakingAttemptDetailPage /> },
     ],

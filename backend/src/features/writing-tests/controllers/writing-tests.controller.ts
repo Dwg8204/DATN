@@ -8,7 +8,7 @@ import { Roles } from '../../auth/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { AuthUser } from '../../auth/types/auth-user.type';
-import { CreateWritingTestDto, UpdateWritingTestDto } from '../dto/save-writing-test.dto';
+import { CreateWritingTestDto, PublishWritingTestDto, UpdateWritingTestDto } from '../dto/save-writing-test.dto';
 import { ListWritingTestsQueryDto } from '../dto/list-writing-tests-query.dto';
 import { WritingTestsService } from '../services/writing-tests.service';
 import { WritingAudit } from '../types/writing-test.type';
@@ -40,8 +40,8 @@ export class WritingTestsController {
   }
 
   @Post(':id/publish')
-  publish(@Param('id', new ParseUUIDPipe()) id: string, @CurrentUser() actor: AuthUser, @Req() request: Request) {
-    return this.tests.publish(id, actor, this.audit(request));
+  publish(@Param('id', new ParseUUIDPipe()) id: string, @CurrentUser() actor: AuthUser, @Req() request: Request, @Body() dto: PublishWritingTestDto) {
+    return this.tests.publish(id, actor, this.audit(request), dto.version);
   }
 
   @Delete(':id')
@@ -59,13 +59,13 @@ export class WritingTestsController {
 @ApiTags('Writing Tests')
 @ApiCookieAuth('aptimate_access_token')
 @Controller('writing-tests')
-@UseGuards(JwtAuthGuard)
 export class PublishedWritingTestsController {
   constructor(private readonly tests: WritingTestsService) {}
 
   @Get()
   list(@Query() query: ListWritingTestsQueryDto) { return this.tests.listPublished(query); }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   get(@Param('id', new ParseUUIDPipe()) id: string) { return this.tests.getPublished(id); }
 }

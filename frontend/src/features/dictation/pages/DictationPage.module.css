@@ -45,7 +45,7 @@
 .notebookNotice > button { display: grid; place-items: center; margin-left: auto; padding: 3px; border: 0; color: inherit; background: transparent; cursor: pointer; }
 .notebookStats { padding: 20px; border: 1px solid #ead7da; border-radius: 11px; background: #faf3f4; }.notebookStats h3 { margin: 0 0 14px; }.notebookStats dl { margin: 0; }.notebookStats dl div { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid #eadcdf; }.notebookStats dt { color: #64748b; }.notebookStats dd { margin: 0; color: #da1e21; font-weight: 800; }.statsProgress { height: 7px; margin: 17px 0 12px; overflow: hidden; border-radius: 99px; background: #eadcdf; }.statsProgress span { display: block; height: 100%; border-radius: inherit; background: #da1e21; }.notebookStats > button { width: 100%; padding: 10px; border: 0; border-radius: 8px; color: white; background: #da1e21; font-weight: 800; cursor: pointer; }
 .notebookPagination { display: flex; justify-content: center; gap: 5px; margin-top: 18px; }.notebookPagination button { display: grid; place-items: center; min-width: 30px; height: 30px; padding: 0 7px; border: 1px solid #edc7ce; border-radius: 7px; color: #64748b; background: white; cursor: pointer; }.notebookPagination button:disabled { opacity: .4; cursor: default; }.notebookPagination .currentPage { border-color: #da1e21; color: white; background: #da1e21; }.emptyNotebook { padding: 60px 20px; border: 1px dashed #edc7ce; border-radius: 12px; color: #94a3b8; text-align: center; }.emptyNotebook h3 { margin: 10px 0 5px; color: #475569; }.emptyNotebook p { margin: 0; }
-.modalBackdrop { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: rgba(23,32,51,.55); backdrop-filter: blur(3px); }.createModal { width: min(100%, 580px); max-height: calc(100vh - 40px); overflow-y: auto; padding: 25px; border-radius: 18px; background: white; box-shadow: 0 24px 70px rgba(0,0,0,.25); font-family: Inter, "Segoe UI", Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 1.5; }.createModalHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }.createModalHeader span { color: #da1e21; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }.createModalHeader h3 { margin: 4px 0 0; font-size: 22px; font-weight: 600; line-height: 1.3; }.createModalHeader button { padding: 5px; border: 0; color: #64748b; background: transparent; cursor: pointer; }.typeSelector { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin: 22px 0 16px; padding: 5px; border-radius: 11px; background: #f1f5f9; }.typeSelector button { padding: 9px; border: 0; border-radius: 8px; color: #64748b; background: transparent; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }.typeSelector .selectedType { color: white; background: #a11d33; }.createModal > label, .formRow label { display: block; margin-top: 14px; color: #334155; font-size: 14px; font-weight: 600; }.createModal input, .createModal textarea, .createModal select { width: 100%; box-sizing: border-box; margin-top: 7px; padding: 11px 12px; border: 1px solid #d7dee9; border-radius: 9px; outline: 0; font-family: inherit; font-size: 14px; font-weight: 400; line-height: 1.5; }.createModal input::placeholder, .createModal textarea::placeholder { color: #94a3b8; font-family: inherit; font-weight: 400; }.createModal input:focus, .createModal textarea:focus, .createModal select:focus { border-color: #da1e21; box-shadow: 0 0 0 3px #ffe4e6; }.createModal textarea { resize: vertical; }.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }.modalActions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 22px; padding-top: 17px; border-top: 1px solid #e5e7eb; }.modalActions button { display: flex; align-items: center; gap: 6px; padding: 10px 15px; border: 1px solid #d7dee9; border-radius: 9px; color: #475569; background: white; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }.modalActions button[type='submit'] { border-color: #da1e21; color: white; background: #da1e21; }
+.modalBackdrop { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 20px; background: rgba(23,32,51,.55); backdrop-filter: blur(3px); }.createModal { width: min(100%, 580px); max-height: calc(100vh - 40px); overflow-y: auto; padding: 25px; border-radius: 18px; background: white; box-shadow: 0 24px 70px rgba(0,0,0,.25); font-family: Inter, "Segoe UI", Arial, sans-serif; font-size: 14px; font-weight: 400; line-height: 1.5; }.createModalHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }.createModalHeader span { color: #da1e21; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }.createModalHeader h3 { margin: 4px 0 0; font-size: 22px; font-weight: 600; line-height: 1.3; }.createModalHeader button { padding: 5px; border: 0; color: #64748b; background: transparent; cursor: pointer; }.typeSelector { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin: 22px 0 16px; padding: 5px; border-radius: 11px; background: #f1f5f9; }.typeSelector button { padding: 9px; border: 0; border-radius: 8px; color: #64748b; background: transparent; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }.typeSelector .selectedType { color: white; background: #a11d33; }.createModal > label, .formRow label { display: block; margin-top: 14px; color: #334155; font-size: 14px; font-weight: 600; }.createModal input, .createModal textarea, .createModal select { width: 100%; box-sizing: border-box; margin-top: 7px; padding: 11px 12px; border: 1px solid #d7dee9; border-radius: 9px; outline: 0; font-family: inherit; font-size: 14px; font-weight: 400; line-height: 1.5; }.createModal input::placeholder, .createModal textarea::placeholder { color: #94a3b8; font-family: inherit; font-weight: 400; }.createModal input:focus, .createModal textarea:focus, .createModal select:focus { border-color: #da1e21; box-shadow: 0 0 0 3px #ffe4e6; }.createModal textarea { resize: vertical; }.formRow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }.modalActions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 22px; padding-top: 17px; border-top: 1px solid #e5e7eb; }.modalActions button { display: flex; align-items: center; gap: 6px; padding: 10px 15px; border: 1px solid #d7dee9; border-radius: 9px; color: #475569; background: white; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }.modalActions button[type='submit'] { border-color: #da1e21; color: white; background: #da1e21; }
 
 /* Softer AptiMate red hierarchy */
 .modeTabs button { color: #7f2637; background: #faf0f1; }
@@ -198,3 +198,182 @@
 @media (max-width: 800px) { .selectedTopicHeader { margin: -20px -14px 22px; padding: 0 14px; }.selectedTopicModes { overflow-x: auto; }.selectedTopicModes button { flex: 0 0 auto; }.selectedTopicHeader ~ .flashcardSection { padding: 20px; }.referenceStudy { padding-top: 0; }.referenceActions { display: grid; grid-template-columns: 1fr 1fr; }.quizOptions, .matchingGrid { grid-template-columns: 1fr; }.wordDetailMain, .wordExample, .wordMeta, .quizCard, .matchingCard { padding: 22px; } }
 
 @media (prefers-reduced-motion: reduce) { .flashcard { transition-duration: .01ms; } }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page) !important; color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .modeTabs { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .modeTabs button { color: #fff !important; background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .modeTabs .activeMode { color: #fff !important; background: var(--brand) !important; }
+:global([data-theme="dark"]) .lessonList { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .lessonList h2 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .lessonList button { color: var(--text-muted) !important; background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .lessonList button:hover { background: var(--brand-subtle) !important; }
+:global([data-theme="dark"]) .lessonList .activeLesson { color: var(--brand-hover) !important; background: var(--brand-subtle) !important; }
+:global([data-theme="dark"]) .lessonList small { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .lessonNumber { background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .practiceCard { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .cardHeader h2 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .cardHeader span { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .cardHeader .level { background: var(--brand-subtle) !important; color: var(--brand-hover) !important; }
+:global([data-theme="dark"]) .player { background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .player strong { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .player span { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .player label { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .player select { background: var(--bg-surface) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .practiceCard textarea { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .secondaryButton { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .cardFooter { border-top-color: var(--border) !important; color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .hint { background: var(--warning-bg) !important; border-color: var(--warning) !important; color: var(--warning) !important; }
+:global([data-theme="dark"]) .fullAnswer { background: var(--brand-subtle) !important; border-color: var(--brand) !important; color: var(--brand-hover) !important; }
+:global([data-theme="dark"]) .result { background: var(--bg-hover) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .result h3 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .result small { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .transcript { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .answerLabel { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .flashcardSection { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .flashcardTopline h2 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .flashcardTools button { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .studyProgress { background: var(--border) !important; }
+:global([data-theme="dark"]) .flashcard { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .flashcardFace { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .flashcardBack { background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .flashcard p { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .flashcard small { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .cardNavigation button { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--brand-hover) !important; }
+:global([data-theme="dark"]) .cardNavigation span { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .ratingPanel button { background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .stillLearning { border-color: var(--border) !important; color: var(--text-primary) !important; background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .notebookSection { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .notebookHeader h2 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .notebookSearch { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .notebookSearch input { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .notebookTabs { border-bottom-color: var(--border) !important; }
+:global([data-theme="dark"]) .notebookTabs button { color: var(--text-muted) !important; background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .notebookTabs .activeNotebookTab { color: #fff !important; background: var(--brand) !important; border-bottom-color: var(--brand) !important; }
+:global([data-theme="dark"]) .savedCard { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .savedTitle strong { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .savedCard p { color: var(--brand-hover) !important; }
+:global([data-theme="dark"]) .savedCard small { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .savedActions > button { background: var(--bg-hover) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .notebookStats { background: var(--bg-hover) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .notebookStats h3 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .notebookStats dt { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .notebookStats dl div { border-bottom-color: var(--border) !important; }
+:global([data-theme="dark"]) .statsProgress { background: var(--border) !important; }
+:global([data-theme="dark"]) .notebookPagination button { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .cardBody { background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .topicLibrary { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .topicHeader { border-bottom-color: var(--border) !important; }
+:global([data-theme="dark"]) .topicHeader h1 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .topicHeader p { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .topicFolder { background: var(--bg-surface) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .topicFolder:hover { border-color: var(--brand) !important; }
+:global([data-theme="dark"]) .topicCopy strong { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .topicCopy small { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .topicProgress { background: var(--border) !important; }
+:global([data-theme="dark"]) .topicModeTabs { background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .topicModeTabs button { color: #fff !important; }
+:global([data-theme="dark"]) .topicSearch { background: var(--bg-hover) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .topicSearch input { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .selectedTopicHeader { background: var(--brand-subtle) !important; border-color: var(--brand-active-bg) !important; }
+:global([data-theme="dark"]) .selectedTopicTitle h1 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .selectedTopicTitle span { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .selectedTopicModes { border-top-color: var(--border) !important; }
+:global([data-theme="dark"]) .selectedTopicModes button { color: #fff !important; }
+:global([data-theme="dark"]) .selectedTopicModes button:hover { color: #fff !important; background: var(--brand-subtle) !important; }
+:global([data-theme="dark"]) .selectedTopicModes .activeStudyMode { color: #fff !important; background: var(--brand) !important; }
+:global([data-theme="dark"]) .modalBackdrop { background: rgba(0,0,0,0.7) !important; }
+:global([data-theme="dark"]) .createModal { background: var(--bg-surface) !important; }
+
+/* Scoped dropdown palette: do not change assessment answer states elsewhere. */
+:global([data-theme="dark"]) .topicFilter,
+:global([data-theme="dark"]) .createModal {
+  --select-bg: #1e2c43;
+  --select-border: #5275a5;
+  --select-hover: #263a57;
+  --select-focus: #668bc0;
+  --select-text: #fff;
+}
+:global([data-theme="dark"]) .createModalHeader h3 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .createModal > label,
+:global([data-theme="dark"]) .createModal .formRow label { color: #fff !important; }
+:global([data-theme="dark"]) .createModal input { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .createModal textarea { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .createModal select { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .typeSelector { background: var(--bg-hover) !important; }
+:global([data-theme="dark"]) .typeSelector button { color: var(--text-muted) !important; background: var(--bg-surface) !important; }
+:global([data-theme="dark"]) .typeSelector .selectedType { color: #fff !important; background: var(--brand) !important; }
+:global([data-theme="dark"]) .modalActions { border-top-color: var(--border) !important; }
+:global([data-theme="dark"]) .modalActions button { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .modalActions button[type='submit'] { color: #fff !important; background: var(--brand) !important; border-color: var(--brand) !important; }
+:global([data-theme="dark"]) .topicCreator { background: var(--bg-hover) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .topicCreator input { background: var(--bg-surface) !important; color: var(--text-primary) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .quizCard { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .quizCard h2 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .quizOptions button { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .matchingCard { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .matchingGrid button { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .wordDetailCard { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .wordDetailMain h2 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .wordDetailMain p { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .wordExample { border-top-color: var(--border) !important; }
+:global([data-theme="dark"]) .wordExample p { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .wordMeta { border-top-color: var(--border) !important; }
+
+:global([data-theme="dark"]) .topicLandingPage { background: var(--bg-page) !important; }
+:global([data-theme="dark"]) .topicLanding { background: transparent !important; }
+:global([data-theme="dark"]) .topicHero { background: var(--bg-surface) !important; border-color: var(--border) !important; }
+:global([data-theme="dark"]) .topicHero h1 { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .topicHero p { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .topicLanding .topicFolder { background: var(--bg-surface) !important; border-color: var(--border) !important; color: var(--text-primary) !important; box-shadow: none !important; }
+:global([data-theme="dark"]) .topicLanding .topicFolder:hover { border-color: var(--brand) !important; }
+:global([data-theme="dark"]) .topicCollection { background: var(--brand-subtle) !important; color: var(--brand-hover) !important; border-color: var(--brand) !important; }
+:global([data-theme="dark"]) .topicLanding .topicCopy strong { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .topicLanding .topicCopy small { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .topicSummary { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .topicLanding .topicProgress { background: var(--border) !important; }
+:global([data-theme="dark"]) .topicLanding .topicProgress > span { background: var(--brand) !important; }
+:global([data-theme="dark"]) .topicActions button { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .topicActions button:last-child { background: var(--brand) !important; border-color: var(--brand) !important; color: #fff !important; }
+:global([data-theme="dark"]) .topicActions button:hover:not(:disabled) { background: var(--brand-subtle) !important; border-color: var(--brand) !important; color: var(--brand-hover) !important; }
+:global([data-theme="dark"]) .topicActions button:last-child:hover:not(:disabled) { background: var(--brand-hover) !important; color: #fff !important; }
+
+:global([data-theme="dark"]) .wordDetailMain { background: var(--bg-surface) !important; }
+
+/* Fit all three study modes on mobile without horizontal scrolling. */
+@media (max-width: 620px) {
+  .modeTabs,
+  .topicModeTabs,
+  .selectedTopicModes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    gap: 3px;
+    overflow-x: visible;
+  }
+
+  .modeTabs button,
+  .topicModeTabs button,
+  .selectedTopicModes button {
+    min-width: 0;
+    height: auto;
+    min-height: 34px;
+    padding: 4px 5px;
+    gap: 4px;
+    font-size: 11px;
+    line-height: 14px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .modeTabs button svg,
+  .topicModeTabs button svg,
+  .selectedTopicModes button svg {
+    width: 12px;
+    height: 12px;
+    flex: 0 0 12px;
+  }
+}
+

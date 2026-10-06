@@ -9,7 +9,7 @@ import { validateGrammarDetails, validateGrammarTest } from './data/grammarTestV
 import { useToast } from '../../../context/ToastContext';
 import { getFirstValidationError } from '../../../utils/validationErrors';
 import styles from '../writing/WritingTestDetailsPage.module.css';
-import { grammarMediaApi, grammarTestsApi } from './services/grammarTestsApi';
+import { grammarMediaApi } from './services/grammarTestsApi';
 import { getApiError } from '../../../services/apiError';
 
 const PARTS = [
@@ -19,22 +19,20 @@ const PARTS = [
 
 export default function GrammarTestDetailsPage() {
   const navigate = useNavigate();
-  const { test, updateDetails, replaceTest, basePath } = useGrammarTestBuilder();
+  const { test, updateDetails, goTo, saveDraft, publishTest } = useGrammarTestBuilder();
   const { showError, showSuccess, dismissToast } = useToast();
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
   const visible = test.mode === 'full' ? PARTS : PARTS.filter(part => `part${part.number}` === test.mode);
-  const saveDraft = async () => test.id ? grammarTestsApi.update(test) : grammarTestsApi.create(test);
   const saveInformation = async () => {
     const message = getFirstValidationError(validateGrammarDetails(test.details));
     if (message) return showError(message);
     if (busy) return;
     setBusy(true);
     try {
-      const saved = await saveDraft();
-      replaceTest(saved);
+      await saveDraft();
       showSuccess('Test information saved as a draft.');
-      if (!test.id) navigate(`/admin/tests/grammar/${saved.id}/edit`, { replace: true });
+      await goTo();
     } catch (error) {
       showError(getApiError(error, 'Unable to save the test draft.'));
     } finally { setBusy(false); }
@@ -50,16 +48,12 @@ export default function GrammarTestDetailsPage() {
     setConfirm(false);
     if (busy) return;
     setBusy(true);
-    let draft;
     try {
-      draft = await saveDraft();
-      replaceTest(draft);
-      const saved = await grammarTestsApi.publish(draft.id);
+      const saved = await publishTest();
       showSuccess(test.id ? 'Grammar & Vocabulary test updated successfully.' : 'Grammar & Vocabulary test created successfully.');
       navigate(`/admin/tests/grammar/${saved.id}/preview`, { state: { toast: 'Test published successfully.' } });
     } catch (error) {
-      showError(getApiError(error, draft ? 'Draft saved, but publishing failed. You can retry without creating another test.' : 'Unable to save the test.'));
-      if (draft && !test.id) navigate(`/admin/tests/grammar/${draft.id}/edit`, { replace: true });
+      showError(getApiError(error, 'Unable to save or publish the test. Your draft is preserved.'));
     }
     finally { setBusy(false); }
   };
@@ -78,6 +72,6 @@ export default function GrammarTestDetailsPage() {
         <aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>{test.status === 'PUBLISHED' ? 'Published' : 'Draft'}</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview" /> : <strong>AptiMate<br /><em>Grammar</em></strong>}<button disabled={busy} onClick={requestSave}>{test.status === 'PUBLISHED' ? 'Update & preview' : 'Publish & preview'}</button></div></aside>
       </div>
     </section>
-    <section className={styles.content} inert={busy ? '' : undefined}><h2>CONTENT TEST</h2><div>{visible.map(part => <PartSummaryCard key={part.number} part={part} onEdit={() => navigate(`${basePath}/part/${part.number}${test.id ? '' : `?mode=${test.mode}`}`)} />)}</div><button className={styles.saveAll} disabled={busy} onClick={requestSave}>{busy ? 'Saving…' : test.status === 'PUBLISHED' ? 'Update & publish test' : 'Publish test & preview'}</button></section>
+    <section className={styles.content} inert={busy ? '' : undefined}><h2>CONTENT TEST</h2><div>{visible.map(part => <PartSummaryCard key={part.number} part={part} onEdit={() => goTo(part.number)} />)}</div><button className={styles.saveAll} disabled={busy} onClick={requestSave}>{busy ? 'Saving…' : test.status === 'PUBLISHED' ? 'Update & publish test' : 'Publish test & preview'}</button></section>
   </div>;
 }

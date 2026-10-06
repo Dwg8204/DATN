@@ -43,7 +43,7 @@ export class SpeakingTestsService {
   async create(dto: CreateSpeakingTestDto, actor: SpeakingActor, audit: SpeakingAudit) {
     const aggregate = this.contentService.normalize(dto);
     this.contentService.assertDraftShape(aggregate);
-    return this.repository.create(actor, aggregate, audit);
+    return this.repository.create(actor, aggregate, audit, dto.creationRequestId);
   }
 
   async update(id: string, dto: UpdateSpeakingTestDto, actor: SpeakingActor, audit: SpeakingAudit) {
