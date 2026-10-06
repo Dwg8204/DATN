@@ -3,38 +3,20 @@ import { Download, Eye, Paperclip, Search, Send, X } from 'lucide-react';
 import { useToast } from '../../../context/ToastContext';
 import Pagination from '../../../components/common/Pagination';
 import AnswerSelect from '../../../components/common/AnswerSelect';
+import WordDocumentPreview from '../../../components/common/WordDocumentPreview';
+import SpreadsheetPreview from '../../../components/common/SpreadsheetPreview';
+import PowerPointPreview from '../../../components/common/PowerPointPreview';
+import { isPreviewablePowerPoint, isPreviewableSpreadsheet, isPreviewableWordDocument } from '../../../utils/attachmentPreview';
 import { adminUsersApi } from '../users/services/adminUsersApi';
+import { adminNotificationsApi } from './services/adminNotificationsApi';
 import styles from './NotificationPage.module.css';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
-const STORAGE_KEY = 'aptimate.admin.notifications';
 const MAX_ATTACHMENT_SIZE = 2 * 1024 * 1024;
 const NOTIFICATION_QUERY_SCHEMA = {
   page: queryParam.positiveInt(1),
   pageSize: { ...queryParam.positiveInt(8, 100), param: 'size' },
 };
-
-
-const initialNotifications = [
-  { id: 1, date: '2026-07-15T07:30', content: 'Hey Lee! We’re thrilled to have you on board. Start your first practice test today.', target: 'Student', type: 'Push notification' },
-  { id: 2, date: '2026-09-09T09:00', content: 'A new Writing test is ready for review. Please check the submitted content.', target: 'Teacher', type: 'Email' },
-  { id: 3, date: '2026-09-09T10:30', content: 'AptiMate maintenance is scheduled for tonight from 11:00 PM.', target: 'Everyone', type: 'Push notification' },
-  { id: 4, date: '2026-03-09T08:15', content: 'Your weekly learning report is now available.', target: 'admin@aptimate.com', type: 'Email' },
-  { id: 5, date: '2025-11-12T14:00', content: 'Your Reading practice streak has reached seven days. Keep it going!', target: 'Student', type: 'Push notification' },
-  { id: 6, date: '2025-12-28T16:45', content: 'New student submissions are waiting for feedback.', target: 'Teacher', type: 'Email' },
-  { id: 7, date: '2025-10-14T11:20', content: 'Explore our latest Aptis preparation resources.', target: 'Everyone', type: 'Push notification' },
-  { id: 8, date: '2025-07-24T13:10', content: 'Your assigned Speaking assessments have been updated.', target: 'Teacher', type: 'Push notification' },
-  { id: 9, date: '2025-12-21T08:00', content: 'Holiday study challenge: complete three lessons this week.', target: 'Everyone', type: 'Email' },
-];
-
-function loadNotifications() {
-  try {
-    const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '[]');
-    return [...saved.filter((item) => item.type !== 'Banner'), ...initialNotifications];
-  } catch {
-    return initialNotifications;
-  }
-}
 
 const formatDate = (value) => new Intl.DateTimeFormat('en-US', {
   month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
@@ -48,10 +30,34 @@ const toLocalDateTimeMinute = (date = new Date()) => {
 const nextAvailableMinute = () => toLocalDateTimeMinute(new Date(Date.now() + 60000));
 
 const emptyForm = () => ({
-  target: 'Everyone', selectedEmail: '', type: 'Push notification', deliveryMode: 'now', date: nextAvailableMinute(), content: '', fileName: '', fileType: '', fileSize: 0, fileData: '',
+  target: 'Everyone', type: 'Push notification', deliveryMode: 'now', date: nextAvailableMinute(), content: '',
+  subject: '',
+  fileName: '', fileType: '', fileSize: 0, fileData: '', filePublicId: '',
 });
 
 const formatFileSize = (bytes = 0) => bytes < 1024 ? `${bytes} B` : bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+const mapAdminNotification = (row) => {
+  const attachment = row?.attachment && typeof row.attachment === 'object' ? row.attachment : {};
+  const recipientEmails = Array.isArray(row?.recipient_emails) ? row.recipient_emails : [];
+  const fallbackTarget = row?.audience_type === 'ALL' ? 'Everyone' : row?.audience_type === 'ROLE' ? 'Role' : 'Selected users';
+  return {
+    id: row.id,
+    date: row.scheduled_at || row.sent_at || row.created_at,
+    createdAt: row.created_at,
+    content: row.content || '',
+    subject: row.channel === 'EMAIL' ? row.title || '' : '',
+    target: recipientEmails.length === 1 ? recipientEmails[0] : recipientEmails.length > 1 ? recipientEmails.join(', ') : fallbackTarget,
+    recipientEmails,
+    recipientCount: Number(row.recipient_count) || recipientEmails.length,
+    type: row.channel === 'EMAIL' ? 'Email' : 'Push notification',
+    status: row.status || 'DRAFT',
+    fileName: attachment.name || '',
+    fileType: attachment.mimeType || '',
+    fileSize: Number(attachment.size) || 0,
+    fileData: attachment.url || '',
+  };
+};
 
 function AttachmentLink({ notification, onPreview }) {
   if (!notification.fileName) return null;
@@ -70,7 +76,7 @@ function AttachmentLink({ notification, onPreview }) {
 export default function NotificationPage() {
   const { showError, showSuccess, dismissToast } = useToast();
   const [form, setForm] = useState(emptyForm);
-  const [notifications, setNotifications] = useState(loadNotifications);
+  const [notifications, setNotifications] = useState([]);
   const [urlState, setUrlState] = useUrlQueryState(NOTIFICATION_QUERY_SCHEMA);
   const { page, pageSize } = urlState;
   const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
@@ -80,50 +86,89 @@ export default function NotificationPage() {
   const [previewAttachment, setPreviewAttachment] = useState(null);
   const [readingFile, setReadingFile] = useState(false);
   const [userList, setUserList] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [userLoadError, setUserLoadError] = useState('');
   const [emailSearch, setEmailSearch] = useState('');
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [sending, setSending] = useState(false);
   const fileRef = useRef(null);
   const visibleNotifications = useMemo(() => notifications.slice((page - 1) * pageSize, page * pageSize), [notifications, page, pageSize]);
 
   useEffect(() => {
     let isMounted = true;
-    adminUsersApi.list({ pageSize: 100 })
-      .then((data) => {
-        if (isMounted && data?.items && data.items.length > 0) {
-          setUserList(data.items);
-        } else if (isMounted) {
-          setUserList([
-            { id: '1', fullName: 'System Administrator', email: 'admin@aptimate.com', role: 'ADMIN' },
-            { id: '2', fullName: 'Student User', email: 'student@aptimate.com', role: 'STUDENT' },
-            { id: '3', fullName: 'Teacher User', email: 'teacher@aptimate.com', role: 'TEACHER' },
-          ]);
-        }
+    const loadHistory = () => adminNotificationsApi.list({ pageSize: 100 })
+      .then((result) => {
+        if (isMounted) setNotifications((result?.data || []).map(mapAdminNotification));
       })
-      .catch(() => {
-        if (isMounted) {
-          setUserList([
-            { id: '1', fullName: 'System Administrator', email: 'admin@aptimate.com', role: 'ADMIN' },
-            { id: '2', fullName: 'Student User', email: 'student@aptimate.com', role: 'STUDENT' },
-            { id: '3', fullName: 'Teacher User', email: 'teacher@aptimate.com', role: 'TEACHER' },
-          ]);
-        }
-      });
-    return () => { isMounted = false; };
+      .catch(() => {});
+    loadHistory();
+    const timer = window.setInterval(loadHistory, 10_000);
+    return () => {
+      isMounted = false;
+      window.clearInterval(timer);
+    };
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+    const loadUsers = () => {
+      setLoadingUsers(true);
+      adminUsersApi.list({ status: 'ACTIVE', pageSize: 100 })
+        .then((result) => {
+          if (isMounted) {
+            setUserList(Array.isArray(result?.data) ? result.data : []);
+            setUserLoadError('');
+          }
+        })
+        .catch(() => {
+          if (isMounted) {
+            setUserList([]);
+            setUserLoadError('Unable to load active users. Please refresh and try again.');
+          }
+        })
+        .finally(() => { if (isMounted) setLoadingUsers(false); });
+    };
+    const refreshWhenVisible = () => { if (document.visibilityState === 'visible') loadUsers(); };
+    loadUsers();
+    window.addEventListener('focus', loadUsers);
+    document.addEventListener('visibilitychange', refreshWhenVisible);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('focus', loadUsers);
+      document.removeEventListener('visibilitychange', refreshWhenVisible);
+    };
+  }, []);
+
+  const audienceUsers = useMemo(() => {
+    if (form.target === 'Everyone') return userList;
+    return userList.filter((user) => user.role === form.target.toUpperCase());
+  }, [form.target, userList]);
+
   const filteredUsers = useMemo(() => {
-    if (!emailSearch.trim()) return userList;
+    if (!emailSearch.trim()) return audienceUsers;
     const term = emailSearch.toLowerCase();
-    return userList.filter(
+    return audienceUsers.filter(
       (u) => u.fullName?.toLowerCase().includes(term) || u.email?.toLowerCase().includes(term)
     );
-  }, [userList, emailSearch]);
+  }, [audienceUsers, emailSearch]);
+  const selectedRecipients = useMemo(
+    () => audienceUsers.filter(user => selectedUserIds.includes(user.id)),
+    [audienceUsers, selectedUserIds],
+  );
+  const selectedRecipientLabel = useMemo(() => {
+    if (selectedRecipients.length === 0) return 'No recipients selected';
+    if (selectedRecipients.length === 1) return selectedRecipients[0].email;
+    return selectedRecipients.map(user => user.email).join(', ');
+  }, [selectedRecipients]);
 
   const update = (field, value) => setForm((current) => ({ ...current, [field]: value }));
   const validate = () => {
     if (readingFile) return 'Please wait for the attachment to finish loading.';
-    if (form.type === 'Email' && form.target === 'Specific User Email' && !form.selectedEmail) {
-      return 'Please select a specific user email from the user list.';
-    }
+    if (loadingUsers) return 'Please wait while the recipient list is loading.';
+    if (userLoadError) return userLoadError;
+    if (audienceUsers.length === 0) return 'No active users match the selected audience.';
+    if (selectedRecipients.length === 0) return `Please select at least one ${form.type.toLowerCase()} recipient.`;
+    if (form.type === 'Email' && !form.subject.trim()) return 'Please enter an email subject.';
     if (!form.content.trim()) return 'Please enter notification content.';
     if (form.deliveryMode === 'scheduled') {
       if (!form.date) return 'Please select a delivery date and time.';
@@ -133,9 +178,9 @@ export default function NotificationPage() {
     }
     return '';
   };
-  const selectFile = (file) => {
+  const selectFile = async (file) => {
     if (!file) {
-      setForm((current) => ({ ...current, fileName: '', fileType: '', fileSize: 0, fileData: '' }));
+      setForm((current) => ({ ...current, fileName: '', fileType: '', fileSize: 0, fileData: '', filePublicId: '' }));
       return;
     }
     if (file.size > MAX_ATTACHMENT_SIZE) {
@@ -145,17 +190,17 @@ export default function NotificationPage() {
     }
     setReadingFile(true);
     dismissToast();
-    const reader = new FileReader();
-    reader.onload = () => {
-      setForm((current) => ({ ...current, fileName: file.name, fileType: file.type, fileSize: file.size, fileData: String(reader.result || '') }));
-      setReadingFile(false);
-    };
-    reader.onerror = () => {
-      showError('The selected file could not be read. Please choose another file.');
+    try {
+      const uploaded = await adminNotificationsApi.uploadAttachment(file);
+      setForm((current) => ({ ...current, fileName: uploaded.name, fileType: uploaded.mimeType,
+        fileSize: uploaded.size, fileData: uploaded.url, filePublicId: uploaded.publicId }));
+    } catch (error) {
+      showError(error.response?.data?.error?.message || 'The selected file could not be uploaded. Please choose another file.');
+      setForm((current) => ({ ...current, fileName: '', fileType: '', fileSize: 0, fileData: '', filePublicId: '' }));
+    } finally {
       setReadingFile(false);
       if (fileRef.current) fileRef.current.value = '';
-    };
-    reader.readAsDataURL(file);
+    }
   };
   const showPreview = () => {
     const message = validate();
@@ -163,23 +208,37 @@ export default function NotificationPage() {
     dismissToast();
     setPreview(true);
   };
-  const sendNotification = () => {
+  const sendNotification = async () => {
     const message = validate();
     if (message) { showError(message); return; }
-    const actualTarget = (form.type === 'Email' && form.target === 'Specific User Email' && form.selectedEmail) ? form.selectedEmail : form.target;
-    const created = { ...form, target: actualTarget, date: form.deliveryMode === 'now' ? new Date().toISOString() : form.date, id: Date.now() };
-    const saved = [created, ...notifications.filter((item) => !initialNotifications.some((initial) => initial.id === item.id))];
+    setSending(true);
+    dismissToast();
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
-    } catch {
-      showError('The attachment could not be saved because browser storage is full. Please use a smaller file.');
+      const response = await adminNotificationsApi.create({
+        title: form.type === 'Email' ? form.subject.trim() : form.content.trim().slice(0, 80),
+        content: form.content.trim(),
+        type: 'SYSTEM',
+        channel: form.type === 'Email' ? 'EMAIL' : 'IN_APP',
+        audienceType: 'SELECTED_USERS',
+        targetUserIds: selectedRecipients.map(user => user.id),
+        ...(form.deliveryMode === 'scheduled' ? { scheduledAt: new Date(form.date).toISOString() } : {}),
+        ...(form.fileData ? { attachment: { name: form.fileName, mimeType: form.fileType,
+          size: form.fileSize, url: form.fileData, publicId: form.filePublicId } } : {}),
+      });
+      const created = mapAdminNotification(response);
+      setNotifications((current) => [created, ...current.filter(item => item.id !== created.id)]);
+    } catch (error) {
+      showError(error.response?.data?.error?.message || 'The notification could not be sent. Please try again.');
+      setSending(false);
       return;
     }
-    setNotifications((current) => [created, ...current]);
     setForm(emptyForm());
+    setSelectedUserIds([]);
+    setEmailSearch('');
     setPage(1);
     setPreview(false);
     showSuccess(form.deliveryMode === 'now' ? 'Notification sent successfully.' : 'Notification scheduled successfully.');
+    setSending(false);
     if (fileRef.current) fileRef.current.value = '';
   };
 
@@ -191,7 +250,7 @@ export default function NotificationPage() {
     return styles.specificEmail;
   };
 
-  const targetOptions = form.type === 'Email' ? ['Everyone', 'Student', 'Teacher', 'Specific User Email'] : ['Everyone', 'Student', 'Teacher'];
+  const targetOptions = ['Everyone', 'Student', 'Teacher'];
 
   return (
     <div className={styles.page}>
@@ -202,7 +261,7 @@ export default function NotificationPage() {
           <label className={styles.field}>Target
             <AnswerSelect
               value={form.target}
-              onChange={(event) => update('target', event.target.value)}
+              onChange={(event) => { update('target', event.target.value); setEmailSearch(''); setSelectedUserIds([]); dismissToast(); }}
               options={targetOptions}
               ariaLabel="Target audience"
             />
@@ -218,9 +277,8 @@ export default function NotificationPage() {
                   checked={form.type === type}
                   onChange={() => {
                     update('type', type);
-                    if (type !== 'Email' && form.target === 'Specific User Email') {
-                      update('target', 'Everyone');
-                    }
+                    setEmailSearch('');
+                    setSelectedUserIds([]);
                   }}
                 />
                 <span>{type}</span>
@@ -228,64 +286,64 @@ export default function NotificationPage() {
             ))}
           </fieldset>
 
-          {/* User Email Selection Panel for Email Notifications */}
-          {form.type === 'Email' && (
-            <div className={styles.userEmailSection}>
+          <div className={styles.userEmailSection}>
               <div className={styles.userEmailHeader}>
-                <label>User Email Recipients</label>
-                <span className={styles.userEmailBadgeCount}>{filteredUsers.length} users</span>
+                <label>{form.type} recipients</label>
+                <span className={styles.userEmailBadgeCount}>{selectedRecipients.length}/{audienceUsers.length} selected</span>
               </div>
+
+              <label className={styles.selectAllRecipients}>
+                <input type="checkbox" checked={audienceUsers.length > 0 && selectedRecipients.length === audienceUsers.length}
+                  onChange={(event) => setSelectedUserIds(event.target.checked ? audienceUsers.map(user => user.id) : [])} />
+                <span>Select all {form.target.toLowerCase()} recipients</span>
+              </label>
 
               <div className={styles.emailSearchBox}>
                 <Search className={styles.emailSearchIcon} />
                 <input
                   type="text"
-                  placeholder="Search user by name or email..."
+                  placeholder="Search recipient by name or email..."
                   value={emailSearch}
                   onChange={(e) => setEmailSearch(e.target.value)}
                 />
               </div>
 
               <div className={styles.userEmailList}>
-                {filteredUsers.length > 0 ? (
+                {loadingUsers ? (
+                  <div style={{ padding: '12px', textAlign: 'center', color: '#888', fontSize: '12px' }}>
+                    Loading recipients…
+                  </div>
+                ) : filteredUsers.length > 0 ? (
                   filteredUsers.map((user) => {
-                    const isSelected = form.selectedEmail === user.email;
+                    const isSelected = selectedUserIds.includes(user.id);
                     const roleClass = user.role === 'ADMIN' ? styles.roleAdmin : user.role === 'TEACHER' ? styles.roleTeacher : styles.roleStudent;
                     return (
-                      <div
+                      <label
                         key={user.id || user.email}
                         className={`${styles.userEmailItem} ${isSelected ? styles.userEmailItemActive : ''}`}
-                        onClick={() => {
-                          setForm((current) => ({
-                            ...current,
-                            target: 'Specific User Email',
-                            selectedEmail: user.email,
-                          }));
-                          dismissToast();
-                        }}
                       >
+                        <input type="checkbox" checked={isSelected} onChange={(event) => setSelectedUserIds(current => event.target.checked
+                          ? [...new Set([...current, user.id])]
+                          : current.filter(id => id !== user.id))} />
                         <div className={styles.userEmailInfo}>
                           <span className={styles.userEmailName}>{user.fullName || 'User'}</span>
                           <span className={styles.userEmailAddr}>{user.email}</span>
                         </div>
                         <span className={`${styles.userEmailRoleTag} ${roleClass}`}>{user.role}</span>
-                      </div>
+                      </label>
                     );
                   })
                 ) : (
                   <div style={{ padding: '12px', textAlign: 'center', color: '#888', fontSize: '12px' }}>
-                    No matching user emails found
+                    No matching recipients found
                   </div>
                 )}
               </div>
 
-              {form.target === 'Specific User Email' && form.selectedEmail && (
-                <div style={{ marginTop: '10px', fontSize: '12px', color: '#c51629', fontWeight: 600 }}>
-                  Selected recipient: <span>{form.selectedEmail}</span>
-                </div>
-              )}
-            </div>
-          )}
+              <div style={{ marginTop: '10px', fontSize: '12px', color: '#157347', fontWeight: 600 }}>
+                {selectedRecipients.length} recipient{selectedRecipients.length === 1 ? '' : 's'} selected from the {form.target} audience.
+              </div>
+          </div>
 
           <fieldset className={styles.deliveryOptions}>
             <legend>Delivery time</legend>
@@ -305,6 +363,11 @@ export default function NotificationPage() {
             <input type="datetime-local" min={nextAvailableMinute()} step="60" value={form.date} onChange={(event) => { update('date', event.target.value); dismissToast(); }} />
           </label>}
 
+          {form.type === 'Email' && <label className={styles.field}>Email subject
+            <input type="text" maxLength="255" value={form.subject} onChange={(event) => { update('subject', event.target.value); dismissToast(); }} placeholder="Enter the email subject" />
+            <small>{form.subject.length}/255 characters</small>
+          </label>}
+
           <label className={styles.field}>Content
             <textarea rows="7" maxLength="500" value={form.content} onChange={(event) => { update('content', event.target.value); dismissToast(); }} placeholder="Write the message here" />
             <small>{form.content.length}/500 characters</small>
@@ -312,7 +375,7 @@ export default function NotificationPage() {
 
           <div className={styles.composerFooter}>
             <label className={styles.attachment}><Paperclip /><span>{readingFile ? 'Loading file…' : form.fileName || 'Attach files (max 2 MB)'}</span><input ref={fileRef} type="file" onChange={(event) => selectFile(event.target.files?.[0])} /></label>
-            <div><button type="button" className={styles.previewButton} onClick={showPreview}><Eye />Preview</button><button type="submit" className={styles.sendButton}><Send />Send</button></div>
+            <div><button type="button" className={styles.previewButton} onClick={showPreview} disabled={sending}><Eye />Preview</button><button type="submit" className={styles.sendButton} disabled={sending}><Send />{sending ? (form.deliveryMode === 'now' ? 'Sending…' : 'Scheduling…') : (form.deliveryMode === 'now' ? 'Send' : 'Schedule')}</button></div>
           </div>
         </form>
 
@@ -320,12 +383,13 @@ export default function NotificationPage() {
           <header><div><h3>Notification history</h3><p>{notifications.length} messages</p></div></header>
           <div className={styles.tableScroll}>
             <table>
-              <thead><tr><th>Date &amp; time</th><th>Content</th><th>Target</th><th>Type</th><th><span className={styles.visuallyHidden}>Actions</span></th></tr></thead>
+              <thead><tr><th>Date &amp; time</th><th>Content</th><th>Target</th><th>Type</th><th>Status</th><th><span className={styles.visuallyHidden}>Actions</span></th></tr></thead>
               <tbody>{visibleNotifications.map((item) => <tr key={item.id}>
                 <td>{formatDate(item.date)}</td>
                 <td><span className={styles.contentPreview} title={item.content}>{item.content}</span></td>
                 <td><span className={`${styles.target} ${getTargetClass(item.target)}`}>{item.target}</span></td>
                 <td>{item.type}</td>
+                <td><span className={styles.notificationStatus} data-status={item.status}>{item.status}</span></td>
                 <td><button type="button" className={styles.viewButton} onClick={() => setSelectedNotification(item)} aria-label={`View notification sent on ${formatDate(item.date)}`} title="View details"><Eye /></button></td>
               </tr>)}</tbody>
             </table>
@@ -336,10 +400,11 @@ export default function NotificationPage() {
 
       {preview && <div className={styles.backdrop} onMouseDown={() => setPreview(false)}><section className={styles.previewModal} role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}>
         <header><div><span>Notification preview</span><h3>{form.type}</h3></div><button onClick={() => setPreview(false)} aria-label="Close preview"><X /></button></header>
-        <div className={styles.previewAudience}>To: <strong>{form.target === 'Specific User Email' ? form.selectedEmail : form.target}</strong> · {form.deliveryMode === 'now' ? 'Send immediately' : formatDate(form.date)}</div>
+        <div className={styles.previewAudience}>To: <strong>{selectedRecipientLabel}</strong> · {form.deliveryMode === 'now' ? 'Send immediately' : formatDate(form.date)}</div>
+        {form.type === 'Email' && <div className={styles.detailContent}><strong>Subject</strong><p>{form.subject}</p></div>}
         <p>{form.content}</p>
         <AttachmentLink notification={form} onPreview={setPreviewAttachment} />
-        <footer><button onClick={() => setPreview(false)}>Back to edit</button><button onClick={sendNotification}><Send />Confirm &amp; send</button></footer>
+        <footer><button onClick={() => setPreview(false)} disabled={sending}>Back to edit</button><button onClick={sendNotification} disabled={sending}><Send />{sending ? (form.deliveryMode === 'now' ? 'Sending…' : 'Scheduling…') : (form.deliveryMode === 'now' ? 'Confirm & send' : 'Confirm schedule')}</button></footer>
       </section></div>}
 
       {selectedNotification && <div className={styles.backdrop} onMouseDown={() => setSelectedNotification(null)}><section className={styles.previewModal} role="dialog" aria-modal="true" aria-labelledby="notification-detail-title" onMouseDown={(event) => event.stopPropagation()}>
@@ -347,6 +412,7 @@ export default function NotificationPage() {
         <dl className={styles.detailMeta}>
           <div><dt>Target</dt><dd><span className={`${styles.target} ${getTargetClass(selectedNotification.target)}`}>{selectedNotification.target}</span></dd></div>
           <div><dt>Date &amp; time</dt><dd>{formatDate(selectedNotification.date)}</dd></div>
+          <div><dt>Status</dt><dd>{selectedNotification.status}</dd></div>
         </dl>
         <div className={styles.detailContent}><strong>Content</strong><p>{selectedNotification.content}</p></div>
         <AttachmentLink notification={selectedNotification} onPreview={setPreviewAttachment} />
@@ -360,12 +426,15 @@ export default function NotificationPage() {
             <button type="button" onClick={() => setPreviewAttachment(null)} aria-label="Close file preview"><X /></button>
           </header>
           <div className={styles.fileViewer}>
+            {isPreviewableWordDocument(previewAttachment.fileType, previewAttachment.fileName) && <WordDocumentPreview key={previewAttachment.fileData} source={previewAttachment.fileData} fileName={previewAttachment.fileName} />}
+            {isPreviewableSpreadsheet(previewAttachment.fileType, previewAttachment.fileName) && <SpreadsheetPreview key={previewAttachment.fileData} source={previewAttachment.fileData} fileName={previewAttachment.fileName} />}
+            {isPreviewablePowerPoint(previewAttachment.fileType, previewAttachment.fileName) && <PowerPointPreview key={previewAttachment.fileData} source={previewAttachment.fileData} fileName={previewAttachment.fileName} />}
             {previewAttachment.fileType?.startsWith('image/') && <img src={previewAttachment.fileData} alt={previewAttachment.fileName} />}
             {previewAttachment.fileType === 'application/pdf' && <iframe src={previewAttachment.fileData} title={previewAttachment.fileName} />}
             {previewAttachment.fileType?.startsWith('text/') && <iframe src={previewAttachment.fileData} title={previewAttachment.fileName} />}
             {previewAttachment.fileType?.startsWith('audio/') && <audio src={previewAttachment.fileData} controls />}
             {previewAttachment.fileType?.startsWith('video/') && <video src={previewAttachment.fileData} controls />}
-            {!previewAttachment.fileType?.startsWith('image/') && previewAttachment.fileType !== 'application/pdf' && !previewAttachment.fileType?.startsWith('text/') && !previewAttachment.fileType?.startsWith('audio/') && !previewAttachment.fileType?.startsWith('video/') && <div className={styles.unsupportedPreview}><Paperclip /><strong>Preview is not available for this file type.</strong><span>You can download the file and open it with a compatible application.</span></div>}
+            {!isPreviewableWordDocument(previewAttachment.fileType, previewAttachment.fileName) && !isPreviewableSpreadsheet(previewAttachment.fileType, previewAttachment.fileName) && !isPreviewablePowerPoint(previewAttachment.fileType, previewAttachment.fileName) && !previewAttachment.fileType?.startsWith('image/') && previewAttachment.fileType !== 'application/pdf' && !previewAttachment.fileType?.startsWith('text/') && !previewAttachment.fileType?.startsWith('audio/') && !previewAttachment.fileType?.startsWith('video/') && <div className={styles.unsupportedPreview}><Paperclip /><strong>Preview is not available for this file type.</strong><span>You can download the file and open it with a compatible application.</span></div>}
           </div>
           <footer>
             <button type="button" onClick={() => setPreviewAttachment(null)}>Close</button>

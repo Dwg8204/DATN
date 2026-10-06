@@ -1,13 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Bell, BellRing, CheckCheck, Clock3, Download, Eye, Mail, Paperclip, Trash2, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
-import {
-  formatNotificationDate,
-  getAvailableUserNotifications,
-  getUserNotificationState,
-  saveUserNotificationState,
-} from '../../../utils/notificationStorage';
+import { formatNotificationDate } from '../../../utils/notificationStorage';
+import { mapUserNotification, userNotificationsApi } from '../services/userNotificationsApi';
+import { subscribeToRealtimeNotifications } from '../services/notificationSocket';
+import WordDocumentPreview from '../../../components/common/WordDocumentPreview';
+import SpreadsheetPreview from '../../../components/common/SpreadsheetPreview';
+import PowerPointPreview from '../../../components/common/PowerPointPreview';
+import { isPreviewablePowerPoint, isPreviewableSpreadsheet, isPreviewableWordDocument } from '../../../utils/attachmentPreview';
 import styles from './NotificationsPage.module.css';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 import { useTranslation } from 'react-i18next';
@@ -21,47 +22,55 @@ export default function NotificationsPage() {
   const [urlState, setUrlState] = useUrlQueryState(NOTIFICATION_QUERY_SCHEMA);
   const { filter } = urlState;
   const setFilter = value => setUrlState({ filter: value });
-  const [notifications] = useState(getAvailableUserNotifications);
-  const [notificationState, setNotificationState] = useState(getUserNotificationState);
-  const [selected, setSelected] = useState(() => {
-    const requestedId = location.state?.notificationId;
-    return requestedId
-      ? getAvailableUserNotifications().find((item) => String(item.id) === requestedId) || null
-      : null;
-  });
+  const [notifications, setNotifications] = useState([]);
+  const [selected, setSelected] = useState(null);
   const [previewAttachment, setPreviewAttachment] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const available = useMemo(
-    () => notifications.filter((item) => !notificationState.deleted.includes(String(item.id))),
-    [notifications, notificationState.deleted],
-  );
+  useEffect(() => {
+    let active = true;
+    userNotificationsApi.list().then(({ items }) => {
+      if (!active) return;
+      setNotifications(items);
+      const requestedId = location.state?.notificationId;
+      if (requestedId) setSelected(items.find(item => item.id === String(requestedId)) || null);
+    }).catch(() => undefined).finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [location.state?.notificationId]);
+
+  useEffect(() => subscribeToRealtimeNotifications(payload => {
+    const item = mapUserNotification(payload);
+    setNotifications(current => [item, ...current.filter(notification => notification.id !== item.id)]);
+  }), []);
+
+  const available = useMemo(() => notifications, [notifications]);
   const visible = filter === 'unread'
-    ? available.filter((item) => !notificationState.read.includes(String(item.id)))
+    ? available.filter((item) => !item.readAt)
     : available;
-  const unreadCount = available.filter((item) => !notificationState.read.includes(String(item.id))).length;
+  const unreadCount = available.filter((item) => !item.readAt).length;
 
-  const updateState = (next) => {
-    setNotificationState(next);
-    saveUserNotificationState(next);
-  };
-  const markRead = (id) => {
-    const key = String(id);
-    if (!notificationState.read.includes(key)) {
-      updateState({ ...notificationState, read: [...notificationState.read, key] });
-    }
+  const markRead = async (id) => {
+    const item = notifications.find(notification => notification.id === String(id));
+    if (!item || item.readAt) return;
+    await userNotificationsApi.markRead(id);
+    setNotifications(current => current.map(notification => notification.id === String(id)
+      ? { ...notification, readAt: new Date().toISOString() }
+      : notification));
   };
   const openDetail = (item) => {
-    markRead(item.id);
-    setSelected(item);
+    setSelected({ ...item, readAt: item.readAt || new Date().toISOString() });
+    markRead(item.id).catch(() => undefined);
   };
-  const remove = (item) => {
-    updateState({ ...notificationState, deleted: [...notificationState.deleted, String(item.id)] });
+  const remove = async (item) => {
+    await userNotificationsApi.dismiss(item.id);
+    setNotifications(current => current.filter(notification => notification.id !== item.id));
     if (selected?.id === item.id) setSelected(null);
   };
-  const markAllRead = () => updateState({
-    ...notificationState,
-    read: [...new Set([...notificationState.read, ...available.map((item) => String(item.id))])],
-  });
+  const markAllRead = async () => {
+    await userNotificationsApi.markAllRead();
+    const readAt = new Date().toISOString();
+    setNotifications(current => current.map(item => ({ ...item, readAt: item.readAt || readAt })));
+  };
 
   return (
     <div className={styles.page}>
@@ -80,7 +89,7 @@ export default function NotificationsPage() {
 
           <section className={styles.list} aria-label={t('notifications.title')}>
             {visible.length ? visible.map((item) => {
-              const unread = !notificationState.read.includes(String(item.id));
+              const unread = !item.readAt;
               return (
                 <article className={`${styles.item} ${unread ? styles.unread : ''}`} key={item.id} onClick={() => openDetail(item)}>
                   <div className={styles.icon}>{item.type === 'Email' ? <Mail /> : <Bell />}</div>
@@ -89,10 +98,10 @@ export default function NotificationsPage() {
                     <p>{notificationContent(item, t)}</p>
                     <time><Clock3 size={13} />{formatNotificationDate(item.date, i18n.language === 'vi' ? 'vi-VN' : 'en-GB')}</time>
                   </div>
-                  <button className={styles.delete} onClick={(event) => { event.stopPropagation(); remove(item); }} title={t('notifications.remove')}><Trash2 size={17} /></button>
+                  <button className={styles.delete} onClick={(event) => { event.stopPropagation(); remove(item).catch(() => undefined); }} title={t('notifications.remove')}><Trash2 size={17} /></button>
                 </article>
               );
-            }) : <div className={styles.empty}><BellRing /><h2>{t('notifications.caughtUp')}</h2><p>{t(filter === 'unread' ? 'notifications.emptyUnread' : 'notifications.empty')}</p></div>}
+            }) : !loading && <div className={styles.empty}><BellRing /><h2>{t('notifications.caughtUp')}</h2><p>{t(filter === 'unread' ? 'notifications.emptyUnread' : 'notifications.empty')}</p></div>}
           </section>
         </main>
       </div>
@@ -121,11 +130,14 @@ export default function NotificationsPage() {
         <section className={styles.fileModal} role="dialog" aria-modal="true" aria-labelledby="user-file-preview-title">
           <header><div><span>{t('notifications.attachmentPreview')}</span><h2 id="user-file-preview-title">{previewAttachment.fileName}</h2></div><button type="button" onClick={() => setPreviewAttachment(null)} aria-label={t('notifications.closePreview')}><X /></button></header>
           <div className={styles.fileViewer}>
+            {isPreviewableWordDocument(previewAttachment.fileType, previewAttachment.fileName) && <WordDocumentPreview key={previewAttachment.fileData} source={previewAttachment.fileData} fileName={previewAttachment.fileName} />}
+            {isPreviewableSpreadsheet(previewAttachment.fileType, previewAttachment.fileName) && <SpreadsheetPreview key={previewAttachment.fileData} source={previewAttachment.fileData} fileName={previewAttachment.fileName} />}
+            {isPreviewablePowerPoint(previewAttachment.fileType, previewAttachment.fileName) && <PowerPointPreview key={previewAttachment.fileData} source={previewAttachment.fileData} fileName={previewAttachment.fileName} />}
             {previewAttachment.fileType?.startsWith('image/') && <img src={previewAttachment.fileData} alt={previewAttachment.fileName} />}
             {(previewAttachment.fileType === 'application/pdf' || previewAttachment.fileType?.startsWith('text/')) && <iframe src={previewAttachment.fileData} title={previewAttachment.fileName} />}
             {previewAttachment.fileType?.startsWith('audio/') && <audio src={previewAttachment.fileData} controls />}
             {previewAttachment.fileType?.startsWith('video/') && <video src={previewAttachment.fileData} controls />}
-            {!previewAttachment.fileType?.startsWith('image/') && previewAttachment.fileType !== 'application/pdf' && !previewAttachment.fileType?.startsWith('text/') && !previewAttachment.fileType?.startsWith('audio/') && !previewAttachment.fileType?.startsWith('video/') && <div className={styles.unsupported}><Paperclip /><strong>{t('notifications.unsupported')}</strong><p>{t('notifications.unsupportedHint')}</p></div>}
+            {!isPreviewableWordDocument(previewAttachment.fileType, previewAttachment.fileName) && !isPreviewableSpreadsheet(previewAttachment.fileType, previewAttachment.fileName) && !isPreviewablePowerPoint(previewAttachment.fileType, previewAttachment.fileName) && !previewAttachment.fileType?.startsWith('image/') && previewAttachment.fileType !== 'application/pdf' && !previewAttachment.fileType?.startsWith('text/') && !previewAttachment.fileType?.startsWith('audio/') && !previewAttachment.fileType?.startsWith('video/') && <div className={styles.unsupported}><Paperclip /><strong>{t('notifications.unsupported')}</strong><p>{t('notifications.unsupportedHint')}</p></div>}
           </div>
           <footer><button type="button" onClick={() => setPreviewAttachment(null)}>{t('dictionary.close')}</button><a href={previewAttachment.fileData} download={previewAttachment.fileName}><Download />{t('notifications.downloadFile')}</a></footer>
         </section>

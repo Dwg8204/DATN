@@ -152,6 +152,39 @@
   border: 0;
 }
 
+.notificationStatus {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 9px;
+  background: #f1f1f1;
+  color: #555;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.notificationStatus[data-status='SCHEDULED'] {
+  background: #fff1d6;
+  color: #9a5a00;
+}
+
+.notificationStatus[data-status='SENDING'] {
+  background: #eaf2ff;
+  color: #245ca6;
+}
+
+.notificationStatus[data-status='SENT'] {
+  background: #e8f7ed;
+  color: #18743a;
+}
+
+.notificationStatus[data-status='FAILED'],
+.notificationStatus[data-status='CANCELLED'] {
+  background: #fdebec;
+  color: #b0162b;
+}
+
 .detailMeta {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -568,6 +601,26 @@
   margin-bottom: 10px;
 }
 
+.selectAllRecipients {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 10px;
+  color: #555;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.selectAllRecipients input,
+.userEmailItem > input {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  margin: 0;
+  accent-color: #c51629;
+}
+
 .emailSearchBox input {
   width: 100%;
   height: 38px;
@@ -605,7 +658,8 @@
 .userEmailItem {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 9px;
   padding: 8px 12px;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
@@ -628,6 +682,8 @@
 
 .userEmailInfo {
   display: flex;
+  flex: 1;
+  min-width: 0;
   flex-direction: column;
 }
 

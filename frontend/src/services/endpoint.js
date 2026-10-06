@@ -20,6 +20,16 @@ export const API_ENDPOINTS = {
     role: (id) => `/admin/users/${id}/role`,
   },
   adminDashboard: '/admin/dashboard',
+  adminNotifications: {
+    list: '/admin/notifications',
+  },
+  notifications: {
+    list: '/notifications',
+    unreadCount: '/notifications/unread-count',
+    readAll: '/notifications/read-all',
+    read: (id) => `/notifications/${id}/read`,
+    dismiss: (id) => `/notifications/${id}`,
+  },
   adminGrammarTests: {
     list: '/admin/grammar-tests',
     detail: (id) => `/admin/grammar-tests/${id}`,
@@ -74,6 +84,7 @@ export const API_ENDPOINTS = {
   adminMedia: {
     testCovers: '/admin/media/test-covers',
     audio: '/admin/media/audio',
+    notificationAttachments: '/admin/media/notification-attachments',
   },
   attemptMedia: {
     audio: '/media/attempt-audio',
