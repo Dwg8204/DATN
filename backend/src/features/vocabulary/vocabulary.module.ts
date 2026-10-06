@@ -13,6 +13,8 @@ import { VocabularyFoldersRepository } from './repositories/vocabulary-folders.r
 import { VocabularyEntriesRepository } from './repositories/vocabulary-entries.repository';
 import { UserNotebookRepository } from './repositories/user-notebook.repository';
 import { DictationRepository } from './repositories/dictation.repository';
+import { StudyController } from './controllers/study.controller';
+import { StudyRepository } from './repositories/study.repository';
 
 @Module({
   controllers: [
@@ -20,6 +22,7 @@ import { DictationRepository } from './repositories/dictation.repository';
     VocabularyEntriesController,
     UserNotebookController,
     DictationController,
+    StudyController,
   ],
   providers: [
     VocabularyFoldersService,
@@ -30,6 +33,7 @@ import { DictationRepository } from './repositories/dictation.repository';
     VocabularyEntriesRepository,
     UserNotebookRepository,
     DictationRepository,
+    StudyRepository,
   ],
   exports: [
     VocabularyFoldersService,

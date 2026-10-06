@@ -42,6 +42,8 @@ export class VocabularyFoldersRepository {
     const rows = await this.dataSource.query<VocabularyFolderRow[]>(
       `INSERT INTO vocabulary_folders (owner_id, name, description)
        VALUES ($1, $2, $3)
+       ON CONFLICT (owner_id,lower(name)) WHERE owner_id IS NOT NULL AND archived_at IS NULL
+       DO UPDATE SET name=vocabulary_folders.name
        RETURNING id, owner_id, name, description, false AS is_system, created_at, updated_at`,
       [ownerId, dto.name, dto.description ?? null],
     );

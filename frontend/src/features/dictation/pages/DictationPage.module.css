@@ -1,5 +1,9 @@
 .page { min-height: 100%; padding: 40px max(24px, calc((100vw - 1240px) / 2)); background: #f8f6f6; color: #26202a; font-family: Inter, "Segoe UI", Arial, sans-serif; }
 .page button, .page input, .page textarea, .page select { font-family: inherit; }
+.importNotice { max-width: 1240px; margin: 0 auto 20px; padding: 14px 18px; border: 1px solid #ecd7b1; border-radius: 12px; background: #fffbef; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.importNotice p { margin: 0; flex: 1 1 300px; font-size: 13px; line-height: 1.6; }
+.importNotice button { padding: 10px 14px; border-radius: 8px; cursor: pointer; }
+.savingNotice { margin: 0 0 12px; color: #64748b; font-size: 13px; }
 .layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 24px; margin-top: 24px; }
 .modeTabs { display: flex; gap: 8px; padding: 6px; width: fit-content; border: 1px solid #e2e8f0; border-radius: 14px; background: white; }
 .modeTabs button { display: flex; align-items: center; gap: 8px; padding: 10px 20px; border: 0; border-radius: 10px; color: #64748b; background: transparent; font-weight: 800; cursor: pointer; }

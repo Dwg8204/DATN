@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { DictationRepository, DictationExerciseRow, DictationAttemptRow } from '../repositories/dictation.repository';
 import { CreateDictationExerciseDto } from '../dto/create-dictation.dto';
 import { SubmitDictationAttemptDto } from '../dto/submit-dictation.dto';
@@ -7,12 +7,12 @@ import { SubmitDictationAttemptDto } from '../dto/submit-dictation.dto';
 export class DictationService {
   constructor(private readonly dictationRepo: DictationRepository) {}
 
-  async listExercises(folderId?: string): Promise<DictationExerciseRow[]> {
-    return this.dictationRepo.findExercises(folderId);
+  async listExercises(userId: string, folderId?: string): Promise<DictationExerciseRow[]> {
+    return this.dictationRepo.findExercises(userId, folderId);
   }
 
-  async getExercise(id: string): Promise<DictationExerciseRow> {
-    const exercise = await this.dictationRepo.findExerciseById(id);
+  async getExercise(id: string, userId: string): Promise<DictationExerciseRow> {
+    const exercise = await this.dictationRepo.findExerciseById(id, userId);
     if (!exercise) throw new NotFoundException('Dictation exercise not found');
     return exercise;
   }
@@ -22,11 +22,12 @@ export class DictationService {
   }
 
   async submitAttempt(userId: string, dto: SubmitDictationAttemptDto): Promise<{ data: DictationAttemptRow; feedback: { wordResults: Array<{ target: string; typed?: string; isCorrect: boolean }> } }> {
-    const exercise = await this.dictationRepo.findExerciseById(dto.exerciseId);
+    const exercise = await this.dictationRepo.findExerciseById(dto.exerciseId, userId);
     if (!exercise) throw new NotFoundException('Dictation exercise not found');
 
     const targetWords = this.tokenize(exercise.transcript);
     const typedWords = this.tokenize(dto.typedText);
+    if (!targetWords.length || !typedWords.length) throw new BadRequestException('The answer and transcript must contain words.');
 
     let correctCount = 0;
     const wordResults: Array<{ target: string; typed?: string; isCorrect: boolean }> = [];
@@ -57,6 +58,7 @@ export class DictationService {
       hintUsed: dto.hintUsed ?? false,
       playbackRate: dto.playbackRate ?? 1.0,
       playbackCount: dto.playbackCount ?? 1,
+      clientEventId: dto.clientEventId,
     });
 
     return {
@@ -70,7 +72,8 @@ export class DictationService {
   private tokenize(text: string): string[] {
     return text
       .trim()
-      .replace(/[.,/#!$%^&*;:{}=\-_`~()?"']/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9'\s]/g, '')
       .split(/\s+/)
       .filter(w => w.length > 0);
   }

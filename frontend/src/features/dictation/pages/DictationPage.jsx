@@ -1,33 +1,36 @@
 import Pagination from '../../../components/common/Pagination';
 import AnswerSelect from '../../../components/common/AnswerSelect';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeftRight, BookOpen, Check, ChevronLeft, ChevronRight, CircleHelp, Eye, FolderOpen, Headphones, Heart, Lightbulb, List, Pencil, Play, Plus, Search, RotateCcw, Shuffle, Trash2, Volume2, X } from 'lucide-react';
-import { DICTATION_EXERCISES, DICTATION_FLASHCARDS, DICTATION_TOPICS } from '../data/dictationExercises';
-import { loadDictationProgress, saveDictationAttempt } from '../utils/dictationStorage';
+import { ArrowLeftRight, BookOpen, Check, ChevronLeft, ChevronRight, CircleHelp, Eye, FolderOpen, Headphones, Lightbulb, List, Pencil, Play, Plus, Search, RotateCcw, Shuffle, Trash2, Volume2, X } from 'lucide-react';
+import { useAuth } from '../../../context/AuthContext';
+import { useStudyData } from '../hooks/useStudyData';
+import { studyApi } from '../services/studyApi';
+import { hasLegacyStudyData, readLegacyStudyData } from '../utils/legacyStudyImport';
+import { normalizeApiError } from '../../../services/apiError';
 import { useToast } from '../../../context/ToastContext';
 import styles from './DictationPage.module.css';
 import VocabularyWordInput from '../components/VocabularyWordInput';
 
-const normalize = (value) => value.toLowerCase().replace(/[^a-z0-9'\s]/g, '').replace(/\s+/g, ' ').trim();
 const positiveQueryInt = (value, fallback, maximum = 100) => {
   const parsed = Number.parseInt(value, 10);
   return Number.isInteger(parsed) && parsed > 0 && parsed <= maximum ? parsed : fallback;
 };
 const latestAccuracy = (attempt) => attempt?.lastAccuracy ?? attempt?.bestAccuracy ?? 0;
 
-function compareAnswer(answer, transcript) {
-  const typedWords = normalize(answer).split(' ').filter(Boolean);
-  const correctWords = normalize(transcript).split(' ').filter(Boolean);
-  const words = correctWords.map((word, index) => ({ word, correct: typedWords[index] === word }));
-  const correctCount = words.filter((item) => item.correct).length;
-  return { words, accuracy: Math.round((correctCount / correctWords.length) * 100) };
-}
-
 export default function DictationPage() {
   const { t } = useTranslation();
   const { showError, showSuccess, showInfo, dismissToast } = useToast();
+  const { user, isAuthReady, authConnectionError, retryAuth } = useAuth();
+  const { data, loading, error, saving, refresh, mutate } = useStudyData(user?.id);
+  const { topics: availableTopics, words: allFlashcards, exercises: allExercises, progress, ratings: cardRatings } = data;
+  const reportError = cause => showError(normalizeApiError(cause).message);
+  const playbackCount = useRef(0);
+  const submitRequest = useRef(null);
+  const reviewRequest = useRef(null);
+  const createRequest = useRef(null);
+  const [importDone, setImportDone] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedMode = searchParams.get('mode');
   const mode = ['browse', 'flashcard', 'quiz', 'matching', 'notebook'].includes(requestedMode) ? requestedMode : 'dictation';
@@ -52,7 +55,6 @@ export default function DictationPage() {
   const [showHint, setShowHint] = useState(false);
   const [showFullAnswer, setShowFullAnswer] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [progress, setProgress] = useState(loadDictationProgress);
   const [cardIndex, setCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [quizIndex, setQuizIndex] = useState(0);
@@ -60,59 +62,21 @@ export default function DictationPage() {
   const [quizScore, setQuizScore] = useState(0);
   const [matchingWord, setMatchingWord] = useState('');
   const [matchedCards, setMatchedCards] = useState([]);
-  const [cardRatings, setCardRatings] = useState(() => {
-    try { return JSON.parse(window.localStorage.getItem('aptimate.dictation.flashcards') || '{}'); } catch { return {}; }
-  });
   const notebookTab = searchParams.get('tab') === 'sentences' ? 'sentences' : 'words';
   const topicQuery = searchParams.get('q') || '';
   const notebookQuery = searchParams.get('q') || '';
   const notebookTopic = searchParams.get('filterTopic') || 'All topics';
-  const [savedWords, setSavedWords] = useState(() => {
-    try {
-      const stored = JSON.parse(window.localStorage.getItem('aptimate.dictation.savedWords') || 'null');
-      return stored || DICTATION_FLASHCARDS.map((card) => card.id);
-    } catch { return DICTATION_FLASHCARDS.map((card) => card.id); }
-  });
-  const [customWords, setCustomWords] = useState(() => {
-    try { return JSON.parse(window.localStorage.getItem('aptimate.dictation.customWords') || '[]'); } catch { return []; }
-  });
-  const [customSentences, setCustomSentences] = useState(() => {
-    try { return JSON.parse(window.localStorage.getItem('aptimate.dictation.customSentences') || '[]'); } catch { return []; }
-  });
-  const [customTopics, setCustomTopics] = useState(() => {
-    try { return JSON.parse(window.localStorage.getItem('aptimate.dictation.customTopics') || '[]'); } catch { return []; }
-  });
-  const [itemOverrides, setItemOverrides] = useState(() => {
-    try { return JSON.parse(window.localStorage.getItem('aptimate.dictation.itemOverrides') || '{}'); } catch { return {}; }
-  });
-  const [deletedSentenceIds, setDeletedSentenceIds] = useState(() => {
-    try { return JSON.parse(window.localStorage.getItem('aptimate.dictation.deletedSentences') || '[]'); } catch { return []; }
-  });
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showTopicCreator, setShowTopicCreator] = useState(false);
   const [newTopicName, setNewTopicName] = useState('');
   const [notebookNotice, setNotebookNotice] = useState('');
   const [createType, setCreateType] = useState('word');
   const [editingItemId, setEditingItemId] = useState(null);
-  const [newItem, setNewItem] = useState({ word: '', pronunciation: '', type: 'noun', topic: DICTATION_TOPICS[0].name, meaning: '', example: '' });
+  const [newItem, setNewItem] = useState({ word: '', pronunciation: '', type: 'noun', topic: '', meaning: '', example: '' });
   const textareaRef = useRef(null);
-  const availableTopics = [...DICTATION_TOPICS, ...customTopics];
-  const selectedTopic = availableTopics.find((topic) => topic.id === requestedTopic) || null;
-  const allFlashcards = [...DICTATION_FLASHCARDS, ...customWords].map((item) => ({ ...item, ...(itemOverrides[item.id] || {}) }));
-  const allExercises = [
-    ...DICTATION_EXERCISES,
-    ...customSentences.map((item) => ({
-      ...item,
-      title: item.word,
-      transcript: item.meaning,
-      accent: item.accent || 'en-GB',
-    })),
-  ].filter((item) => !deletedSentenceIds.includes(item.id)).map((item) => {
-    const override = itemOverrides[item.id];
-    return override ? { ...item, ...override, title: override.word, transcript: override.meaning } : item;
-  });
-  const activeExercises = selectedTopic ? allExercises.filter((item) => item.topic === selectedTopic.name) : [];
-  const activeFlashcards = selectedTopic ? allFlashcards.filter((item) => item.topic === selectedTopic.name) : [];
+  const selectedTopic = availableTopics.find((topic) => topic.id === requestedTopic || topic.legacyId === requestedTopic) || null;
+  const activeExercises = selectedTopic ? allExercises.filter((item) => item.folderId === selectedTopic.id) : [];
+  const activeFlashcards = selectedTopic ? allFlashcards.filter((item) => item.folderId === selectedTopic.id) : [];
   const visibleTopics = availableTopics.filter((topic) => {
     const searchableText = `${topic.name} ${topic.description || ''}`.toLowerCase();
     return searchableText.includes(topicQuery.trim().toLowerCase());
@@ -120,15 +84,23 @@ export default function DictationPage() {
   const topicPageCount = Math.max(1, Math.ceil(visibleTopics.length / itemsPerPage));
   const currentTopicPage = Math.min(notebookPage, topicPageCount);
   const paginatedTopics = visibleTopics.slice((currentTopicPage - 1) * itemsPerPage, currentTopicPage * itemsPerPage);
-  const exercise = activeExercises[exerciseIndex] || DICTATION_EXERCISES[0];
+  const exercise = activeExercises[exerciseIndex] || activeExercises[0] || { id: null, transcript: '', title: '', accent: 'en-GB' };
 
-  const hint = useMemo(() => exercise.transcript.split(' ').map((word) => `${word[0]}${'_'.repeat(Math.max(1, word.length - 1))}`).join(' '), [exercise]);
-  const transcriptWordCount = useMemo(() => exercise.transcript.trim().split(/\s+/).filter(Boolean).length, [exercise]);
+  const hint = exercise.transcript.split(/\s+/).filter(Boolean).map(word => `${word[0]}${'_'.repeat(Math.max(1, word.length - 1))}`).join(' ');
+  const transcriptWordCount = exercise.transcript.trim().split(/\s+/).filter(Boolean).length;
 
   useEffect(() => () => window.speechSynthesis?.cancel(), []);
 
   useEffect(() => {
-    if (mode !== 'flashcard' || !activeFlashcards.length) return undefined;
+    setExerciseIndex(0); setCardIndex(0); setQuizIndex(0); setQuizAnswer(''); setQuizScore(0);
+    setMatchedCards([]); setMatchingWord(''); setIsFlipped(false); setShowCreateForm(false);
+    setNotebookNotice(''); setAnswer(''); setResult(null); setShowHint(false); setShowFullAnswer(false);
+    setIsSpeaking(false); setImportDone(false); window.speechSynthesis?.cancel();
+    submitRequest.current = null; reviewRequest.current = null; createRequest.current = null; playbackCount.current = 0;
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (saving || mode !== 'flashcard' || !activeFlashcards.length) return undefined;
     const handleKeyDown = (event) => {
       if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
       if (event.code === 'Space') { event.preventDefault(); setIsFlipped((value) => !value); }
@@ -137,7 +109,7 @@ export default function DictationPage() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [mode, activeFlashcards.length]);
+  }, [mode, activeFlashcards.length, saving]);
 
   const speak = (playbackRate = rate, focusInput = true) => {
     if (!('speechSynthesis' in window)) return;
@@ -149,6 +121,7 @@ export default function DictationPage() {
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
     window.speechSynthesis.speak(utterance);
+    playbackCount.current += 1;
     if (focusInput) textareaRef.current?.focus();
   };
 
@@ -159,43 +132,52 @@ export default function DictationPage() {
     if (shouldResume) speak(nextRate, false);
   };
 
-  const checkAnswer = () => {
-    if (!answer.trim()) return;
-    const nextResult = compareAnswer(answer, exercise.transcript);
-    setResult(nextResult);
-    setProgress(saveDictationAttempt(exercise.id, nextResult));
+  const checkAnswer = async () => {
+    if (!answer.trim() || !exercise.id || saving) return;
+    const dto = { exerciseId: exercise.id, typedText: answer, hintUsed: showHint || showFullAnswer,
+      playbackRate: rate, playbackCount: playbackCount.current };
+    const signature = JSON.stringify(dto);
+    if (submitRequest.current?.signature !== signature) submitRequest.current = { signature, id: crypto.randomUUID() };
+    try {
+      const response = await mutate(() => studyApi.submit({ ...dto, clientEventId: submitRequest.current.id }));
+      if (!response) return;
+      setResult({ accuracy: Math.round(Number(response.data.accuracy)),
+        words: response.feedback.wordResults.map(w => ({ word: w.target, correct: w.isCorrect })) });
+      submitRequest.current = null;
+    } catch (cause) { reportError(cause); }
   };
 
   const resetExercise = () => {
+    if (saving) return;
     window.speechSynthesis?.cancel();
     setAnswer('');
     setResult(null);
     setShowHint(false);
     setShowFullAnswer(false);
     setIsSpeaking(false);
+    playbackCount.current = 0;
+    submitRequest.current = null;
   };
 
   const moveExercise = (direction) => {
+    if (saving || !activeExercises.length) return;
     setExerciseIndex((current) => (current + direction + activeExercises.length) % activeExercises.length);
     resetExercise();
   };
 
   const currentProgress = progress[exercise.id];
-  const currentCard = activeFlashcards[cardIndex] || DICTATION_FLASHCARDS[0];
-  const currentQuizCard = activeFlashcards[quizIndex] || DICTATION_FLASHCARDS[0];
-  const quizOptions = useMemo(() => {
-    if (!currentQuizCard) return [];
-    const distractors = allFlashcards.filter((card) => card.id !== currentQuizCard.id).slice(0, 3);
-    return [currentQuizCard, ...distractors]
-      .sort((left, right) => (left.id.length + quizIndex) % 4 - (right.id.length + quizIndex) % 4)
-      .map((card) => ({ id: card.id, label: card.word }));
-  }, [currentQuizCard, quizIndex, allFlashcards]);
+  const currentCard = activeFlashcards[cardIndex] || activeFlashcards[0] || {};
+  const currentQuizCard = activeFlashcards[quizIndex] || activeFlashcards[0] || {};
+  const quizOptions = currentQuizCard.id
+    ? [currentQuizCard, ...allFlashcards.filter((card) => card.id !== currentQuizCard.id).slice(0, 3)]
+      .sort((left, right) => (parseInt(left.id.slice(-8), 16) + quizIndex) % 17 - (parseInt(right.id.slice(-8), 16) + quizIndex) % 17)
+      .map((card) => ({ id: card.id, label: card.word })) : [];
   const matchingCards = activeFlashcards.slice(0, 8);
-  const matchingMeanings = useMemo(() => [...matchingCards].reverse(), [activeFlashcards]);
+  const matchingMeanings = [...matchingCards].reverse();
   const notebookItems = notebookTab === 'sentences'
     ? allExercises.map((item) => ({ ...item, word: item.title, meaning: item.transcript, type: item.type || item.topic }))
-    : allFlashcards.filter((item) => savedWords.includes(item.id));
-  const notebookWordCount = allFlashcards.filter((item) => savedWords.includes(item.id)).length;
+    : allFlashcards;
+  const notebookWordCount = allFlashcards.length;
   const reviewedFlashcardCount = allFlashcards.filter((item) => Boolean(cardRatings[item.id])).length;
   const flashcardProgress = allFlashcards.length
     ? Math.min(100, (reviewedFlashcardCount / allFlashcards.length) * 100)
@@ -209,17 +191,23 @@ export default function DictationPage() {
   const currentNotebookPage = Math.min(notebookPage, notebookPageCount);
   const visibleNotebookItems = filteredNotebookItems.slice((currentNotebookPage - 1) * itemsPerPage, currentNotebookPage * itemsPerPage);
 
-  const rateCard = (rating) => {
-    const nextRatings = { ...cardRatings, [currentCard.id]: rating };
-    setCardRatings(nextRatings);
-    window.localStorage.setItem('aptimate.dictation.flashcards', JSON.stringify(nextRatings));
-    if (rating === 'know') {
-      showSuccess(t('dictation.savedKnown', { word: currentCard.word }));
-    } else {
-      showInfo(t('dictation.savedLearning', { word: currentCard.word }));
-    }
-    setIsFlipped(false);
-    setCardIndex((current) => (current + 1) % activeFlashcards.length);
+  const rateCard = async (rating) => {
+    if (saving || !currentCard.id) return;
+    const signature = `${currentCard.id}:${rating}`;
+    if (reviewRequest.current?.signature !== signature) reviewRequest.current = { signature, id: crypto.randomUUID() };
+    try {
+      const response = await mutate(() => studyApi.review({ notebookItemId: currentCard.id,
+        rating: rating === 'know' ? 'KNOWN' : 'LEARNING', clientEventId: reviewRequest.current.id }));
+      if (!response) return;
+      reviewRequest.current = null;
+      if (rating === 'know') {
+        showSuccess(t('dictation.savedKnown', { word: currentCard.word }));
+      } else {
+        showInfo(t('dictation.savedLearning', { word: currentCard.word }));
+      }
+      setIsFlipped(false);
+      setCardIndex((current) => (current + 1) % activeFlashcards.length);
+    } catch (cause) { reportError(cause); }
   };
 
   const shuffleCard = () => {
@@ -253,6 +241,7 @@ export default function DictationPage() {
   };
 
   const chooseTopic = (topicId, nextMode = mode) => {
+    if (saving) return;
     setSearchParams(nextMode === 'dictation' ? { topic: topicId } : { mode: nextMode, topic: topicId });
     setExerciseIndex(0);
     setCardIndex(0);
@@ -266,6 +255,7 @@ export default function DictationPage() {
   };
 
   const returnToTopics = () => {
+    if (saving) return;
     setSearchParams(mode === 'dictation' ? {} : { mode: 'flashcard' });
     setExerciseIndex(0);
     setCardIndex(0);
@@ -279,6 +269,7 @@ export default function DictationPage() {
   };
 
   const switchTopicMode = (nextMode) => {
+    if (saving) return;
     if (nextMode === 'notebook') {
       setMode('notebook');
       return;
@@ -315,16 +306,11 @@ export default function DictationPage() {
     window.speechSynthesis.speak(utterance);
   };
 
-  const toggleSavedWord = (id) => {
-    const next = savedWords.includes(id) ? savedWords.filter((wordId) => wordId !== id) : [...savedWords, id];
-    setSavedWords(next);
-    window.localStorage.setItem('aptimate.dictation.savedWords', JSON.stringify(next));
-  };
-
   const openCreateForm = (type = notebookTab === 'sentences' ? 'sentence' : 'word') => {
+    createRequest.current = crypto.randomUUID();
     setEditingItemId(null);
     setCreateType(type);
-    setNewItem({ word: '', pronunciation: '', type: type === 'word' ? 'noun' : 'Custom sentence', topic: DICTATION_TOPICS[0].name, meaning: '', example: '' });
+    setNewItem({ word: '', pronunciation: '', type: type === 'word' ? 'noun' : 'Custom sentence', topic: availableTopics[0]?.name || '', meaning: '', example: '' });
     setShowTopicCreator(false);
     setNewTopicName('');
     dismissToast();
@@ -333,15 +319,16 @@ export default function DictationPage() {
 
   const openEditForm = (item) => {
     const type = notebookTab === 'sentences' ? 'sentence' : 'word';
-    setEditingItemId(item.id);
+    setEditingItemId(item.notebookId || item.id);
     setCreateType(type);
     setNewItem({
       word: item.word || '',
       pronunciation: item.pronunciation || '',
       type: type === 'word' ? (item.type || 'noun') : 'Custom sentence',
-      topic: item.topic || DICTATION_TOPICS[0].name,
+      topic: item.topic || availableTopics[0]?.name || '',
       meaning: item.meaning || '',
       example: item.example || '',
+      accent: item.accent || 'en-GB',
     });
     setShowTopicCreator(false);
     setNewTopicName('');
@@ -349,48 +336,30 @@ export default function DictationPage() {
     setShowCreateForm(true);
   };
 
-  const deleteNotebookItem = (item) => {
+  const deleteNotebookItem = async (item) => {
+    if (saving) return;
     if (!window.confirm(t('dictation.deleteConfirm', { name: item.word }))) return;
-
-    if (notebookTab === 'words') {
-      const nextSaved = savedWords.filter((id) => id !== item.id);
-      setSavedWords(nextSaved);
-      window.localStorage.setItem('aptimate.dictation.savedWords', JSON.stringify(nextSaved));
-      if (item.custom) {
-        const nextWords = customWords.filter((word) => word.id !== item.id);
-        setCustomWords(nextWords);
-        window.localStorage.setItem('aptimate.dictation.customWords', JSON.stringify(nextWords));
-      }
-    } else if (item.custom) {
-      const nextSentences = customSentences.filter((sentence) => sentence.id !== item.id);
-      setCustomSentences(nextSentences);
-      window.localStorage.setItem('aptimate.dictation.customSentences', JSON.stringify(nextSentences));
-    } else {
-      const nextDeleted = [...new Set([...deletedSentenceIds, item.id])];
-      setDeletedSentenceIds(nextDeleted);
-      window.localStorage.setItem('aptimate.dictation.deletedSentences', JSON.stringify(nextDeleted));
-    }
-
-    const nextOverrides = { ...itemOverrides };
-    delete nextOverrides[item.id];
-    setItemOverrides(nextOverrides);
-    window.localStorage.setItem('aptimate.dictation.itemOverrides', JSON.stringify(nextOverrides));
-    setNotebookPage(1);
-    setNotebookNotice(t('dictation.itemDeleted', { name: item.word }));
+    try {
+      const response = await mutate(() => studyApi.remove(item.notebookId || item.id));
+      if (!response) return;
+      setNotebookPage(1);
+      setNotebookNotice(t('dictation.itemDeleted', { name: item.word }));
+    } catch (cause) { reportError(cause); }
   };
 
-  const addCustomTopic = () => {
+  const addCustomTopic = async () => {
+    if (saving) return;
     const name = newTopicName.trim().replace(/\s+/g, ' ');
     if (!name) return;
     const existingTopic = availableTopics.find((topic) => topic.name.toLowerCase() === name.toLowerCase());
     if (existingTopic) {
       setNewItem((item) => ({ ...item, topic: existingTopic.name }));
     } else {
-      const topic = { id: `custom-topic-${Date.now()}`, name, description: t('dictation.customTopicDescription') };
-      const nextTopics = [...customTopics, topic];
-      setCustomTopics(nextTopics);
-      window.localStorage.setItem('aptimate.dictation.customTopics', JSON.stringify(nextTopics));
-      setNewItem((item) => ({ ...item, topic: topic.name }));
+      try {
+        const response = await mutate(() => studyApi.createTopic({ name, description: t('dictation.customTopicDescription') }));
+        if (!response) return;
+        setNewItem((item) => ({ ...item, topic: name }));
+      } catch (cause) { reportError(cause); return; }
     }
     setNewTopicName('');
     dismissToast();
@@ -401,7 +370,7 @@ export default function DictationPage() {
     if (showTopicCreator) {
       setShowTopicCreator(false);
       setNewTopicName('');
-      setNewItem((item) => ({ ...item, topic: item.topic || DICTATION_TOPICS[0].name }));
+      setNewItem((item) => ({ ...item, topic: item.topic || availableTopics[0]?.name || '' }));
       return;
     }
     setNewItem((item) => ({ ...item, topic: '' }));
@@ -410,8 +379,9 @@ export default function DictationPage() {
     setShowTopicCreator(true);
   };
 
-  const createNotebookItem = (event) => {
+  const createNotebookItem = async (event) => {
     event.preventDefault();
+    if (saving) return;
     dismissToast();
     if (!newItem.topic) {
       showError(t('dictation.chooseTopicError'));
@@ -422,44 +392,45 @@ export default function DictationPage() {
       return;
     }
     const item = {
-      ...newItem,
+      kind: createType === 'word' ? 'WORD' : 'SENTENCE',
+      folderId: availableTopics.find(topic => topic.name === newItem.topic)?.id,
       word: newItem.word.trim(),
       pronunciation: newItem.pronunciation.trim(),
       meaning: newItem.meaning.trim(),
       example: newItem.example.trim(),
-      topic: newItem.topic || t('dictation.other'),
-      id: `custom-${Date.now()}`,
-      custom: true,
+      type: newItem.type,
+      ...(createType === 'sentence' ? { accent: newItem.accent || 'en-GB' } : {}),
     };
-    if (editingItemId) {
-      const nextOverrides = { ...itemOverrides, [editingItemId]: { ...newItem, word: item.word, meaning: item.meaning, pronunciation: item.pronunciation, example: item.example } };
-      setItemOverrides(nextOverrides);
-      window.localStorage.setItem('aptimate.dictation.itemOverrides', JSON.stringify(nextOverrides));
-      setNotebookPagination({
-        page: 1,
-        ...(notebookTopic !== 'All topics' && notebookTopic !== newItem.topic ? { filterTopic: newItem.topic } : {}),
-      });
+    try {
+      const response = await mutate(() => editingItemId ? studyApi.update(editingItemId, item)
+        : studyApi.create({ ...item, clientRequestId: createRequest.current }));
+      if (!response) return;
+      if (editingItemId) {
+        setNotebookPagination({
+          page: 1,
+          ...(notebookTopic !== 'All topics' && notebookTopic !== newItem.topic ? { filterTopic: newItem.topic } : {}),
+        });
+        setShowCreateForm(false);
+        setEditingItemId(null);
+        setNotebookNotice(t('dictation.itemUpdated', { name: item.word }));
+        return;
+      }
+      setNotebookPagination({ q: '', filterTopic: newItem.topic, tab: createType === 'word' ? 'words' : 'sentences', page: 1 });
+      dismissToast();
       setShowCreateForm(false);
-      setEditingItemId(null);
-      setNotebookNotice(t('dictation.itemUpdated', { name: item.word }));
-      return;
-    }
-    if (createType === 'word') {
-      const nextWords = [item, ...customWords];
-      const nextSaved = [item.id, ...savedWords];
-      setCustomWords(nextWords);
-      setSavedWords(nextSaved);
-      window.localStorage.setItem('aptimate.dictation.customWords', JSON.stringify(nextWords));
-      window.localStorage.setItem('aptimate.dictation.savedWords', JSON.stringify(nextSaved));
-    } else {
-      const nextSentences = [item, ...customSentences];
-      setCustomSentences(nextSentences);
-      window.localStorage.setItem('aptimate.dictation.customSentences', JSON.stringify(nextSentences));
-    }
-    setNotebookPagination({ q: '', filterTopic: item.topic, tab: createType === 'word' ? 'words' : 'sentences', page: 1 });
-    dismissToast();
-    setShowCreateForm(false);
-    setNotebookNotice(t(createType === 'word' ? 'dictation.wordAdded' : 'dictation.sentenceAdded', { topic: item.topic }));
+      setNotebookNotice(t(createType === 'word' ? 'dictation.wordAdded' : 'dictation.sentenceAdded', { topic: newItem.topic }));
+    } catch (cause) { reportError(cause); }
+  };
+
+  const importLegacy = async () => {
+    if (saving || !window.confirm(t('dictation.importConfirm', { email: user.email }))) return;
+    try {
+      const response = await mutate(() => studyApi.importBrowser(readLegacyStudyData(window.localStorage)));
+      if (!response) return;
+      window.localStorage.setItem(`aptimate.dictation.imported:${user.id}`, 'true');
+      setImportDone(true);
+      showSuccess(t('dictation.importComplete', { count: response.imported }));
+    } catch (cause) { reportError(cause); }
   };
 
   const isTopicLanding = (mode !== 'notebook' && !selectedTopic) || mode === 'notebook';
@@ -480,8 +451,16 @@ export default function DictationPage() {
     </header>
   ) : null;
 
+  if (!isAuthReady || loading) return <main className={styles.practiceCard}>{t('common.loading')}</main>;
+  if (authConnectionError || error) return <main className={styles.practiceCard}><p>{t('dictation.loadError')}</p><button className={styles.secondaryButton} onClick={() => authConnectionError ? retryAuth() : refresh().catch(() => {})}>{t('common.tryAgain')}</button></main>;
+  if (!user) return <main className={styles.practiceCard}><p>{t('dictation.signInRequired')}</p><Link to="/login">{t('profile.signIn')}</Link></main>;
+  if (selectedTopic && mode !== 'notebook' && !(mode === 'dictation' ? activeExercises.length : activeFlashcards.length)) return <div className={styles.page}>{topicStudyHeader}<main className={styles.practiceCard}><p>{t('dictation.noContent')}</p><button className={styles.secondaryButton} onClick={() => setMode('notebook')}>{t('dictation.notebook')}</button></main></div>;
+  const canImport = !importDone && !window.localStorage.getItem(`aptimate.dictation.imported:${user.id}`) && hasLegacyStudyData(window.localStorage);
+
   return (
-    <div className={`${styles.page} ${isTopicLanding ? styles.topicLandingPage : ''}`}>
+    <div className={`${styles.page} ${isTopicLanding ? styles.topicLandingPage : ''}`} inert={saving ? '' : undefined}>
+      {canImport && <div className={styles.importNotice}><p>{t('dictation.importHelp')}</p><button className={styles.secondaryButton} disabled={saving} onClick={importLegacy}>{t('dictation.importBrowser')}</button></div>}
+      {saving && <p role="status" className={styles.savingNotice}>{t('dictation.saving')}</p>}
       {mode !== 'notebook' && !selectedTopic ? (
         <main className={styles.topicLanding}>
           <div className={styles.topicContent}>
@@ -509,8 +488,8 @@ export default function DictationPage() {
 
             <section className={styles.topicGrid} aria-label={`${mode} topics`}>
             {paginatedTopics.map((topic) => {
-              const lessons = allExercises.filter((item) => item.topic === topic.name);
-              const cards = allFlashcards.filter((item) => item.topic === topic.name);
+              const lessons = allExercises.filter((item) => item.folderId === topic.id);
+              const cards = allFlashcards.filter((item) => item.folderId === topic.id);
               const completedLessons = lessons.filter((item) => progress[item.id]).length;
               const reviewedCards = cards.filter((item) => cardRatings[item.id]).length;
               const completed = mode === 'dictation' ? completedLessons : reviewedCards;
@@ -518,7 +497,7 @@ export default function DictationPage() {
 
               return (
                 <article key={topic.id} className={`${styles.topicFolder} ${!total ? styles.emptyTopic : ''}`}>
-                  <span className={styles.topicCollection}>{t(String(topic.id).startsWith('custom-topic-') ? 'dictation.myCollection' : 'dictation.aptisCollection')}</span>
+                  <span className={styles.topicCollection}>{t(topic.is_system ? 'dictation.aptisCollection' : 'dictation.myCollection')}</span>
                   <div className={styles.topicCopy}>
                     <strong>{topic.name}</strong>
                     <small>{topic.description}</small>
@@ -548,7 +527,7 @@ export default function DictationPage() {
         <aside className={styles.lessonList}>
           <h2>{t('dictation.lessons')}</h2>
           {activeExercises.map((item, index) => (
-            <button key={item.id} className={index === exerciseIndex ? styles.activeLesson : ''} onClick={() => { setExerciseIndex(index); resetExercise(); }}>
+            <button key={item.id} disabled={saving} className={index === exerciseIndex ? styles.activeLesson : ''} onClick={() => { setExerciseIndex(index); resetExercise(); }}>
               <span className={styles.lessonNumber}>{index + 1}</span>
               <span><strong>{item.title}</strong><small>{item.topic}</small></span>
               {progress[item.id] && <span className={styles.best}>{latestAccuracy(progress[item.id])}%</span>}
@@ -568,13 +547,13 @@ export default function DictationPage() {
           </div>
 
           <label className={styles.answerLabel} htmlFor="dictation-answer">{t('dictation.typeWhatYouHear')}</label>
-          <textarea id="dictation-answer" ref={textareaRef} value={answer} onChange={(event) => { setAnswer(event.target.value); setResult(null); }} placeholder={t('dictation.answerPlaceholder')} rows={5} />
+          <textarea id="dictation-answer" ref={textareaRef} disabled={saving} maxLength={5000} value={answer} onChange={(event) => { setAnswer(event.target.value); setResult(null); }} placeholder={t('dictation.answerPlaceholder')} rows={5} />
 
           <div className={styles.actions}>
             <button className={styles.secondaryButton} onClick={() => setShowHint((value) => !value)}><Lightbulb size={17} /> {t('dictation.hint')}</button>
             <button className={styles.secondaryButton} onClick={() => setShowFullAnswer((value) => !value)}><Eye size={17} /> {t(showFullAnswer ? 'dictation.hideFullAnswer' : 'dictation.showFullAnswer')}</button>
             <button className={styles.secondaryButton} onClick={resetExercise}><RotateCcw size={17} /> {t('dictation.reset')}</button>
-            <button className={styles.checkButton} onClick={checkAnswer} disabled={!answer.trim()}><Check size={18} /> {t('dictation.checkAnswer')}</button>
+            <button className={styles.checkButton} onClick={checkAnswer} disabled={saving || !answer.trim()}><Check size={18} /> {t('dictation.checkAnswer')}</button>
           </div>
 
           {showHint && <div className={styles.hint}><div className={styles.hintHeader}><strong>{t('dictation.firstLetterHint')}</strong><span>{t('dictation.totalWordHint', { count: transcriptWordCount })}</span></div><p>{hint}</p></div>}
@@ -590,7 +569,7 @@ export default function DictationPage() {
 
           <footer className={styles.cardFooter}>
             <button onClick={() => moveExercise(-1)}><ChevronLeft size={18} /> {t('dictation.previous')}</button>
-            <span>{currentProgress ? t('dictation.attemptSummary', { count: currentProgress.attempts, accuracy: latestAccuracy(currentProgress) }) : t('dictation.notAttempted')}</span>
+            <span>{currentProgress ? t('dictation.attemptSummary', { count: currentProgress.attempts, accuracy: latestAccuracy(currentProgress) }) : t('dictation.notAttempted')}{currentProgress?.imported && <small> · {t('dictation.importedScore')}</small>}</span>
             <button onClick={() => moveExercise(1)}>{t('dictation.next')} <ChevronRight size={18} /></button>
           </footer>
         </main>
@@ -654,7 +633,6 @@ export default function DictationPage() {
               <div className={styles.flashcardInner}>
                 <section className={`${styles.flashcardFace} ${styles.flashcardFront}`} aria-hidden={isFlipped}>
                   <span className={styles.cardSideLabel}>{t('dictation.term')}</span>
-                  <span className={`${styles.cardFavourite} ${savedWords.includes(currentCard.id) ? styles.favourited : ''}`} role="button" tabIndex="0" onClick={(event) => { event.stopPropagation(); toggleSavedWord(currentCard.id); }}><Heart size={22} fill={savedWords.includes(currentCard.id) ? 'currentColor' : 'none'} /></span>
                 <h2>{currentCard.word}</h2>
                 <p>{currentCard.pronunciation}</p>
                 <small>{currentCard.type}</small>

@@ -14,14 +14,14 @@ export class DictationController {
   constructor(private readonly dictationService: DictationService) {}
 
   @Get('exercises')
-  async listExercises(@Query('folderId') folderId?: string) {
-    const data = await this.dictationService.listExercises(folderId);
+  async listExercises(@CurrentUser() user: AuthUser, @Query('folderId') folderId?: string) {
+    const data = await this.dictationService.listExercises(user.id, folderId);
     return { data };
   }
 
   @Get('exercises/:id')
-  async getExercise(@Param('id') id: string) {
-    const data = await this.dictationService.getExercise(id);
+  async getExercise(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    const data = await this.dictationService.getExercise(id, user.id);
     return { data };
   }
 

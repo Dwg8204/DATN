@@ -67,15 +67,15 @@ export class VocabularyEntriesRepository {
     };
   }
 
-  async findById(id: string): Promise<VocabularyEntryRow | null> {
+  async findById(id: string, userId?: string): Promise<VocabularyEntryRow | null> {
     const rows = await this.dataSource.query<VocabularyEntryRow[]>(
       `SELECT id, owner_id, default_folder_id, item_type, term, normalized_term,
               language_code, meaning_language, meaning, phonetic, part_of_speech,
               context_sentence, source_type, created_at
        FROM vocabulary_entries
-       WHERE id = $1
+       WHERE id = $1 AND (owner_id IS NULL OR owner_id=$2)
        LIMIT 1`,
-      [id],
+      [id, userId ?? null],
     );
     return rows[0] ?? null;
   }

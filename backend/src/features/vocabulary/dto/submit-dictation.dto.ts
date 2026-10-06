@@ -1,4 +1,4 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, MaxLength, Min } from 'class-validator';
 
 export class SubmitDictationAttemptDto {
   @IsUUID()
@@ -7,7 +7,12 @@ export class SubmitDictationAttemptDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(5000)
   typedText!: string;
+
+  @IsOptional()
+  @IsUUID()
+  clientEventId?: string;
 
   @IsBoolean()
   @IsOptional()
@@ -15,10 +20,11 @@ export class SubmitDictationAttemptDto {
 
   @IsNumber()
   @Min(0.1)
+  @Max(3)
   @IsOptional()
   playbackRate?: number = 1.0;
 
-  @IsNumber()
+  @IsInt()
   @Min(0)
   @IsOptional()
   playbackCount?: number = 1;

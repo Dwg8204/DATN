@@ -17,8 +17,8 @@ export class VocabularyEntriesController {
   }
 
   @Get(':id')
-  async getEntryById(@Param('id') id: string) {
-    const data = await this.entriesService.getEntryById(id);
+  async getEntryById(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    const data = await this.entriesService.getEntryById(id, user.id);
     return { data };
   }
 

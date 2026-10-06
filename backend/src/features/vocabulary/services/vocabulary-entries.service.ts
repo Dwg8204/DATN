@@ -20,8 +20,8 @@ export class VocabularyEntriesService {
     };
   }
 
-  async getEntryById(id: string): Promise<VocabularyEntryRow> {
-    const entry = await this.entriesRepo.findById(id);
+  async getEntryById(id: string, userId: string): Promise<VocabularyEntryRow> {
+    const entry = await this.entriesRepo.findById(id, userId);
     if (!entry) throw new NotFoundException('Vocabulary entry not found');
     return entry;
   }

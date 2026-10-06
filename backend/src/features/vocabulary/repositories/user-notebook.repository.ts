@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { SaveNotebookItemDto } from '../dto/save-notebook-item.dto';
 import { FlashcardReviewDto } from '../dto/flashcard-review.dto';
@@ -38,7 +38,11 @@ export class UserNotebookRepository {
 
     return this.dataSource.query<UserNotebookItemRow[]>(
       `SELECT n.id, n.user_id, n.folder_id, f.name AS folder_name, n.item_type,
-              n.vocabulary_entry_id, e.term, e.meaning, e.phonetic, e.part_of_speech, e.context_sentence,
+              n.vocabulary_entry_id, COALESCE(n.custom_content->>'word',e.term) AS term,
+              COALESCE(n.custom_content->>'meaning',e.meaning) AS meaning,
+              COALESCE(n.custom_content->>'pronunciation',e.phonetic) AS phonetic,
+              COALESCE(n.custom_content->>'type',e.part_of_speech) AS part_of_speech,
+              COALESCE(n.custom_content->>'example',e.context_sentence) AS context_sentence,
               n.user_example, n.user_notes, n.last_rating, n.last_reviewed_at, n.review_count, n.saved_at
        FROM user_notebook_items n
        JOIN vocabulary_folders f ON f.id = n.folder_id
@@ -50,6 +54,10 @@ export class UserNotebookRepository {
   }
 
   async saveNotebookItem(userId: string, dto: SaveNotebookItemDto): Promise<UserNotebookItemRow> {
+    const [allowed] = await this.dataSource.query(`SELECT e.id FROM vocabulary_entries e,vocabulary_folders f
+      WHERE e.id=$1 AND f.id=$2 AND (e.owner_id IS NULL OR e.owner_id=$3)
+      AND (f.owner_id IS NULL OR f.owner_id=$3) AND f.archived_at IS NULL`, [dto.vocabularyEntryId, dto.folderId, userId]);
+    if (!allowed) throw new NotFoundException('Vocabulary entry or topic not found.');
     const rows = await this.dataSource.query<UserNotebookItemRow[]>(
       `INSERT INTO user_notebook_items (
         user_id, folder_id, item_type, vocabulary_entry_id, user_example, user_notes, saved_at
@@ -85,18 +93,20 @@ export class UserNotebookRepository {
     return this.dataSource.transaction(async manager => {
       // 1. Verify item belongs to user
       const check = await manager.query<Array<{ id: string }>>(
-        `SELECT id FROM user_notebook_items WHERE id = $1 AND user_id = $2 AND archived_at IS NULL LIMIT 1`,
+        `SELECT id FROM user_notebook_items WHERE id = $1 AND user_id = $2 AND archived_at IS NULL
+         AND item_type IN ('WORD','PHRASE') FOR UPDATE`,
         [dto.notebookItemId, userId],
       );
       if (!check[0]) return false;
 
       // 2. Insert event
-      await manager.query(
+      const inserted = await manager.query(
         `INSERT INTO vocabulary_review_events (notebook_item_id, client_event_id, rating, reviewed_at, duration_ms)
          VALUES ($1, $2, $3, now(), $4)
-         ON CONFLICT (notebook_item_id, client_event_id) DO NOTHING`,
+         ON CONFLICT (notebook_item_id, client_event_id) DO NOTHING RETURNING id`,
         [dto.notebookItemId, dto.clientEventId, dto.rating, dto.durationMs ?? null],
       );
+      if (!inserted.length) return true;
 
       // 3. Update notebook summary
       await manager.query(
