@@ -2,8 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { ApplicationError } from '../../../common/errors/application.error';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { extname, join } from 'node:path';
+import { randomUUID } from 'node:crypto';
 
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+const NOTIFICATION_ATTACHMENT_TYPES = new Set([
+  'application/pdf', 'text/plain', 'text/csv',
+  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+  'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/webm', 'audio/mp4', 'audio/aac',
+  'video/mp4', 'video/webm',
+]);
 
 @Injectable()
 export class CloudinaryMediaService {
@@ -88,6 +100,56 @@ export class CloudinaryMediaService {
       bytes: result.bytes,
       format: result.format,
       duration: result.duration,
+    };
+  }
+
+  async uploadNotificationAttachment(file?: Express.Multer.File) {
+    if (!file?.buffer?.length) throw new ApplicationError('ATTACHMENT_REQUIRED', 'Choose a file to upload.', 400);
+    if (file.size > 2 * 1024 * 1024) throw new ApplicationError('ATTACHMENT_TOO_LARGE', 'Attachment must be 2 MB or smaller.', 413);
+    if (!NOTIFICATION_ATTACHMENT_TYPES.has(file.mimetype)) {
+      throw new ApplicationError('INVALID_ATTACHMENT', 'This attachment type is not supported.', 415);
+    }
+
+    const safeName = file.originalname.replace(/[\\/]/g, '_').slice(0, 255);
+    if (!this.enabled) {
+      const extension = extname(safeName).toLowerCase().replace(/[^.a-z0-9]/g, '').slice(0, 10);
+      const storedName = `${randomUUID()}${extension}`;
+      const directory = join(process.cwd(), 'uploads', 'notification-attachments');
+      try {
+        await mkdir(directory, { recursive: true });
+        await writeFile(join(directory, storedName), file.buffer, { flag: 'wx' });
+      } catch {
+        throw new ApplicationError('ATTACHMENT_UPLOAD_FAILED', 'The attachment could not be stored. Please try again.', 500);
+      }
+      return {
+        name: safeName,
+        mimeType: file.mimetype,
+        size: file.size,
+        url: `/api/v1/admin/media/notification-attachments/files/${storedName}`,
+        publicId: `local:notification-attachments/${storedName}`,
+        resourceType: 'local',
+      };
+    }
+
+    const result = await new Promise<UploadApiResponse>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream({
+        folder: `${this.folder}/notification-attachments`,
+        resource_type: 'auto',
+        unique_filename: true,
+        overwrite: false,
+      }, (error, response) => error || !response ? reject(error ?? new Error('Cloudinary returned no result.')) : resolve(response));
+      stream.end(file.buffer);
+    }).catch(() => {
+      throw new ApplicationError('ATTACHMENT_UPLOAD_FAILED', 'The attachment could not be uploaded. Please try again.', 502);
+    });
+
+    return {
+      name: safeName,
+      mimeType: file.mimetype,
+      size: result.bytes,
+      url: result.secure_url,
+      publicId: result.public_id,
+      resourceType: result.resource_type,
     };
   }
 
