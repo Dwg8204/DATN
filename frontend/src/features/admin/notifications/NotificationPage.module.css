@@ -72,53 +72,154 @@
 }
 
 /* Notification history layout */
+.page {
+  container-type: inline-size;
+}
+
+.workspace {
+  grid-template-columns: minmax(320px, .75fr) minmax(820px, 1.65fr);
+}
+
+.tableScroll {
+  overscroll-behavior-x: contain;
+}
+
 .history table {
-  min-width: 790px;
+  min-width: 820px;
 }
 
 .history th,
 .history td {
   box-sizing: border-box;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 14px 12px;
+  vertical-align: middle;
+  line-height: 1.5;
 }
 
-.history th:nth-child(1) {
-  width: 170px;
+.history th {
+  white-space: nowrap;
+  background: #f6f7f9;
 }
 
-.history th:nth-child(2) {
+.history th:nth-child(n) {
   width: auto;
 }
 
-.history th:nth-child(3) {
-  width: 105px;
+.dateColumn {
+  width: 132px;
 }
 
-.history th:nth-child(4) {
-  width: 135px;
+.targetColumn {
+  width: 220px;
 }
 
-.history th:nth-child(5) {
-  width: 58px;
+.typeColumn {
+  width: 116px;
+}
+
+.statusColumn {
+  width: 112px;
+}
+
+.actionsColumn {
+  width: 60px;
 }
 
 .history td:nth-child(1),
-.history td:nth-child(3),
+.history td:nth-child(3) {
+  white-space: normal;
+}
+
 .history td:nth-child(4),
 .history td:nth-child(5) {
   white-space: nowrap;
 }
 
+.history td:last-child {
+  text-align: center;
+}
+
+.history tbody tr:hover {
+  background: #fff8f8;
+}
+
 .contentPreview {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.recipientSummary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.recipientSummary .target {
+  min-width: 0;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.recipientCount {
+  flex-shrink: 0;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.historyPagination {
+  border-top: 1px solid #e5e5e5;
+  background: #fafafa;
+  padding: 4px 8px;
+}
+
+.history .historyEmpty {
+  padding: 32px 16px;
+  text-align: center;
+  color: #64748b;
+  white-space: normal;
+}
+
+.historyError {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  background: #fff1f2;
+  color: #b0162b;
+  font-size: 13px;
+}
+
+.historyError button {
+  padding: 6px 10px;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+@container (max-width: 1140px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .composer {
+    border-right: 0;
+    border-bottom: 1px solid #d8d8d8;
+  }
 }
 
 .viewButton {
+  margin: auto;
   width: 34px;
   height: 34px;
   display: grid;
@@ -162,6 +263,7 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: capitalize;
+  white-space: nowrap;
 }
 
 .notificationStatus[data-status='SCHEDULED'] {
