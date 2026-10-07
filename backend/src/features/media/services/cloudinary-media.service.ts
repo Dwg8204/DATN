@@ -110,7 +110,7 @@ export class CloudinaryMediaService {
       throw new ApplicationError('INVALID_ATTACHMENT', 'This attachment type is not supported.', 415);
     }
 
-    const safeName = file.originalname.replace(/[\\/]/g, '_').slice(0, 255);
+    const safeName = file.originalname.normalize('NFC').replace(/[\\/]/g, '_').slice(0, 255);
     if (!this.enabled) {
       const extension = extname(safeName).toLowerCase().replace(/[^.a-z0-9]/g, '').slice(0, 10);
       const storedName = `${randomUUID()}${extension}`;

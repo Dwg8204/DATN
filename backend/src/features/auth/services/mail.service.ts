@@ -76,7 +76,7 @@ export class MailService {
           to,
           subject,
           text: content,
-          html: `<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#222"><h2 style="color:#e41e2b">AptiMate</h2><h3>${this.escape(subject)}</h3><div style="white-space:pre-wrap;line-height:1.6">${this.escape(content)}</div></div>`,
+          html: `<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#222"><h2 style="color:#e41e2b">AptiMate</h2><div style="white-space:pre-wrap;line-height:1.6">${this.escape(content)}</div></div>`,
           attachments: mailAttachments,
         })));
     } catch {

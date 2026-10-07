@@ -37,7 +37,8 @@ export class MediaController {
   @Roles('ADMIN')
   @Throttle({ default: { limit: 20, ttl: 60_000 } })
   @ApiConsumes('multipart/form-data')
-  @UseInterceptors(FileInterceptor('file', { limits: { files: 1, fileSize: 2 * 1024 * 1024 } }))
+  // Browser multipart filenames are UTF-8; Multer's Latin-1 default corrupts Vietnamese accents.
+  @UseInterceptors(FileInterceptor('file', { defParamCharset: 'utf8', limits: { files: 1, fileSize: 2 * 1024 * 1024 } }))
   async uploadNotificationAttachment(@UploadedFile() file: Express.Multer.File | undefined, @Req() request: Request) {
     const uploaded = await this.media.uploadNotificationAttachment(file);
     if (uploaded.url.startsWith('/')) {
