@@ -1,5 +1,5 @@
 import { Transform } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
 export enum NotificationStatus {
   DRAFT = 'DRAFT',
@@ -11,6 +11,12 @@ export enum NotificationStatus {
 }
 
 export class QueryAdminNotificationDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  @Transform(({ value }) => typeof value === 'string' ? value.trim() : value)
+  search?: string;
+
   @IsEnum(NotificationStatus)
   @IsOptional()
   status?: NotificationStatus;

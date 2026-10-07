@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "test": "jest --runInBand",
+    "test:notifications:db": "ts-node test/integration/notification-scheduling.ts",
     "test:e2e": "jest --config test/jest-e2e.json --runInBand",
     "test:attempt-load": "ts-node test/performance/shared-attempts-load.ts",
     "db:migrate": "typeorm-ts-node-commonjs migration:run -d src/database/data-source.ts",
