@@ -16,6 +16,7 @@ const MAX_ATTACHMENT_SIZE = 2 * 1024 * 1024;
 const NOTIFICATION_QUERY_SCHEMA = {
   page: queryParam.positiveInt(1),
   pageSize: { ...queryParam.positiveInt(8, 100), param: 'size' },
+  search: { ...queryParam.string(''), param: 'q' },
 };
 
 const formatDate = (value) => new Intl.DateTimeFormat('en-US', {
@@ -78,7 +79,11 @@ export default function NotificationPage() {
   const [form, setForm] = useState(emptyForm);
   const [notifications, setNotifications] = useState([]);
   const [urlState, setUrlState] = useUrlQueryState(NOTIFICATION_QUERY_SCHEMA);
-  const { page, pageSize } = urlState;
+  const { page, pageSize, search } = urlState;
+  const [totalItems, setTotalItems] = useState(0);
+  const [loadingHistory, setLoadingHistory] = useState(true);
+  const [historyError, setHistoryError] = useState('');
+  const [historyVersion, setHistoryVersion] = useState(0);
   const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
   const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   const [preview, setPreview] = useState(false);
@@ -92,22 +97,41 @@ export default function NotificationPage() {
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [sending, setSending] = useState(false);
   const fileRef = useRef(null);
-  const visibleNotifications = useMemo(() => notifications.slice((page - 1) * pageSize, page * pageSize), [notifications, page, pageSize]);
-
   useEffect(() => {
     let isMounted = true;
-    const loadHistory = () => adminNotificationsApi.list({ pageSize: 100 })
+    let requestId = 0;
+    const controller = new AbortController();
+    setLoadingHistory(true);
+    setHistoryError('');
+    const loadHistory = () => {
+      const currentRequest = ++requestId;
+      return adminNotificationsApi.list({ page, pageSize, search, signal: controller.signal })
       .then((result) => {
-        if (isMounted) setNotifications((result?.data || []).map(mapAdminNotification));
+        if (!isMounted || currentRequest !== requestId) return;
+        const rows = result?.data || [];
+        const total = Number(result?.pagination?.totalItems ?? rows.length);
+        setNotifications(rows.map(mapAdminNotification));
+        setTotalItems(total);
+        setHistoryError('');
+        const lastPage = Math.max(1, Math.ceil(total / pageSize));
+        if (page > lastPage) setUrlState({ page: lastPage });
       })
-      .catch(() => {});
-    loadHistory();
+      .catch(() => {
+        if (isMounted && currentRequest === requestId) setHistoryError('Unable to load notification history. Please try again.');
+      })
+      .finally(() => {
+        if (isMounted && currentRequest === requestId) setLoadingHistory(false);
+      });
+    };
+    const debounce = window.setTimeout(loadHistory, search ? 250 : 0);
     const timer = window.setInterval(loadHistory, 10_000);
     return () => {
       isMounted = false;
+      controller.abort();
+      window.clearTimeout(debounce);
       window.clearInterval(timer);
     };
-  }, []);
+  }, [page, pageSize, search, historyVersion, setUrlState]);
 
   useEffect(() => {
     let isMounted = true;
@@ -214,7 +238,7 @@ export default function NotificationPage() {
     setSending(true);
     dismissToast();
     try {
-      const response = await adminNotificationsApi.create({
+      await adminNotificationsApi.create({
         title: form.type === 'Email' ? form.subject.trim() : form.content.trim().slice(0, 80),
         content: form.content.trim(),
         type: 'SYSTEM',
@@ -225,8 +249,7 @@ export default function NotificationPage() {
         ...(form.fileData ? { attachment: { name: form.fileName, mimeType: form.fileType,
           size: form.fileSize, url: form.fileData, publicId: form.filePublicId } } : {}),
       });
-      const created = mapAdminNotification(response);
-      setNotifications((current) => [created, ...current.filter(item => item.id !== created.id)]);
+      setHistoryVersion(current => current + 1);
     } catch (error) {
       showError(error.response?.data?.error?.message || 'The notification could not be sent. Please try again.');
       setSending(false);
@@ -380,21 +403,37 @@ export default function NotificationPage() {
         </form>
 
         <section className={styles.history}>
-          <header><div><h3>Notification history</h3><p>{notifications.length} messages</p></div></header>
+          <header><div><h3>Notification history</h3><p aria-live="polite">{totalItems} {search.trim() ? 'matching messages' : 'messages'}</p></div></header>
+          {historyError && <div className={styles.historyError} role="alert">{historyError}<button type="button" onClick={() => setHistoryVersion(current => current + 1)}>Retry</button></div>}
           <div className={styles.tableScroll}>
-            <table>
-              <thead><tr><th>Date &amp; time</th><th>Content</th><th>Target</th><th>Type</th><th>Status</th><th><span className={styles.visuallyHidden}>Actions</span></th></tr></thead>
-              <tbody>{visibleNotifications.map((item) => <tr key={item.id}>
+            <table aria-label="Notification history">
+              <colgroup>
+                <col className={styles.dateColumn} />
+                <col />
+                <col className={styles.targetColumn} />
+                <col className={styles.typeColumn} />
+                <col className={styles.statusColumn} />
+                <col className={styles.actionsColumn} />
+              </colgroup>
+              <thead><tr><th scope="col">Date &amp; time</th><th scope="col">Content</th><th scope="col">Recipients</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col"><span className={styles.visuallyHidden}>Actions</span></th></tr></thead>
+              <tbody>{loadingHistory ? <tr><td colSpan={6} className={styles.historyEmpty}>Loading notifications…</td></tr>
+                : !historyError && notifications.length === 0 ? <tr><td colSpan={6} className={styles.historyEmpty}>{search.trim() ? 'No notifications match your search.' : 'No notifications yet.'}</td></tr>
+                : notifications.map((item) => <tr key={item.id}>
                 <td>{formatDate(item.date)}</td>
                 <td><span className={styles.contentPreview} title={item.content}>{item.content}</span></td>
-                <td><span className={`${styles.target} ${getTargetClass(item.target)}`}>{item.target}</span></td>
+                <td><div className={styles.recipientSummary} title={item.target}>
+                  <span className={`${styles.target} ${getTargetClass(item.target)}`}>{item.recipientEmails[0] || item.target}</span>
+                  {item.recipientEmails.length > 1 && <span className={styles.recipientCount}>+{item.recipientEmails.length - 1}</span>}
+                </div></td>
                 <td>{item.type}</td>
                 <td><span className={styles.notificationStatus} data-status={item.status}>{item.status}</span></td>
                 <td><button type="button" className={styles.viewButton} onClick={() => setSelectedNotification(item)} aria-label={`View notification sent on ${formatDate(item.date)}`} title="View details"><Eye /></button></td>
               </tr>)}</tbody>
             </table>
           </div>
-          <Pagination page={page} totalItems={notifications.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          <div className={styles.historyPagination}>
+            <Pagination page={page} totalItems={totalItems} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          </div>
         </section>
       </section>
 
