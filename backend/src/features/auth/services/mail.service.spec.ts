@@ -52,9 +52,22 @@ describe('MailService errors', () => {
         subject: 'Lesson <update>', text: 'Hello & welcome',
         attachments: [{ filename: 'Lesson.pdf', contentType: 'application/pdf', path: attachment.url }],
       });
-      expect(mail.html).toContain('Lesson &lt;update&gt;');
+      expect(mail.html).toContain('AptiMate');
+      expect(mail.html).not.toContain('Lesson &lt;update&gt;');
+      expect(mail.html).not.toContain('<h3>');
       expect(mail.html).toContain('Hello &amp; welcome');
     }
+  });
+
+  it('renders the message once when the subject and content are identical', async () => {
+    sendMail.mockResolvedValue({});
+    const service = new MailService(new ConfigService({ smtp: { enabled: true, host: 'localhost', from: 'test@example.com' } }));
+    await service.sendNotificationEmail(['one@example.com'], 'Đi làm', 'Đi làm');
+    const mail = sendMail.mock.calls[0][0];
+    expect(mail.subject).toBe('Đi làm');
+    expect(mail.text).toBe('Đi làm');
+    expect(mail.html.split('Đi làm')).toHaveLength(2);
+    expect(mail.html).not.toContain('<h3>');
   });
 
   it('attaches locally stored files using their backend path', async () => {
@@ -66,6 +79,16 @@ describe('MailService errors', () => {
       publicId: 'local:notification-attachments/lesson.docx',
     });
     expect(sendMail.mock.calls[0][0].attachments[0].path).toBe(join(process.cwd(), 'uploads', 'notification-attachments', 'lesson.docx'));
+  });
+
+  it('keeps the Vietnamese filename when attaching a notification file to email', async () => {
+    sendMail.mockResolvedValue({});
+    const service = new MailService(new ConfigService({ smtp: { enabled: true, host: 'localhost', from: 'test@example.com' } }));
+    await service.sendNotificationEmail(['one@example.com'], 'Tài liệu học', 'Xem file đính kèm', {
+      name: 'Báo cáo tổng hợp tiếng Việt.pdf', mimeType: 'application/pdf',
+      url: 'https://files.example.com/test.pdf', publicId: 'test',
+    });
+    expect(sendMail.mock.calls[0][0].attachments[0].filename).toBe('Báo cáo tổng hợp tiếng Việt.pdf');
   });
 
   it('does not send notification email when no recipients were supplied', async () => {
