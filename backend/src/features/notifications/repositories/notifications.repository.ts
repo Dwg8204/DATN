@@ -112,7 +112,19 @@ export class NotificationsRepository {
 
     if (query.status) {
       values.push(query.status);
-      where.push(`status = $${values.length}`);
+      where.push(`n.status = $${values.length}`);
+    }
+
+    if (query.search?.trim()) {
+      values.push(query.search.trim());
+      const term = `lower($${values.length}::text)`;
+      where.push(`(strpos(lower(n.title), ${term}) > 0
+        OR strpos(lower(n.content), ${term}) > 0
+        OR strpos(lower(COALESCE(n.attachment->>'name', '')), ${term}) > 0
+        OR strpos(lower(n.status::text), ${term}) > 0
+        OR strpos(CASE WHEN n.channel='EMAIL' THEN 'email' ELSE 'push notification' END, ${term}) > 0
+        OR EXISTS (SELECT 1 FROM notification_recipients sr JOIN users su ON su.id=sr.user_id
+          WHERE sr.notification_id=n.id AND strpos(lower(su.email::text), ${term}) > 0))`);
     }
 
     const whereSql = where.length > 0 ? `WHERE ${where.join(' AND ')}` : '';
@@ -124,18 +136,18 @@ export class NotificationsRepository {
       this.dataSource.query<NotificationRow[]>(
         `SELECT id, created_by, title, content, type, channel, audience_type, audience_role_id,
                 attachment, action_path, scheduled_at, status, sent_at, created_at, updated_at,
-                (SELECT count(*)::int FROM notification_recipients r WHERE r.notification_id = notifications.id) AS recipient_count,
+                (SELECT count(*)::int FROM notification_recipients r WHERE r.notification_id = n.id) AS recipient_count,
                 COALESCE((SELECT array_agg(u.email::text ORDER BY u.email)
                           FROM notification_recipients r JOIN users u ON u.id = r.user_id
-                          WHERE r.notification_id = notifications.id), ARRAY[]::text[]) AS recipient_emails
-         FROM notifications
+                          WHERE r.notification_id = n.id), ARRAY[]::text[]) AS recipient_emails
+         FROM notifications n
          ${whereSql}
-         ORDER BY created_at DESC
+         ORDER BY n.created_at DESC, n.id DESC
          LIMIT ${limitParam} OFFSET ${offsetParam}`,
         [...values, query.pageSize, offset],
       ),
       this.dataSource.query<Array<{ total: string }>>(
-        `SELECT count(*)::text AS total FROM notifications ${whereSql}`,
+        `SELECT count(*)::text AS total FROM notifications n ${whereSql}`,
         values,
       ),
     ]);
@@ -183,6 +195,8 @@ export class NotificationsRepository {
   }
 
   async claimDueNotifications(limit: number): Promise<NotificationRow[]> {
+    // Keep the outer command a SELECT: TypeORM returns [rows, affected] for
+    // a raw UPDATE, which is not the NotificationRow[] consumed by the worker.
     return this.dataSource.query<NotificationRow[]>(
       `WITH due AS (
          SELECT id
@@ -192,25 +206,27 @@ export class NotificationsRepository {
          ORDER BY scheduled_at ASC
          FOR UPDATE SKIP LOCKED
          LIMIT $1
-       )
+       ), claimed AS (
        UPDATE notifications n
        SET status = 'SENDING', updated_at = now()
        FROM due
        WHERE n.id = due.id
        RETURNING n.id, n.created_by, n.title, n.content, n.type, n.channel, n.audience_type,
                  n.audience_role_id, n.attachment, n.action_path, n.scheduled_at, n.status,
-                 n.sent_at, n.created_at, n.updated_at`,
+                 n.sent_at, n.created_at, n.updated_at
+       ) SELECT * FROM claimed`,
       [limit],
     );
   }
 
   async claimScheduledNotificationNow(id: string): Promise<NotificationRow | null> {
     const rows = await this.dataSource.query<NotificationRow[]>(
-      `UPDATE notifications
+      `WITH claimed AS (UPDATE notifications
        SET status = 'SENDING', scheduled_at = COALESCE(scheduled_at, now()), updated_at = now()
        WHERE id = $1 AND status = 'SCHEDULED'
        RETURNING id, created_by, title, content, type, channel, audience_type, audience_role_id,
-                 attachment, action_path, scheduled_at, status, sent_at, created_at, updated_at`,
+                 attachment, action_path, scheduled_at, status, sent_at, created_at, updated_at
+       ) SELECT * FROM claimed`,
       [id],
     );
     return rows[0] ?? null;
