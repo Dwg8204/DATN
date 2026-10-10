@@ -193,16 +193,21 @@ function TestAttemptSession({ attemptId, expectedComponent, children }) {
     };
   }, []);
 
-  const setAnswer = useCallback((key, answer) => {
+  const setAnswerBatch = useCallback((update, currentQuestionKey) => {
     if (!attemptRef.current?.canAnswer || timeExpiredRef.current || conflictRemoteRef.current || submissionRef.current !== 'idle') return;
-    pendingRef.current = { ...pendingRef.current, [key]: answer };
-    publishAnswers(applyLocalChanges(answersRef.current, { [key]: answer }));
+    const changes = typeof update === 'function' ? update(answersRef.current) : update;
+    const keys = Object.keys(changes ?? {});
+    if (!keys.length) return;
+    pendingRef.current = { ...pendingRef.current, ...changes };
+    publishAnswers(applyLocalChanges(answersRef.current, changes));
     attemptRef.current = { ...attemptRef.current,
-      progress: { ...(attemptRef.current.progress ?? {}), currentQuestionKey: key } };
+      progress: { ...(attemptRef.current.progress ?? {}), currentQuestionKey: currentQuestionKey ?? keys[keys.length - 1] } };
     navigationDirtyRef.current = true;
     setSaveStatus(retryWaitingRef.current && !retryRef.current ? 'error' : 'unsaved');
     scheduleSave();
   }, [publishAnswers, scheduleSave]);
+
+  const setAnswer = useCallback((key, answer) => setAnswerBatch({ [key]: answer }, key), [setAnswerBatch]);
 
   const setCurrentQuestion = useCallback(key => {
     if (!attemptRef.current?.canAnswer || timeExpiredRef.current || conflictRemoteRef.current || submissionRef.current !== 'idle' || !key) return;
@@ -324,10 +329,10 @@ function TestAttemptSession({ attemptId, expectedComponent, children }) {
   const value = useMemo(() => ({
     attemptId, attempt, paper: attempt?.paper, answers, loading, loadError, saveStatus,
     submitting: submissionState === 'submitting' || submissionState === 'verifying', submissionState,
-    timeExpired, setAnswer, setCurrentQuestion, resolveSaveConflict, retrySave, flush, submit,
+    timeExpired, setAnswer, setAnswerBatch, setCurrentQuestion, resolveSaveConflict, retrySave, flush, submit,
     reconcileSubmission, approveNavigation, isNavigationApproved,
   }), [answers, approveNavigation, attempt, attemptId, flush, isNavigationApproved, loadError, loading,
-    reconcileSubmission, resolveSaveConflict, retrySave, saveStatus, setAnswer, setCurrentQuestion,
+    reconcileSubmission, resolveSaveConflict, retrySave, saveStatus, setAnswer, setAnswerBatch, setCurrentQuestion,
     submissionState, submit, timeExpired]);
 
   return <TestAttemptContext.Provider value={value}>

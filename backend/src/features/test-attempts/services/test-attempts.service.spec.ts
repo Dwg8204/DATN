@@ -4,6 +4,7 @@ import { TestAttemptsRepository } from '../repositories/test-attempts.repository
 import { TestAttemptsService } from './test-attempts.service';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { Logger } from '@nestjs/common';
+import { buildSampleTests } from '../../../database/seeds/seed-sample-tests';
 
 const actor = { id: 'student-1' } as AuthUser;
 const grammarPart = { mode: 'part1', details: { title: 'Grammar' }, parts: {
@@ -18,6 +19,39 @@ function service(repository: Record<string, unknown>) {
 }
 
 describe('shared test attempt regressions', () => {
+  it('starts Reading with a persisted 35-minute deadline and preserves it on resume', async () => {
+    const startedAt = new Date('2026-10-11T10:00:00Z');
+    const expiresAt = new Date('2026-10-11T10:35:00Z');
+    const snapshot = buildSampleTests().find(sample => sample.component === 'READING' && sample.test.purpose === 'EXAM')!.test;
+    let created: Record<string, unknown> | null = null;
+    const manager = { query: jest.fn(async (sql: string, values: unknown[]) => {
+      if (sql.includes('INSERT INTO test_attempts')) {
+        expect(values[6]).toBe(35);
+        expect(sql).toContain("now() + ($7::integer * interval '1 minute')");
+        created = { id: 'reading-attempt', test_id: 'reading-test', snapshot_id: 'reading-snapshot',
+          component: 'READING', purpose: 'EXAM', scope: 'FULL_SKILL', part_number: null,
+          status: 'IN_PROGRESS', started_at: startedAt, expires_at: expiresAt, version: 1 };
+      }
+      return [];
+    }) };
+    const repository = {
+      dataSource: { transaction: (fn: (value: unknown) => Promise<unknown>) => fn(manager) },
+      find: jest.fn(async () => created), idExists: jest.fn(async () => false), active: jest.fn(async () => null),
+      published: jest.fn(async () => ({ component: 'READING', purpose: 'EXAM', scope: 'FULL_SKILL',
+        snapshot_id: 'reading-snapshot', schema_version: 1 })),
+      snapshot: jest.fn(async () => snapshot), progress: jest.fn(async () => ({ answers: {}, progress: {}, revision: 0 })),
+      serverTime: jest.fn(async () => new Date('2026-10-11T10:05:00Z')),
+    };
+    const attempts = service(repository);
+    const first = await attempts.start('reading-test', 'reading-attempt', actor, 'full', 'READING');
+    const resumed = await attempts.start('reading-test', 'reading-attempt', actor, 'full', 'READING');
+    expect(first).toMatchObject({ expiresAt, canAnswer: true });
+    expect(resumed.expiresAt).toEqual(first.expiresAt);
+    expect(manager.query.mock.calls.filter(([sql]) => sql.includes('INSERT INTO test_attempts'))).toHaveLength(1);
+    repository.serverTime.mockResolvedValue(new Date('2026-10-11T10:35:00Z'));
+    expect(await attempts.get('reading-attempt', actor)).toMatchObject({ expiresAt, canAnswer: false });
+  });
+
   it('uses immutable snapshot mode when mutable test metadata differs', async () => {
     const snapshot = { mode: 'full', details: { title: 'Full test' }, parts: {
       1: grammarPart.parts[1],

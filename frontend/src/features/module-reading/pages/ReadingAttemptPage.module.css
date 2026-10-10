@@ -3,9 +3,20 @@
 .heading { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
 .heading > div { display: grid; gap: 3px; }.heading strong { font-size: 22px; }.heading span { color: #686868; }
 .task { min-width: 0; }
+.partOneExamPage { flex: 1; min-height: 0; }
+.partOneExam {
+  width: min(1200px, 100%);
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 32px clamp(16px, 4vw, 48px);
+  align-content: start;
+  gap: 24px;
+}
+.partOneInstructions { padding: 0; }
 .reveals { display: grid; gap: 10px; padding: 20px; border-radius: 12px; background: #fafafa; border: 1px solid #e1e1e1; }
 .reveals h2 { margin: 0; font-size: 18px; }.reveals > div { border-top: 1px solid #e6e6e6; padding-top: 10px; }
 @media (max-width: 700px) { .content { padding: 22px 14px 115px; }.heading { align-items: flex-start; } }
+@media (max-width: 700px) { .partOneExam { padding: 22px 14px 24px; gap: 20px; }.partOneInstructions { padding: 12px 14px; } }
 
 /* Dark Mode Overrides */
 :global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }

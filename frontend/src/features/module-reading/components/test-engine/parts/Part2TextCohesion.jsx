@@ -6,6 +6,7 @@ import {
   DragOverlay,
   PointerSensor,
   TouchSensor,
+  pointerWithin,
   useDraggable,
   useDroppable,
   useSensor,
@@ -22,10 +23,6 @@ const DraggableSentence = ({ id, sentence, isSelected, onSelect }) => {
     data: { type: 'sentence', sentence }
   });
 
-  if (isDragging) {
-    return <div ref={setNodeRef} className="opacity-30 border-2 border-dashed border-gray-300 rounded-lg p-3 my-2 h-[60px] bg-gray-50 w-full"></div>;
-  }
-
   return (
     <div 
       ref={setNodeRef} 
@@ -34,7 +31,7 @@ const DraggableSentence = ({ id, sentence, isSelected, onSelect }) => {
       onClick={() => onSelect(id)}
       className={`bg-white border rounded-lg p-4 my-3 flex items-center cursor-grab active:cursor-grabbing hover:border-blue-400 hover:shadow-sm transition-all w-full min-h-[60px] touch-none ${
         isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-300'
-      }`}
+      } ${isDragging ? 'opacity-30' : ''}`}
     >
       <RichTextContent className="text-sm font-medium text-gray-800 flex-1" value={sentence.content}/>
       <GripVertical className="w-4 h-4 text-gray-400 ml-2 flex-shrink-0" />
@@ -71,15 +68,6 @@ const DroppableGap = ({
   };
 
   if (droppedSentence) {
-    if (isDragging) {
-      return (
-        <div
-          ref={setNodeRef}
-          className="min-h-[60px] w-full rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 my-3 opacity-60"
-        />
-      );
-    }
-
     return (
       <div
         ref={setNodeRef}
@@ -87,8 +75,8 @@ const DroppableGap = ({
         {...attributes}
         onClick={() => hasSelectedSentence ? onPlace(id) : onSelectPlaced(droppedSentence.id)}
         className={`bg-[#F3D5B5] border rounded-lg px-4 py-3 min-h-[60px] w-full flex items-center shadow-inner relative my-3 cursor-grab active:cursor-grabbing touch-none transition-colors ${
-          isSelected ? 'border-blue-500 ring-2 ring-blue-200' : 'border-black'
-        }`}
+          isSelected || isOver ? 'border-blue-500 ring-2 ring-blue-200' : 'border-black'
+        } ${isDragging ? 'opacity-30' : ''}`}
       >
         <RichTextContent className="text-sm font-semibold text-black flex-1" value={droppedSentence.content}/>
       </div>
@@ -110,7 +98,7 @@ const DroppableGap = ({
 
 const CohesionText = ({ data, questionStart }) => {
   const shuffled = useMemo(() => shuffleSentences(data?.sentences || []), [data?.sentences]);
-  const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
+  const { answers, handleSentencePlacement, renderAnswerReveal } = useContext(ReadingTestContext);
   const [activeId, setActiveId] = useState(null);
   const [selectedSentenceId, setSelectedSentenceId] = useState(null);
   const sensors = useSensors(
@@ -121,28 +109,14 @@ const CohesionText = ({ data, questionStart }) => {
   if (!data) return null;
 
   const handleDragStart = (event) => {
+    setSelectedSentenceId(null);
     setActiveId(event.active.id);
   };
 
   const placeSentence = (sentenceId, position) => {
     if (!sentenceId) return;
 
-    const sentenceIds = new Set(data.sentences.map(sentence => sentence.id));
-    const existingSentenceId = Object.keys(answers).find(key => sentenceIds.has(key) && answers[key] === position);
-    const previousPosition = answers[sentenceId];
-
-    if (existingSentenceId === sentenceId) {
-      setSelectedSentenceId(null);
-      return;
-    }
-
-    handleAnswerChange(sentenceId, position);
-
-    if (existingSentenceId && existingSentenceId !== sentenceId) {
-      // Moving an already-placed sentence to an occupied position swaps them.
-      handleAnswerChange(existingSentenceId, previousPosition || null);
-    }
-
+    handleSentencePlacement(sentenceId, position, data.sentences);
     setSelectedSentenceId(null);
   };
 
@@ -164,7 +138,9 @@ const CohesionText = ({ data, questionStart }) => {
   const availableSentences = shuffled.filter(s => !answers[s.id]);
 
   return (
-    <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+    <DndContext sensors={sensors} collisionDetection={pointerWithin}
+      onDragStart={handleDragStart} onDragEnd={handleDragEnd}
+      onDragCancel={() => { setActiveId(null); setSelectedSentenceId(null); }}>
       <div className="flex flex-col h-full bg-transparent animate-in fade-in">
         
         <div className="py-2 sm:py-6 flex-1 flex flex-col md:flex-row gap-6 md:gap-10">
@@ -187,8 +163,7 @@ const CohesionText = ({ data, questionStart }) => {
               
               {/* Droppable gaps */}
               {[2, 3, 4, 5, 6].map(position => {
-                const sentenceId = Object.keys(answers).find(key => answers[key] === position);
-                const sentence = data.sentences.find(s => s.id === sentenceId);
+                const sentence = data.sentences.find(s => s.correctPosition !== 1 && answers[s.id] === position);
                 const questionId = questionStart + position - 2;
                 return (
                   <div key={position} id={`question-${questionId}`} className="transition-all duration-300 rounded p-1">
@@ -231,7 +206,7 @@ const CohesionText = ({ data, questionStart }) => {
         </div>
       </div>
 
-      <DragOverlay>
+      <DragOverlay dropAnimation={null}>
         {activeSentence ? (
           <div className="bg-white border-2 border-blue-400 shadow-xl rounded-lg p-4 flex items-center opacity-90 scale-105 cursor-grabbing min-h-[60px] w-[min(400px,calc(100vw-32px))]">
             <RichTextContent className="text-sm font-medium text-gray-900 flex-1" value={activeSentence.content}/>

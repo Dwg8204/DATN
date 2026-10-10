@@ -1,5 +1,6 @@
 import { createContext, useCallback, useState } from 'react';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+import { part2PlacementChanges } from '../utils/part2Placement.js';
 
 export const ReadingTestContext = createContext(null);
 const READING_TEST_QUERY_SCHEMA = { currentPart: { ...queryParam.positiveInt(1, 4), param: 'part' } };
@@ -20,6 +21,9 @@ export const ReadingTestProvider = ({ children }) => {
       [questionId]: value
     }));
   };
+  const handleSentencePlacement = (sentenceId, position, sentences) => {
+    setAnswers(previous => ({ ...previous, ...part2PlacementChanges(sentences, previous, sentenceId, position) }));
+  };
   
   const value = {
     testData,
@@ -28,6 +32,7 @@ export const ReadingTestProvider = ({ children }) => {
     setCurrentPart,
     answers,
     handleAnswerChange,
+    handleSentencePlacement,
     timeLeft,
     setTimeLeft,
     isStarted,

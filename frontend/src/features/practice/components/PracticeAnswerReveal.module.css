@@ -9,4 +9,12 @@
 .panel > div { display: grid; gap: 5px; }
 .panel strong { color: #a81620; font-size: 13px; }
 .panel p { margin: 0; line-height: 1.55; }
+.inlineReveal .panel { display: inline-flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 7px 10px; font-size: 14px; }
+.inlineReveal .panel > div { display: flex; align-items: baseline; flex-wrap: wrap; gap: 5px; }
+.inlineReveal > button span { display: none; }
+.inlineExplanation { position: relative; }
+.inlineExplanation summary { color: #a81620; font-size: 13px; cursor: pointer; }
+.inlineExplanation > div { position: absolute; z-index: 210; top: calc(100% + 8px); right: 0; width: min(340px, calc(100vw - 48px)); padding: 14px; border: 1px solid #f0c8cb; border-radius: 8px; background: #fff8f8; box-shadow: 0 6px 20px #0002; line-height: 1.55; }
+@media (max-width: 700px) { .inlineExplanation { position: static; } .inlineExplanation > div { position: static; width: 100%; margin-top: 8px; box-shadow: none; } }
+:global([data-theme="dark"]) .inlineExplanation > div { background: var(--bg-surface); color: var(--text-primary); border-color: var(--brand); }
 @media (max-width: 700px) { .reveal > button { min-width: 40px; justify-content: center; } .reveal > button span { display: none; } .panel { padding: 12px; } }

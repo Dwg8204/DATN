@@ -12,6 +12,7 @@ import Part2TextCohesion from '../components/test-engine/parts/Part2TextCohesion
 import Part3OpinionMatch from '../components/test-engine/parts/Part3OpinionMatch.jsx';
 import Part4MatchHeading from '../components/test-engine/parts/Part4MatchHeading.jsx';
 import styles from './ReadingAttemptPage.module.css';
+import { part2AttemptChanges } from '../utils/part2Placement.js';
 
 const instructions = {
   1: 'Read the passage and choose the correct word for each gap.',
@@ -53,7 +54,7 @@ export default function ReadingAttemptPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { attemptId, paper, answers, loading, loadError, saveStatus, isPractice,
-    setAnswer, flush, submit, approveNavigation } = useTestAttempt();
+    setAnswer, setAnswerBatch, flush, submit, approveNavigation } = useTestAttempt();
   const [showSubmit, setShowSubmit] = useState(false);
   const current = findPaperPart(paper, number);
   const data = useMemo(() => current ? legacyPart(number, current) : null, [current, number]);
@@ -88,13 +89,7 @@ export default function ReadingAttemptPage() {
       const option = question.options.find(item => item.text === value);
       setAnswer(key, option ? { kind: 'CHOICE', optionId: option.id } : null);
     } else if (number === 2) {
-      const texts = Array.isArray(current.texts) ? current.texts : [{ id: 'p2-text1', ...current }];
-      const text = texts.find(item => item.options.some(option => option.id === key));
-      const position = text?.positions.find(item => item.position === value);
-      if (position) setAnswer(position.key, { kind: 'MATCH', optionId: key });
-      for (const item of text?.positions || []) {
-        if (item.position !== value && answers[item.key]?.optionId === key) setAnswer(item.key, null);
-      }
+      setAnswerBatch(latest => part2AttemptChanges(current, latest, key, value));
     } else if (number === 3) {
       const speaker = current.speakers.find(item => item.name === value);
       setAnswer(key, speaker ? { kind: 'MATCH', optionId: speaker.id } : null);
@@ -123,21 +118,25 @@ export default function ReadingAttemptPage() {
         : current.paragraphs.map(item => ({ ...item, options: current.headings }));
   const questionIds = revealItems.map(item => item.key);
   const answeredIds = questionIds.filter(key => answers[key]);
-  const renderAnswerReveal = legacyKey => {
+  const renderAnswerReveal = (legacyKey, revealOptions = {}) => {
     const item = number === 2
       ? revealItems.find(candidate => candidate.position === legacyKey.position && candidate.textId === legacyKey.textId)
       : number === 4
         ? revealItems.find(candidate => candidate.id === legacyKey)
         : revealItems.find(candidate => candidate.key === legacyKey);
-    return item ? <PracticeAnswerReveal questionKey={item.key} options={item.options} /> : null;
+    return item ? <PracticeAnswerReveal questionKey={item.key} options={item.options} inline={Boolean(revealOptions.inline)} /> : null;
   };
-  const provider = { answers: legacyAnswers, handleAnswerChange: handleLegacyAnswer, renderAnswerReveal };
+  const provider = { answers: legacyAnswers, handleAnswerChange: handleLegacyAnswer, renderAnswerReveal,
+    handleSentencePlacement: (sentenceId, position) => {
+      setAnswerBatch(latest => part2AttemptChanges(current, latest, sentenceId, position));
+    } };
 
-  return <div className={styles.page}><main className={styles.content}>
+  return <div className={`${styles.page} ${number === 1 && !isPractice ? styles.partOneExamPage : ''}`}><main className={`${styles.content} ${number === 1 && !isPractice ? styles.partOneExam : ''}`}>
     <header className={styles.heading}><div><strong>Reading · Part {number}</strong><span>{paper.title}</span></div><SaveIndicator status={saveStatus} /></header>
-    <InstructionBlock title={`Part ${number}`}>{instructions[number]}</InstructionBlock>
+    <InstructionBlock title={number === 1 && !isPractice ? 'Instructions' : `Part ${number}`}
+      className={number === 1 && !isPractice ? styles.partOneInstructions : ''}>{instructions[number]}</InstructionBlock>
     <ReadingTestContext.Provider value={provider}>
-      <div className={styles.task}>{number === 1 ? <Part1GapFilling data={data} /> : number === 2 ? <Part2TextCohesion data={data} />
+      <div className={styles.task}>{number === 1 ? <Part1GapFilling data={data} isPractice={isPractice} /> : number === 2 ? <Part2TextCohesion data={data} />
         : number === 3 ? <Part3OpinionMatch data={data} /> : <Part4MatchHeading data={data} />}</div>
     </ReadingTestContext.Provider>
   </main>

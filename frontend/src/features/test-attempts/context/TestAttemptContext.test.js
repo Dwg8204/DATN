@@ -5,6 +5,7 @@ import { runInNewContext } from 'node:vm';
 import { transformSync } from 'esbuild';
 import { normalizeApiError } from '../../../services/apiError.js';
 import * as savePolicy from '../utils/attemptSavePolicy.js';
+import { remainingSeconds } from '../utils/attemptTime.js';
 
 const source = readFileSync(new URL('./TestAttemptContext.jsx', import.meta.url), 'utf8');
 const compiled = transformSync(source, { loader: 'jsx', format: 'cjs', jsx: 'automatic' }).code;
@@ -22,6 +23,11 @@ function attemptHarness(initial = {}) {
   let pendingEffects = [];
   let timerId = 0;
   const timers = new Map();
+  const intervals = new Map();
+  let clientNow = Date.now();
+  class ClockDate extends Date {
+    static now() { return clientNow; }
+  }
   const notices = [];
   const toast = { showError: message => notices.push(message) };
   const remote = {
@@ -55,7 +61,11 @@ function attemptHarness(initial = {}) {
   };
   const clone = value => structuredClone(value);
   const harness = {
-    remote, notices, timers,
+    remote, notices, timers, intervals,
+    advance(milliseconds) {
+      clientNow += milliseconds;
+      for (const callback of intervals.values()) callback();
+    },
     getBehavior: async () => clone(remote),
     saveBehavior: async payload => {
       remote.revision += 1;
@@ -70,7 +80,9 @@ function attemptHarness(initial = {}) {
     },
     render() {
       cursor = 0;
-      const context = session.type(session.props).props.value;
+      const tree = session.type(session.props);
+      const context = tree.props.value;
+      harness.timerSeconds = tree.props.children.props.value;
       const effects = pendingEffects;
       pendingEffects = [];
       effects.forEach(commit => commit());
@@ -87,8 +99,8 @@ function attemptHarness(initial = {}) {
   const mockWindow = {
     setTimeout: (callback, delay) => { timers.set(++timerId, { callback, delay }); return timerId; },
     clearTimeout: id => timers.delete(id),
-    setInterval: () => ++timerId,
-    clearInterval: () => {},
+    setInterval: callback => { intervals.set(++timerId, callback); return timerId; },
+    clearInterval: id => intervals.delete(id),
     addEventListener: () => {}, removeEventListener: () => {},
   };
   const jsx = (type, props) => ({ type, props });
@@ -98,7 +110,7 @@ function attemptHarness(initial = {}) {
     '../../../context/ToastContext.jsx': { useToast: () => toast },
     '../../../services/apiError.js': { normalizeApiError },
     '../services/testAttemptsApi.js': { testAttemptsApi: api },
-    '../utils/attemptTime.js': { remainingSeconds: () => 100 },
+    '../utils/attemptTime.js': { remainingSeconds },
     '../utils/attemptSavePolicy.js': savePolicy,
     './testAttemptContextStore.js': { AttemptTimerContext: { Provider: 'timer' }, TestAttemptContext: { Provider: 'context' } },
     'react/jsx-runtime': { jsx, jsxs: jsx },
@@ -108,8 +120,8 @@ function attemptHarness(initial = {}) {
   mocks['./useAttemptAutosave.js'] = autosaveModule.exports;
   const module = { exports: {} };
   runInNewContext(compiled, { module, require: name => mocks[name], window: mockWindow,
-    document: { addEventListener() {}, removeEventListener() {} }, AbortController, Date, URLSearchParams });
-  const session = module.exports.TestAttemptProvider({ expectedComponent: 'WRITING' });
+    document: { addEventListener() {}, removeEventListener() {} }, AbortController, Date: ClockDate, URLSearchParams });
+  const session = module.exports.TestAttemptProvider({ expectedComponent: remote.component });
   return harness;
 }
 
@@ -118,6 +130,72 @@ async function mounted(harness) {
   await settle();
   return harness.render();
 }
+
+test('Reading countdown uses the server deadline, continues through Part changes and locks at zero', async () => {
+  const harness = attemptHarness({ component: 'READING', expiresAt: '2026-10-11T10:35:00Z', serverTime: '2026-10-11T10:00:00Z' });
+  await mounted(harness);
+  let context = harness.render();
+  assert.equal(harness.timerSeconds, 35 * 60);
+  harness.advance(65_000);
+  context = harness.render();
+  assert.equal(harness.timerSeconds, 35 * 60 - 65);
+  context.setAnswer('p2:q1', { kind: 'MATCH', optionId: 'A' });
+  harness.render();
+  assert.equal(harness.timerSeconds, 35 * 60 - 65, 'changing Part does not restart the timer');
+  harness.advance(40 * 60_000);
+  context = harness.render();
+  assert.equal(harness.timerSeconds, 0);
+  assert.equal(context.timeExpired, true);
+  context.setAnswer('p2:q1', { kind: 'MATCH', optionId: 'B' });
+  assert.equal(harness.render().answers['p2:q1'].optionId, 'A', 'expired answers stay locked');
+  harness.unmount();
+  assert.equal(harness.intervals.size, 0);
+});
+
+test('reloading a Reading attempt keeps only the remaining server time, not a fresh 35 minutes', async () => {
+  const harness = attemptHarness({ component: 'READING', expiresAt: '2026-10-11T10:35:00Z', serverTime: '2026-10-11T10:12:00Z' });
+  await mounted(harness);
+  harness.render();
+  assert.equal(harness.timerSeconds, 23 * 60);
+  harness.unmount();
+});
+
+test('batch swaps update and autosave both positions together for exam and practice', async () => {
+  for (const purpose of ['EXAM', 'PRACTICE']) {
+    const match = optionId => ({ kind: 'MATCH', optionId });
+    const harness = attemptHarness({ purpose, answers: { 'p2:q2': match('A'), 'p2:q3': match('B') } });
+    const context = await mounted(harness);
+    context.setAnswerBatch({ 'p2:q2': match('B'), 'p2:q3': match('A') });
+    assert.deepEqual(harness.render().answers, { 'p2:q2': match('B'), 'p2:q3': match('A') });
+    let saved;
+    const save = harness.saveBehavior;
+    harness.saveBehavior = async payload => { saved = payload; return save(payload); };
+    await context.flush();
+    assert.deepEqual(saved.changes, { 'p2:q2': match('B'), 'p2:q3': match('A') });
+    assert.deepEqual(harness.remote.answers, { 'p2:q2': match('B'), 'p2:q3': match('A') });
+    harness.unmount();
+  }
+});
+
+test('batch functional updates see latest answers even before another render', async () => {
+  const harness = attemptHarness();
+  const context = await mounted(harness);
+  context.setAnswer('q2', answer('A'));
+  context.setAnswerBatch(latest => ({ q3: latest.q2, q2: null }));
+  assert.deepEqual(harness.render().answers, { q3: answer('A') });
+  await context.flush();
+  assert.deepEqual(harness.remote.answers, { q3: answer('A') });
+  harness.unmount();
+});
+
+test('batch updates cannot change a submitted or non-answerable attempt', async () => {
+  for (const initial of [{ canAnswer: false }, { status: 'SUBMITTED', canAnswer: false }]) {
+    const harness = attemptHarness(initial), context = await mounted(harness);
+    context.setAnswerBatch({ q2: answer('A'), q3: answer('B') });
+    assert.deepEqual(harness.render().answers, {});
+    harness.unmount();
+  }
+});
 
 test('a lost save response followed by more typing does not create a false conflict', async () => {
   const harness = attemptHarness();

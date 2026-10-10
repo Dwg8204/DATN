@@ -5,7 +5,7 @@ import { useTestAttempt } from '../../test-attempts/context/testAttemptContextSt
 import styles from './PracticeAnswerReveal.module.css';
 import { useTranslation } from 'react-i18next';
 
-export default function PracticeAnswerReveal({ questionKey, options = [] }) {
+export default function PracticeAnswerReveal({ questionKey, options = [], inline = false }) {
   const { t } = useTranslation();
   const { isPractice, revealedAnswers, revealAnswer } = useTestAttempt();
   const [expanded, setExpanded] = useState(false);
@@ -23,7 +23,7 @@ export default function PracticeAnswerReveal({ questionKey, options = [] }) {
     setExpanded(true);
   };
 
-  return <div className={styles.reveal}>
+  return <div className={`${styles.reveal} ${inline ? styles.inlineReveal : ''}`}>
     <button type="button" onClick={() => void toggle()} disabled={loading}
       aria-expanded={expanded} title={expanded ? t('practice.hideAnswer') : t('practice.showAnswer')}>
       {expanded ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}
@@ -32,7 +32,10 @@ export default function PracticeAnswerReveal({ questionKey, options = [] }) {
     {expanded && revealed && <aside className={styles.panel} aria-live="polite">
       {(answerText || revealed.sampleAnswer) && <div><strong>{revealed.sampleAnswer ? t('practice.sampleAnswer') : t('practice.correctAnswer')}</strong>
         <RichTextContent value={revealed.sampleAnswer || answerText} /></div>}
-      {revealed.explanation && <div><strong>{t('practice.explanation')}</strong><RichTextContent value={revealed.explanation} /></div>}
+      {revealed.explanation && (inline ? <details className={styles.inlineExplanation}>
+        <summary>{t('practice.explanation')}</summary>
+        <div><RichTextContent value={revealed.explanation} /></div>
+      </details> : <div><strong>{t('practice.explanation')}</strong><RichTextContent value={revealed.explanation} /></div>)}
       {!answerText && !revealed.sampleAnswer && !revealed.explanation && <p>{t('practice.noGuidance')}</p>}
     </aside>}
   </div>;
