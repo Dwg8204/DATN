@@ -294,3 +294,69 @@
     display: none !important;
   }
 }
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loadingModal {
+  background: white;
+  padding: 32px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #C92A2A;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingText {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); }
+:global([data-theme="dark"]) .content { background: var(--bg-surface); box-shadow: none; }
+:global([data-theme="dark"]) .uploadBtn { background-color: var(--bg-hover); border-color: var(--border); color: var(--text-muted); }
+:global([data-theme="dark"]) .label { color: var(--text-primary); }
+:global([data-theme="dark"]) .input { background: var(--bg-hover); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .textarea { background: var(--bg-hover); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .changePasswordBtn { background-color: var(--bg-surface); border-color: var(--brand-hover); color: var(--brand-hover); }
+:global([data-theme="dark"]) .sectionDivider { background-color: var(--border); }
+:global([data-theme="dark"]) .sectionTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .cancelGoalBtn { border-color: var(--border); color: var(--text-muted); }
+:global([data-theme="dark"]) .cancelGoalBtn:hover { background: var(--bg-hover); }
+:global([data-theme="dark"]) .saveGoalBtn { background: var(--bg-surface); }
+:global([data-theme="dark"]) .goalTile { background: var(--bg-hover); }
+:global([data-theme="dark"]) .goalTileTitle { color: var(--text-muted); }
+:global([data-theme="dark"]) .goalTileValuePrimary { color: var(--brand-hover); }
+:global([data-theme="dark"]) .goalTileValue { color: var(--text-primary); }
+:global([data-theme="dark"]) .goalTileUnit { color: var(--text-muted); }
+:global([data-theme="dark"]) .loadingModal { background: var(--bg-surface); }
+:global([data-theme="dark"]) .loadingText { color: var(--text-primary); }

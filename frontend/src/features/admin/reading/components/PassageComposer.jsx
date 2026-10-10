@@ -6,23 +6,16 @@ import styles from './PassageComposer.module.css';
 
 export default function PassageComposer({ value, onChange, onGapCreated, onGapRemoved }) {
   const editorRef = useRef(null);
-  const syncTimerRef = useRef(null);
   const [pendingGap, setPendingGap] = useState(null);
   const latestHtml = getPassageHtml(value);
   useEffect(() => {
     if (editorRef.current && document.activeElement !== editorRef.current && editorRef.current.innerHTML !== latestHtml) editorRef.current.innerHTML = latestHtml;
   }, [latestHtml]);
 
-  useEffect(() => () => clearTimeout(syncTimerRef.current), []);
 
   const sync = () => {
-    clearTimeout(syncTimerRef.current);
     const passageHtml = sanitizePassageHtml(editorRef.current.innerHTML);
     onChange({ ...value, passageHtml, passage: htmlToLegacyPassage(passageHtml), passageVersion: 2 });
-  };
-  const queueSync = () => {
-    clearTimeout(syncTimerRef.current);
-    syncTimerRef.current = setTimeout(sync, 120);
   };
   const command = (name, argument = null) => { editorRef.current.focus(); document.execCommand(name, false, argument); sync(); };
   const insertGap = () => {
@@ -51,7 +44,7 @@ export default function PassageComposer({ value, onChange, onGapCreated, onGapRe
       <button type="button" title="Undo" onClick={() => command('undo')}><Undo2/></button><button type="button" title="Redo" onClick={() => command('redo')}><Redo2/></button><button type="button" title="Clear formatting" onClick={() => command('removeFormat')}><RemoveFormatting/></button>
       <button type="button" className={styles.gapButton} onClick={insertGap}>Insert next gap</button>
     </div>
-    <div ref={editorRef} className={styles.editor} contentEditable suppressContentEditableWarning onInput={queueSync} onBlur={sync} onClick={event => { const gap = event.target.closest?.('[data-gap]'); if (gap) setPendingGap(Number(gap.dataset.gap)); }} data-placeholder="Write or paste the complete passage here…" />
+    <div ref={editorRef} className={styles.editor} contentEditable suppressContentEditableWarning onInput={sync} onBlur={sync} onClick={event => { const gap = event.target.closest?.('[data-gap]'); if (gap) setPendingGap(Number(gap.dataset.gap)); }} data-placeholder="Write or paste the complete passage here…" />
     <small>Use Enter for a new paragraph and Shift + Enter for a line break. Formatting is cleaned when pasted. Select a gap marker to remove it.</small>
   </section>;
 }

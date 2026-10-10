@@ -4,7 +4,7 @@ import { ReadingTestContext } from '../../../context/ReadingTestContext';
 import styles from './Part3OpinionMatch.module.css';
 
 const Part3OpinionMatch = ({ data }) => {
-  const { answers, handleAnswerChange } = useContext(ReadingTestContext);
+  const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   if (!data) return null;
 
   return (
@@ -18,9 +18,9 @@ const Part3OpinionMatch = ({ data }) => {
         <h3 id="part3-questions-title" className={styles.panelTitle}>Questions</h3>
         <div className={styles.questionList}>
           {data.questions.map((question, index) => (
-            <article key={question.id} id={`question-${index + 11}`} className={styles.questionRow}>
+            <article key={question.id} id={`question-${index + 16}`} className={styles.questionRow}>
               <div className={styles.questionCopy}>
-                <span className={styles.questionNumber}>{index + 11}</span>
+                <span className={styles.questionNumber}>{index + 16}</span>
                 <p>{question.statement}</p>
               </div>
               <div className={styles.answerField}>
@@ -29,9 +29,10 @@ const Part3OpinionMatch = ({ data }) => {
                   onChange={(event) => handleAnswerChange(question.id, event.target.value)}
                   className={styles.answerSelect}
                   options={data.speakers || []}
-                  placeholder={`Question ${index + 11}`}
-                  ariaLabel={`Answer for question ${index + 11}`}
+                  placeholder={`Question ${index + 16}`}
+                  ariaLabel={`Answer for question ${index + 16}`}
                 />
+                {renderAnswerReveal?.(question.id)}
               </div>
             </article>
           ))}

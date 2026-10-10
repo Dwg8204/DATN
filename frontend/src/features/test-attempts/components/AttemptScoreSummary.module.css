@@ -1,0 +1,8 @@
+.summary { width: min(620px, 100%); min-height: 92px; padding: 18px 24px; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 24px; border: 1px solid #c8c8c8; border-left: 5px solid var(--button-primary); border-radius: 10px; background: #fff; }
+.summary > div { display: flex; flex-direction: column; gap: 3px; }
+.summary > div > span { color: #a11d33; font-size: 18px; font-weight: 700; }
+.summary > div > small { color: #686868; font-size: 13px; }
+.summary > strong { color: #a11d33; font-size: 32px; line-height: 1; }
+.summary > strong small { color: #57534e; font-size: 18px; }
+.percentage { padding: 7px 12px; border-radius: 999px; background: #edf9f0; color: #237d36; font-weight: 700; }
+@media (max-width: 600px) { .summary { min-height: 78px; padding: 15px 16px; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; } .summary > strong { font-size: 26px; } .percentage { grid-column: 1 / -1; width: fit-content; padding-block: 5px; } }

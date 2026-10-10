@@ -1,9 +1,15 @@
 import AnswerExplanation from '../../../components/common/AnswerExplanation';
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { calculateScore } from '../services/gradingService';
 import { loadReadingTest } from '../services/readingTestRepository';
 import TestFooter from '../../../components/layout/TestFooter';
+import { useToast } from '../../../context/ToastContext';
+import DataLoadError from '../../../components/common/DataLoadError';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+import { getPart2Texts } from '../utils/part2Texts';
+
+const REVIEW_QUERY_SCHEMA = { currentPart: { ...queryParam.positiveInt(1, 4), param: 'part' } };
 
 const getGapQuestionText = (passage, position) => {
   const marker = `[${position}]`;
@@ -16,26 +22,37 @@ const getGapQuestionText = (passage, position) => {
 };
 
 const ReviewFeedbackPage = () => {
+  const { showError } = useToast();
   const { sessionId } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const hasPartParam = searchParams.has('part');
   const [results, setResults] = useState(null);
   const [testData, setTestData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [currentPart, setCurrentPart] = useState(1);
+  const [loadError, setLoadError] = useState('');
+  const [urlState, setUrlState] = useUrlQueryState(REVIEW_QUERY_SCHEMA);
+  const { currentPart } = urlState;
   const [expandedId, setExpandedId] = useState(null);
   const [mode, setMode] = useState('full');
 
   useEffect(() => {
+    let cancelled = false;
     const fetchResults = async () => {
+      setLoading(true);
+      setLoadError('');
       try {
         const sessionDataString = localStorage.getItem(sessionId);
         if (!sessionDataString) {
-          navigate('/reading/tests');
+          const message = 'This test review is no longer available on this browser. Please return to the Reading test list.';
+          setLoadError(message);
+          showError(message);
           return;
         }
 
         const sessionData = JSON.parse(sessionDataString);
         const testData = sessionData.testSnapshot || await loadReadingTest(sessionData.testId);
+        if (cancelled) return;
 
         setTestData(testData);
         setMode(sessionData.mode || 'full');
@@ -45,27 +62,30 @@ const ReviewFeedbackPage = () => {
         else if (sessionData.mode === 'part2') initialPart = 2;
         else if (sessionData.mode === 'part3') initialPart = 3;
         else if (sessionData.mode === 'part4') initialPart = 4;
-        setCurrentPart(initialPart);
+        if (!hasPartParam) setUrlState({ currentPart: initialPart });
 
         const gradedResults = calculateScore(sessionData.answers, testData, sessionData.mode || 'full');
         setResults(gradedResults);
-      } catch (error) {
-        console.error("Error loading review", error);
-        navigate('/reading/tests');
+      } catch {
+        if (cancelled) return;
+        const message = 'We could not load this test review. Please refresh the page and try again.';
+        setLoadError(message);
+        showError(message);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchResults();
-  }, [sessionId, navigate]);
+    return () => { cancelled = true; };
+  }, [hasPartParam, sessionId, setUrlState, showError]);
 
   useEffect(() => {
     if (expandedId != null) document.getElementById(`reading-review-${expandedId}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [expandedId]);
 
   const handlePartChange = (partNum) => {
-    setCurrentPart(partNum);
+    setUrlState({ currentPart: partNum });
     setExpandedId(null);
   };
 
@@ -77,7 +97,7 @@ const ReviewFeedbackPage = () => {
     );
   }
 
-  if (!results || !testData) return null;
+  if (loadError || !results || !testData) return <DataLoadError title="Test review is unavailable" message={loadError || 'Please return to the Reading test list and open your review again.'} />;
 
   const activeDetails = results[`part${currentPart}`]?.details || [];
   const reviewQuestions = activeDetails.map((detail, index) => ({
@@ -178,12 +198,14 @@ const ReviewFeedbackPage = () => {
     if (currentPart === 2) {
       return (
         <div className="flex flex-col gap-6">
-          {testData.part2.sentences.filter((sentence) => sentence.correctPosition > 1).map((sentence, index) => {
+          {getPart2Texts(testData.part2).flatMap((text, textIndex) => text.sentences
+            .filter((sentence) => sentence.correctPosition > 1)
+            .map(sentence => ({ ...sentence, textTitle: text.title, textIndex }))).map((sentence, index) => {
             const detail = results.part2.details.find((item) => item.id === sentence.id);
             return renderReviewCard({
-              id: `p2-${sentence.correctPosition}`,
+              id: `p2-${sentence.textIndex + 1}-${sentence.correctPosition}`,
               number: index + 1,
-              title: `Sentence for gap [${sentence.correctPosition}]: ${sentence.content}`,
+              title: `Text ${sentence.textIndex + 1} (${sentence.textTitle}) · Gap [${sentence.correctPosition}]: ${sentence.content}`,
               detail,
             });
           })}

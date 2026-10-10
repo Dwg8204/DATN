@@ -1,23 +1,30 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ChevronRight, Edit3, Eye, House, Search, Trash2 } from 'lucide-react';
+import { Edit3, Eye, House, Search, Send, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Pagination from '../../../components/common/Pagination';
 import StatusBadge from '../components/StatusBadge';
 import { AdminConfirmDialog, AdminToast } from '../components/AdminFeedback';
 import AdminBreadcrumb from '../components/AdminBreadcrumb';
 import { ADMIN_TESTS } from '../data/adminMockData';
-import { deleteStoredWritingTest, getStoredWritingTests } from '../writing/data/writingTestStorage';
-import { deleteStoredGrammarTest, getStoredGrammarTests } from '../grammar/data/grammarTestStorage';
-import { deleteStoredReadingTest, getStoredReadingTests } from '../reading/data/readingTestStorage';
-import { deleteStoredListeningTest, getStoredListeningTests } from '../listening/data/listeningTestStorage';
-import { deleteStoredSpeakingTest, getStoredSpeakingTests } from '../speaking/data/speakingTestStorage';
 import { filterTests, formatAdminDate, paginate } from '../utils/testManagerHelpers';
 import styles from './TestManagerPage.module.css';
 import './TestManagerResponsive.css';
+import useAdminGrammarTests from '../grammar/hooks/useAdminGrammarTests';
+import { grammarTestsApi } from '../grammar/services/grammarTestsApi';
+import { getApiError } from '../../../services/apiError';
+import useAdminWritingTests from '../writing/hooks/useAdminWritingTests';
+import { writingTestsApi } from '../writing/services/writingTestsApi';
+import useAdminListeningTests from '../listening/hooks/useAdminListeningTests';
+import { listeningTestsApi } from '../listening/services/listeningTestsApi';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
+import useAdminCatalogTests from './hooks/useAdminCatalogTests';
+import { readingTestsApi } from '../reading/services/readingTestsApi';
+import { speakingTestsApi } from '../speaking/services/speakingTestsApi';
 
 const writingSections = ['Part 1', 'Part 2', 'Part 3', 'Part 4', 'Full Test'];
 const grammarSections = ['Part 1', 'Part 2', 'Full Test'];
 const components = ['Reading', 'Listening', 'Writing', 'Grammar & Vocab', 'Speaking'];
+const allSections = ['Part 1', 'Part 2', 'Part 3', 'Part 4', 'Full Test'];
 const sectionToMode = (section) => section === 'Full Test' ? 'full' : `part${section.match(/\d/)?.[0] || '1'}`;
 
 function useMobileManager() {
@@ -34,67 +41,182 @@ function useMobileManager() {
 export default function TestManagerPage() {
   const navigate = useNavigate();
   const isMobile = useMobileManager();
-  const [storedTests, setStoredTests] = useState(() => getStoredWritingTests());
-  const [storedGrammarTests, setStoredGrammarTests] = useState(() => getStoredGrammarTests());
-  const [storedReadingTests, setStoredReadingTests] = useState(getStoredReadingTests);
-  const [storedListeningTests, setStoredListeningTests] = useState(getStoredListeningTests);
-  const [storedSpeakingTests, setStoredSpeakingTests] = useState(getStoredSpeakingTests);
-  useEffect(() => { const refresh=()=>setStoredReadingTests(getStoredReadingTests());window.addEventListener('reading-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('reading-tests-updated',refresh);window.removeEventListener('storage',refresh)}; }, []);
-  useEffect(() => { const refresh=()=>setStoredListeningTests(getStoredListeningTests());window.addEventListener('listening-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('listening-tests-updated',refresh);window.removeEventListener('storage',refresh)}; }, []);
-  useEffect(() => { const refresh=()=>setStoredSpeakingTests(getStoredSpeakingTests());window.addEventListener('speaking-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('speaking-tests-updated',refresh);window.removeEventListener('storage',refresh)}; }, []);
-  const [filters, setFilters] = useState({ query: '', component: components[0], section: 'Full Test', status: 'All' });
-  const [page, setPage] = useState(1);
+  const querySchema = useMemo(() => ({
+    purpose: queryParam.enum(['EXAM', 'PRACTICE'], 'EXAM'),
+    component: { ...queryParam.enum(components, components[0]), param: 'skill' },
+    section: { ...queryParam.enum(allSections, 'Full Test'), param: 'part' },
+    status: queryParam.enum(['All', 'DRAFT', 'PUBLISHED', 'ARCHIVED'], 'All'),
+    query: { ...queryParam.string(''), param: 'q' },
+    page: queryParam.positiveInt(1),
+    pageSize: { ...queryParam.positiveInt(isMobile ? 5 : 10, 100), param: 'size' },
+  }), [isMobile]);
+  const [urlState, setUrlState] = useUrlQueryState(querySchema);
+  const { page, pageSize } = urlState;
+  const filters = useMemo(() => ({
+    purpose: urlState.purpose,
+    query: urlState.query,
+    component: urlState.component,
+    section: urlState.section,
+    status: urlState.status,
+  }), [urlState.component, urlState.purpose, urlState.query, urlState.section, urlState.status]);
   const [confirmTest, setConfirmTest] = useState(null);
-  const [toast, setToast] = useState('');
+  const [publishTest, setPublishTest] = useState(null);
+  const [toast, setToast] = useState(null);
 
-  useEffect(() => {
-    const refresh = () => setStoredTests(getStoredWritingTests());
-    const refreshGrammar = () => setStoredGrammarTests(getStoredGrammarTests());
-    window.addEventListener('writing-tests-updated', refresh);
-    window.addEventListener('storage', refresh);
-    window.addEventListener('grammar-tests-updated', refreshGrammar);
-    window.addEventListener('storage', refreshGrammar);
-    return () => { window.removeEventListener('writing-tests-updated', refresh); window.removeEventListener('grammar-tests-updated', refreshGrammar); window.removeEventListener('storage', refresh); window.removeEventListener('storage', refreshGrammar); };
-  }, []);
-
-  const tests = useMemo(() => [...storedTests, ...storedGrammarTests, ...storedReadingTests, ...storedListeningTests, ...storedSpeakingTests, ...ADMIN_TESTS], [storedTests, storedGrammarTests, storedReadingTests, storedListeningTests, storedSpeakingTests]);
+  const tests = useMemo(() => ADMIN_TESTS.filter(test => !['Grammar & Vocab', 'Listening', 'Reading', 'Speaking'].includes(test.component))
+    .map(test => ({ ...test, purpose: test.purpose ?? (test.section === 'Full Test' ? 'EXAM' : 'PRACTICE') }))
+    .filter(test => test.purpose === filters.purpose), [filters.purpose]);
   const filtered = useMemo(() => filterTests(tests, filters), [tests, filters]);
-  const [pageSize, setPageSize] = useState(() => isMobile ? 5 : 10);
   const pagination = paginate(filtered, page, pageSize);
-  const sections = filters.component === 'Grammar & Vocab' ? grammarSections : ['Reading','Listening','Speaking'].includes(filters.component) ? ['Part 1','Part 2','Part 3','Part 4','Full Test'] : writingSections;
-  const setFilter = (name, value) => { setFilters((current) => ({ ...current, [name]: value, ...(name === 'component' ? { section: 'Full Test' } : {}) })); setPage(1); };
-  const addTest = () => navigate(`/admin/tests/new/${filters.component === 'Reading' ? 'reading' : filters.component === 'Listening' ? 'listening' : filters.component === 'Speaking' ? 'speaking' : filters.component === 'Grammar & Vocab' ? 'grammar' : 'writing'}?mode=${filters.section==='All'?'full':sectionToMode(filters.section)}`);
-  const remove = () => {
+  const grammarMode = filters.section === 'Full Test' ? 'full' : filters.section === 'Part 2' ? 'part2' : 'part1';
+  const grammar = useAdminGrammarTests({
+    enabled: filters.component === 'Grammar & Vocab', search: filters.query, mode: grammarMode,
+    purpose: filters.purpose, status: filters.status === 'All' ? undefined : filters.status.toUpperCase(), page, pageSize,
+  });
+  const writingMode = filters.section === 'Full Test' ? 'full' : `part${filters.section.match(/\d/)?.[0] || '1'}`;
+  const writing = useAdminWritingTests({
+    enabled: filters.component === 'Writing', search: filters.query, mode: writingMode,
+    purpose: filters.purpose, status: filters.status === 'All' ? undefined : filters.status.toUpperCase(), page, pageSize,
+  });
+  const listeningMode = filters.section === 'Full Test' ? 'full' : `part${filters.section.match(/\d/)?.[0] || '1'}`;
+  const listening = useAdminListeningTests({
+    enabled: filters.component === 'Listening', search: filters.query, mode: listeningMode,
+    purpose: filters.purpose, status: filters.status === 'All' ? undefined : filters.status.toUpperCase(), page, pageSize,
+  });
+  const reading = useAdminCatalogTests({ enabled: filters.component === 'Reading', api: readingTestsApi, label: 'Reading',
+    search: filters.query, mode: sectionToMode(filters.section), purpose: filters.purpose,
+    status: filters.status === 'All' ? undefined : filters.status.toUpperCase(), page, pageSize });
+  const speaking = useAdminCatalogTests({ enabled: filters.component === 'Speaking', api: speakingTestsApi, label: 'Speaking',
+    search: filters.query, mode: sectionToMode(filters.section), purpose: filters.purpose,
+    status: filters.status === 'All' ? undefined : filters.status.toUpperCase(), page, pageSize });
+  const grammarActive = filters.component === 'Grammar & Vocab';
+  const writingActive = filters.component === 'Writing';
+  const listeningActive = filters.component === 'Listening';
+  const readingActive = filters.component === 'Reading';
+  const speakingActive = filters.component === 'Speaking';
+  const visibleTests = grammarActive ? grammar.data : writingActive ? writing.data : listeningActive ? listening.data : readingActive ? reading.data : speakingActive ? speaking.data : pagination.items;
+  const totalItems = grammarActive ? grammar.pagination.totalItems : writingActive ? writing.pagination.totalItems : listeningActive ? listening.pagination.totalItems : readingActive ? reading.pagination.totalItems : speakingActive ? speaking.pagination.totalItems : filtered.length;
+  const sections = filters.purpose === 'EXAM' ? ['Full Test'] : filters.component === 'Grammar & Vocab' ? grammarSections : ['Reading','Listening','Speaking'].includes(filters.component) ? ['Part 1','Part 2','Part 3','Part 4','Full Test'] : writingSections;
+  const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
+  const setFilter = (name, value) => setUrlState({ [name]: value, ...(['component', 'purpose'].includes(name) ? { section: 'Full Test' } : {}), page: 1 });
+  const addTest = () => navigate(`/admin/tests/new/${filters.component === 'Reading' ? 'reading' : filters.component === 'Listening' ? 'listening' : filters.component === 'Speaking' ? 'speaking' : filters.component === 'Grammar & Vocab' ? 'grammar' : 'writing'}?mode=${filters.purpose === 'EXAM' ? 'full' : sectionToMode(filters.section)}&purpose=${filters.purpose}`);
+  const remove = async () => {
     if (!confirmTest) return;
-    if (confirmTest.component === 'Reading') { deleteStoredReadingTest(confirmTest.id); setStoredReadingTests(getStoredReadingTests()); }
-    else if (confirmTest.component === 'Listening') { deleteStoredListeningTest(confirmTest.id); setStoredListeningTests(getStoredListeningTests()); }
-    else if (confirmTest.component === 'Speaking') { deleteStoredSpeakingTest(confirmTest.id); setStoredSpeakingTests(getStoredSpeakingTests()); }
-    else if (confirmTest.component === 'Grammar & Vocab') { deleteStoredGrammarTest(confirmTest.id); setStoredGrammarTests(getStoredGrammarTests()); }
-    else { deleteStoredWritingTest(confirmTest.id); setStoredTests(getStoredWritingTests()); }
-    setToast(`“${confirmTest.name}” was deleted successfully.`);
+    if (confirmTest.component === 'Reading') {
+      try { await readingTestsApi.archive(confirmTest.id); reading.reload(); }
+      catch (error) { setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') }); setConfirmTest(null); return; }
+    }
+    else if (confirmTest.component === 'Speaking') {
+      try { await speakingTestsApi.archive(confirmTest.id); speaking.reload(); }
+      catch (error) { setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') }); setConfirmTest(null); return; }
+    }
+    else if (confirmTest.component === 'Grammar & Vocab') {
+      try {
+        await grammarTestsApi.archive(confirmTest.id);
+        setToast({ type: 'success', message: `“${confirmTest.name}” was archived successfully.` });
+        setConfirmTest(null);
+        if (visibleTests.length === 1 && page > 1) setPage(current => current - 1); else grammar.reload();
+        return;
+      } catch (error) {
+        setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') });
+        setConfirmTest(null);
+        return;
+      }
+    }
+    else if (confirmTest.component === 'Writing') {
+      try {
+        await writingTestsApi.archive(confirmTest.id);
+        setToast({ type: 'success', message: `“${confirmTest.name}” was archived successfully.` });
+        setConfirmTest(null);
+        if (visibleTests.length === 1 && page > 1) setPage(current => current - 1); else writing.reload();
+        return;
+      } catch (error) {
+        setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') });
+        setConfirmTest(null);
+        return;
+      }
+    }
+    else if (confirmTest.component === 'Listening') {
+      try {
+        await listeningTestsApi.archive(confirmTest.id);
+        setToast({ type: 'success', message: `“${confirmTest.name}” was archived successfully.` });
+        setConfirmTest(null);
+        if (visibleTests.length === 1 && page > 1) setPage(current => current - 1); else listening.reload();
+        return;
+      } catch (error) {
+        setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') });
+        setConfirmTest(null);
+        return;
+      }
+    }
+    else { setToast({ type: 'error', message: 'This test cannot be deleted from the current view.' }); setConfirmTest(null); return; }
+    setToast({ type: 'success', message: `“${confirmTest.name}” was deleted successfully.` });
     setConfirmTest(null);
   };
+  const publishDraft = async () => {
+    if (!publishTest) return;
+    try {
+      if (publishTest.component === 'Grammar & Vocab') {
+        await grammarTestsApi.publish(publishTest);
+        grammar.reload();
+      } else if (publishTest.component === 'Writing') {
+        await writingTestsApi.publish(publishTest);
+        writing.reload();
+      } else if (publishTest.component === 'Reading') {
+        await readingTestsApi.publish(publishTest.id, publishTest.version);
+        reading.reload();
+      } else if (publishTest.component === 'Speaking') {
+        await speakingTestsApi.publish(publishTest.id, publishTest.version);
+        speaking.reload();
+      } else if (publishTest.component === 'Listening') {
+        await listeningTestsApi.publish(publishTest);
+        listening.reload();
+      } else {
+        throw new Error('This test type does not support publishing from this list yet.');
+      }
+      setToast({ type: 'success', message: `“${publishTest.name}” was published successfully.` });
+    } catch (error) {
+      setToast({ type: 'error', message: getApiError(error, 'Unable to publish this draft. Complete all required parts and try again.') });
+    } finally {
+      setPublishTest(null);
+    }
+  };
   const testBase = (test) => `/admin/tests/${test.component === 'Reading' ? 'reading' : test.component === 'Listening' ? 'listening' : test.component === 'Speaking' ? 'speaking' : test.component === 'Grammar & Vocab' ? 'grammar' : 'writing'}/${test.id}`;
-  const actions = (test) => test.details ? <div className="mobileTestActions">
-    <button title="Preview" aria-label={`Preview ${test.name}`} onClick={() => navigate(`${testBase(test)}/preview`)}><Eye /></button>
-    <button title="Edit" aria-label={`Edit ${test.name}`} onClick={() => navigate(`${testBase(test)}/edit`)}><Edit3 /></button>
-    <button title="Delete" className="deleteAction" aria-label={`Delete ${test.name}`} onClick={() => setConfirmTest(test)}><Trash2 /></button>
+  const actions = (test) => (test.details || test.canEdit || test.canDelete) ? <div className="mobileTestActions">
+    {test.details && <button title="Preview" aria-label={`Preview ${test.name}`} onClick={() => navigate(`${testBase(test)}/preview`)}><Eye /></button>}
+    {test.canEdit !== false && <button title="Edit" aria-label={`Edit ${test.name}`} onClick={() => navigate(`${testBase(test)}/edit`)}><Edit3 /></button>}
+    {test.status?.toUpperCase() === 'DRAFT' && ['Grammar & Vocab', 'Writing', 'Reading', 'Speaking', 'Listening'].includes(test.component) && test.canEdit !== false && <button title="Publish" aria-label={`Publish ${test.name}`} onClick={() => setPublishTest(test)}><Send /></button>}
+    {test.canDelete !== false && <button title="Archive" className="deleteAction" aria-label={`Archive ${test.name}`} onClick={() => setConfirmTest(test)}><Trash2 /></button>}
   </div> : null;
-  const from = filtered.length ? (pagination.page - 1) * pageSize + 1 : 0;
-  const to = Math.min(pagination.page * pageSize, filtered.length);
+  const currentPage = grammarActive ? grammar.pagination.page : writingActive ? writing.pagination.page : listeningActive ? listening.pagination.page : readingActive ? reading.pagination.page : speakingActive ? speaking.pagination.page : pagination.page;
+  const from = totalItems ? (currentPage - 1) * pageSize + 1 : 0;
+  const to = Math.min(currentPage * pageSize, totalItems);
 
-  return <div className={styles.page}><AdminToast message={toast} onClose={() => setToast('')}/><AdminConfirmDialog open={Boolean(confirmTest)} title={`Delete ${confirmTest?.component || ''} test?`} message={confirmTest ? `“${confirmTest.name}” will be permanently removed from this browser. This action cannot be undone.` : ''} onCancel={() => setConfirmTest(null)} onConfirm={remove}/>
+  const archiveSelected = ['Grammar & Vocab', 'Writing', 'Listening', 'Reading', 'Speaking'].includes(confirmTest?.component);
+  return <div className={styles.page}><AdminToast message={toast?.message} type={toast?.type} onClose={() => setToast(null)}/><AdminConfirmDialog open={Boolean(confirmTest)} title={`${archiveSelected ? 'Archive' : 'Delete'} ${confirmTest?.component || ''} test?`} message={confirmTest ? archiveSelected ? `“${confirmTest.name}” will be hidden from learners while its existing attempt history is retained.` : `“${confirmTest.name}” will be permanently removed from this browser. This action cannot be undone.` : ''} onCancel={() => setConfirmTest(null)} onConfirm={remove}/><AdminConfirmDialog open={Boolean(publishTest)} title="Publish this test?" message={publishTest ? `“${publishTest.name}” will become available to learners. All required parts must be complete.` : ''} confirmLabel="Publish test" onCancel={() => setPublishTest(null)} onConfirm={publishDraft}/>
     <AdminBreadcrumb />
     <nav className={styles.components}>{components.map((component) => <button className={filters.component === component ? styles.activeComponent : ''} onClick={() => setFilter('component', component)} key={component}>{component}</button>)}</nav>
     <section className={styles.card}>
       <header>
         <nav className={styles.parts}>{sections.map((section) => <button className={filters.section === section ? styles.activePart : ''} onClick={() => setFilter('section', section)} key={section}>{section}</button>)}</nav>
-        <div className={styles.tools}><span>{from}-{to} of {filtered.length}</span><label><Search /><input placeholder="Search" value={filters.query} onChange={(event) => setFilter('query', event.target.value)} /></label><button className={styles.add} onClick={addTest}><House /><span>Add new</span></button></div>
+        <div className={styles.tools}><span>{from}-{to} of {totalItems}</span><label><Search /><input placeholder="Search" value={filters.query} onChange={(event) => setFilter('query', event.target.value)} /></label><button className={styles.add} onClick={addTest}><House /><span>Add new</span></button></div>
       </header>
-      <div className={styles.scroll}><table><thead><tr><th><input type="checkbox" /></th><th>Name</th><th>Status</th><th>Date Added</th><th>Attempt</th><th>Questions Type</th><th /></tr></thead><tbody>{pagination.items.map((test) => <tr key={test.id}><td><input type="checkbox" /></td><td>{test.name}</td><td><StatusBadge status={test.status} /></td><td>{formatAdminDate(test.dateAdded)}</td><td>{test.attempts}</td><td><span className={styles.type}>{test.questionType}</span></td><td>{actions(test)}</td></tr>)}</tbody></table></div>
-      <div className="mobileTestList">{pagination.items.map((test) => <article className="mobileTestCard" key={test.id}><header><div><small>{test.section}</small><h3>{test.name}</h3></div><StatusBadge status={test.status} /></header><dl><div><dt>Date added</dt><dd>{formatAdminDate(test.dateAdded)}</dd></div><div><dt>Attempts</dt><dd>{test.attempts}</dd></div><div><dt>Type</dt><dd>{test.questionType}</dd></div></dl>{actions(test)}</article>)}</div>
-      {!pagination.items.length && <p className="mobileEmptyTests">No tests found.</p>}
-      <Pagination page={page} totalItems={filtered.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+      <div className={styles.scroll}><table><thead><tr><th><input type="checkbox" /></th><th>Name</th><th>Status</th><th>Date Added</th><th>Attempt</th><th>Questions Type</th><th /></tr></thead><tbody>{visibleTests.map((test) => <tr key={test.id}><td><input type="checkbox" /></td><td>{test.name}</td><td><StatusBadge status={test.status} /></td><td>{formatAdminDate(test.dateAdded)}</td><td>{test.attempts}</td><td><span className={styles.type}>{test.questionType}</span></td><td>{actions(test)}</td></tr>)}</tbody></table></div>
+      <div className="mobileTestList">{visibleTests.map((test) => <article className="mobileTestCard" key={test.id}><header><div><small>{test.section}</small><h3>{test.name}</h3></div><StatusBadge status={test.status} /></header><dl><div><dt>Date added</dt><dd>{formatAdminDate(test.dateAdded)}</dd></div><div><dt>Attempts</dt><dd>{test.attempts}</dd></div><div><dt>Type</dt><dd>{test.questionType}</dd></div></dl>{actions(test)}</article>)}</div>
+      {grammarActive && grammar.loading && <p className="mobileEmptyTests">Loading tests…</p>}
+      {grammarActive && grammar.error && <p className="mobileEmptyTests">{grammar.error}</p>}
+      {writingActive && writing.loading && <p className="mobileEmptyTests">Loading tests…</p>}
+      {writingActive && writing.error && <p className="mobileEmptyTests">{writing.error}</p>}
+      {listeningActive && listening.loading && <p className="mobileEmptyTests">Loading tests…</p>}
+      {listeningActive && listening.error && <p className="mobileEmptyTests">{listening.error}</p>}
+      {readingActive && reading.loading && <p className="mobileEmptyTests">Loading tests…</p>}
+      {readingActive && reading.error && <p className="mobileEmptyTests">{reading.error}</p>}
+      {speakingActive && speaking.loading && <p className="mobileEmptyTests">Loading tests…</p>}
+      {speakingActive && speaking.error && <p className="mobileEmptyTests">{speaking.error}</p>}
+      {!grammar.loading && !writing.loading && !listening.loading && !reading.loading && !speaking.loading
+        && !visibleTests.length && <p className="mobileEmptyTests">No tests found.</p>}
+      <Pagination page={page} totalItems={totalItems} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
     </section>
   </div>;
 }

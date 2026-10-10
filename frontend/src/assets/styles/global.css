@@ -1,26 +1,87 @@
-:root {
+:root, [data-theme="light"] {
   color-scheme: light;
   font-family: Inter, "Segoe UI", Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  color: #0f172a;
+  color: var(--text-primary);
   background:
-    radial-gradient(circle at top left, rgba(59, 130, 246, 0.18), transparent 32%),
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.15), transparent 28%),
-    linear-gradient(180deg, #f8fafc 0%, #eef2ff 45%, #f8fafc 100%);
+    radial-gradient(circle at top left, var(--info-bg), transparent 32%),
+    radial-gradient(circle at top right, var(--success-bg), transparent 28%),
+    var(--bg-page);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --color-primary: #2563eb;
+  --color-primary: var(--info);
   --color-primary-dark: #1d4ed8;
-  --color-surface: rgba(255, 255, 255, 0.88);
-  --color-border: rgba(148, 163, 184, 0.24);
-  --color-text-muted: #475569;
-  --color-success: #16a34a;
-  --shadow-soft: 0 20px 60px rgba(15, 23, 42, 0.08);
+  --color-surface: var(--bg-surface);
+  --color-border: var(--border);
+  --color-text-muted: var(--text-muted);
+  --color-success: var(--success);
+  --shadow-soft: 0 20px 60px var(--shadow-sm);
+
+  /* Light Theme Tokens */
+  --brand: #da1e21;
+  --brand-hover: #c5151e;
+  --brand-active-bg: #fff0f1;
+  --brand-subtle: #fff7f7;
+  --brand-border: #e2d5d6;
+  --brand-border-focus: #da1e21;
+  --brand-shadow: rgba(218, 30, 33, .08);
+
+  --text-primary: #131927;
+  --text-secondary: #403738;
+  --text-muted: #6b7280;
+  --text-disabled: #9ca3af;
+
+  --bg-page: #f7fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-warm: #fffefc;
+  --bg-hover: #f8f3f3;
+
+  --border: #e5e5e5;
+  --success: #16a34a;
+  --success-bg: #dcf4e2;
+  --warning: #d97706;
+  --warning-bg: #fff9f1;
+  --info: #2563eb;
+  --info-bg: #e6f4ff;
+
+  --overlay: rgba(0, 0, 0, .5);
+  --shadow-sm: rgba(36, 18, 20, .16);
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+  --brand: #e11d48;
+  --brand-hover: #f43f5e;
+  --brand-active-bg: #281622;
+  --brand-subtle: #1d1720;
+  --brand-border: #432429;
+  --brand-border-focus: #f43f5e;
+  --brand-shadow: rgba(244, 63, 94, .25);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-disabled: #64748b;
+
+  --bg-page: #020617;
+  --bg-surface: #0f172a;
+  --bg-surface-warm: #1e293b;
+  --bg-hover: #1e293b;
+
+  --border: #243247;
+  --success: #4ade80;
+  --success-bg: #0f291e;
+  --warning: #fbbf24;
+  --warning-bg: #2c2010;
+  --info: #60a5fa;
+  --info-bg: #10223d;
+
+  --overlay: rgba(3, 7, 18, .75);
+  --shadow-sm: rgba(0, 0, 0, .65);
+}
 * {
   box-sizing: border-box;
 }

@@ -1,142 +1,106 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useMemo, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
 import SubmitModal from '../../../components/shared/SubmitModal/SubmitModal';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import MultipleChoice from '../../../components/common/MultipleChoice';
-import { PART1_QUESTIONS as MOCK_QUESTIONS } from '../data/part1MockData';
-import { getAdminGrammarPart } from '../utils/adminGrammarTestAdapter';
-import { getGrammarVocabAnswers, saveGrammarVocabAnswers, startGrammarVocabSession } from '../utils/grammarVocabSessionStorage';
-import styles from './Part1GrammarPage.module.css';
 import RichTextContent from '../../../components/common/RichTextContent';
+import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal';
+import { AttemptPageState, SaveIndicator } from '../../test-attempts/components/AttemptPageState';
+import { useTestAttempt } from '../../test-attempts/context/testAttemptContextStore';
+import styles from './Part1GrammarPage.module.css';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
-
+const ITEMS_PER_PAGE = 3;
+const PAGE_QUERY_SCHEMA = { currentPage: { ...queryParam.positiveInt(1), param: 'page' } };
 
 export default function Part1GrammarPage() {
-  const { skill = 'grammar-vocab' } = useParams(); 
-  const part = 'part1';
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const testId = searchParams.get('testId') || '1';
-  const questions = getAdminGrammarPart(testId, part) || MOCK_QUESTIONS;
-  const isFullTest = searchParams.get('isFull') === 'true';
-  startGrammarVocabSession(testId, isFullTest ? 'full' : 'part1');
-
-  // Format dynamic titles
-  const formattedPart = part ? part.replace(/([a-zA-Z]+)(\d+)/, (m, p1, p2) => `${p1.charAt(0).toUpperCase() + p1.slice(1)} ${p2}`) : 'Part 1';
-  const formattedSkill = skill === 'grammar-vocab'
-    ? 'Grammar & Vocabulary'
-    : skill.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const [answers, setAnswers] = useState(() => getGrammarVocabAnswers('part1'));
+  const [searchParams] = useSearchParams();
+  const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
+  const [urlState, setUrlState] = useUrlQueryState(PAGE_QUERY_SCHEMA);
   const [showSubmitModal, setShowSubmitModal] = useState(false);
+  const questions = useMemo(() => paper?.parts?.['1']?.questions ?? [], [paper]);
+  const isFullTest = paper?.mode === 'full';
+  const totalPages = Math.max(1, Math.ceil(questions.length / ITEMS_PER_PAGE));
+  const currentPage = Math.min(urlState.currentPage, totalPages);
+  const setCurrentPage = next => setUrlState({
+    currentPage: typeof next === 'function' ? next(currentPage) : next,
+  });
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const currentQuestions = questions.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const footerQuestions = useMemo(() => questions.map((question, index) => ({
+    id: question.key, displayLabel: index + 1,
+  })), [questions]);
 
-  useEffect(() => {
-    saveGrammarVocabAnswers('part1', answers);
-  }, [answers]);
+  if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
+  if (!paper?.parts?.['1']) return <AttemptPageState error="Part 1 is not included in this test." />;
 
-  const itemsPerPage = 3;
-  const totalPages = Math.ceil(questions.length / itemsPerPage);
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
-  const currentPageQuestionIds = currentQuestions.map(q => q.id);
-
-  const handleOptionSelect = (questionId, optionIndex) => {
-    setAnswers(prev => ({
-      ...prev,
-      [questionId]: optionIndex
-    }));
+  const goToPartTwo = async () => {
+    await flush();
+    const params = new URLSearchParams(searchParams);
+    params.set('attemptId', attemptId);
+    params.set('isFull', 'true');
+    params.set('page', '1');
+    navigate(`/grammar-vocab/test/part2?${params.toString()}`);
   };
 
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(p => p + 1);
-  };
-
-  const handlePrev = () => {
-    if (currentPage > 1) setCurrentPage(p => p - 1);
-  };
-
-  const handleSubmit = () => {
-    setShowSubmitModal(true);
-  };
-
-  const handleConfirmSubmit = () => {
+  const confirmSubmit = async () => {
     setShowSubmitModal(false);
-    if (isFullTest) {
-      // Logic for GrammarVocab: Part 1 -> Part 2
-      if (part === 'part1') {
-        navigate(`/${skill}/test/part2?testId=${testId}&isFull=true`);
-      } else {
-        navigate(`/${skill}/result?testId=${testId}&isFull=true&part=2`);
-      }
-    } else {
-      navigate(`/${skill}/result?testId=${testId}&isFull=false&part=1`);
-    }
+    try {
+      const result = await submit();
+      if (result) { approveNavigation(); navigate(`/grammar-vocab/result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`); }
+    } catch { /* The provider displays the error. */ }
   };
-
-  const handleCloseSubmit = () => {
-    setShowSubmitModal(false);
-  };
-
-  const getPageOfQuestion = (questionId) => {
-    const index = questions.findIndex(q => q.id === questionId);
-    return Math.floor(index / itemsPerPage) + 1;
-  };
-
-  const submitLabel = (isFullTest && part === 'part1') ? 'Next Part' : 'Submit';
 
   return (
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div className={styles.partTitle}>{formattedPart}</div>
-          <div className={styles.skillTitle}>{formattedSkill}</div>
+          <div><div className={styles.partTitle}>Part 1</div><div className={styles.skillTitle}>Grammar &amp; Vocabulary</div></div>
+          <SaveIndicator status={saveStatus} />
         </div>
-
-          <InstructionBlock title={`Questions ${startIndex + 1}-${Math.min(startIndex + itemsPerPage, questions.length)}`}>
-          Choose the correct letter, A, B or C.
+        <InstructionBlock title={`Questions ${startIndex + 1}-${Math.min(startIndex + ITEMS_PER_PAGE, questions.length)}`}>
+          <RichTextContent value={paper.parts['1'].instruction || 'Choose the correct letter, A, B or C.'} />
         </InstructionBlock>
-
         <div className={styles.questionsContainer}>
-          {currentQuestions.map(q => (
-            <div key={q.id} className={styles.questionItem}>
-              <div className={styles.questionHeader}>
-                <div className={styles.questionNumberBox}>
-                  <span className={styles.questionNumber}>{q.id}</span>
+          {currentQuestions.map((question, localIndex) => {
+            const answer = answers[question.key];
+            const selectedIndex = question.options.findIndex(option => option.id === answer?.optionId);
+            return (
+              <div key={question.key} className={styles.questionItem}>
+                <div className={styles.questionHeader}>
+                  <div className={styles.questionNumberBox}><span className={styles.questionNumber}>{startIndex + localIndex + 1}</span></div>
+                  <RichTextContent className={styles.questionText} value={question.text} />
                 </div>
-                <RichTextContent className={styles.questionText} value={q.text}/>
+                <MultipleChoice
+                  name={`grammar-question-${question.key}`}
+                  options={question.options.map(option => option.text)}
+                  value={selectedIndex < 0 ? undefined : selectedIndex}
+                  disabled={submitting || timeExpired || !attempt?.canAnswer || saveStatus === 'conflict'}
+                  onChange={index => setAnswer(question.key, { kind: 'CHOICE', optionId: question.options[index].id })}
+                />
+                <PracticeAnswerReveal questionKey={question.key} options={question.options} />
               </div>
-              <MultipleChoice
-                name={`grammar-question-${q.id}`}
-                options={q.options}
-                value={answers[q.id]}
-                onChange={(optionIndex) => handleOptionSelect(q.id, optionIndex)}
-              />
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
-
-      <TestFooter 
-        partLabel={formattedPart} 
-        questions={questions}
+      <TestFooter
+        partLabel="Part 1"
+        questions={footerQuestions}
         answeredIds={Object.keys(answers)}
-        currentPageQuestionIds={currentPageQuestionIds}
-        onQuestionClick={(qId) => setCurrentPage(getPageOfQuestion(qId))}
-        onPrevClick={handlePrev}
-        onNextClick={handleNext}
-        onSubmitClick={handleSubmit}
-        submitLabel={submitLabel}
+        currentPageQuestionIds={currentQuestions.map(question => question.key)}
+        onQuestionClick={key => setCurrentPage(Math.floor(questions.findIndex(question => question.key === key) / ITEMS_PER_PAGE) + 1)}
+        onPrevClick={() => setCurrentPage(page => Math.max(1, page - 1))}
+        onNextClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
+        onSubmitClick={isFullTest ? () => void goToPartTwo().catch(() => undefined) : () => setShowSubmitModal(true)}
+        submitLabel={isFullTest ? 'Next Part' : submitting ? 'Submitting…' : 'Submit'}
+        submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={currentPage > 1}
         hasNext={currentPage < totalPages}
       />
-      <SubmitModal 
-        isOpen={showSubmitModal} 
-        onBack={handleCloseSubmit} 
-        onNext={handleConfirmSubmit} 
-      />
+      <SubmitModal isOpen={showSubmitModal} onBack={() => setShowSubmitModal(false)} onNext={confirmSubmit} busy={submitting} />
     </div>
   );
 }

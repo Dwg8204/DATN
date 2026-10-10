@@ -4,6 +4,8 @@ import { calculateScore } from '../services/gradingService';
 import { updateHistoryEntry } from '../../../utils/historyStorage';
 import styles from './ReadingResultPage.module.css';
 import {loadReadingTest} from '../services/readingTestRepository';
+import { useToast } from '../../../context/ToastContext';
+import DataLoadError from '../../../components/common/DataLoadError';
 
 function getCefrLevel(percentage) {
   if (percentage >= 90) return 'C1';
@@ -53,23 +55,31 @@ function ScoreRing({ percentage, size = 'large', children }) {
 }
 
 const ReadingResultPage = () => {
+  const { showError } = useToast();
   const { sessionId } = useParams();
   const navigate = useNavigate();
   const [results, setResults] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => {
+    let cancelled = false;
     const fetchResults = async () => {
+      setLoading(true);
+      setLoadError('');
       try {
         const sessionDataString = localStorage.getItem(sessionId);
         if (!sessionDataString) {
-          navigate('/reading/tests');
+          const message = 'This test result is no longer available on this browser. Please return to the Reading test list.';
+          setLoadError(message);
+          showError(message);
           return;
         }
 
         const sessionData = JSON.parse(sessionDataString);
         
         const testData = sessionData.testSnapshot || await loadReadingTest(sessionData.testId);
+        if (cancelled) return;
 
         const gradedResults = calculateScore(sessionData.answers, testData, sessionData.mode || 'full');
         setResults({ 
@@ -79,16 +89,19 @@ const ReadingResultPage = () => {
           mode: sessionData.mode || 'full',
           historyId: sessionData.historyId
         });
-      } catch (error) {
-        console.error("Error loading results", error);
-        navigate('/reading/tests');
+      } catch {
+        if (cancelled) return;
+        const message = 'We could not load this test result. Please refresh the page and try again.';
+        setLoadError(message);
+        showError(message);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     fetchResults();
-  }, [sessionId, navigate]);
+    return () => { cancelled = true; };
+  }, [sessionId, showError]);
 
   const stats = useMemo(() => {
     if (!results) return null;
@@ -98,8 +111,8 @@ const ReadingResultPage = () => {
     const questions = [
       ...results.part1.details.map((d, index) => ({ id: index + 1, answer: d.userAnswer, isCorrect: d.isCorrect })),
       ...results.part2.details.map((d, index) => ({ id: index + 6, answer: d.userAnswer, isCorrect: d.isCorrect })),
-      ...results.part3.details.map((d, index) => ({ id: index + 11, answer: d.userAnswer, isCorrect: d.isCorrect })),
-      ...results.part4.details.map((d, index) => ({ id: index + 18, answer: d.userAnswer, isCorrect: d.isCorrect })),
+      ...results.part3.details.map((d, index) => ({ id: index + 16, answer: d.userAnswer, isCorrect: d.isCorrect })),
+      ...results.part4.details.map((d, index) => ({ id: index + 23, answer: d.userAnswer, isCorrect: d.isCorrect })),
     ].map(item => {
       const isSkipped = !item.answer || item.answer === '' || item.answer === '(No answer)';
       return {
@@ -206,7 +219,7 @@ const ReadingResultPage = () => {
     );
   }
 
-  if (!results || !stats) return null;
+  if (loadError || !results || !stats) return <DataLoadError title="Test result is unavailable" message={loadError || 'Please return to the Reading test list and open your result again.'} />;
 
   return (
     <div className={styles.page}>

@@ -234,10 +234,10 @@
 }
 
 .circlesWrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 32px;
-  justify-items: center;
 }
 
 .circleItem {
@@ -329,7 +329,6 @@
   }
 
   .circlesWrapper {
-    grid-template-columns: 1fr 1fr;
     gap: 24px;
   }
 
@@ -350,4 +349,98 @@
     width: auto;
     min-width: 120px;
   }
+}
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .cefrBox {
+  background: var(--bg-surface);
+  border: 1px solid var(--text-muted);
+}
+
+:global([data-theme="dark"]) .cefrLabel {
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .cefrValue {
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .scoreText {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .resultBox {
+  background: var(--bg-surface);
+  border: 1px solid var(--text-muted);
+}
+
+:global([data-theme="dark"]) .resultLabel {
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .statLabel {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .statValueBold {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .statLabelCorrect {
+  color: var(--success);
+}
+
+:global([data-theme="dark"]) .statLabelWrong {
+  color: var(--brand);
+}
+
+:global([data-theme="dark"]) .statLabelSkip {
+  color: var(--text-muted);
+}
+
+:global([data-theme="dark"]) .statValue {
+  color: var(--text-primary);
+}
+
+:global([data-theme="dark"]) .detailBox {
+  background: var(--bg-surface);
+  border: 1px solid var(--text-muted);
+}
+
+:global([data-theme="dark"]) .feedbackBox {
+  background: var(--bg-surface);
+  border: 1px solid var(--text-muted);
+}
+
+:global([data-theme="dark"]) .feedbackLabel {
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .statsBox {
+  background: var(--bg-surface);
+  border: 1px solid var(--text-muted);
+}
+
+:global([data-theme="dark"]) .statsLabel {
+  color: var(--brand-hover);
+}
+
+:global([data-theme="dark"]) .tryAgainBtn {
+  background: var(--brand);
+  color: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .backBtn {
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .percentageText {
+  color: #000000 !important;
+}
+:global([data-theme="dark"]) .statPercentageText {
+  color: #000000 !important;
 }

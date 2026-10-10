@@ -1,25 +1,29 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import ReadingOverviewPage from './pages/ReadingOverviewPage';
-import ReadingChooseTestPage from './pages/ReadingChooseTestPage';
-import ReadingTestPage from './pages/ReadingTestPage';
 import ReadingResultPage from './pages/ReadingResultPage';
 import ReviewFeedbackPage from './pages/ReviewFeedbackPage';
-import { ReadingTestProvider } from './context/ReadingTestContext';
 import TestLayout from '../../components/layout/TestLayout';
+import TestListPage from '../../pages/TestListPage';
+import AttemptRoleGuard from '../test-attempts/components/AttemptRoleGuard.jsx';
+import ReadingAttemptLayout from './components/ReadingAttemptLayout';
+import ReadingAttemptPage from './pages/ReadingAttemptPage';
+import ReadingAttemptResultPage from './pages/ReadingAttemptResultPage';
+import ReadingAttemptDetailPage from './pages/ReadingAttemptDetailPage';
 
 export const readingMainRoutes = [
   {
     path: 'reading',
     element: <ReadingOverviewPage />,
   },
-  {
-    path: 'reading/tests',
-    element: <ReadingChooseTestPage />,
-  },
+
   {
     path: 'reading/choose',
     element: <Navigate to="/reading/tests" replace />,
+  },
+  {
+    path: 'reading/result',
+    element: <AttemptRoleGuard><ReadingAttemptResultPage /></AttemptRoleGuard>,
   },
   {
     path: 'reading/result/:sessionId',
@@ -29,18 +33,16 @@ export const readingMainRoutes = [
 
 export const readingTestRoutes = [
   {
-    path: 'reading/test/:testId',
-    element: <TestLayout />,
+    path: 'reading/test',
+    element: <ReadingAttemptLayout />,
     children: [
-      {
-        index: true,
-        element: (
-          <ReadingTestProvider>
-            <ReadingTestPage />
-          </ReadingTestProvider>
-        ),
-      },
+      { path: ':part', element: <ReadingAttemptPage /> },
     ],
+  },
+  {
+    path: 'reading/detail-result',
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
+    children: [{ index: true, element: <ReadingAttemptDetailPage /> }],
   },
   {
     path: 'reading/review/:sessionId',

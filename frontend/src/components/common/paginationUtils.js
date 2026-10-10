@@ -1,4 +1,4 @@
-export const MAX_PAGE_SIZE = 1000;
+export const MAX_PAGE_SIZE = 100;
 
 export function isValidPageInput(value, max) {
   return /^\d+$/.test(String(value)) && Number.isSafeInteger(Number(value)) && Number(value) >= 1 && Number(value) <= max;

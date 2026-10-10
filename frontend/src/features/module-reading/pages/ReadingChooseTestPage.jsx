@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import CommentSection from '../../../components/shared/CommentSection/CommentSection';
 import styles from './ReadingChooseTestPage.module.css';
 import {getAdminReadingList} from '../services/readingTestRepository';
+import { useToast } from '../../../context/ToastContext';
+import DataLoadError from '../../../components/common/DataLoadError';
+import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const TABS = [
   { id: 'part1', label: 'Part 1' },
@@ -12,18 +15,27 @@ const TABS = [
   { id: 'part4', label: 'Part 4' },
   { id: 'full', label: 'Full Reading test' },
 ];
+const LIST_QUERY_SCHEMA = {
+  activeTab: { ...queryParam.enum(TABS.map(tab => tab.id), 'part1'), param: 'part' },
+  searchQuery: { ...queryParam.string(''), param: 'q' },
+  page: queryParam.positiveInt(1),
+  pageSize: { ...queryParam.positiveInt(() => window.innerWidth <= 700 ? 5 : 10, 100), param: 'size' },
+};
 
 export default function ReadingChooseTestPage() {
+  const { showError } = useToast();
   const navigate = useNavigate();
   const [tests, setTests] = useState([]);
   const [adminTests,setAdminTests]=useState(getAdminReadingList);
   useEffect(()=>{const refresh=()=>setAdminTests(getAdminReadingList());window.addEventListener('reading-tests-updated',refresh);window.addEventListener('storage',refresh);return()=>{window.removeEventListener('reading-tests-updated',refresh);window.removeEventListener('storage',refresh)}},[]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('part1');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(() => window.innerWidth <= 700 ? 5 : 10);
-  useEffect(() => setPage(1), [activeTab, searchQuery]);
+  const [loadError, setLoadError] = useState('');
+  const [urlState, setUrlState] = useUrlQueryState(LIST_QUERY_SCHEMA);
+  const { activeTab, searchQuery, page, pageSize } = urlState;
+  const setActiveTab = value => setUrlState({ activeTab: value, page: 1 });
+  const setSearchQuery = value => setUrlState({ searchQuery: value, page: 1 });
+  const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
+  const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
 
   useEffect(() => {
     let cancelled = false;
@@ -35,15 +47,19 @@ export default function ReadingChooseTestPage() {
           setTests(data.tests || []);
           setLoading(false);
         }
-      } catch (error) {
-        console.error("Failed to load tests", error);
-        if (!cancelled) setLoading(false);
+      } catch {
+        if (!cancelled) {
+          const message = 'We could not load the Reading tests. Please refresh the page and try again.';
+          setLoadError(message);
+          showError(message);
+          setLoading(false);
+        }
       }
     };
 
     fetchTests();
     return () => { cancelled = true; };
-  }, []);
+  }, [showError]);
 
   const handleDoTest = (testId) => {
     navigate(`/reading/introduction?testId=${testId}&mode=${activeTab}`);
@@ -89,6 +105,7 @@ export default function ReadingChooseTestPage() {
 
       <div className={styles.mainContent}>
         <div className={styles.testSection}>
+          {loadError && <DataLoadError title="Reading tests are unavailable" message={loadError} />}
           {/* Search Row */}
           <div className={styles.searchRow}>
             <div className={styles.searchInputContainer}>
@@ -118,7 +135,7 @@ export default function ReadingChooseTestPage() {
                 <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>
                   Loading tests...
                 </div>
-              ) : filteredTests.length === 0 ? (
+              ) : filteredTests.length === 0 && !loadError ? (
                 <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>
                   No tests available for this search/part yet.
                 </div>

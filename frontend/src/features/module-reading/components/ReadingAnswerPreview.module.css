@@ -8,3 +8,15 @@
 .sentence {display:flex;gap:16px;border:1px solid #b9d8c3;background:#f3fbf5;border-radius:9px;padding:18px;margin:14px 0}.sentence p {margin:0 0 8px}.number {background:white;border:1px solid #9bc6aa;border-radius:6px;min-width:32px;height:32px;text-align:center}.note,.sentence small {color:#617067}
 .columns {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}.headingLayout {display:grid;grid-template-columns:minmax(220px,1fr) minmax(0,2fr);gap:24px;align-items:start}.heading {padding:12px 0;border-bottom:1px solid #eee}.heading small {display:block;color:#8a5a0b;background:#fff6df;padding:3px 8px;margin-top:6px;border-radius:5px}
 @media(max-width:750px){.columns,.headingLayout,.optionsGrid{grid-template-columns:1fr}.preview{font-size:15px}.card,.passage{padding:16px}.preview h2{font-size:19px}.instruction{padding:14px}.sentence{padding:14px;gap:10px}}
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .preview { color: var(--text-primary); }
+:global([data-theme="dark"]) .instruction { background: var(--warning-bg); border-left-color: var(--brand); color: var(--text-primary); }
+:global([data-theme="dark"]) .passage { background: var(--bg-surface); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .card { background: var(--bg-surface); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .answer { background: var(--success-bg); color: var(--success); border-color: var(--success); }
+:global([data-theme="dark"]) .correctOption { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+:global([data-theme="dark"]) .sentence { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .note { color: var(--text-muted); }
+:global([data-theme="dark"]) .heading { border-bottom-color: var(--border); }
+:global([data-theme="dark"]) .heading small { background: var(--warning-bg); color: var(--warning); }

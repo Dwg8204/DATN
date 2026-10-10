@@ -87,3 +87,22 @@
     line-height: 21px;
   }
 }
+
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .radioOuter {
+  border: 1px solid var(--text-disabled);
+  background: var(--bg-surface);
+}
+
+:global([data-theme="dark"]) .radioOuterSelected {
+  border-color: var(--info);
+}
+
+:global([data-theme="dark"]) .radioInner {
+  background: var(--info);
+}
+
+:global([data-theme="dark"]) .optionText {
+  color: var(--text-primary);
+}

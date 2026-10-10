@@ -1,24 +1,42 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { useAuth } from '../../../context/AuthContext';
-import { Key, Plus, Target } from 'lucide-react';
+import { Key, Plus } from 'lucide-react';
 import ConfirmModal from '../../../components/common/ConfirmModal';
+import ToastNotification from '../../../components/common/ToastNotification';
 import { calcGoalProgress } from '../../../utils/dashboardUtils';
 import { getHistoryEntries } from '../../../utils/historyStorage';
+import { addPersonalNotification } from '../../../utils/notificationStorage';
+import { profileApi } from '../services/profileApi';
 import styles from './ProfilePage.module.css';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, updateProfile } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const [firstName, setFirstName] = useState(user?.name ? user.name.split(' ')[0] : '');
-  const [lastName, setLastName] = useState(user?.name && user.name.split(' ').length > 1 ? user.name.split(' ').slice(1).join(' ') : '');
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [avatarBase64, setAvatarBase64] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName || '');
+      setLastName(user.lastName || '');
+      setBio(user.bio || '');
+      setPhone(user.phone || '');
+    }
+  }, [user]);
 
   const [showConfirm, setShowConfirm] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
 
   // Goal config
   const [goalConfig, setGoalConfig] = useState(() => {
@@ -37,6 +55,7 @@ export default function ProfilePage() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
         setAvatarBase64(reader.result);
@@ -50,18 +69,54 @@ export default function ProfilePage() {
     setShowConfirm(true);
   };
 
-  const executeSave = () => {
-    const updates = {
-      name: `${firstName} ${lastName}`.trim(),
-      bio,
-      phone
-    };
-    if (avatarBase64) {
-      updates.avatar = avatarBase64;
-    }
-    updateProfile(updates);
-
+  const executeSave = async () => {
+    setIsSaving(true);
     setShowConfirm(false);
+    
+    // Validate empty names
+    if (!firstName.trim()) {
+      setToastType('error');
+      setToastMessage(t('account.firstNameRequired'));
+      setFirstName(user?.firstName || '');
+      setIsSaving(false);
+      return;
+    }
+    if (!lastName.trim()) {
+      setToastType('error');
+      setToastMessage(t('account.lastNameRequired'));
+      setLastName(user?.lastName || '');
+      setIsSaving(false);
+      return;
+    }
+
+    try {
+      const updates = {
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        bio,
+        phone
+      };
+      
+      await profileApi.updateProfile(updates);
+
+      if (avatarFile) {
+        await profileApi.uploadAvatar(avatarFile);
+      }
+
+      // Fetch the latest profile to ensure 100% sync with sidebar and header
+      const freshProfile = await profileApi.getProfile();
+      updateProfile(freshProfile);
+
+      setToastType('success');
+      setToastMessage(t('account.saved'));
+      addPersonalNotification(t('account.saved'));
+    } catch (error) {
+      console.error('Failed to save profile', error);
+      setToastType('error');
+      setToastMessage(error.response?.data?.message || t('account.saveFailed'));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleSaveGoal = () => {
@@ -75,12 +130,8 @@ export default function ProfilePage() {
     setGoalConfig(newConfig);
     localStorage.setItem('aptimate.dashboard_goal', JSON.stringify(newConfig));
     setShowGoalForm(false);
-  };
-
-  const handleDeactivateGoal = () => {
-    const newConfig = { ...goalConfig, active: false };
-    setGoalConfig(newConfig);
-    localStorage.setItem('aptimate.dashboard_goal', JSON.stringify(newConfig));
+    setToastMessage(t('goal.saved'));
+    addPersonalNotification(t('goal.saved'));
   };
 
   return (
@@ -90,7 +141,7 @@ export default function ProfilePage() {
         
         <div className={styles.content}>
           <div className={styles.avatarSection}>
-            <img src={avatarBase64 || user?.avatar || 'https://placehold.co/100x100'} alt="Large Avatar" className={styles.largeAvatar} />
+            <img src={avatarBase64 || user?.avatar?.url || user?.avatar || 'https://placehold.co/100x100'} alt="Large Avatar" className={styles.largeAvatar} />
             <input 
               type="file" 
               accept="image/*" 
@@ -106,7 +157,7 @@ export default function ProfilePage() {
           <form className={styles.form} onSubmit={handleFormSubmit}>
             <div className={styles.inputRow}>
               <div className={styles.inputCol}>
-                <label className={styles.label}>First Name</label>
+                <label className={styles.label}>{t('account.firstName')}</label>
                 <input 
                   type="text" 
                   className={styles.input} 
@@ -115,7 +166,7 @@ export default function ProfilePage() {
                 />
               </div>
               <div className={styles.inputCol}>
-                <label className={styles.label}>Last Name</label>
+                <label className={styles.label}>{t('account.lastName')}</label>
                 <input 
                   type="text" 
                   className={styles.input} 
@@ -126,7 +177,7 @@ export default function ProfilePage() {
             </div>
             
             <div className={styles.inputCol}>
-              <label className={styles.label}>Bio</label>
+              <label className={styles.label}>{t('account.bio')}</label>
               <textarea 
                 className={styles.textarea} 
                 rows="4" 
@@ -136,7 +187,7 @@ export default function ProfilePage() {
             </div>
             
             <div className={styles.inputCol}>
-              <label className={styles.label}>Phone Number</label>
+              <label className={styles.label}>{t('account.phone')}</label>
               <input 
                 type="text" 
                 className={styles.input} 
@@ -153,11 +204,11 @@ export default function ProfilePage() {
                 onClick={() => navigate('/profile/change-password')}
               >
                 <Key size={16} style={{ marginRight: '8px' }} />
-                Change password
+                {t('account.changePassword')}
               </button>
               
-              <button type="submit" className={styles.saveBtn}>
-                Save changes
+              <button type="submit" className={styles.saveBtn} disabled={isSaving}>
+                {t(isSaving ? 'account.saving' : 'account.saveChanges')}
               </button>
             </div>
             
@@ -165,23 +216,23 @@ export default function ProfilePage() {
               {goalConfig.active && goalProgress && (
                 <div className={styles.mobileGoalGrid}>
                   <div className={styles.goalTile}>
-                    <div className={styles.goalTileTitle}>Target</div>
-                    <div className={styles.goalTileValuePrimary}>Band {goalConfig.targetBand}</div>
+                    <div className={styles.goalTileTitle}>{t('goal.target')}</div>
+                    <div className={styles.goalTileValuePrimary}>{t('dashboard.band', { band: goalConfig.targetBand })}</div>
                   </div>
                   <div className={styles.goalTile}>
-                    <div className={styles.goalTileTitle}>Current (Est.)</div>
-                    <div className={styles.goalTileValue}>Band {goalProgress.currentEstBand}</div>
+                    <div className={styles.goalTileTitle}>{t('goal.current')}</div>
+                    <div className={styles.goalTileValue}>{t('dashboard.band', { band: goalProgress.currentEstBand })}</div>
                   </div>
                   <div className={styles.goalTile}>
-                    <div className={styles.goalTileTitle}>Completed</div>
+                    <div className={styles.goalTileTitle}>{t('goal.completed')}</div>
                     <div className={styles.goalTileValue}>
-                      {goalProgress.completedTests} <span className={styles.goalTileUnit}>tests</span>
+                      {goalProgress.completedTests} <span className={styles.goalTileUnit}>{t('goal.tests')}</span>
                     </div>
                   </div>
                   <div className={styles.goalTile}>
-                    <div className={styles.goalTileTitle}>Learning Time</div>
+                    <div className={styles.goalTileTitle}>{t('goal.learningTime')}</div>
                     <div className={styles.goalTileValue}>
-                      {goalProgress.totalHours} <span className={styles.goalTileUnit}>hours</span>
+                      {goalProgress.totalHours} <span className={styles.goalTileUnit}>{t('goal.hours')}</span>
                     </div>
                   </div>
                 </div>
@@ -192,17 +243,17 @@ export default function ProfilePage() {
                 className={styles.mobileSetGoalBtn}
                 onClick={() => setShowGoalForm(!showGoalForm)}
               >
-                {goalConfig.active ? 'Change Goal' : 'Set Learning Goal'}
+                {t(goalConfig.active ? 'goal.change' : 'goal.set')}
               </button>
             </div>
 
             <div className={`${styles.goalTrackerContainer} ${!showGoalForm ? styles.mobileHiddenForm : ''}`}>
               <div className={styles.sectionDivider}></div>
-              <h3 className={styles.sectionTitle}>Learning Goal Tracker</h3>
+              <h3 className={styles.sectionTitle}>{t('goal.tracker')}</h3>
               
               <div className={styles.goalSettings}>
               <div className={styles.goalInputGroup}>
-                <label className={styles.label}>Target Band</label>
+                <label className={styles.label}>{t('goal.targetBand')}</label>
                 <select className={styles.input} value={tempGoalBand} onChange={e => setTempGoalBand(e.target.value)}>
                   <option value="A1">A1</option>
                   <option value="A2">A2</option>
@@ -212,27 +263,18 @@ export default function ProfilePage() {
                 </select>
               </div>
               <div className={styles.goalInputGroup}>
-                <label className={styles.label}>Total Tests</label>
+                <label className={styles.label}>{t('goal.totalTests')}</label>
                 <input type="number" min="1" className={styles.input} value={tempGoalTests} onChange={e => setTempGoalTests(e.target.value)} />
               </div>
               <div className={styles.goalInputGroup}>
-                <label className={styles.label}>Duration (Days)</label>
+                <label className={styles.label}>{t('goal.duration')}</label>
                 <input type="number" min="1" className={styles.input} value={tempGoalDays} onChange={e => setTempGoalDays(e.target.value)} />
               </div>
             </div>
 
-            <div className={styles.actions} style={{ marginTop: '16px', marginBottom: '32px' }}>
-              <button 
-                type="button" 
-                className={`${styles.changePasswordBtn} ${styles.desktopOnlyBtn}`} 
-                onClick={handleDeactivateGoal}
-              >
-                <Target size={16} style={{ marginRight: '8px' }} />
-                Change Goal
-              </button>
-              
+            <div className={styles.actions} style={{ marginTop: '16px', marginBottom: '32px', justifyContent: 'flex-end' }}>
               <button type="button" className={styles.saveBtn} onClick={handleSaveGoal}>
-                Save Goal
+                {t('goal.save')}
               </button>
             </div>
             </div>
@@ -240,12 +282,27 @@ export default function ProfilePage() {
 
           {showConfirm && (
             <ConfirmModal 
-              title="Save Changes"
-              message="Are you sure you want to save these changes to your personal information?"
+              title={t('account.saveTitle')}
+              message={t('account.saveConfirm')}
               onConfirm={executeSave}
               onCancel={() => setShowConfirm(false)}
             />
           )}
+
+          {isSaving && (
+            <div className={styles.modalOverlay}>
+              <div className={styles.loadingModal}>
+                <div className={styles.spinner}></div>
+                <p className={styles.loadingText}>{t('account.aligning')}</p>
+              </div>
+            </div>
+          )}
+
+          <ToastNotification 
+            message={toastMessage} 
+            type={toastType}
+            onClose={() => setToastMessage('')} 
+          />
         </div>
       </div>
     </div>

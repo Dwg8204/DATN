@@ -1,0 +1,95 @@
+.selector {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.trigger {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  border: 1px solid var(--brand-border);
+  border-radius: 50%;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .18s ease, background .18s ease, box-shadow .18s ease, color .18s ease;
+}
+
+.trigger:hover,
+.trigger:focus-visible,
+.selector:has(.menu) .trigger {
+  border-color: var(--brand);
+  background: var(--brand-subtle);
+  box-shadow: 0 0 0 3px var(--brand-shadow);
+  outline: none;
+}
+
+.trigger > svg:not(.flag) {
+  display: none;
+}
+
+.chevronOpen { transform: rotate(180deg); }
+.flag { width: 21px; height: 21px; flex: 0 0 auto; overflow: hidden; border-radius: 50%; box-shadow: 0 0 0 1px var(--shadow-sm); object-fit: cover; }
+.code { font-size: 10px; line-height: 1; }
+
+.menu {
+  position: absolute;
+  z-index: 1100;
+  top: calc(100% + 8px);
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+  width: 94px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-surface);
+  box-shadow: 0 14px 36px var(--shadow-sm);
+}
+
+.option {
+  width: 100%;
+  min-height: 32px;
+  display: grid;
+  grid-template-columns: 22px 1fr 14px;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  text-align: left;
+  cursor: pointer;
+}
+
+.option:hover { background: var(--bg-hover); }
+.option > svg:last-child { width: 14px; height: 14px; }
+
+.option.active {
+  background: var(--brand-active-bg);
+  color: var(--brand-hover);
+}
+
+@media (max-width: 700px) {
+  .trigger {
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
+    padding: 0;
+  }
+
+  .trigger > svg:not(.flag) { width: 13px; height: 13px; }
+  .menu { position: fixed; top: 53px; left: auto; right: 8px; transform: none; width: 94px; }
+}

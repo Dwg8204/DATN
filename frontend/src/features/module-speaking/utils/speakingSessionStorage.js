@@ -1,9 +1,29 @@
+import { toast } from '../../../services/toastStore.js';
+
 const COMPLETED_TESTS_KEY = 'completedSpeakingTests';
+const failedWrites = new Set();
+
+function readObject(storage, key) {
+  const value = JSON.parse(storage.getItem(key) || '{}');
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid speaking data');
+  return value;
+}
+
+function writeSpeaking(key, operation, message) {
+  try {
+    operation();
+    failedWrites.delete(key);
+    return true;
+  } catch {
+    if (!failedWrites.has(key)) toast.error(message);
+    failedWrites.add(key);
+    return false;
+  }
+}
 
 export const saveCompletedSpeakingTest = (testId, resultData) => {
-  try {
-    const existingStr = localStorage.getItem(COMPLETED_TESTS_KEY);
-    const existing = existingStr ? JSON.parse(existingStr) : {};
+  return writeSpeaking(COMPLETED_TESTS_KEY, () => {
+    const existing = readObject(localStorage, COMPLETED_TESTS_KEY);
     
     existing[testId] = {
       ...resultData,
@@ -11,34 +31,33 @@ export const saveCompletedSpeakingTest = (testId, resultData) => {
     };
     
     localStorage.setItem(COMPLETED_TESTS_KEY, JSON.stringify(existing));
-  } catch (error) {
-    console.error('Error saving completed speaking test:', error);
-  }
+  }, 'We could not save your Speaking test result in this browser. Please allow browser storage or free up some space before leaving.');
 };
 
 export const getCompletedSpeakingTests = () => {
   try {
-    const existingStr = localStorage.getItem(COMPLETED_TESTS_KEY);
-    return existingStr ? JSON.parse(existingStr) : {};
-  } catch (error) {
-    console.error('Error getting completed speaking tests:', error);
+    return readObject(localStorage, COMPLETED_TESTS_KEY);
+  } catch {
     return {};
   }
 };
 
 export const clearCompletedSpeakingTests = () => {
-  try {
-    localStorage.removeItem(COMPLETED_TESTS_KEY);
-  } catch (error) {
-    console.error('Error clearing completed speaking tests:', error);
-  }
+  return writeSpeaking(COMPLETED_TESTS_KEY, () => localStorage.removeItem(COMPLETED_TESTS_KEY), 'We could not clear your Speaking test history. Please allow browser storage and try again.');
 };
 
 export const saveSpeakingPartAnswers = (part, answers) => {
-  sessionStorage.setItem("speaking_$part_answers", JSON.stringify(answers));
+  const key = `speaking_${part}_answers`;
+  return writeSpeaking(key, () => sessionStorage.setItem(key, JSON.stringify(answers)), 'We could not save your answers. Please keep this page open, allow browser storage or free up some space, then submit again.');
 };
 
 export const getSpeakingPartAnswers = (part) => {
-  return JSON.parse(sessionStorage.getItem("speaking_$part_answers") || '{}');
+  try {
+    const key = `speaking_${part}_answers`;
+    // Read old attempts without deleting or rewriting the legacy record.
+    return readObject(sessionStorage, sessionStorage.getItem(key) !== null ? key : 'speaking_$part_answers');
+  } catch {
+    return {};
+  }
 };
 

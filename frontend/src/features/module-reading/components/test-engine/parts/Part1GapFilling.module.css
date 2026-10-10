@@ -35,7 +35,99 @@
   width: 100%;
 }
 
+.examLayout {
+  min-height: 0;
+  width: 100%;
+}
+
+.examLayout .passageWrap {
+  min-width: 0;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px solid #e3e5e8;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.examLayout .passage {
+  max-width: 960px;
+  font-size: 18px;
+  line-height: 2.5;
+}
+
+.examLayout .answerGap {
+  width: 160px;
+  margin: 4px 6px;
+}
+
+.examLayout .answerSelect > button {
+  min-height: 42px;
+  padding: 7px 12px;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.practiceLayout {
+  width: min(1160px, 100%);
+  margin: 0 auto;
+  min-height: 0;
+}
+
+.practiceLayout .passageWrap {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e3e5e8;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.practiceLayout .passage {
+  max-width: none;
+  font-size: 16px;
+  line-height: 2.2;
+}
+
+.panelTitle {
+  margin: 0 0 16px;
+  color: #30343b;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.practiceLayout .answerGap {
+  width: max-content;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  margin: 5px 6px;
+}
+
+.practiceLayout .answerSelect { width: 180px; max-width: 100%; flex: 0 1 180px; }
+.practiceLayout .answerReveal { display: contents; }
+.practiceLayout .answerReveal > div {
+  display: contents;
+}
+.practiceLayout .answerReveal > div > button { flex-shrink: 0; }
+.practiceLayout .answerReveal > div > aside {
+  width: max-content;
+  max-width: min(340px, 100%);
+  min-width: 0;
+  margin: 0;
+  line-height: 1.5;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .practiceLayout .passageWrap { padding: 18px; }
+}
+
 @media (max-width: 700px) {
+  .examLayout .passageWrap { padding: 18px 14px; }
+  .examLayout .passage { font-size: 16px; line-height: 2.6; }
+  .examLayout .answerGap { width: 140px; margin: 4px; }
+  .examLayout .answerSelect > button { font-size: 14px; padding: 7px 10px; }
+
   .passageWrap {
     padding: 0;
   }
@@ -68,3 +160,10 @@
     width: 132px;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .passage { color: var(--text-primary); }
+:global([data-theme="dark"]) .practiceLayout .passageWrap { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .examLayout .passageWrap { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .panelTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .practiceLayout .answerReveal > div > aside { background: var(--bg-surface); color: var(--text-primary); border-color: var(--brand); }

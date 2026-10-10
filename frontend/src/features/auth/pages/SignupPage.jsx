@@ -1,66 +1,56 @@
 import { validatePassword } from '../utils/passwordValidation';
-import { getManagedUsers } from '../../admin/users/data/userManagementStorage';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from '../components/PasswordInput';
 import styles from './Auth.module.css';
 import { useAuth } from '../../../context/AuthContext';
+import { authApi, getApiError } from '../services/authApi';
+import { useToast } from '../../../context/ToastContext';
+import { validateEmail } from '../utils/emailValidation';
 
 export default function SignupPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { showError, showSuccess, dismissToast } = useToast();
   
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    setError('');
+    if (busy) return;
+    dismissToast();
 
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields.');
-      return;
-    }
-    
-    const passwordError = validatePassword(password, confirmPassword);
-    if (passwordError) {
-      setError(passwordError);
-      return;
-    }
-
-    const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
-    if ([...existingUsers, ...getManagedUsers()].some(u => u.email.toLowerCase() === email.trim().toLowerCase())) {
-      setError('Email already in use.');
+    const validationError = (!firstName.trim() && 'Please enter your first name.')
+      || (!lastName.trim() && 'Please enter your last name.')
+      || validateEmail(email)
+      || validatePassword(password, confirmPassword);
+    if (validationError) {
+      showError(validationError);
       return;
     }
 
-    const newUser = {
-      id: Date.now(),
-      name: `${firstName} ${lastName}`,
-      email,
-      password, // Note: In a real app, passwords should be hashed
-      avatar: 'https://placehold.co/100x100?text=' + firstName.charAt(0)
-    };
-
-    existingUsers.push(newUser);
-    localStorage.setItem('aptimate.mock_users', JSON.stringify(existingUsers));
-
-    // Exclude password from profile
-    const { password: _, ...profile } = newUser;
-    
-    login({ accessToken: 'mock-token-' + Date.now(), profile });
-    navigate('/');
+    setBusy(true);
+    try {
+      const result = await authApi.register({ firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim(), password, confirmPassword });
+      login(result);
+      showSuccess('Your account has been created successfully.');
+      navigate('/');
+    } catch (requestError) {
+      showError(getApiError(requestError, 'Unable to create your account. Please try again.'));
+    } finally {
+      setBusy(false);
+    }
   };
   return (
     <div className={styles.signupWrapper}>
       <div className={styles.container}>
         <span className={styles.title}>SIGN UP TO YOUR ACCOUNT</span>
-        {error && <div style={{ color: 'red', marginBottom: '16px' }}>{error}</div>}
-        <form className={styles.signupForm} onSubmit={handleSignup}>
+        <form className={styles.signupForm} onSubmit={handleSignup} noValidate>
           <div className={styles.signupFormGroup}>
             <div className={styles.inputRow}>
               <div className={styles.inputColMargin}>
@@ -111,7 +101,7 @@ export default function SignupPage() {
               />
             </div>
           </div>
-          <button type="submit" className={styles.submitBtnSignup}>
+          <button type="submit" disabled={busy} className={styles.submitBtnSignup}>
             <span className={styles.submitBtnText}>SIGN UP</span>
           </button>
         </form>

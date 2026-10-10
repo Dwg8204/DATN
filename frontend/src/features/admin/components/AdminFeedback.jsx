@@ -1,21 +1,15 @@
-import { CheckCircle2, TriangleAlert, X } from 'lucide-react';
+import { TriangleAlert } from 'lucide-react';
+import ToastNotification from '../../../components/common/ToastNotification';
+import { getFirstValidationError } from '../../../utils/validationErrors';
 import styles from './AdminFeedback.module.css';
 
 export function AdminToast({ message, type = 'success', onClose }) {
-  if (!message) return null;
-  const Icon = type === 'success' ? CheckCircle2 : TriangleAlert;
-  return <div className={`${styles.toast} ${styles[type]}`} role="status"><Icon/><span>{message}</span><button type="button" onClick={onClose} aria-label="Close notification"><X/></button></div>;
+  return <ToastNotification message={message} type={type} onClose={onClose} duration={type === 'error' ? 0 : 4500} />;
 }
 
 /** Shows one validation problem at a time so a long form never overwhelms the user. */
 export function AdminValidationToast({ errors = [], onClose }) {
-  const findFirst = value => {
-    if (typeof value === 'string') return value;
-    if (Array.isArray(value)) return value.map(findFirst).find(Boolean);
-    if (value && typeof value === 'object') return Object.values(value).map(findFirst).find(Boolean);
-    return '';
-  };
-  return <AdminToast message={findFirst(errors)} type="error" onClose={onClose} />;
+  return <AdminToast message={getFirstValidationError(errors)} type="error" onClose={onClose} />;
 }
 
 export function AdminConfirmDialog({ open, title, message, confirmLabel = 'Delete', onCancel, onConfirm }) {

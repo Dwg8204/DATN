@@ -1,9 +1,10 @@
+import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
-import { startGrammarVocabSession } from '../features/grammar_vocab/utils/grammarVocabSessionStorage';
-import { startListeningSession } from '../features/module-listening/utils/listeningSessionStorage';
-import { startReadingSession } from '../features/module-reading/utils/readingSessionStorage';
-import { startWritingSession } from '../features/writing/utils/writingSessionStorage';
+import { testAttemptsApi } from '../features/test-attempts/services/testAttemptsApi';
+import { resumePartFromAttempt } from '../features/writing/utils/writingAttemptPaper';
+import { useToast } from '../context/ToastContext';
+import { getApiError } from '../services/apiError';
 
 const skillConfigs = {
   reading: {
@@ -66,7 +67,7 @@ const readingModeConfigs = {
     title: 'APTIS GENERAL READING - PART 4',
     time: 'Time: 14 min',
     instructions: 'Read the passage. Choose a heading for each numbered paragraph.',
-    information: 'This part consists of a long text with 7 paragraphs. Select the best heading for each paragraph from the 8 options.'
+    information: 'This part consists of a long text with 7 paragraphs. Select the best heading for each paragraph from the 7 options.'
   },
   full: {
     title: 'APTIS GENERAL READING',
@@ -88,6 +89,7 @@ export default function IntroductionPage({
   const navigate = useNavigate();
   const { skill } = useParams();
   const [searchParams] = useSearchParams();
+  const { showError } = useToast();
   const mode = searchParams.get('mode') || 'full';
 
   // Use props first, then fall back to skill config from URL params
@@ -101,37 +103,56 @@ export default function IntroductionPage({
   const finalInstructions = instructions || config.instructions;
   const finalInformation = information || config.information;
 
-  const handleStartTest = () => {
-    if (onStartTest) {
-      onStartTest();
-    } else if (skill) {
-      const testId = searchParams.get('testId') || '1';
+  const [isStarting, setIsStarting] = React.useState(false);
 
-      if (skill === 'grammar-vocab') {
-        startGrammarVocabSession(testId, mode, { force: true });
-        if (mode === 'full') {
-          navigate(`/${skill}/test/part1${testId ? `?testId=${testId}&isFull=true` : '?isFull=true'}`);
-        } else {
-          navigate(`/${skill}/test/${mode}${testId ? `?testId=${testId}` : ''}`);
+  const handleStartTest = async () => {
+    if (isStarting) return;
+    try {
+      setIsStarting(true);
+      if (onStartTest) {
+        onStartTest();
+      } else if (skill) {
+        const testId = searchParams.get('testId') || '1';
+
+        if (skill === 'grammar-vocab') {
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const actualMode = started.paper?.mode ?? mode;
+          const firstPart = actualMode === 'full' ? 'part1' : actualMode;
+          const params = new URLSearchParams({ testId, attemptId: started.attemptId });
+          if (actualMode === 'full') params.set('isFull', 'true');
+          navigate(`/${skill}/test/${firstPart}?${params.toString()}`);
+        } else if (skill === 'listening') {
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const actualMode = started.paper?.mode ?? mode;
+          const attemptId = started.attemptId;
+          const params = new URLSearchParams({ attemptId });
+          if (testId) params.set('testId', testId);
+        
+          if (actualMode === 'full') {
+            navigate(`/${skill}/test/part1?${params.toString()}`);
+          } else {
+            navigate(`/${skill}/test/${actualMode}?${params.toString()}`);
+          }
+        } else if (skill === 'reading') {
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const firstPart = started.paper?.mode === 'full' ? 'part1' : started.paper?.mode ?? mode;
+          navigate(`/reading/test/${firstPart}?${new URLSearchParams({ testId, attemptId: started.attemptId }).toString()}`);
+        } else if (skill === 'writing') {
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const actualMode = started.paper?.mode ?? mode;
+          const firstPart = resumePartFromAttempt(started, actualMode);
+          const params = new URLSearchParams({ testId, attemptId: started.attemptId });
+          navigate(`/writing/test/${firstPart}?${params.toString()}`);
+        } else if (skill === 'speaking') {
+          const started = await testAttemptsApi.start({ testId, attemptId: crypto.randomUUID(), mode });
+          const firstPart = started.paper?.mode === 'full' ? 'part1' : started.paper?.mode ?? mode;
+          navigate(`/speaking/test/${firstPart}?${new URLSearchParams({ testId, attemptId: started.attemptId }).toString()}`);
         }
-      } else if (skill === 'listening') {
-        startListeningSession(testId, mode, { force: true });
-        if (mode === 'full') {
-          navigate(`/${skill}/test/part1${testId ? `?testId=${testId}&isFull=true` : '?isFull=true'}`);
-        } else {
-          navigate(`/${skill}/test/${mode}${testId ? `?testId=${testId}` : ''}`);
-        }
-      } else if (skill === 'reading') {
-        startReadingSession(testId, mode, { force: true });
-        navigate(`/reading/test/${testId}?mode=${mode}`);
-      } else if (skill === 'writing') {
-        startWritingSession(testId, mode, { force: true });
-        const firstPart = mode === 'full' ? 'part1' : mode;
-        navigate(`/writing/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}&fresh=true`);
-      } else if (skill === 'speaking') {
-        const firstPart = mode === 'full' ? 'part1' : mode;
-        navigate(`/speaking/test/${firstPart}?testId=${testId}${mode === 'full' ? '&isFull=true' : ''}`);
       }
+    } catch (e) {
+      showError(getApiError(e, 'Unable to start this test. Please try again.'));
+    } finally {
+      setIsStarting(false);
     }
   };
 
@@ -177,8 +198,8 @@ export default function IntroductionPage({
         {/* Action */}
         <div className={styles.actionBlock}>
           <span className={styles.warning}>{warningText}</span>
-          <button className={styles.startBtn} onClick={handleStartTest}>
-            <span className={styles.startBtnText}>{startButtonText}</span>
+          <button className={styles.startBtn} onClick={handleStartTest} disabled={isStarting}>
+            <span className={styles.startBtnText}>{isStarting ? 'Starting...' : startButtonText}</span>
           </button>
         </div>
       </div>

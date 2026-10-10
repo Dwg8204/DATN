@@ -239,3 +239,19 @@
   .statistics { flex-direction: column; align-items: center; gap: 32px; }
   .actions { align-items: stretch; flex-direction: column; gap: 12px; }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }
+:global([data-theme="dark"]) .bandCard { background: var(--bg-surface); border-color: var(--text-muted); }
+:global([data-theme="dark"]) .bandCard h2 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .bandCard p { color: var(--text-secondary); }
+:global([data-theme="dark"]) .bandValue strong { color: var(--brand-hover); }
+:global([data-theme="dark"]) .bandValue span { color: var(--text-muted); }
+:global([data-theme="dark"]) .resultCard { background: var(--bg-surface); border-color: var(--text-muted); }
+:global([data-theme="dark"]) .resultCard h2 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .scoreRingInner { background: var(--bg-surface); color: #FFFFFF; }
+:global([data-theme="dark"]) .panel { background: var(--bg-surface); border-color: var(--text-muted); }
+:global([data-theme="dark"]) .panel h2 { color: var(--brand-hover); }
+:global([data-theme="dark"]) .notice { background: var(--warning-bg); border-color: var(--warning); color: var(--warning); }
+:global([data-theme="dark"]) .primaryButton { background: var(--brand); border-color: var(--brand); }
+:global([data-theme="dark"]) .secondaryButton { background: var(--bg-surface); border-color: var(--brand-hover); color: var(--brand-hover); }

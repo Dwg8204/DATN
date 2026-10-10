@@ -1,0 +1,12 @@
+.totalScore { color: #a11d33; font-size: 20px; font-weight: 700; }
+.pending { margin: 0; color: #666; }
+.summary { display: flex; flex-wrap: wrap; gap: 12px 28px; padding: 14px 20px; border: 1px solid #d9d9d9; border-radius: 8px; background: #fdfdfd; font-weight: 600; }
+.feedbackPanel { margin-top: 0; border-radius: 10px; align-self: stretch; }
+.feedbackHeading { color: #a11d33; font-size: 18px; margin: 0 0 20px; }
+.feedbackValue { float: right; font-weight: 700; color: #a11d33; }
+.audio { display: block; width: min(100%, 390px); margin-top: 10px; }
+.mockNotice { margin: 12px 0 4px; font-size: 13px; font-style: italic; color: #686868; }
+.partButton { border: 0; background: transparent; font: inherit; }
+:global([data-theme="dark"]) .summary { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .totalScore, :global([data-theme="dark"]) .feedbackHeading, :global([data-theme="dark"]) .feedbackValue { color: var(--brand-hover); }
+:global([data-theme="dark"]) .pending { color: var(--text-muted); }

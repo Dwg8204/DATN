@@ -124,7 +124,7 @@ export default function Part2SpeakingPage() {
   const handleSubmit = () => setShowSubmitModal(true);
 
   const handleConfirmSubmit = () => {
-    saveSpeakingPartAnswers('part2', answers);
+    if (!saveSpeakingPartAnswers('part2', answers)) return;
     setShowSubmitModal(false);
     if (isFullTest) {
       navigate(`/speaking/test/part3?testId=${testId}&isFull=true`);

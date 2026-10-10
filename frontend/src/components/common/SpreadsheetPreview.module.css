@@ -1,0 +1,12 @@
+.preview { width: 100%; min-height: 420px; align-self: stretch; background: #fff; }
+.tabs { display: flex; gap: 6px; padding: 10px 12px; overflow-x: auto; border-bottom: 1px solid #ddd; background: #f7f7f7; }
+.tabs button { padding: 7px 12px; border: 1px solid #d7d7d7; border-radius: 5px; background: #fff; white-space: nowrap; cursor: pointer; }
+.tabs .active { border-color: #b21f35; color: #a7192e; background: #fff3f5; font-weight: 700; }
+.tableWrap { max-height: min(64vh, 640px); overflow: auto; }
+.tableWrap table { min-width: 100%; border-collapse: collapse; font-size: 13px; }
+.tableWrap td { min-width: 90px; max-width: 320px; padding: 7px 9px; border: 1px solid #ddd; color: #222; white-space: pre-wrap; vertical-align: top; }
+.tableWrap tr:nth-child(even) td { background: #fafafa; }
+.message, .empty { min-height: 420px; padding: 48px 24px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px; color: #555; text-align: center; }
+.message svg { width: 44px; height: 44px; color: #198754; }
+.message span, .limit { color: #777; font-size: 13px; }
+.limit { margin: 0; padding: 8px 12px; border-top: 1px solid #ddd; }

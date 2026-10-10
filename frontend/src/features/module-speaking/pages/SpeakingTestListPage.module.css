@@ -466,3 +466,30 @@
   font-weight: 700;
   line-height: 16px;
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); }
+:global([data-theme="dark"]) .title { color: var(--brand-hover); }
+:global([data-theme="dark"]) .tabsBox { background: #334155 !important; }
+:global([data-theme="dark"]) .tabsLabel { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .tabItemInactive { background: var(--bg-hover); }
+:global([data-theme="dark"]) .tabText { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .searchInputContainer { background: #334155 !important; outline-color: var(--border); }
+:global([data-theme="dark"]) .searchInput { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .searchBtn { background: #334155 !important; outline-color: var(--border); }
+:global([data-theme="dark"]) .searchBtnText { color: var(--text-primary) !important; }
+:global([data-theme="dark"]) .testCard { background: #334155; outline-color: var(--brand-border); }
+:global([data-theme="dark"]) .cardTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .cardDesc { color: var(--text-muted) !important; }
+:global([data-theme="dark"]) .statLabel { color: var(--text-primary); }
+:global([data-theme="dark"]) .statValue { color: var(--text-primary); }
+:global([data-theme="dark"]) .statValueSuccess { color: var(--success); }
+:global([data-theme="dark"]) .statValueDanger { color: var(--brand); }
+:global([data-theme="dark"]) .reviewBtn { background: var(--brand); }
+:global([data-theme="dark"]) .doTestBtn { background: var(--bg-hover); outline-color: var(--border); }
+:global([data-theme="dark"]) .doTestBtnText { color: var(--text-primary); }
+:global([data-theme="dark"]) .partBadge { background: var(--warning); }
+:global([data-theme="dark"]) .statusBadgeCompleted { background: var(--success-bg); }
+:global([data-theme="dark"]) .statusBadgeCompletedText { color: var(--text-primary); }
+:global([data-theme="dark"]) .statusBadgeNotStarted { background: var(--border); }
+:global([data-theme="dark"]) .statusBadgeNotStartedText { color: var(--text-muted); }

@@ -277,3 +277,21 @@
     font-size: 14px;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); }
+:global([data-theme="dark"]) .title { color: var(--brand-hover); }
+:global([data-theme="dark"]) .divider { background: var(--text-primary); }
+:global([data-theme="dark"]) .heading { color: var(--brand-hover); }
+:global([data-theme="dark"]) .text { color: var(--text-primary); }
+:global([data-theme="dark"]) .subHeading { color: var(--text-primary); }
+:global([data-theme="dark"]) .textBlock { color: var(--text-primary); }
+:global([data-theme="dark"]) .documentLink { color: var(--brand-hover); }
+:global([data-theme="dark"]) .popularTitle { color: var(--brand-hover); }
+:global([data-theme="dark"]) .popularCard { background: var(--bg-surface-warm); outline: 2px solid var(--brand-hover); }
+:global([data-theme="dark"]) .cardHeader { background: var(--text-primary); }
+:global([data-theme="dark"]) .cardTitle { color: var(--warning); }
+:global([data-theme="dark"]) .cardSubTitle { color: var(--bg-surface); }
+:global([data-theme="dark"]) .cardBadge { background: var(--brand); }
+:global([data-theme="dark"]) .cardBodyText { color: var(--text-primary); }
+:global([data-theme="dark"]) .goToTestBtn { background: var(--brand); color: var(--bg-surface); }

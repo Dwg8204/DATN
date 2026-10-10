@@ -1,17 +1,13 @@
 import React from 'react';
 import SpeakingOverviewPage from './pages/SpeakingOverviewPage';
 import SpeakingFeedPage from './pages/SpeakingFeedPage';
-import SpeakingTestListPage from './pages/SpeakingTestListPage';
+import TestListPage from '../../pages/TestListPage';
 import TestLayout from '../../components/layout/TestLayout';
-import Part1SpeakingPage from './pages/Part1SpeakingPage';
-import Part2SpeakingPage from './pages/Part2SpeakingPage';
-import Part3SpeakingPage from './pages/Part3SpeakingPage';
-import Part4SpeakingPage from './pages/Part4SpeakingPage';
-import SpeakingResultPage from './pages/SpeakingResultPage';
-
-// Mock test parts and results pages to avoid routing errors before they are implemented
-const MockSpeakingPage = () => <div>Speaking Part Placeholder</div>;
-const MockSpeakingDetailResultPage = () => <div>Speaking Detail Result Placeholder</div>;
+import AttemptRoleGuard from '../test-attempts/components/AttemptRoleGuard.jsx';
+import SpeakingAttemptLayout from './components/SpeakingAttemptLayout';
+import SpeakingPartPage from './pages/SpeakingPartPage';
+import SpeakingAttemptResultPage from './pages/SpeakingAttemptResultPage';
+import SpeakingAttemptDetailPage from './pages/SpeakingAttemptDetailPage';
 
 export const speakingMainRoutes = [
   {
@@ -22,32 +18,29 @@ export const speakingMainRoutes = [
     path: 'speaking/feed',
     element: <SpeakingFeedPage />,
   },
-  {
-    path: 'speaking/tests',
-    element: <SpeakingTestListPage />,
-  },
+
   {
     path: 'speaking/result',
-    element: <SpeakingResultPage />,
+    element: <AttemptRoleGuard><SpeakingAttemptResultPage /></AttemptRoleGuard>,
   }
 ];
 
 export const speakingTestRoutes = [
   {
     path: 'speaking/test',
-    element: <TestLayout />,
+    element: <SpeakingAttemptLayout />,
     children: [
-      { path: 'part1', element: <Part1SpeakingPage /> },
-      { path: 'part2', element: <Part2SpeakingPage /> },
-      { path: 'part3', element: <Part3SpeakingPage /> },
-      { path: 'part4', element: <Part4SpeakingPage /> },
+      { path: 'part1', element: <SpeakingPartPage partNumber={1} /> },
+      { path: 'part2', element: <SpeakingPartPage partNumber={2} /> },
+      { path: 'part3', element: <SpeakingPartPage partNumber={3} /> },
+      { path: 'part4', element: <SpeakingPartPage partNumber={4} /> },
     ]
   },
   {
     path: 'speaking/detail-result',
-    element: <TestLayout headerProps={{ showTimer: false, showExit: false }} />,
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
     children: [
-      { index: true, element: <MockSpeakingDetailResultPage /> },
+      { index: true, element: <SpeakingAttemptDetailPage /> },
     ],
   }
 ];

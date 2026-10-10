@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { ReadingTestContext } from '../../context/ReadingTestContext';
+import { getPart2QuestionCount, getPart2Sentences, getPart2Texts } from '../../utils/part2Texts';
 
 const PartNavigator = () => {
   const { currentPart, setCurrentPart, answers, testData } = useContext(ReadingTestContext);
@@ -8,7 +9,7 @@ const PartNavigator = () => {
 
   const parts = [
     { id: 1, name: 'Part 1', totalQs: testData.part1?.questions?.length || 0, startId: 'p1-q1' },
-    { id: 2, name: 'Part 2', totalQs: testData.part2?.sentences?.length || 0, startId: 's1' },
+    { id: 2, name: 'Part 2', totalQs: getPart2QuestionCount(testData.part2), startId: getPart2Sentences(testData.part2)[1]?.id },
     { id: 3, name: 'Part 3', totalQs: testData.part3?.questions?.length || 0, startId: 'p3-q1' },
     { id: 4, name: 'Part 4', totalQs: testData.part4?.headings?.length || 0, startId: 'h1' }
   ];
@@ -20,7 +21,11 @@ const PartNavigator = () => {
     const answeredKeys = Object.keys(answers);
     
     if (partId === 1) count = answeredKeys.filter(k => k.startsWith('p1')).length;
-    else if (partId === 2) count = answeredKeys.filter(k => k.startsWith('s')).length;
+    else if (partId === 2) {
+      const openingIds = new Set(getPart2Texts(testData.part2).map(text => text.sentences?.[0]?.id));
+      const sentenceIds = new Set(getPart2Sentences(testData.part2).filter(sentence => !openingIds.has(sentence.id)).map(sentence => sentence.id));
+      count = answeredKeys.filter(key => sentenceIds.has(key)).length;
+    }
     else if (partId === 3) count = answeredKeys.filter(k => k.startsWith('p3')).length;
     else if (partId === 4) count = answeredKeys.filter(k => k.startsWith('h')).length;
     

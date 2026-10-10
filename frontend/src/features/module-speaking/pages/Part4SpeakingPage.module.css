@@ -154,3 +154,11 @@
     height: 250px;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .page { background: var(--bg-page); }
+:global([data-theme="dark"]) .partTitle { color: var(--text-primary); }
+:global([data-theme="dark"]) .questionCard { background: var(--bg-surface); border-color: var(--border); }
+:global([data-theme="dark"]) .questionNumber { color: var(--text-primary); }
+:global([data-theme="dark"]) .questionText { color: var(--text-primary); }
+:global([data-theme="dark"]) .questionNumberBox { background: var(--bg-hover); }

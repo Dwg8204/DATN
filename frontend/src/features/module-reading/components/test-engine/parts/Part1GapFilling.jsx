@@ -4,21 +4,23 @@ import { ReadingTestContext } from '../../../context/ReadingTestContext';
 import { splitFormattedPassage } from '../../../../admin/reading/utils/richPassage';
 import styles from './Part1GapFilling.module.css';
 
-const Part1GapFilling = ({ data }) => {
-  const { answers, handleAnswerChange } = useContext(ReadingTestContext);
+const Part1GapFilling = ({ data, isPractice = false }) => {
+  const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   if (!data) return null;
 
   const parts = splitFormattedPassage(data);
+  const questions = [...(data.questions || [])].sort((a, b) => a.position - b.position);
 
   return (
-    <div className={styles.part}>
+    <div className={`${styles.part} ${isPractice ? styles.practiceLayout : styles.examLayout}`}>
       <div className={styles.passageWrap}>
+        <h2 className={styles.panelTitle}>Reading passage</h2>
         <div className={styles.passage}>
           {parts.map((part, index) => {
             if (!part.gap) return <span key={index} className={styles.passageText} dangerouslySetInnerHTML={{ __html: part.html }} />;
 
             const position = part.gap;
-            const question = data.questions.find((item) => item.position === position);
+            const question = questions.find((item) => item.position === position);
             if (!question) return null;
 
             return (
@@ -31,6 +33,7 @@ const Part1GapFilling = ({ data }) => {
                   placeholder={`Question ${position}`}
                   ariaLabel={`Answer for gap ${position}`}
                 />
+                <span className={styles.answerReveal}>{renderAnswerReveal?.(question.id, { inline: isPractice })}</span>
               </span>
             );
           })}

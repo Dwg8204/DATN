@@ -226,25 +226,29 @@
 
 .submitBtn {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  width: 635px;
+  box-sizing: border-box;
   background: #DA1E21;
   border-radius: 8px;
   border: none;
-  padding: 10px 289px;
-  text-align: left;
+  padding: 10px 24px;
+  text-align: center;
   cursor: pointer;
 }
 
 .submitBtnSignup {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: center;
+  width: 635px;
+  box-sizing: border-box;
   background: #DA1E21;
   border-radius: 8px;
   border: none;
-  padding: 10px 283px;
-  text-align: left;
+  padding: 10px 24px;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -252,10 +256,43 @@
   opacity: 0.9;
 }
 
+.submitBtn:disabled,
+.submitBtnSignup:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .submitBtnText {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
   color: #FFFFFF;
   font-size: 18px;
   font-weight: bold;
+}
+
+.loadingIcon {
+  width: 19px;
+  height: 19px;
+  animation: authSpin 0.8s linear infinite;
+}
+
+.loadingHint {
+  width: 100%;
+  margin: -8px 0 0;
+  color: #5f6368;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@keyframes authSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingIcon { animation-duration: 1.6s; }
 }
 
 .orText {
@@ -421,3 +458,18 @@
     line-height: 24px;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .wrapper { background: var(--bg-page); }
+:global([data-theme="dark"]) .signupWrapper { background: var(--bg-page); }
+:global([data-theme="dark"]) .label { color: var(--text-primary); }
+:global([data-theme="dark"]) .input { background: var(--bg-hover); border-color: var(--border); color: var(--text-primary); }
+:global([data-theme="dark"]) .forgotPassword { color: var(--text-primary); }
+:global([data-theme="dark"]) .orText { color: var(--text-primary); }
+:global([data-theme="dark"]) .bottomText { color: var(--text-primary); }
+:global([data-theme="dark"]) .emailText { color: var(--text-primary); }
+:global([data-theme="dark"]) .emailButton { background: var(--bg-hover); border-color: var(--border); }
+:global([data-theme="dark"]) .verifyEmailButton { background: var(--bg-hover); border-color: var(--border); }
+:global([data-theme="dark"]) .passwordToggle { color: var(--text-muted); }
+:global([data-theme="dark"]) .loadingHint { color: var(--text-muted); }
+:global([data-theme="dark"]) .warningText { color: var(--brand-hover); }

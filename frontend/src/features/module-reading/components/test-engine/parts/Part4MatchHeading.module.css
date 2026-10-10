@@ -91,3 +91,9 @@
     grid-column: 1;
   }
 }
+
+/* Dark Mode Overrides */
+:global([data-theme="dark"]) .title { color: var(--text-primary); }
+:global([data-theme="dark"]) .paragraphRow { background: var(--bg-surface-warm); border-color: var(--border); }
+:global([data-theme="dark"]) .paragraphNumber { color: var(--text-primary); }
+:global([data-theme="dark"]) .paragraphText { color: var(--text-primary); }

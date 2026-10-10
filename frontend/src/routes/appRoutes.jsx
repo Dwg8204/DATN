@@ -15,10 +15,8 @@ import ProfilePage from '../features/profile/pages/ProfilePage';
 import NotificationsPage from '../features/profile/pages/NotificationsPage';
 import LearningHistoryPage from '../features/profile/pages/LearningHistoryPage';
 import ChangePasswordPage from '../features/profile/pages/ChangePasswordPage';
-import DashboardPage from '../features/profile/pages/DashboardPage';
 import { practiceRoutes } from '../features/practice-exam/practiceRoutes';
 import { writingMainRoutes, writingTestRoutes } from '../features/writing/writingRoutes';
-import { chatbotRoutes } from '../features/ai-chatbot/chatbotRoutes';
 import { listeningMainRoutes, listeningTestRoutes } from '../features/module-listening/listeningRoutes';
 import { speakingMainRoutes, speakingTestRoutes } from '../features/module-speaking/speakingRoutes';
 import { grammarVocabRoutes } from '../features/grammar_vocab/grammarVocabRoutes';
@@ -26,6 +24,9 @@ import { readingMainRoutes, readingTestRoutes } from '../features/module-reading
 import FlashcardPage from '../features/module-reading/pages/FlashcardPage';
 import { adminRoutes } from '../features/admin/adminRoutes';
 import { dictationRoutes } from '../features/dictation/dictationRoutes';
+import RoleGuard from '../features/auth/components/RoleGuard';
+import AttemptRoleGuard from '../features/test-attempts/components/AttemptRoleGuard.jsx';
+import DashboardRoute from '../features/profile/routes/DashboardRoute';
 
 export const appRoutes = [
   {
@@ -74,7 +75,7 @@ export const appRoutes = [
       },
       {
         path: 'profile/dashboard',
-        element: <DashboardPage />,
+        element: <DashboardRoute />,
       },
       {
         path: 'grammar-vocab/overview',
@@ -82,7 +83,7 @@ export const appRoutes = [
       },
       {
         path: 'grammar-vocab/result',
-        element: <GrammarVocabResultPage />,
+        element: <AttemptRoleGuard><GrammarVocabResultPage /></AttemptRoleGuard>,
       },
       {
         path: 'vocab',
@@ -90,14 +91,17 @@ export const appRoutes = [
       },
       {
         path: ':skill/tests',
-        element: <TestListPage />,
+        element: <TestListPage purpose="EXAM" />,
+      },
+      {
+        path: ':skill/practice',
+        element: <TestListPage purpose="PRACTICE" />,
       },
       ...listeningMainRoutes,
       ...speakingMainRoutes,
       ...readingMainRoutes,
       ...practiceRoutes,
       ...writingMainRoutes,
-      ...chatbotRoutes,
       ...dictationRoutes,
       {
         path: '*',
@@ -107,7 +111,7 @@ export const appRoutes = [
   },
   {
     path: '/:skill/introduction',
-    element: <TestLayout />,
+    element: <RoleGuard allowedRoles={['STUDENT']}><TestLayout /></RoleGuard>,
     children: [
       {
         index: true,

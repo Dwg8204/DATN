@@ -5,7 +5,7 @@ import styles from './Part4MatchHeading.module.css';
 import RichTextContent from '../../../../../components/common/RichTextContent';
 
 const Part4MatchHeading = ({ data }) => {
-  const { answers, handleAnswerChange } = useContext(ReadingTestContext);
+  const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   if (!data) return null;
 
   const headingOptions = data.headings.map((heading) => ({ value: heading.id, label: heading.text }));
@@ -16,7 +16,7 @@ const Part4MatchHeading = ({ data }) => {
           <h2 className={styles.title}>{data.title || 'Mission to Mars'}</h2>
           <div className={styles.paragraphList}>
             {data.paragraphs.map((paragraph, index) => (
-              <article key={paragraph.id} id={`question-${index + 18}`} className={styles.paragraphRow}>
+              <article key={paragraph.id} id={`question-${index + 23}`} className={styles.paragraphRow}>
                 <span className={styles.paragraphNumber}>{index + 1}.</span>
                 <div className={styles.answerField}>
                   <AnswerSelect
@@ -24,9 +24,10 @@ const Part4MatchHeading = ({ data }) => {
                     value={answers[paragraph.id] || ''}
                     onChange={(event) => handleAnswerChange(paragraph.id, event.target.value)}
                     options={headingOptions}
-                    placeholder={`Question ${index + 18}`}
+                    placeholder={`Question ${index + 23}`}
                     ariaLabel={`Heading for paragraph ${index + 1}`}
                   />
+                  {renderAnswerReveal?.(paragraph.id)}
                 </div>
                 <RichTextContent className={styles.paragraphText} value={paragraph.content}/>
               </article>

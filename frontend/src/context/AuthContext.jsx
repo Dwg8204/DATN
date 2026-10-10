@@ -1,47 +1,51 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { authApi } from '../features/auth/services/authApi';
+import { profileApi } from '../features/profile/services/profileApi';
 
-const AUTH_STORAGE_KEY = 'aptimate.auth.token';
 const USER_STORAGE_KEY = 'aptimate.auth.user';
 
 const AuthContext = createContext(undefined);
 
-function readStorage(key) {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  return window.localStorage.getItem(key);
-}
-
-function readUser() {
-  const rawUser = readStorage(USER_STORAGE_KEY);
-
-  if (!rawUser) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(rawUser);
-  } catch {
-    return null;
-  }
+function normalizeProfile(profile) {
+  if (!profile) return null;
+  const fullName = [profile.firstName, profile.lastName].filter(Boolean).join(' ').trim();
+  return { ...profile, fullName, name: fullName };
 }
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(() => readStorage(AUTH_STORAGE_KEY));
-  const [user, setUser] = useState(() => readUser());
+  const [user, setUser] = useState(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
+  const [authConnectionError, setAuthConnectionError] = useState(false);
+  const [authCheckRevision, setAuthCheckRevision] = useState(0);
+  const authMutation = useRef(0);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
-
-    if (token) {
-      window.localStorage.setItem(AUTH_STORAGE_KEY, token);
-    } else {
-      window.localStorage.removeItem(AUTH_STORAGE_KEY);
-    }
-  }, [token]);
+    setIsAuthReady(false);
+    setAuthConnectionError(false);
+    window.localStorage.removeItem('aptimate.auth.token');
+    let active = true;
+    const initialRevision = authMutation.current;
+    const clearSession = () => {
+      authMutation.current += 1;
+      if (active) { setUser(null); setIsAuthReady(true); }
+    };
+    window.addEventListener('aptimate:session-expired', clearSession);
+    profileApi.getProfile()
+      .catch(() => authApi.me())
+      .then(profile => { if (active && authMutation.current === initialRevision) setUser(normalizeProfile(profile)); })
+      .catch(error => {
+        if (!active || authMutation.current !== initialRevision) return;
+        // A connection failure cannot establish that the session expired. Keep the
+        // requested builder URL and its local draft until access can be checked again.
+        if (!error.response || error.response.status >= 500 || [408, 429].includes(error.response.status)) setAuthConnectionError(true);
+        else setUser(null);
+      })
+      .finally(() => { if (active) setIsAuthReady(true); });
+    return () => {
+      active = false;
+      window.removeEventListener('aptimate:session-expired', clearSession);
+    };
+  }, [authCheckRevision]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -57,36 +61,33 @@ export function AuthProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      token,
       user,
-      isAuthenticated: Boolean(token),
-      login: ({ accessToken, profile }) => {
-        setToken(accessToken);
-        setUser(profile ?? null);
+      isAuthReady,
+      authConnectionError,
+      retryAuth: () => setAuthCheckRevision(revision => revision + 1),
+      isAuthenticated: isAuthReady && Boolean(user),
+      login: ({ profile }) => {
+        authMutation.current += 1;
+        setUser(normalizeProfile(profile));
+        setAuthConnectionError(false);
+        setIsAuthReady(true);
+        if (profile) {
+          profileApi.getProfile().then(fullProfile => setUser(fullProfile)).catch(() => {});
+        }
       },
-      logout: () => {
-        setToken(null);
+      logout: async ({ remote = true } = {}) => {
+        authMutation.current += 1;
+        if (remote) await authApi.logout();
         setUser(null);
+        setIsAuthReady(true);
       },
       updateProfile: (updates) => {
         if (!user) return;
-        const updatedUser = { ...user, ...updates };
+        const updatedUser = normalizeProfile({ ...user, ...updates });
         setUser(updatedUser);
-
-        // Update mock_users in localStorage
-        try {
-          const existingUsers = JSON.parse(localStorage.getItem('aptimate.mock_users') || '[]');
-          const userIndex = existingUsers.findIndex(u => u.email === user.email);
-          if (userIndex !== -1) {
-            existingUsers[userIndex] = { ...existingUsers[userIndex], ...updates };
-            localStorage.setItem('aptimate.mock_users', JSON.stringify(existingUsers));
-          }
-        } catch (e) {
-          console.error("Failed to update mock users in localStorage", e);
-        }
       },
     }),
-    [token, user],
+    [isAuthReady, user, authConnectionError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
