@@ -6,12 +6,26 @@ import { API_ENDPOINTS } from '../../../services/endpoint';
 import styles from './VocabularyWordInput.module.css';
 
 const validWord = word => word.length >= 2 && word.length <= 60 && /^[a-z]+(?:[ '-][a-z]+)*$/i.test(word);
+// Guard automatic fills from both API results and previously saved mixed meanings.
+const vietnameseMeaning = value => typeof value === 'string' ? [...new Set(value.split(/[;\r\n]+/)
+  .map(term => term.trim().normalize('NFC'))
+  .filter(term => /\p{L}/u.test(term) && !/[^\p{Script=Latin}\p{M}\p{N}\p{P}\p{Zs}]/u.test(term)))].join('; ') : '';
+const cacheResult = (cache, key, value) => {
+  if (cache.size >= 100) cache.delete(cache.keys().next().value);
+  cache.set(key, { value, expiresAt: Date.now() + 5 * 60_000 });
+};
+const cachedResult = (cache, key) => {
+  const cached = cache.get(key);
+  return cached?.expiresAt > Date.now() ? cached.value : undefined;
+};
 
 export default function VocabularyWordInput({ item, knownWords, onChange, onResolved }) {
   const { t } = useTranslation();
   const inputId = useId();
   const listId = `${inputId}-suggestions`;
   const requestRef = useRef(null);
+  const [suggestionCache, setSuggestionCache] = useState(() => new Map());
+  const lookupCache = useRef(new Map());
   const [focused, setFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [remote, setRemote] = useState({ query: '', words: [], loading: false, unavailable: false });
@@ -21,70 +35,111 @@ export default function VocabularyWordInput({ item, knownWords, onChange, onReso
 
   useEffect(() => {
     if (!focused || !canLookup) return undefined;
+    const cached = cachedResult(suggestionCache, query);
+    if (cached) return undefined;
     const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setRemote({ query, words: [], loading: true, unavailable: false });
       try {
         const { data } = await api.get(API_ENDPOINTS.dictionary.suggestions, {
-          params: { q: query }, signal: controller.signal, notifyOnError: false,
+          params: { q: query }, signal: controller.signal, timeout: 5_000, notifyOnError: false,
         });
-        if (!controller.signal.aborted) setRemote({ query, words: data.words || [], loading: false, unavailable: Boolean(data.unavailable) });
+        if (!controller.signal.aborted) {
+          if (!data.unavailable) setSuggestionCache(current => {
+            const updated = new Map(current);
+            cacheResult(updated, query, data.words || []);
+            return updated;
+          });
+          setRemote({ query, words: data.words || [], loading: false, unavailable: Boolean(data.unavailable) });
+        }
       } catch {
         if (!controller.signal.aborted) setRemote({ query, words: [], loading: false, unavailable: true });
       }
-    }, 350);
+    }, 180);
     return () => { window.clearTimeout(timer); controller.abort(); };
-  }, [query, focused, canLookup]);
+  }, [query, focused, canLookup, suggestionCache]);
 
   useEffect(() => () => requestRef.current?.abort(), []);
 
   const suggestions = useMemo(() => {
-    if (!canLookup) return [];
+    if (!query || !/^[a-z]+(?:[ '-][a-z]+)*$/i.test(query)) return [];
     const local = knownWords.filter(word => word.word.toLowerCase().includes(query))
       .sort((a, b) => Number(b.word.toLowerCase().startsWith(query)) - Number(a.word.toLowerCase().startsWith(query)));
     const unique = new Map();
     for (const word of local) {
       const key = word.word.trim().toLowerCase();
-      if (!unique.has(key)) unique.set(key, { word: key, meaning: word.meaning || '' });
+      if (!unique.has(key)) unique.set(key, { word: key, meaning: vietnameseMeaning(word.meaning) });
     }
-    for (const word of remote.query === query ? remote.words : []) {
+    let online = remote.query === query ? remote.words : [];
+    // Keep matching cached suggestions visible while a longer prefix is loading.
+    if (remote.query !== query || remote.loading) {
+      for (let length = query.length; length >= 2; length -= 1) {
+        const cached = cachedResult(suggestionCache, query.slice(0, length));
+        if (cached) { online = cached.filter(word => word.includes(query)); break; }
+      }
+    }
+    for (const word of online) {
       if (!unique.has(word)) unique.set(word, { word, meaning: '' });
     }
     return [...unique.values()].slice(0, 8);
-  }, [query, canLookup, knownWords, remote]);
+  }, [query, knownWords, remote, suggestionCache]);
 
   const lookup = async (word) => {
     requestRef.current?.abort();
     const controller = new AbortController();
     requestRef.current = controller;
     const snapshot = { ...item };
-    const savedWord = knownWords.find(entry => entry.word.trim().toLowerCase() === word);
+    const savedEntry = knownWords.find(entry => entry.word.trim().toLowerCase() === word);
+    const savedWord = savedEntry ? { ...savedEntry, meaning: vietnameseMeaning(savedEntry.meaning) } : undefined;
     onChange(word);
     setFocused(false);
     setActiveIndex(-1);
+    const finish = fields => {
+      fields = { ...fields, meaning: vietnameseMeaning(fields.meaning) };
+      onResolved(word, fields, snapshot);
+      setLookupState({ loading: false, message: t(fields.pronunciation && fields.meaning && fields.example
+        ? 'dictation.wordLookupDone' : 'dictation.wordLookupPartial') });
+    };
+    const cached = cachedResult(lookupCache.current, word);
+    if (cached) { finish(cached); return; }
+    // Saved details are available immediately; fetch only to enrich missing fields.
+    if (savedWord) {
+      if (savedWord.pronunciation && savedWord.meaning && savedWord.example && savedWord.type) {
+        finish(savedWord);
+        return;
+      }
+      onResolved(word, savedWord, snapshot);
+    }
     setLookupState({ loading: true, message: '' });
     try {
       const { data } = await api.get(API_ENDPOINTS.dictionary.lookup(word), {
-        signal: controller.signal, notifyOnError: false,
+        signal: controller.signal, timeout: 6_000, notifyOnError: false,
       });
       if (controller.signal.aborted) return;
       const translation = data.translations?.[0];
-      onResolved(word, {
-        pronunciation: data.entries?.[0]?.phonetic || savedWord?.pronunciation || '',
-        type: translation?.partOfSpeech || savedWord?.type || '',
-        meaning: translation?.terms?.join('; ') || savedWord?.meaning || '',
-        example: data.examples?.[0] || savedWord?.example || '',
-      }, snapshot);
-      setLookupState({ loading: false, message: t('dictation.wordLookupDone') });
+      const entries = data.entries || [];
+      const phonetic = entries.flatMap(entry => [entry.phonetic, ...(entry.phonetics || []).map(value => value.text)])
+        .find(value => typeof value === 'string' && value.trim());
+      const example = data.examples?.find(value => typeof value === 'string' && value.trim())
+        || entries.flatMap(entry => (entry.meanings || []).flatMap(meaning => (meaning.definitions || [])
+          .map(definition => definition.example))).find(value => typeof value === 'string' && value.trim());
+      const fields = {
+        pronunciation: phonetic || savedWord?.pronunciation || '',
+        type: translation?.partOfSpeech || entries[0]?.meanings?.[0]?.partOfSpeech || savedWord?.type || '',
+        meaning: vietnameseMeaning(translation?.terms?.join('; ')) || savedWord?.meaning || '',
+        example: example || savedWord?.example || '',
+      };
+      if (fields.pronunciation && fields.meaning && fields.example) cacheResult(lookupCache.current, word, fields);
+      finish(fields);
     } catch {
       if (!controller.signal.aborted) {
-        if (savedWord) onResolved(word, savedWord, snapshot);
-        setLookupState({ loading: false, message: t(savedWord ? 'dictation.wordLookupDone' : 'dictation.wordLookupFailed') });
+        if (savedWord) finish(savedWord);
+        else setLookupState({ loading: false, message: t('dictation.wordLookupFailed') });
       }
     }
   };
 
-  const expanded = focused && canLookup;
+  const expanded = focused && (canLookup || suggestions.length > 0);
   return <div className={styles.field} onBlur={event => {
     if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
   }}>
@@ -129,8 +184,9 @@ export default function VocabularyWordInput({ item, knownWords, onChange, onReso
           </button>
         </li>)}
       </ul>
-      <small>{remote.query !== query || remote.loading ? t('dictation.suggestionsLoading')
-        : remote.unavailable ? t('dictation.suggestionsUnavailable')
+      <small>{!canLookup ? t('dictation.wordSuggestionHelp')
+        : !cachedResult(suggestionCache, query) && (remote.query !== query || remote.loading) ? t('dictation.suggestionsLoading')
+        : remote.query === query && remote.unavailable ? t('dictation.suggestionsUnavailable')
           : suggestions.length ? t('dictation.chooseSuggestion') : t('dictation.noWordSuggestions')}</small>
     </div>}
     <p id={`${inputId}-status`} className={styles.status} role="status">

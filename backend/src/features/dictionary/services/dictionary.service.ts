@@ -23,12 +23,14 @@ type ProviderData = {
   synonyms: Map<string, string[]>;
   phonetic: string | null;
   examplePair: ExamplePair | null;
+  examples: string[];
 };
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1_000;
 const MAX_CACHE_ENTRIES = 500;
 const WIKTIONARY_TIMEOUT_MS = 1_500;
 const AZURE_EXAMPLES_TIMEOUT_MS = 1_500;
+const ENGLISH_DICTIONARY_TIMEOUT_MS = 1_800;
 const SUPPORTED_PARTS = new Set([
   'noun', 'verb', 'adjective', 'adverb', 'preposition', 'conjunction',
   'pronoun', 'interjection', 'determiner', 'numeral',
@@ -38,6 +40,8 @@ const SUPPORTED_PARTS = new Set([
 export class DictionaryService {
   private readonly cache = new Map<string, CacheEntry>();
   private readonly suggestionCache = new Map<string, { expiresAt: number; words: string[] }>();
+  private readonly pendingSuggestions = new Map<string, Promise<{ words: string[]; unavailable: boolean }>>();
+  private readonly pendingLookups = new Map<string, Promise<DictionaryResponse>>();
 
   constructor(private readonly config: ConfigService = new ConfigService()) {}
 
@@ -45,6 +49,14 @@ export class DictionaryService {
     const query = rawQuery.trim().toLowerCase();
     const cached = this.suggestionCache.get(query);
     if (cached && cached.expiresAt > Date.now()) return { words: cached.words, unavailable: false };
+    const pending = this.pendingSuggestions.get(query);
+    if (pending) return pending;
+    const request = this.fetchSuggestions(query);
+    this.pendingSuggestions.set(query, request);
+    try { return await request; } finally { this.pendingSuggestions.delete(query); }
+  }
+
+  private async fetchSuggestions(query: string): Promise<{ words: string[]; unavailable: boolean }> {
     try {
       const params = new URLSearchParams({
         action: 'opensearch', search: query, namespace: '0', limit: '12',
@@ -72,17 +84,30 @@ export class DictionaryService {
     const cached = this.cache.get(word);
     if (cached && cached.expiresAt > Date.now()) return cached.value;
     if (cached) this.cache.delete(word);
+    const pending = this.pendingLookups.get(word);
+    if (pending) return pending;
+    const request = this.resolveWord(word);
+    this.pendingLookups.set(word, request);
+    try { return await request; } finally { this.pendingLookups.delete(word); }
+  }
 
-    const [azure, wiktionary] = await Promise.all([
-      this.azureDictionaryLookup(word),
+  private async resolveWord(word: string): Promise<DictionaryResponse> {
+    // Start examples as soon as Azure lookup finishes, not after all other providers.
+    const azureRequest = this.azureDictionaryLookup(word);
+    const examplesRequest = azureRequest.then(azure => azure.examplePair
+      ? this.azureDictionaryExamples(azure.examplePair) : []);
+    const [azure, wiktionary, english, azureExamples] = await Promise.all([
+      azureRequest,
       this.wiktionaryLookup(word),
+      this.englishDictionaryLookup(word),
+      examplesRequest,
     ]);
     const translations = this.preferAzureTranslations(azure.translations, wiktionary.translations);
-    if (!translations.length) {
+    if (!translations.length && !english.entries.length) {
       throw new ApplicationError('DICTIONARY_WORD_NOT_FOUND', `No dictionary entry was found for “${word}”.`, 404);
     }
 
-    const examples = azure.examplePair ? await this.azureDictionaryExamples(azure.examplePair) : [];
+    const examples = [...new Set([...azureExamples, ...english.examples, ...wiktionary.examples])].slice(0, 3);
     const synonyms = this.mergeSynonyms(word, azure.synonyms, wiktionary.synonyms);
     const meanings: DictionaryMeaning[] = translations.map(({ partOfSpeech }) => ({
       partOfSpeech,
@@ -90,17 +115,42 @@ export class DictionaryService {
       synonyms: synonyms.get(partOfSpeech) ?? [],
       antonyms: [],
     }));
-    const phonetic = wiktionary.phonetic ?? '';
+    const phonetic = wiktionary.phonetic || english.phonetic;
     const entry: DictionaryEntry = {
       word,
       phonetic,
       phonetics: phonetic ? [{ text: phonetic, audio: '' }] : [],
-      meanings,
+      meanings: meanings.length ? meanings : english.entries[0]?.meanings ?? [],
     };
     const value = { entries: [entry], translations, examples };
     if (this.cache.size >= MAX_CACHE_ENTRIES) this.cache.delete(this.cache.keys().next().value ?? '');
-    this.cache.set(word, { expiresAt: Date.now() + CACHE_TTL_MS, value });
+    // Don't keep a provider outage / incomplete enrichment cached for a whole day.
+    const complete = translations.length && phonetic && examples.length;
+    this.cache.set(word, { expiresAt: Date.now() + (complete ? CACHE_TTL_MS : 5 * 60_000), value });
     return value;
+  }
+
+  private async englishDictionaryLookup(word: string): Promise<{
+    entries: DictionaryEntry[]; phonetic: string; examples: string[];
+  }> {
+    const empty = { entries: [], phonetic: '', examples: [] };
+    try {
+      const response = await this.fetchJson(
+        `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`,
+        ENGLISH_DICTIONARY_TIMEOUT_MS,
+      );
+      if (!Array.isArray(response)) return empty;
+      const entries = (response as DictionaryEntry[]).filter(entry =>
+        typeof entry?.word === 'string' && entry.word.trim().toLowerCase() === word
+        && Array.isArray(entry.meanings));
+      const phonetic = entries.flatMap(entry => [entry.phonetic, ...(entry.phonetics ?? []).map(item => item?.text)])
+        .find(text => typeof text === 'string' && text.trim());
+      const examples = [...new Set(entries.flatMap(entry => entry.meanings.flatMap(meaning =>
+        (meaning.definitions ?? []).map(definition => definition?.example)))
+        .filter((example): example is string => typeof example === 'string' && Boolean(example.trim()))
+        .map(example => example.trim()))].slice(0, 3);
+      return { entries, phonetic: phonetic ? `/${phonetic.trim().replace(/^[/\[]+|[/\]]+$/g, '')}/` : '', examples };
+    } catch { return empty; }
   }
 
   private async azureDictionaryLookup(word: string): Promise<ProviderData> {
@@ -139,15 +189,21 @@ export class DictionaryService {
         for (const backTranslation of row.backTranslations ?? []) {
           const synonym = backTranslation.displayText?.trim() || backTranslation.normalizedText?.trim();
           if (synonym) this.addUnique(synonyms, partOfSpeech, synonym, 16, 'en');
-          if (!examplePair && (backTranslation.numExamples ?? 0) > 0 && row.normalizedTarget) {
+          const source = backTranslation.normalizedText?.trim() || result?.normalizedSource?.trim() || word;
+          if (!examplePair && source.toLowerCase() === word && (backTranslation.numExamples ?? 0) > 0 && row.normalizedTarget) {
             examplePair = {
-              source: backTranslation.normalizedText?.trim() || result?.normalizedSource?.trim() || word,
+              source,
               target: row.normalizedTarget,
             };
           }
         }
       }
-      return { translations: this.mapTranslations(translations), synonyms, phonetic: null, examplePair };
+      // Some Azure entries omit backTranslations/numExamples, but still support examples.
+      if (!examplePair) {
+        const target = rows.find(row => row.normalizedTarget)?.normalizedTarget;
+        if (target) examplePair = { source: word, target };
+      }
+      return { translations: this.mapTranslations(translations), synonyms, phonetic: null, examplePair, examples: [] };
     } catch {
       return empty;
     }
@@ -184,6 +240,7 @@ export class DictionaryService {
     const translations = new Map<string, string[]>();
     const synonyms = new Map<string, string[]>();
     let phonetic: string | null = null;
+    const examples = new Set<string>();
 
     for (const response of responses) {
       if (response.status !== 'fulfilled') continue;
@@ -194,8 +251,28 @@ export class DictionaryService {
       phonetic ??= this.parseWiktionaryPhonetic(english);
       this.collectWiktionaryTranslations(english, translations);
       this.collectWiktionarySynonyms(english, synonyms);
+      for (const example of this.parseWiktionaryExamples(english)) examples.add(example);
     }
-    return { translations: this.mapTranslations(translations), synonyms, phonetic, examplePair: null };
+    return { translations: this.mapTranslations(translations), synonyms, phonetic, examplePair: null,
+      examples: [...examples].slice(0, 3) };
+  }
+
+  private parseWiktionaryExamples(english: string): string[] {
+    const examples: string[] = [];
+    for (const match of english.matchAll(/\{\{(?:ux|uxi|usex)\|en\|((?:[^{}]|\{\{[^{}]*\}\})+)\}\}/gi)) {
+      const text = match[1]
+        .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2')
+        .replace(/\[\[([^\]]+)\]\]/g, '$1')
+        .replace(/\{\{(?:l|m)\|en\|([^|}]+)(?:\|([^|}]+))?\}\}/gi, (_match, word: string, alt?: string) => alt || word)
+        .split('|')[0]
+        .replace(/'{2,5}/g, '').replace(/<[^>]+>/g, '')
+        .replace(/&nbsp;/gi, ' ').replace(/&amp;/gi, '&').replace(/&quot;/gi, '"').replace(/&#39;/g, "'")
+        .trim();
+      // Don't expose unresolved template markup as a student's example sentence.
+      if (text && text.length <= 600 && !/[{}]/.test(text)) examples.push(text);
+      if (examples.length === 3) break;
+    }
+    return examples;
   }
 
   private englishSection(wikitext: string): string {
@@ -281,6 +358,11 @@ export class DictionaryService {
   private addUnique(
     target: Map<string, string[]>, key: string, value: string, limit: number, locale: string,
   ): void {
+    value = value.trim().normalize('NFC');
+    // Wiktionary's `vi` entries can also contain historical Han/Nom spellings.
+    // This app's Vietnamese meaning field uses modern Latin-script Quoc ngu only.
+    if (locale === 'vi' && (!/\p{L}/u.test(value)
+      || /[^\p{Script=Latin}\p{M}\p{N}\p{P}\p{Zs}]/u.test(value))) return;
     const values = target.get(key) ?? [];
     if (values.length >= limit) return;
     if (!values.some(current => current.localeCompare(value, locale, { sensitivity: 'base' }) === 0)) {
@@ -317,7 +399,7 @@ export class DictionaryService {
   }
 
   private emptyProviderData(): ProviderData {
-    return { translations: [], synonyms: new Map(), phonetic: null, examplePair: null };
+    return { translations: [], synonyms: new Map(), phonetic: null, examplePair: null, examples: [] };
   }
 
   private async fetchJson(url: string, timeoutMs: number, init: RequestInit = {}): Promise<unknown> {

@@ -1,5 +1,6 @@
 import Pagination from '../../../components/common/Pagination';
 import AnswerSelect from '../../../components/common/AnswerSelect';
+import ConfirmModal from '../../../components/common/ConfirmModal';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -30,6 +31,8 @@ export default function DictationPage() {
   const submitRequest = useRef(null);
   const reviewRequest = useRef(null);
   const createRequest = useRef(null);
+  const deleteRequest = useRef(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [importDone, setImportDone] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const requestedMode = searchParams.get('mode');
@@ -96,6 +99,7 @@ export default function DictationPage() {
     setMatchedCards([]); setMatchingWord(''); setIsFlipped(false); setShowCreateForm(false);
     setNotebookNotice(''); setAnswer(''); setResult(null); setShowHint(false); setShowFullAnswer(false);
     setIsSpeaking(false); setImportDone(false); window.speechSynthesis?.cancel();
+    setDeleteTarget(null);
     submitRequest.current = null; reviewRequest.current = null; createRequest.current = null; playbackCount.current = 0;
   }, [user?.id]);
 
@@ -300,7 +304,7 @@ export default function DictationPage() {
   const speakNotebookItem = (item) => {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(notebookTab === 'sentences' ? item.meaning : item.word);
+    const utterance = new SpeechSynthesisUtterance(item.word);
     utterance.lang = 'en-GB';
     utterance.rate = 0.85;
     window.speechSynthesis.speak(utterance);
@@ -336,15 +340,26 @@ export default function DictationPage() {
     setShowCreateForm(true);
   };
 
-  const deleteNotebookItem = async (item) => {
-    if (saving) return;
-    if (!window.confirm(t('dictation.deleteConfirm', { name: item.word }))) return;
+  const requestNotebookDelete = item => {
+    if (saving || deleteRequest.current) return;
+    setDeleteTarget({ item, type: notebookTab, owner: user.id });
+  };
+  const cancelNotebookDelete = () => {
+    if (!deleteRequest.current) setDeleteTarget(null);
+  };
+  const deleteNotebookItem = async () => {
+    if (saving || deleteRequest.current || !deleteTarget || deleteTarget.owner !== user?.id) return;
+    const target = deleteTarget;
+    const { item } = target;
+    deleteRequest.current = true;
     try {
       const response = await mutate(() => studyApi.remove(item.notebookId || item.id));
       if (!response) return;
+      setDeleteTarget(current => current === target ? null : current);
       setNotebookPage(1);
       setNotebookNotice(t('dictation.itemDeleted', { name: item.word }));
     } catch (cause) { reportError(cause); }
+    finally { deleteRequest.current = false; }
   };
 
   const addCustomTopic = async () => {
@@ -446,7 +461,6 @@ export default function DictationPage() {
         <button type="button" className={mode === 'flashcard' ? styles.activeStudyMode : ''} onClick={() => switchTopicMode('flashcard')}><BookOpen /> {t('dictation.flashcard')}</button>
         <button type="button" className={mode === 'quiz' ? styles.activeStudyMode : ''} onClick={() => switchTopicMode('quiz')}><CircleHelp /> {t('dictation.quiz')}</button>
         <button type="button" className={mode === 'matching' ? styles.activeStudyMode : ''} onClick={() => switchTopicMode('matching')}><ArrowLeftRight /> {t('dictation.matching')}</button>
-        <button type="button" onClick={() => switchTopicMode('notebook')}><FolderOpen /> {t('dictation.notebook')}</button>
       </nav>
     </header>
   ) : null;
@@ -458,7 +472,7 @@ export default function DictationPage() {
   const canImport = !importDone && !window.localStorage.getItem(`aptimate.dictation.imported:${user.id}`) && hasLegacyStudyData(window.localStorage);
 
   return (
-    <div className={`${styles.page} ${isTopicLanding ? styles.topicLandingPage : ''}`} inert={saving ? '' : undefined}>
+    <><div className={`${styles.page} ${isTopicLanding ? styles.topicLandingPage : ''}`} inert={saving ? '' : undefined}>
       {canImport && <div className={styles.importNotice}><p>{t('dictation.importHelp')}</p><button className={styles.secondaryButton} disabled={saving} onClick={importLegacy}>{t('dictation.importBrowser')}</button></div>}
       {saving && <p role="status" className={styles.savingNotice}>{t('dictation.saving')}</p>}
       {mode !== 'notebook' && !selectedTopic ? (
@@ -747,7 +761,7 @@ export default function DictationPage() {
                   </div>
                   <div className={styles.savedActions}>
                     <button type="button" onClick={() => openEditForm(item)} aria-label={t('dictation.editItem', { name: item.word })}><Pencil size={18} /></button>
-                    <button type="button" className={styles.deleteSavedItem} onClick={() => deleteNotebookItem(item)} aria-label={t('dictation.deleteItem', { name: item.word })}><Trash2 size={18} /></button>
+                    <button type="button" className={styles.deleteSavedItem} onClick={() => requestNotebookDelete(item)} aria-label={t('dictation.deleteItem', { name: item.word })}><Trash2 size={18} /></button>
                   </div>
                 </article>
               )) : <div className={styles.emptyNotebook}><Search size={34} /><h3>{t('dictation.noItems')}</h3><p>{t('dictation.noItemsHelp')}</p></div>}
@@ -801,5 +815,14 @@ export default function DictationPage() {
         </main>
       )}
     </div>
+    {deleteTarget && <ConfirmModal
+      title={t(deleteTarget.type === 'sentences' ? 'dictation.deleteSentenceTitle' : 'dictation.deleteWordTitle')}
+      message={t('dictation.deleteConfirm', { name: deleteTarget.item.word })}
+      confirmText={t(saving ? 'dictation.deleting' : 'dictation.deleteAction')}
+      cancelText={t('dictation.cancel')}
+      busy={saving}
+      onCancel={cancelNotebookDelete}
+      onConfirm={deleteNotebookItem}
+    />}</>
   );
 }

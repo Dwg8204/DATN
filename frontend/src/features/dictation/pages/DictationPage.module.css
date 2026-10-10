@@ -135,24 +135,24 @@
 .topicSearch svg { width: 16px; height: 16px; flex: 0 0 auto; }
 .topicSearch input { min-width: 0; width: 100%; border: 0; outline: 0; color: #262626; background: transparent; font: inherit; font-size: 13px; }
 .topicSearch input::placeholder { color: #aaa; }
-.topicLanding .topicGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
-.topicLanding .topicFolder { min-height: 154px; box-sizing: border-box; display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 14px 16px 12px; border: 1px solid #dedede; border-radius: 10px; color: #171717; background: #fff; box-shadow: 0 2px 5px rgba(20,20,20,.035); text-align: left; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.topicLanding .topicGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; margin-top: 22px; }
+.topicLanding .topicFolder { min-width: 0; min-height: 240px; box-sizing: border-box; display: flex; flex-direction: column; align-items: stretch; gap: 0; padding: 24px; border: 1px solid #dedede; border-radius: 14px; color: #171717; background: #fff; box-shadow: 0 2px 5px rgba(20,20,20,.035); text-align: left; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
 .topicLanding .topicFolder:hover { transform: translateY(-2px); border-color: #e8a59b; box-shadow: 0 8px 22px rgba(75,29,23,.09); }
-.topicCollection { display: block; padding: 2px 9px; overflow: hidden; border: 1px solid #efb5ba; border-radius: 999px; color: #a11d33; background: #fff0f2; font-size: 9px; font-weight: 700; line-height: 1.2; white-space: nowrap; text-overflow: ellipsis; }
-.topicLanding .topicCopy { margin-top: 9px; }
-.topicLanding .topicCopy strong { overflow: hidden; color: #101010; font-size: 13px; font-weight: 800; line-height: 1.25; text-transform: uppercase; white-space: nowrap; text-overflow: ellipsis; }
-.topicLanding .topicCopy small { height: 17px; margin-top: 4px; overflow: hidden; color: #817b7d; font-size: 11px; line-height: 1.5; white-space: nowrap; text-overflow: ellipsis; }
-.topicSummary { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 7px; color: #8a8586; font-size: 10px; }
+.topicCollection { display: block; padding: 5px 12px; overflow: hidden; border: 1px solid #efb5ba; border-radius: 999px; color: #a11d33; background: #fff0f2; font-size: 11px; font-weight: 700; line-height: 1.3; white-space: nowrap; text-overflow: ellipsis; }
+.topicLanding .topicCopy { margin-top: 14px; }
+.topicLanding .topicCopy strong { color: #101010; font-size: 20px; font-weight: 800; line-height: 1.3; text-transform: uppercase; overflow-wrap: anywhere; }
+.topicLanding .topicCopy small { min-height: 21px; margin-top: 7px; color: #817b7d; font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
+.topicSummary { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; margin-top: 16px; color: #8a8586; font-size: 13px; }
 .topicSummary span:last-child { text-align: right; }
-.topicLanding .topicProgress { position: static; width: 100%; height: 3px; margin-top: 7px; background: #f0dddd; }
+.topicLanding .topicProgress { position: static; width: 100%; height: 5px; margin-top: 10px; background: #f0dddd; }
 .topicLanding .topicProgress > span { background: #db200d; }
-.topicActions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: auto; padding-top: 10px; }
-.topicActions button { min-width: 0; height: 30px; display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 0 8px; border: 1px solid #e14737; border-radius: 8px; color: #d42613; background: #fff; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.topicActions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: auto; padding-top: 18px; }
+.topicActions button { min-width: 0; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 8px 12px; border: 1px solid #e14737; border-radius: 9px; color: #d42613; background: #fff; font: inherit; font-size: 14px; font-weight: 700; line-height: 1.4; overflow-wrap: anywhere; cursor: pointer; }
 .topicActions button:last-child { color: #fff; background: #db200d; }
 .topicActions button:hover:not(:disabled) { border-color: #b91d0d; background: #fff2ef; }
 .topicActions button:last-child:hover:not(:disabled) { background: #b91d0d; }
 .topicActions button:disabled { border-color: #ddd; color: #aaa; background: #f3f3f3; cursor: not-allowed; }
-.topicActions button svg { width: 13px; height: 13px; }
+.topicActions button svg { width: 16px; height: 16px; flex: 0 0 auto; }
 .topicLanding .emptyTopic { opacity: .62; }
 .emptyTopicSearch { min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 7px; margin-top: 18px; border: 1px dashed #e4c8c4; border-radius: 10px; color: #8d8183; background: #fffafa; }
 .emptyTopicSearch svg { width: 25px; height: 25px; }
@@ -198,7 +198,7 @@
 @media (max-width: 800px) { .topicLibrary { padding: 22px; }.topicGrid { grid-template-columns: 1fr; }.topicLandingPage { padding: 0; }.topicHeroInner, .topicContent { width: min(100% - 28px, 1040px); } }
 @media (max-width: 520px) { .topicLibrary { padding: 18px 14px; }.topicHeader > div > span { font-size: 14px; }.topicHeader h1 { font-size: 21px; }.topicHeader > svg { display: none; }.topicFolder { grid-template-columns: 44px minmax(0, 1fr); padding: 16px; }.folderIcon { width: 44px; height: 44px; }.topicMeta { display: none; }.topicProgress { right: 16px; left: 74px; }.topicStatus { right: 16px; }.practiceContext { align-items: flex-start; flex-direction: column; }.practiceContext > div { order: -1; } }
 @media (max-width: 520px) { .topicFormRow, .topicCreator { grid-template-columns: 1fr; }.addTopicButton, .topicCreator button { min-height: 40px; } }
-@media (max-width: 620px) { .topicHeroInner { min-height: 116px; }.topicHeroIcon { width: 46px; height: 46px; }.topicHero h1 { font-size: 22px; }.topicHero p { font-size: 12px; line-height: 1.45; }.topicModeTabs { width: 100%; overflow-x: auto; }.topicModeTabs button { min-width: 145px; flex: 1; padding-inline: 8px; }.topicSearch { width: 100%; margin-top: 20px; }.topicLanding .topicGrid { grid-template-columns: 1fr; }.topicLanding .topicFolder { min-height: 160px; } }
+@media (max-width: 620px) { .topicHeroInner { min-height: 116px; }.topicHeroIcon { width: 46px; height: 46px; }.topicHero h1 { font-size: 22px; }.topicHero p { font-size: 12px; line-height: 1.45; }.topicModeTabs { width: 100%; overflow-x: auto; }.topicModeTabs button { min-width: 145px; flex: 1; padding-inline: 8px; }.topicSearch { width: 100%; margin-top: 20px; }.topicLanding .topicGrid { grid-template-columns: 1fr; gap: 16px; }.topicLanding .topicFolder { min-height: 220px; padding: 20px; } }
 @media (max-width: 800px) { .selectedTopicHeader { margin: -20px -14px 22px; padding: 0 14px; }.selectedTopicModes { overflow-x: auto; }.selectedTopicModes button { flex: 0 0 auto; }.selectedTopicHeader ~ .flashcardSection { padding: 20px; }.referenceStudy { padding-top: 0; }.referenceActions { display: grid; grid-template-columns: 1fr 1fr; }.quizOptions, .matchingGrid { grid-template-columns: 1fr; }.wordDetailMain, .wordExample, .wordMeta, .quizCard, .matchingCard { padding: 22px; } }
 
 @media (prefers-reduced-motion: reduce) { .flashcard { transition-duration: .01ms; } }
