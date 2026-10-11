@@ -2,7 +2,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AttemptPageState } from '../../test-attempts/components/AttemptPageState.jsx';
 import { useAttemptResult } from '../../test-attempts/hooks/useAttemptResult.js';
 import { formatDuration } from '../../test-attempts/utils/attemptTime.js';
-import { readingFeedback, readingResultView } from '../utils/readingResultPresentation.js';
+import { readingFeedback, readingOverviewColumns, readingResultView } from '../utils/readingResultPresentation.js';
 import styles from './ReadingAttemptResultPage.module.css';
 
 const color = percentage => percentage >= 75 ? '#43b75d' : percentage >= 40 ? '#f5a623' : '#da1e21';
@@ -33,15 +33,20 @@ export default function ReadingAttemptResultPage() {
   const [feedbackTitle, feedbackText] = readingFeedback(view.percentage);
   const detailHref = `/reading/detail-result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}`;
   const assistance = data.result.assistance?.revealedKeys?.length ?? 0;
+  const isFullResult = data.scope === 'FULL_SKILL'
+    || (!data.scope && [1, 2, 3, 4].every(number => view.parts.some(part => part.partNumber === number)));
+  const overviewColumns = readingOverviewColumns(view, { compact: isFullResult });
+  const hasCefrEstimate = data.cefrEstimate?.kind === 'PRACTICE_ESTIMATE' && !!data.cefrEstimate.level;
+  const showCefr = !isPractice || isFullResult;
   return <div className={styles.page}><main className={styles.contentWrap}>
     <header className={styles.pageHeading}><span>{isPractice ? 'READING PRACTICE' : 'READING TEST'}</span><h1>{data.title || 'Reading result'}</h1></header>
     {!isPractice && (params.get('timedOut') === 'true' || data.submittedAfterExpiry) && <div className={styles.notice}>Time's up! Your answers have been automatically submitted.</div>}
     {isPractice && assistance > 0 && <div className={styles.notice}>Answers were revealed for {assistance} question(s). This is an assisted practice result.</div>}
     <div className={styles.topSection}>
       <section className={styles.cefrBox} aria-label="Final score">
-        <div className={styles.cefrLabel}>{isPractice ? 'Practice score' : 'CEFR Level'}</div>
-        <div className={styles.cefrValue}>{isPractice ? `${view.score}/${view.maximum}` : data.estimatedCefr || 'Not converted'}</div>
-        {!isPractice && <div className={styles.scoreText}>Score: {view.score}/{view.maximum}</div>}
+        <div className={styles.cefrLabel}>{showCefr ? hasCefrEstimate ? 'Estimated CEFR' : 'CEFR Level' : 'Practice score'}</div>
+        <div className={styles.cefrValue}>{showCefr ? data.estimatedCefr || 'Not converted' : `${view.score}/${view.maximum}`}</div>
+        {showCefr && <div className={styles.scoreText}>Score: {view.score}/{view.maximum}</div>}
       </section>
       <section className={styles.resultBox}><h2 className={styles.resultLabel}>Result</h2><div className={styles.resultContent}>
         <ScoreCircle percentage={view.percentage} />
@@ -53,13 +58,14 @@ export default function ReadingAttemptResultPage() {
         </dl>
       </div></section>
     </div>
-    <section className={styles.detailBox}><h2 className={styles.resultLabel}>Answer overview</h2><div className={styles.columnsWrapper}>
-      {view.parts.map(part => <div className={styles.partColumn} key={part.partNumber}><h3 className={styles.partTitle}>Part {part.partNumber}</h3>
-        {view.items.filter(item => item.partNumber === part.partNumber).map(item => <button className={styles.answerRow} key={item.key}
+    <section className={`${styles.detailBox} ${isFullResult ? styles.fullPracticeOverview : ''}`}><h2 className={styles.resultLabel}>Answer overview</h2><div className={styles.columnsWrapper}>
+      {overviewColumns.map(part => <div className={`${styles.partColumn} ${!isFullResult ? styles.sentenceColumn : ''} ${isFullResult && part.partNumber === 4 ? styles.headingColumn : ''}`} key={part.key}><h3 className={styles.partTitle}>Part {part.partNumber}</h3>
+        {part.items.map(item => <button className={styles.answerRow} key={item.key}
           aria-label={`Question ${item.number}: ${statusLabels[item.status]}`}
           onClick={() => navigate(`${detailHref}&part=${part.partNumber}&question=${encodeURIComponent(item.key)}`)}>
-          <span className={styles.qId}>{item.number}</span><span className={styles.userAns}>{item.answer}</span>
+          <span className={styles.qId}>{item.number}</span><span className={styles.userAns} title={item.answer}>{item.answer}</span>
           <span className={`${styles.iconWrap} ${styles[item.status]}`} aria-hidden="true">{item.status === 'correct' ? '✓' : item.status === 'wrong' ? '✕' : '—'}</span>
+          {!isFullResult && <span className={`${styles.statusLabel} ${styles[item.status]}`}>{statusLabels[item.status]}</span>}
         </button>)}
       </div>)}
     </div></section>

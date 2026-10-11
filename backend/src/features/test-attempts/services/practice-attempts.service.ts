@@ -11,6 +11,7 @@ import { AttemptHistoryQueryDto } from '../dto/attempt.dto';
 import { CompletePracticeAttemptDto, StartPracticeAttemptDto } from '../dto/practice-attempt.dto';
 import { TestAttemptsRepository } from '../repositories/test-attempts.repository';
 import { Answers, AssessmentPaper, AssessmentResult, AttemptRow, LockedAttemptRow, SkillComponent } from '../types/attempt.type';
+import { readingCefrEstimate } from '../policies/reading-cefr.policy';
 
 const COMPONENTS: SkillComponent[] = ['GRAMMAR_VOCAB', 'READING', 'LISTENING', 'WRITING', 'SPEAKING'];
 
@@ -105,7 +106,7 @@ export class PracticeAttemptsService {
       if (attempt.purpose !== 'PRACTICE') this.conflict('This attempt belongs to the exam flow.');
       if (attempt.status === 'SUBMITTED') {
         const progress = await this.repository.progress(attemptId, manager);
-        return this.summary(attempt, progress?.answers);
+        return this.summary(attempt, progress?.answers, paper);
       }
       if (attempt.status !== 'IN_PROGRESS') this.conflict('This practice attempt is no longer active.');
       const graded = this.grader.grade(paper.items, answers, metadata.component);
@@ -122,7 +123,7 @@ export class PracticeAttemptsService {
       const cefr = metadata.component === 'SPEAKING' && result.score != null && result.maxScore != null
         ? estimateCefr(metadata.component, result.score, result.maxScore) : null;
       const completed = await this.repository.complete(manager, attemptId, result, undefined, cefr);
-      return this.summary(completed, answers);
+      return this.summary(completed, answers, paper);
     });
   }
 
@@ -147,7 +148,8 @@ export class PracticeAttemptsService {
       throw new ApplicationError('PRACTICE_NOT_COMPLETED', 'Complete this practice test before viewing its result.', 409);
     }
     const progress = await this.repository.progress(attemptId);
-    return this.summary(attempt, progress?.answers);
+    const paper = attempt.component === 'READING' ? await this.paper(attempt) : undefined;
+    return this.summary(attempt, progress?.answers, paper);
   }
 
   async details(attemptId: string, partNumber: number, actor: AuthUser) {
@@ -208,15 +210,18 @@ export class PracticeAttemptsService {
         ({ key, partNumber, kind, optionIds, ...(maxCharacters ? { maxCharacters } : {}) })) };
   }
 
-  private summary(attempt: LockedAttemptRow, answers?: Answers) {
+  private summary(attempt: LockedAttemptRow, answers?: Answers, paper?: AssessmentPaper) {
+    const cefrEstimate = readingCefrEstimate(attempt);
     return {
       attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null,
       purpose: 'PRACTICE', component: attempt.component, scope: attempt.scope, partNumber: attempt.part_number,
       status: attempt.status, gradingStatus: attempt.grading_status,
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
-      estimatedCefr: attempt.component === 'SPEAKING' ? attempt.estimated_cefr : null,
-      result: attempt.result ? presentAssessmentResult(this.assessmentResult(attempt.result), answers) : null,
+      estimatedCefr: attempt.component === 'READING' ? cefrEstimate?.level ?? null
+        : attempt.component === 'SPEAKING' ? attempt.estimated_cefr : null,
+      ...(attempt.component === 'READING' ? { cefrEstimate } : {}),
+      result: attempt.result ? presentAssessmentResult(this.assessmentResult(attempt.result), answers, paper) : null,
       submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: null,
     };
