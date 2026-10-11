@@ -23,8 +23,8 @@ export function readingResultSections(paper, partNumber) {
     key: item.key, prompt: item.statement,
     options: records(paper.speakers).map(speaker => ({ id: speaker.id, text: speaker.name })),
   }));
-  else if (partNumber === 4) rows = records(paper.paragraphs).map(item => ({
-    key: item.key, prompt: item.content, options: records(paper.headings),
+  else if (partNumber === 4) rows = records(paper.paragraphs).map((item, index) => ({
+    key: item.key, label: item.label || `Paragraph ${index + 1}`, prompt: item.content, options: records(paper.headings),
   }));
   else return [];
   return [{ id: `part${partNumber}`, rows }];

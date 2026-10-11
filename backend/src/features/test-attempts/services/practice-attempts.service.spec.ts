@@ -4,6 +4,7 @@ import { TestAttemptsRepository } from '../repositories/test-attempts.repository
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { PracticeAttemptsService } from './practice-attempts.service';
 import { Answers } from '../types/attempt.type';
+import { buildSampleTests } from '../../../database/seeds/seed-sample-tests';
 
 const actor = { id: 'student-1' } as AuthUser;
 const testId = '11111111-1111-4111-8111-111111111111';
@@ -26,6 +27,42 @@ function createService(repository: Record<string, unknown>) {
 }
 
 describe('PracticeAttemptsService', () => {
+  it('estimates the CEFR of old full Reading practice from saved scores without rewriting the DB', async () => {
+    const readingSnapshot = buildSampleTests().find(sample => sample.component === 'READING' && sample.test.mode === 'full')!.test;
+    const paper = new AssessmentPaperFactory().build('READING', readingSnapshot as unknown as Record<string, unknown>);
+    const result = new ObjectiveGraderService().grade(paper.items, {}, 'READING');
+    const stored = JSON.stringify(result);
+    const repository = {
+      findSummary: jest.fn(async () => ({ id: attemptId, snapshot_id: 'snapshot-full-reading', component: 'READING',
+        purpose: 'PRACTICE', scope: 'FULL_SKILL', status: 'SUBMITTED', score: '21', max_score: '29', estimated_cefr: null, result })),
+      snapshot: jest.fn(async () => readingSnapshot), progress: jest.fn(async () => ({ answers: {} })),
+      complete: jest.fn(),
+    };
+    const response = await createService(repository).result(attemptId, actor);
+    expect(response).toMatchObject({ score: 21, maxScore: 29, estimatedCefr: 'B2', cefrEstimate: { kind: 'PRACTICE_ESTIMATE', level: 'B2' } });
+    expect(repository.complete).not.toHaveBeenCalled();
+    expect(JSON.stringify(result)).toBe(stored);
+  });
+
+  it('returns selected Part 2 sentences for saved Reading practice results', async () => {
+    const readingSnapshot = buildSampleTests().find(sample => sample.component === 'READING' && sample.test.mode === 'part2')!.test;
+    const paper = new AssessmentPaperFactory().build('READING', readingSnapshot as unknown as Record<string, unknown>);
+    const answers: Answers = { 'p2:q1': { kind: 'MATCH', optionId: paper.items[0].correctOptionId! } };
+    const result = new ObjectiveGraderService().grade(paper.items, answers, 'READING');
+    const repository = {
+      findSummary: jest.fn(async () => ({ id: attemptId, snapshot_id: 'snapshot-reading', component: 'READING',
+        purpose: 'PRACTICE', status: 'SUBMITTED', result })),
+      progress: jest.fn(async () => ({ answers })), snapshot: jest.fn(async () => readingSnapshot),
+    };
+    const summary = await createService(repository).result(attemptId, actor);
+    expect(summary.result?.items[0]).toMatchObject({ outcome: 'CORRECT', selectedAnswer: answers['p2:q1'],
+      selectedAnswerText: expect.any(String) });
+    expect(summary.result?.items[0].selectedAnswerText?.length).toBeGreaterThan(0);
+    expect(summary.result?.items[1]).toMatchObject({ outcome: 'SKIPPED', selectedAnswerText: null });
+    expect(result.items[0]).not.toHaveProperty('selectedAnswerText');
+    expect(repository.findSummary).toHaveBeenCalledWith(attemptId, actor.id);
+  });
+
   it('starts a fresh practice attempt without creating autosave progress', async () => {
     let created: Record<string, unknown> | null = null;
     const manager = { query: jest.fn(async (sql: string) => {

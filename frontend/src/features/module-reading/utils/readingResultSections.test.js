@@ -47,5 +47,5 @@ test('other Reading parts retain their question keys and options', () => {
   const [p3] = readingResultSections({ questions: [{ key: 'p3:q1', statement: 'Who likes tea?' }], speakers: [{ id: 'speaker1', name: 'Ann' }] }, 3);
   assert.deepEqual(p3.rows[0], { key: 'p3:q1', prompt: 'Who likes tea?', options: [{ id: 'speaker1', text: 'Ann' }] });
   const [p4] = readingResultSections({ paragraphs: [{ key: 'p4:q1', content: 'Paragraph' }], headings: [{ id: 'h1', text: 'Heading' }] }, 4);
-  assert.deepEqual(p4.rows[0], { key: 'p4:q1', prompt: 'Paragraph', options: [{ id: 'h1', text: 'Heading' }] });
+  assert.deepEqual(p4.rows[0], { key: 'p4:q1', label: 'Paragraph 1', prompt: 'Paragraph', options: [{ id: 'h1', text: 'Heading' }] });
 });
