@@ -2,7 +2,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import RichTextContent from '../../../components/common/RichTextContent.jsx';
 import { AttemptPageState } from '../../test-attempts/components/AttemptPageState.jsx';
 import { useAttemptPartResult, useAttemptResult } from '../../test-attempts/hooks/useAttemptResult.js';
-import { MOCK_SPEAKING_RESULT } from '../data/speakingResultMockData.js';
+import SpeakingAiConsentGate from '../components/SpeakingAiConsentGate.jsx';
 import { speakingResultParts, speakingPartStatus } from '../utils/speakingResultParts.js';
 import styles from './SpeakingResultPage.module.css';
 import extra from './SpeakingAttemptResultPage.module.css';
@@ -21,7 +21,7 @@ function getStatColor(value) {
 }
 
 function PartContent({ attemptId, partNumber, attempt }) {
-  const { data, loading, error } = useAttemptPartResult(attemptId, partNumber, 'SPEAKING');
+  const { data, loading, error } = useAttemptPartResult(attemptId, partNumber, 'SPEAKING', attempt.assessmentRevision);
   if (loading || error) return <AttemptPageState loading={loading} error={error} />;
   if (!data) return <AttemptPageState error={`Part ${partNumber} is unavailable.`} />;
 
@@ -30,7 +30,7 @@ function PartContent({ attemptId, partNumber, attempt }) {
     ? [{ key: paper.responseKey, text: paper.topic, prompts: paper.questions }]
     : paper.questions ?? [];
   const answers = new Map((data.items ?? []).map(item => [item.key, item.selectedAnswer]));
-  const mock = MOCK_SPEAKING_RESULT.parts[partNumber];
+  const outcomes = new Map((data.items ?? []).map(item => [item.key, item]));
   const status = speakingPartStatus(attempt, partNumber);
 
   return <div className={styles.mainBody}>
@@ -51,8 +51,8 @@ function PartContent({ attemptId, partNumber, attempt }) {
             {hasAudio && <>
               <audio className={extra.audio} controls preload="none" src={answer.mediaKey}
                 aria-label={`Your recording for Part ${partNumber}, question ${index + 1}`} />
-              <p className={extra.mockNotice}>Illustrative answer (mock data; not a transcription of your recording):</p>
-              <p>{mock?.qna?.[index]?.answer ?? 'A sample response will appear here.'}</p>
+              <p className={extra.mockNotice}>Transcript (English):</p>
+              <p>{outcomes.get(question.key)?.assessment?.transcript || 'Chưa có transcript; bài đang chờ xử lý hoặc không có lời nói rõ ràng.'}</p>
             </>}
           </div>
         </div>;
@@ -64,12 +64,13 @@ function PartContent({ attemptId, partNumber, attempt }) {
       </div></div>
       {status.recorded > 0 ? <>
         <div className={styles.feedbackCard}><div className={styles.feedbackText}>
-          Feedback below is illustrative mock data. Your audio has not been transcribed or analyzed.
+          {attempt.result?.gradingNotice || 'Bản ghi âm đang chờ AI chấm; chưa có feedback thật.'}
         </div></div>
-        <div className={styles.feedbackCard}><div className={styles.feedbackText}><strong>Grammar</strong><p>{mock?.grammarFeedback}</p></div></div>
-        <div className={styles.feedbackCard}><div className={styles.feedbackText}><strong>Vocabulary</strong><p>{mock?.vocabFeedback}</p></div></div>
-        <div className={styles.feedbackCard}><div className={styles.feedbackText}><strong>Pronunciation</strong><p>{mock?.pronunciationFeedback}</p></div></div>
-        <div className={styles.feedbackCard}><div className={styles.feedbackText}><strong>Fluency & coherence</strong><p>{mock?.fluencyFeedback} {mock?.coherenceFeedback}</p></div></div>
+        {(data.items ?? []).filter(item => item.assessment).map((item, index) => <div key={item.key} className={styles.feedbackCard}>
+          <div className={styles.feedbackText}><strong>Response {index + 1}</strong><p>{item.assessment.feedback}</p>
+            {CRITERIA.map(({ key, label }) => <p key={key}>{label}: {item.assessment.criteria[key]}%</p>)}
+            {item.assessment.qualityFlags?.length > 0 && <p>{item.assessment.qualityFlags.join(' · ')}</p>}
+          </div></div>)}
       </> : <div className={styles.feedbackCard}><div className={styles.feedbackText}>Skipped — there is no recording to review.</div></div>}
     </aside>
   </div>;
@@ -98,13 +99,15 @@ export default function SpeakingAttemptResultPage() {
   return <div className={styles.page}><div className={styles.contentWrap}>
     <div className={styles.topSection}>
       <section className={styles.cefrBox}>
-        <h1 className={styles.cefrLabel}>CEFR level</h1>
+        <h1 className={styles.cefrLabel}>{assessment?.provider === 'RANDOM' ? 'CEFR · Simulated' : 'CEFR · AI estimate'}</h1>
         <strong className={styles.cefrValue}>{assessment ? data.estimatedCefr || '—' : '—'}</strong>
-        <span className={extra.totalScore}>{assessment ? `${Number(data.score).toFixed(2)} / 50` : 'Not assessed'}</span>
+        <span className={extra.totalScore}>{assessment && data.score != null ? `${Number(data.score).toFixed(2)} / 50 · Practice score` : 'Not assessed'}</span>
       </section>
       <section className={styles.reportBox}>
         <h2 className={styles.reportTitle}>Report</h2>
-        <p className={styles.reportSub}>View detail feedback for each section of your speaking. Scores are simulated.</p>
+        <p className={styles.reportSub}>{assessment?.provider === 'RANDOM' ? 'Kết quả mô phỏng cũ; audio chưa được AI phân tích.' : data.result.gradingNotice || 'Bài đang chờ AI chấm. Nếu chờ lâu, hãy tải lại trang hoặc liên hệ quản trị viên.'}</p>
+        {assessment?.cefrReason && <p className={styles.reportSub}>{assessment.cefrReason}</p>}
+        {data.result.method === 'PENDING_AI' && <SpeakingAiConsentGate requireWhenDisabled><p>Đã xác nhận gửi audio. Kết quả sẽ tự cập nhật khi chấm xong.</p></SpeakingAiConsentGate>}
         <div className={styles.divider} />
         {assessment ? <div className={styles.criteriaGrid}>{CRITERIA.map(({ key, label }) => {
           const value = assessment.criteria[key];

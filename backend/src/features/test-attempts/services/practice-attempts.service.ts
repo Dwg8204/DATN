@@ -111,7 +111,7 @@ export class PracticeAttemptsService {
       const graded = this.grader.grade(paper.items, answers, metadata.component);
       const result: AssessmentResult = {
         ...graded,
-        method: graded.method === 'PENDING_AI' ? 'UNASSESSED' : graded.method,
+        method: graded.method === 'PENDING_AI' && attempt.component !== 'SPEAKING' ? 'UNASSESSED' : graded.method,
         assistance: { revealedKeys },
       };
       await manager.query(
@@ -173,6 +173,7 @@ export class PracticeAttemptsService {
         sampleAnswer: item.sampleAnswer ?? null,
         revealed: revealed.has(item.key),
         outcome: outcomes.get(item.key) ?? null,
+        assessment: outcomes.get(item.key)?.assessment ?? null,
       })),
     };
   }
@@ -212,6 +213,7 @@ export class PracticeAttemptsService {
     return {
       attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null,
       purpose: 'PRACTICE', component: attempt.component, scope: attempt.scope, partNumber: attempt.part_number,
+      assessmentRevision: attempt.assessment_revision,
       status: attempt.status, gradingStatus: attempt.grading_status,
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
