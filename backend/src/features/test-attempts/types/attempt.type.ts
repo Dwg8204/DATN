@@ -77,19 +77,24 @@ export type ItemOutcome = {
   selectedAnswer?: Answer | null;
   /** Human-readable selected option, resolved from the snapshot for display only. */
   selectedAnswerText?: string | null;
+  assessment?: { transcript: string; feedback: string; criteria: Record<string, number>; qualityFlags: string[] };
 };
 export type AssessmentResult = {
   schemaVersion: 1;
-  method: 'OBJECTIVE' | 'PENDING_AI' | 'UNASSESSED' | 'SIMULATED';
+  method: 'OBJECTIVE' | 'PENDING_AI' | 'UNASSESSED' | 'SIMULATED' | 'AI';
   score: number | null;
   maxScore: number | null;
   counts: { correct: number; incorrect: number; skipped: number };
   parts: Array<{ partNumber: number; score: number | null; maxScore: number | null }>;
   items: ItemOutcome[];
   assistance?: { revealedKeys: string[] };
+  gradingNotice?: string;
   speaking?: {
     provider: 'RANDOM' | 'LLM'; version: string; assessedAt: string;
     criteria: { grammarVocabulary: number; pronunciation: number; fluency: number; taskFulfillment: number };
     averagePercentage: number;
+    estimatedCefr?: string | null;
+    cefrReason?: string;
+    model?: string;
   };
 };

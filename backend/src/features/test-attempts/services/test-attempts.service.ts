@@ -168,6 +168,7 @@ export class TestAttemptsService {
         explanation: item.explanation ?? null,
         sampleAnswer: item.sampleAnswer ?? null,
         outcome: outcomes.get(item.key) ?? null,
+        assessment: outcomes.get(item.key)?.assessment ?? null,
       })),
     };
   }

@@ -19,13 +19,25 @@ export function useAttemptResult(attemptId, expectedComponent) {
       return undefined;
     }
     const controller = new AbortController();
-    attemptsApi.result(attemptId, controller.signal)
-      .then(data => setState({ requestKey: attemptId, data: ensureComponent(data, expectedComponent), error: '' }))
+    let timer;
+    let polls = 0;
+    const read = () => attemptsApi.result(attemptId, controller.signal)
+      .then(data => {
+        if (controller.signal.aborted) return;
+        setState({ requestKey: attemptId, data: ensureComponent(data, expectedComponent), error: '' });
+        if (expectedComponent === 'SPEAKING' && ['QUEUED', 'PROCESSING'].includes(data.gradingStatus) && polls++ < 60) {
+          timer = window.setTimeout(read, 5000);
+        }
+      })
       .catch(error => {
-        if (error.code !== 'ERR_CANCELED') setState({ requestKey: attemptId, data: null,
-          error: normalizeApiError(error, 'Unable to load the test result.').message });
+        if (controller.signal.aborted || error.code === 'ERR_CANCELED') return;
+        setState(previous => expectedComponent === 'SPEAKING' && previous.requestKey === attemptId && previous.data
+          ? previous : { requestKey: attemptId, data: null,
+            error: normalizeApiError(error, 'Unable to load the test result.').message });
+        if (expectedComponent === 'SPEAKING' && polls++ < 60) timer = window.setTimeout(read, 5000);
       });
-    return () => controller.abort();
+    read();
+    return () => { controller.abort(); window.clearTimeout(timer); };
   }, [attemptId, attemptsApi, expectedComponent]);
   if (!attemptId) return { data: null, loading: false, error: 'The test session is missing.' };
   return state.requestKey === attemptId
@@ -33,11 +45,11 @@ export function useAttemptResult(attemptId, expectedComponent) {
     : { data: null, loading: true, error: '' };
 }
 
-export function useAttemptPartResult(attemptId, partNumber, expectedComponent) {
+export function useAttemptPartResult(attemptId, partNumber, expectedComponent, refreshKey = 0) {
   const [searchParams] = useSearchParams();
   const isPractice = searchParams.get('practice') === 'true';
   const attemptsApi = isPractice ? practiceAttemptsApi : testAttemptsApi;
-  const requestKey = attemptId && partNumber ? `${attemptId}:${partNumber}` : null;
+  const requestKey = attemptId && partNumber ? `${attemptId}:${partNumber}:${refreshKey}` : null;
   const [state, setState] = useState({ requestKey: null, data: null, error: '' });
   useEffect(() => {
     if (!attemptId || !partNumber) {

@@ -1,0 +1,8 @@
+.panel { max-width: 760px; margin: 32px auto; padding: 24px; background: var(--bg-surface, #fff); color: var(--text-primary, #111); border: 1px solid var(--border, #ddd); border-radius: 12px; }
+.panel p { line-height: 1.6; }
+.panel label { display: block; margin: 16px 0; }
+.panel input { margin-right: 8px; }
+.panel button { display: block; background: #da1e21; color: #fff; padding: 12px 20px; border: 0; border-radius: 8px; margin: 16px 0; cursor: pointer; }
+.panel button:disabled { opacity: .5; cursor: default; }
+.panel a { color: inherit; }
+.disabled { padding: 12px; background: var(--bg-surface, #fff); color: var(--text-primary, #111); }

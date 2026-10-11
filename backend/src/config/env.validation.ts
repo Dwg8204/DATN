@@ -1,6 +1,20 @@
 import * as Joi from 'joi';
 
 export const environmentSchema = Joi.object({
+  SPEAKING_AI_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+  GROQ_API_KEY: Joi.when('SPEAKING_AI_ENABLED', { is: true, then: Joi.string().min(20).required(), otherwise: Joi.string().allow('') }),
+  GEMINI_API_KEY: Joi.when('SPEAKING_AI_ENABLED', { is: true, then: Joi.string().min(20).required(), otherwise: Joi.string().allow('') }),
+  GEMINI_PAID_PROJECT_CONFIRMED: Joi.boolean().truthy('true').falsy('false').default(false),
+  GEMINI_BILLING_TIER: Joi.string().valid('FREE', 'PAID').default('PAID'),
+  GEMINI_FREE_PROJECT_CONFIRMED: Joi.boolean().truthy('true').falsy('false').default(false),
+  GROQ_FREE_TIER_CONFIRMED: Joi.boolean().truthy('true').falsy('false').default(false),
+  SPEAKING_ADULT_ONLY_CONFIRMED: Joi.boolean().truthy('true').falsy('false').default(false),
+  SPEAKING_AI_PRICING_VERIFIED: Joi.boolean().truthy('true').falsy('false').default(false),
+  SPEAKING_AI_MONTHLY_BUDGET_USD: Joi.number().positive().max(1).default(1),
+  GEMINI_INPUT_USD_PER_MILLION: Joi.number().min(.5).default(.5),
+  GEMINI_OUTPUT_USD_PER_MILLION: Joi.number().min(1.5).default(1.5),
+  SPEAKING_FFMPEG_PATH: Joi.string().default('ffmpeg'),
+  SPEAKING_FFPROBE_PATH: Joi.string().default('ffprobe'),
   NODE_ENV: Joi.string().valid('development', 'test', 'production').default('development'),
   PORT: Joi.number().port().default(3000),
   API_PREFIX: Joi.string().pattern(/^[a-z0-9/-]+$/).default('api/v1'),
