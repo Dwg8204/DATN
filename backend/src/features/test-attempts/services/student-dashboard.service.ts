@@ -27,7 +27,7 @@ function roundedAverage(values: number[]): number | null {
 }
 
 function validPercentage(row: DashboardAttemptRow, part: string): number | null {
-  if (row.result?.method !== 'OBJECTIVE') return null;
+  if (row.result?.method !== 'OBJECTIVE' && row.result?.method !== 'AI') return null;
   const partNumber = /^part[1-4]$/.test(part) ? Number(part.slice(4)) : null;
   const partResult = partNumber == null ? null : row.result.parts?.find(item => item.partNumber === partNumber);
   if (partNumber != null && !partResult) return null;
@@ -44,7 +44,7 @@ function bandStats(rows: DashboardAttemptRow[]) {
     const skill = SKILLS[row.component];
     const score = validPercentage(row, 'full');
     if (score != null) scoresBySkill.set(skill, [...(scoresBySkill.get(skill) ?? []), score]);
-    if (row.result?.method === 'OBJECTIVE' && row.estimatedCefr && BANDS[row.estimatedCefr]) {
+    if ((row.result?.method === 'OBJECTIVE' || row.result?.method === 'AI') && row.estimatedCefr && BANDS[row.estimatedCefr]) {
       bySkill.set(skill, [...(bySkill.get(skill) ?? []), BANDS[row.estimatedCefr]]);
     }
   }

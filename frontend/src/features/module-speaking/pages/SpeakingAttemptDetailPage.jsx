@@ -7,7 +7,6 @@ import { useAttemptPartResult, useAttemptResult } from '../../test-attempts/hook
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState.js';
 import styles from './SpeakingAttemptDetailPage.module.css';
 import { speakingResultParts } from '../utils/speakingResultParts.js';
-import { MOCK_SPEAKING_RESULT } from '../data/speakingResultMockData.js';
 
 const SCHEMA = { part: queryParam.positiveInt(1, 4) };
 
@@ -20,7 +19,7 @@ export default function SpeakingAttemptDetailPage() {
   const summary = useAttemptResult(attemptId, 'SPEAKING');
   const parts = useMemo(() => speakingResultParts(summary.data), [summary.data]);
   const activePart = parts.includes(url.part) ? url.part : parts[0];
-  const detail = useAttemptPartResult(attemptId, activePart, 'SPEAKING');
+  const detail = useAttemptPartResult(attemptId, activePart, 'SPEAKING', summary.data?.assessmentRevision);
   if (summary.loading || summary.error || detail.loading || detail.error) {
     return <AttemptPageState loading={summary.loading || detail.loading} error={summary.error || detail.error} />;
   }
@@ -34,8 +33,8 @@ export default function SpeakingAttemptDetailPage() {
     <header><div><span>SPEAKING RESULT</span><h1>{summary.data.title || 'Submitted responses'}</h1></div>
       {parts.length > 1 && <AnswerSelect value={String(activePart)} onChange={event => setUrl({ part: Number(event.target.value) })}
         options={parts.map(part => ({ value: String(part), label: `Part ${part}` }))} ariaLabel="Result part" />}</header>
-    <section className={styles.notice}><strong>{summary.data.result?.speaking ? 'Simulated assessment' : 'Assessment pending'}</strong>
-      <p>{summary.data.result?.speaking ? 'The four criterion scores are simulated; the recordings have not been analyzed.' : 'Your recordings are stored for later assessment.'}</p></section>
+    <section className={styles.notice}><strong>{summary.data.result?.method === 'AI' ? 'AI assessment · CEFR estimate' : 'Assessment pending / legacy'}</strong>
+      <p>{summary.data.result?.gradingNotice || 'Bản ghi âm được lưu. Chưa có kết quả chấm AI cho bài này.'}</p></section>
     <div className={styles.cards}>{prompts.map((prompt, index) => {
       const item = itemByKey.get(prompt.key);
       return <article key={prompt.key}><div className={styles.number}>{index + 1}</div><div>
@@ -44,8 +43,10 @@ export default function SpeakingAttemptDetailPage() {
         <p className={styles.recording}>{item?.selectedAnswer?.kind === 'AUDIO' ? '✓ Recording submitted' : 'Skipped — no recording submitted'}</p>
         {item?.selectedAnswer?.kind === 'AUDIO' && <>
           <audio controls preload="none" src={item.selectedAnswer.mediaKey} aria-label={`Your recording for question ${index + 1}`} />
-          <p><em>Illustrative answer (mock data; not a transcription of your recording):</em></p>
-          <p>{MOCK_SPEAKING_RESULT.parts[activePart]?.qna?.[index]?.answer ?? 'A sample response will appear here.'}</p>
+          <p><em>Transcript (English):</em></p>
+          <p>{item?.assessment?.transcript || 'Chưa có transcript hoặc không có lời nói rõ ràng.'}</p>
+          {item?.assessment && <div><strong>Feedback</strong><p>{item.assessment.feedback}</p>
+            {Object.entries(item.assessment.criteria).map(([key, score]) => <p key={key}>{key}: {score}%</p>)}</div>}
         </>}
         {item?.sampleAnswer && <div className={styles.sample}><strong>Sample answer</strong><RichTextContent value={item.sampleAnswer} /></div>}
       </div></article>;
