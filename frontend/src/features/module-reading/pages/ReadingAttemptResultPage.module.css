@@ -459,5 +459,37 @@
 .correct { color: #237d36; font-weight: 800; }
 .wrong { color: #b0182d; font-weight: 800; }
 .skipped { color: #686868; font-weight: 800; }
+.sentenceColumn { grid-column: 1 / -1; min-width: 0; }
+.sentenceColumn .userAns { min-width: 0; white-space: normal; overflow-wrap: anywhere; line-height: 1.5; }
+.sentenceColumn .qId, .sentenceColumn .iconWrap { flex-shrink: 0; }
+.statusLabel { font-size: 14px; flex-shrink: 0; }
+.sentenceColumn .answerRow { align-items: flex-start; }
 .notice { padding: 12px 16px; border: 1px solid #f5a623; border-radius: 8px; background: var(--warning-bg, #fff9f1); }
 @media (max-width: 640px) { .columnsWrapper { grid-template-columns: repeat(2, minmax(0, 1fr)); } .statsGrid { width: 100%; } }
+
+.fullPracticeOverview .columnsWrapper {
+  grid-template-columns: minmax(0, 1fr) repeat(2, minmax(0, .65fr)) minmax(0, 1.15fr) minmax(0, 2.7fr);
+  gap: 20px;
+  align-items: start;
+}
+.fullPracticeOverview .partColumn { min-width: 0; gap: 8px; }
+.fullPracticeOverview .partTitle { font-size: 18px; margin-bottom: 4px; }
+.fullPracticeOverview .answerRow {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 16px;
+  gap: 6px;
+  padding: 4px 0;
+  align-items: start;
+}
+.fullPracticeOverview .qId,
+.fullPracticeOverview .userAns { font-size: 13px; line-height: 1.5; }
+.fullPracticeOverview .qId { width: auto; font-weight: 500; }
+.fullPracticeOverview .userAns { white-space: normal; overflow-wrap: anywhere; }
+.fullPracticeOverview .iconWrap { width: 16px; height: 20px; }
+@media (max-width: 900px) {
+  .fullPracticeOverview .columnsWrapper { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .fullPracticeOverview .headingColumn { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .fullPracticeOverview .columnsWrapper { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 16px; }
+}

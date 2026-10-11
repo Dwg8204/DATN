@@ -75,6 +75,8 @@ export type ItemOutcome = {
   maxScore: number;
   /** Response-only field. Answers remain canonical in attempt_progress.answers. */
   selectedAnswer?: Answer | null;
+  /** Human-readable selected option, resolved from the snapshot for display only. */
+  selectedAnswerText?: string | null;
 };
 export type AssessmentResult = {
   schemaVersion: 1;

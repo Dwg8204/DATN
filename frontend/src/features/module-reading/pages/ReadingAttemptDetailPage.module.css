@@ -160,7 +160,25 @@
 .scriptBox h2, .scriptBox h3, .scriptBox p, .questionCard p { margin: 0; }
 .scriptBox h2 { font-size: 20px; }.scriptBox h3 { font-size: 16px; }
 .contentRow { align-items: flex-start; }.qaBox { flex: 1.15; }
+.matchingPracticeLayout { flex-direction: column; gap: 24px; }
+.matchingPracticeLayout > .scriptBox, .matchingPracticeLayout > .qaBox { width: 100%; box-sizing: border-box; flex: none; }
 .answerColumn { width: 100%; }.correctField, .answerField { min-width: 0; }
+.matchingPracticeCard .answerColumn { gap: 14px; }
+.matchingPracticeCard { scroll-margin-top: 96px; }
+.matchingPracticeCard .answerEntry { grid-template-columns: minmax(0, 1fr); align-items: start; gap: 6px; }
+.matchingPracticeCard .answerEntry small { font-size: 13px; }
+.explanationBlock { width: 100%; min-width: 0; box-sizing: border-box; border-top: 1px solid var(--border, #e5e5e5); padding-top: 16px; }
+.explanationBlock > details { margin-top: 0; }
+.partFourPracticeCard { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; row-gap: 16px; align-items: start; }
+.partFourPracticeCard > .questionHeading { grid-column: 1 / -1; }
+.partFourPracticeCard > .answerColumn { grid-column: 1; grid-row: 2; min-width: 0; }
+.partFourPracticeCard > .explanationBlock { grid-column: 2; grid-row: 2; border-top: 0; padding-top: 0; border-left: 1px solid var(--border, #e5e5e5); padding-left: 24px; }
+.partFourPracticeCard > .assisted { grid-column: 1 / -1; grid-row: 3; }
+@media (max-width: 700px) {
+  .partFourPracticeCard { grid-template-columns: minmax(0, 1fr); }
+  .partFourPracticeCard > .explanationBlock { grid-column: 1; grid-row: 3; border-left: 0; padding-left: 0; border-top: 1px solid var(--border, #e5e5e5); padding-top: 16px; }
+  .partFourPracticeCard > .assisted { grid-row: 4; }
+}
 .correctField { color: var(--success, #237d36); }
 .correctField p, .answerField p { margin: 0; }
 .correctField, .answerField { line-height: 1.6; gap: 4px; }

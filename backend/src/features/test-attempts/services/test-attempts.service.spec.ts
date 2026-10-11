@@ -19,6 +19,73 @@ function service(repository: Record<string, unknown>) {
 }
 
 describe('shared test attempt regressions', () => {
+  it('resolves actual selected words, both text sentences, speakers and headings for saved Reading exams', async () => {
+    const snapshot = buildSampleTests().find(sample => sample.component === 'READING' && sample.test.purpose === 'EXAM')!.test;
+    const paper = new AssessmentPaperFactory().build('READING', snapshot as unknown as Record<string, unknown>);
+    const answers = Object.fromEntries(paper.items.filter((_, index) => [0, 5, 10, 15, 22].includes(index)).map(item => [item.key,
+      { kind: item.kind as 'CHOICE' | 'MATCH', optionId: item.optionIds!.find(id => id !== item.correctOptionId)! }]));
+    const result = new ObjectiveGraderService().grade(paper.items, answers, 'READING');
+    const stored = JSON.stringify(result);
+    const repository = {
+      findSummary: jest.fn(async () => ({ id: 'saved-reading', snapshot_id: 'saved-reading-snapshot', component: 'READING',
+        purpose: 'EXAM', scope: 'FULL_SKILL', status: 'SUBMITTED', result, score: String(result.score), max_score: String(result.maxScore) })),
+      snapshot: jest.fn(async () => snapshot), progress: jest.fn(async () => ({ answers })), complete: jest.fn(),
+    };
+    const response = await service(repository).result('saved-reading', actor);
+    for (const index of [0, 5, 10, 15, 22]) {
+      expect(response.result?.items[index]).toMatchObject({ outcome: 'INCORRECT', selectedAnswer: answers[paper.items[index].key], selectedAnswerText: expect.any(String) });
+      expect(response.result?.items[index].selectedAnswerText?.length).toBeGreaterThan(0);
+    }
+    expect(response.result?.items[1]).toMatchObject({ outcome: 'SKIPPED', selectedAnswerText: null });
+    expect(response.result?.counts).toEqual(result.counts);
+    expect(JSON.stringify(response.result)).not.toContain('explanation');
+    expect(JSON.stringify(result)).toBe(stored);
+    expect(repository.complete).not.toHaveBeenCalled();
+  });
+
+  it('presents the same Reading answers immediately after submission and on repeated submission', async () => {
+    const snapshot = buildSampleTests().find(sample => sample.component === 'READING' && sample.test.purpose === 'EXAM')!.test;
+    const paper = new AssessmentPaperFactory().build('READING', snapshot as unknown as Record<string, unknown>);
+    const answers = Object.fromEntries(paper.items.map(item => [item.key, { kind: item.kind as 'CHOICE' | 'MATCH', optionId: item.correctOptionId! }]));
+    let attempt = { id: 'new-reading', snapshot_id: 'new-reading-snapshot', component: 'READING', purpose: 'EXAM',
+      scope: 'FULL_SKILL', status: 'IN_PROGRESS', expires_at: null } as Record<string, unknown>;
+    const manager = { query: jest.fn(async () => []) };
+    const repository = {
+      dataSource: { transaction: (fn: (value: unknown) => Promise<unknown>) => fn(manager) },
+      metadata: jest.fn(async () => attempt), snapshot: jest.fn(async () => snapshot),
+      lockAttempt: jest.fn(async () => attempt),
+      progress: jest.fn(async () => ({ answers, revision: 0, sealed_at: null })),
+      serverTime: jest.fn(async () => new Date()),
+      complete: jest.fn(async (_manager: unknown, _id: string, result: { score: number; maxScore: number }) => {
+        attempt = { ...attempt, status: 'SUBMITTED', result, score: String(result.score), max_score: String(result.maxScore) };
+        return attempt;
+      }),
+    };
+    const attempts = service(repository);
+    const first = await attempts.submit('new-reading', actor, { expectedRevision: 0 });
+    const repeated = await attempts.submit('new-reading', actor, { expectedRevision: 0 });
+    expect(first.result?.items).toHaveLength(29);
+    expect(first.result?.items.every(item => item.selectedAnswerText && item.outcome === 'CORRECT')).toBe(true);
+    expect(repeated.result?.items).toEqual(first.result?.items);
+    expect(repository.complete).toHaveBeenCalledTimes(1);
+  });
+
+  it('returns a labelled local CEFR estimate for full Reading exam results without regrading old attempts', async () => {
+    const snapshot = buildSampleTests().find(sample => sample.component === 'READING' && sample.test.purpose === 'EXAM')!.test;
+    const paper = new AssessmentPaperFactory().build('READING', snapshot as unknown as Record<string, unknown>);
+    const result = new ObjectiveGraderService().grade(paper.items, {}, 'READING');
+    const stored = JSON.stringify(result);
+    const repository = {
+      findSummary: jest.fn(async () => ({ id: 'old-reading', snapshot_id: 'snapshot-old-reading', component: 'READING', scope: 'FULL_SKILL', purpose: 'EXAM',
+        status: 'SUBMITTED', score: '27', max_score: '29', estimated_cefr: null, result })),
+      progress: jest.fn(async () => ({ answers: {} })), complete: jest.fn(), snapshot: jest.fn(async () => snapshot),
+    };
+    const response = await service(repository).result('old-reading', actor);
+    expect(response).toMatchObject({ score: 27, maxScore: 29, estimatedCefr: 'C', cefrEstimate: { kind: 'PRACTICE_ESTIMATE', policyVersion: 'APTIMATE_READING_V1' } });
+    expect(repository.complete).not.toHaveBeenCalled();
+    expect(JSON.stringify(result)).toBe(stored);
+  });
+
   it('starts Reading with a persisted 35-minute deadline and preserves it on resume', async () => {
     const startedAt = new Date('2026-10-11T10:00:00Z');
     const expiresAt = new Date('2026-10-11T10:35:00Z');

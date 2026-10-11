@@ -12,6 +12,7 @@ import { AssessmentPaper, AssessmentResult, AttemptRow, LockedAttemptRow, Progre
 import { examDurationMinutes } from '../policies/exam-time.policy';
 import { estimateCefr } from '../policies/exam-cefr.policy';
 import { presentAssessmentResult } from '../assessments/result-presentation';
+import { readingCefrEstimate } from '../policies/reading-cefr.policy';
 
 const COMPONENTS: SkillComponent[] = ['GRAMMAR_VOCAB', 'READING', 'LISTENING', 'WRITING', 'SPEAKING'];
 
@@ -108,7 +109,7 @@ export class TestAttemptsService {
       const progress = await this.repository.progress(attemptId, manager, true);
       const attempt = await this.repository.lockAttempt(attemptId, actor.id, manager);
       if (!progress || !attempt) this.notFound();
-      if (attempt.status === 'SUBMITTED') return this.resultSummary(attempt, progress.answers);
+      if (attempt.status === 'SUBMITTED') return this.resultSummary(attempt, progress.answers, paper);
       if (attempt.status !== 'IN_PROGRESS' || progress.sealed_at) this.conflict('This test has already been submitted.');
       if (attempt.snapshot_id !== metadata.snapshot_id) this.conflict('This test changed while submitting.');
       const serverTime = await this.repository.serverTime(manager);
@@ -125,7 +126,7 @@ export class TestAttemptsService {
       const submittedAt = expired ? attempt.expires_at ?? serverTime : serverTime;
       const completed = await this.repository.complete(manager, attemptId, result, submittedAt,
         this.estimatedCefr(metadata.component, result.score, result.maxScore));
-      return this.resultSummary(completed, answers);
+      return this.resultSummary(completed, answers, paper);
     });
   }
 
@@ -133,7 +134,10 @@ export class TestAttemptsService {
     const attempt = await this.ownedSummary(attemptId, actor);
     if (attempt.status !== 'SUBMITTED') throw new ApplicationError('ATTEMPT_NOT_SUBMITTED', 'Submit this test before viewing its result.', 409);
     const progress = await this.repository.progress(attemptId);
-    return this.resultSummary(attempt, progress?.answers);
+    const paper = attempt.component === 'READING'
+      ? await this.paperFactory.getOrBuild(attempt.snapshot_id, attempt.component, () => this.repository.snapshot(attempt.snapshot_id))
+      : undefined;
+    return this.resultSummary(attempt, progress?.answers, paper);
   }
 
   async details(attemptId: string, partNumber: number, actor: AuthUser) {
@@ -251,7 +255,8 @@ export class TestAttemptsService {
         ({ key, partNumber, kind, optionIds, ...(maxCharacters ? { maxCharacters } : {}) })) };
   }
 
-  private resultSummary(attempt: LockedAttemptRow, answers?: ProgressRow['answers']) {
+  private resultSummary(attempt: LockedAttemptRow, answers?: ProgressRow['answers'], paper?: AssessmentPaper) {
+    const cefrEstimate = readingCefrEstimate(attempt);
     const result = attempt.component === 'LISTENING' && isLegacyListeningResult(attempt.result)
       ? normalizeLegacyListeningResult(attempt.result) : attempt.result;
     return { attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null, component: attempt.component,
@@ -260,8 +265,9 @@ export class TestAttemptsService {
       status: attempt.status, gradingStatus: attempt.grading_status,
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
-      estimatedCefr: attempt.estimated_cefr,
-      result: presentAssessmentResult(result as AssessmentResult | null, answers), submittedAt: attempt.submitted_at,
+      estimatedCefr: attempt.component === 'READING' ? cefrEstimate?.level ?? null : attempt.estimated_cefr,
+      ...(attempt.component === 'READING' ? { cefrEstimate } : {}),
+      result: presentAssessmentResult(result as AssessmentResult | null, answers, paper), submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: attempt.expires_at,
       submittedAfterExpiry: !!attempt.expires_at && !!attempt.submitted_at &&
         new Date(attempt.submitted_at).getTime() >= new Date(attempt.expires_at).getTime() };
