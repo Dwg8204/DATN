@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AiProvider, JsonSchema } from '../ai-provider.interface';
 import { AiError } from '../ai-error';
@@ -6,8 +6,14 @@ import { AiError } from '../ai-error';
 export function toGeminiSchema(schema: JsonSchema): object {
   return {
     type: schema.type.toUpperCase(),
+    // Keep the recursive response schema small enough for Gemini's schema compiler.
+    // Local validation remains authoritative; descriptions communicate omitted bounds.
+    ...(schema.type === 'string' && schema.minLength ? {
+      description: `Nonempty meaningful text, at most ${schema.maxLength ?? 8000} characters. Never use an empty placeholder.`,
+    } : {}),
     ...(schema.nullable ? { nullable: true } : {}),
     ...(schema.enum?.length && schema.type === 'string' ? { enum: schema.enum } : {}),
+    ...(schema.enum?.length && schema.type === 'integer' ? { description: `Use only these integer values: ${schema.enum.join(', ')}.` } : {}),
     ...(schema.properties
       ? {
           properties: Object.fromEntries(
@@ -22,6 +28,7 @@ export function toGeminiSchema(schema: JsonSchema): object {
 
 @Injectable()
 export class GeminiProvider implements AiProvider {
+  private readonly logger = new Logger(GeminiProvider.name);
   constructor(private readonly config: ConfigService) {}
 
   async generateStructured(request: Parameters<AiProvider['generateStructured']>[0]): Promise<unknown> {
@@ -55,6 +62,7 @@ export class GeminiProvider implements AiProvider {
       throw new AiError(request.signal.aborted ? 'AI_TIMEOUT' : 'AI_UNAVAILABLE', true);
     }
     if (!response.ok) {
+      this.logger.warn(`Gemini request failed: model=${request.model} httpStatus=${response.status}`);
       const retryHeader = response.headers.get('retry-after');
       const seconds = retryHeader ? Number(retryHeader) : NaN;
       const delay = Number.isFinite(seconds)
@@ -78,6 +86,8 @@ export class GeminiProvider implements AiProvider {
       };
       if (body.promptFeedback?.blockReason) throw new AiError('AI_SAFETY_BLOCKED');
       const candidate = body.candidates?.[0];
+      const reason = candidate?.finishReason?.replace(/[^A-Z_]/g, '').slice(0, 60) ?? 'MISSING';
+      this.logger.log(`Gemini response: model=${request.model} httpStatus=${response.status} finishReason=${reason}`);
       if (candidate?.finishReason === 'SAFETY') throw new AiError('AI_SAFETY_BLOCKED');
       if (candidate?.finishReason !== 'STOP') throw new AiError('AI_RESPONSE_INCOMPLETE', true);
       return JSON.parse(
