@@ -1,16 +1,18 @@
 import api from '../../../services/api.js';
 import { API_ENDPOINTS } from '../../../services/endpoint.js';
+import i18n from '../../../i18n/index.js';
 
 const silent = { notifyOnError: false };
 
 export const testAttemptsApi = {
   start: ({ testId, attemptId, mode }) => api.post(API_ENDPOINTS.testAttempts.list,
-    { testId, attemptId, mode }, silent).then(response => response.data),
+    { testId, attemptId, mode, feedbackLocale: i18n.language?.startsWith('vi') ? 'vi' : 'en' }, silent).then(response => response.data),
   get: (attemptId, signal) => api.get(API_ENDPOINTS.testAttempts.detail(attemptId),
     { ...silent, signal }).then(response => response.data),
   saveProgress: (attemptId, payload) => api.patch(API_ENDPOINTS.testAttempts.progress(attemptId), payload, silent)
     .then(response => response.data),
-  submit: (attemptId, payload) => api.post(API_ENDPOINTS.testAttempts.submit(attemptId), payload, silent)
+  submit: (attemptId, payload) => api.post(API_ENDPOINTS.testAttempts.submit(attemptId),
+    { ...payload, feedbackLocale: i18n.language?.startsWith('vi') ? 'vi' : 'en' }, silent)
     .then(response => response.data),
   result: (attemptId, signal) => api.get(API_ENDPOINTS.testAttempts.result(attemptId),
     { ...silent, signal }).then(response => response.data),
