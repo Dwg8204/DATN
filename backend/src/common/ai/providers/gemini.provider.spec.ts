@@ -1,7 +1,11 @@
 import { ConfigService } from '@nestjs/config';
-import { GeminiProvider } from './gemini.provider';
+import { GeminiProvider, toGeminiSchema } from './gemini.provider';
 
 describe('Writing Gemini HTTP transport', () => {
+  it('communicates nonempty evidence constraints without expanding recursive schema bounds', () => {
+    expect(toGeminiSchema({ type: 'array', maxItems: 3, items: { type: 'string', minLength: 1, maxLength: 1500 } }))
+      .toEqual({ type: 'ARRAY', items: { type: 'STRING', description: expect.stringContaining('Nonempty meaningful text') } });
+  });
   const original = global.fetch;
   afterEach(() => {
     global.fetch = original;

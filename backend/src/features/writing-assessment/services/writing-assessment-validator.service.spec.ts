@@ -4,6 +4,14 @@ import { writingFixture } from '../testing/writing.fixture';
 
 describe('Writing assessment contract and evidence', () => {
   const validator = new WritingAssessmentValidator();
+  it('normalizes empty TASK evidence placeholders but rejects empty language evidence', () => {
+    const { input, result } = writingFixture(2);
+    const part = result.details.parts[0];
+    part.weaknesses = [{ criterion: 'TASK', comment: 'Missing requested detail.', evidence: [{ questionKey: 'p2:q1', quote: '' }] }];
+    expect(validator.validate(result, input).details.parts[0].weaknesses[0].evidence).toEqual([]);
+    part.weaknesses = [{ criterion: 'GRAMMAR', comment: 'Incorrect tense.', evidence: [{ questionKey: 'p2:q1', quote: '' }] }];
+    expect(() => validator.validate(result, input)).toThrow('AI_INVALID_RESPONSE');
+  });
   it.each(['', '   \n\t'])('rejects empty required feedback (%j) throughout the contract', (empty) => {
     const paths = [
       'summary.overallComment',

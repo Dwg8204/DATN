@@ -44,6 +44,33 @@ const normalize = (text: string) => text.replace(/\s+/gu, ' ').trim();
 @Injectable()
 export class WritingAssessmentValidator {
   validate(value: unknown, input: WritingInput): WritingAssessment {
+    // TASK feedback about missing content legitimately has no source quotation.
+    // Normalize only empty TASK evidence placeholders; language evidence stays strict.
+    const record = (v: unknown): Record<string, unknown> | null =>
+      v !== null && typeof v === 'object' && !Array.isArray(v) ? v as Record<string, unknown> : null;
+    const normalizeTaskEvidence = (v: unknown) => {
+      const row = record(v);
+      for (const field of ['strengths', 'weaknesses']) {
+        const findings = row?.[field];
+        if (!Array.isArray(findings)) continue;
+        for (const entry of findings) {
+          const finding = record(entry);
+          if (finding?.criterion === 'TASK' && Array.isArray(finding.evidence)) {
+            finding.evidence = finding.evidence.filter(e => {
+              const evidence = record(e);
+              return !(evidence && Object.keys(evidence).every(k => ['questionKey', 'quote'].includes(k)) &&
+                typeof evidence.questionKey === 'string' && typeof evidence.quote === 'string' && !evidence.quote.trim());
+            });
+          }
+        }
+      }
+    };
+    const parts = record(record(value)?.details)?.parts;
+    if (Array.isArray(parts)) for (const part of parts) {
+      normalizeTaskEvidence(part);
+      const questions = record(part)?.questions;
+      if (Array.isArray(questions)) questions.forEach(normalizeTaskEvidence);
+    }
     const root = value as {
       details?: {
         parts?: Array<{ questions?: Array<{ criteria?: unknown }> }>;
