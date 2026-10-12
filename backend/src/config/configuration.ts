@@ -1,4 +1,9 @@
 export default () => ({
+  writingAi: {
+    enabled: process.env.WRITING_AI_ENABLED === 'true',
+    provider: process.env.WRITING_AI_PROVIDER ?? 'gemini',
+    model: process.env.WRITING_AI_MODEL ?? 'gemini-3.1-flash-lite',
+  },
   app: {
     env: process.env.NODE_ENV ?? 'development',
     port: Number(process.env.PORT ?? 3000),
