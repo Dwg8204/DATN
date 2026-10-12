@@ -1,6 +1,6 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
-Cập nhật: 05/10/2026, múi giờ Asia/Bangkok. Các snapshot repository ngày 04/10 ở dưới là lịch sử; xem mục 9 để biết thay đổi mới nhất.
+Cập nhật: 12/10/2026, múi giờ Asia/Bangkok. Các snapshot repository ngày 04/10 ở dưới là lịch sử; xem các mục cuối để biết thay đổi mới nhất.
 
 ## Cách sử dụng và mức độ tin cậy
 
@@ -244,7 +244,7 @@ Tách tập hiệu chỉnh và giữ riêng tập kiểm định theo người v
 
 1. Đọc file này và hướng dẫn repository hiện có; chạy `git status`, không đụng thay đổi đang dở ngoài scope.
 2. Hỏi/đọc yêu cầu mới nhất để biết tiếp tục đăng ký/tải dataset, thiết kế rubric hay triển khai; không mặc định các phương án đã được duyệt.
-3. Nếu tiếp tục AI Writing: ưu tiên rubric/output contract + benchmark dataset hợp lệ, trước khi nối chấm vào submit.
+3. Nếu tiếp tục AI Writing: theo yêu cầu mới ngày 11/10, tạm hoãn dataset/benchmark độ chính xác, ưu tiên bản thử tích hợp API và output contract; xem kế hoạch ở mục 10. Các test luồng dữ liệu vẫn cần làm.
 4. Nếu được yêu cầu code: đọc runtime/schema hiện tại vì repository đã tiến xa hơn lịch sử chat; không dùng mô hình mock/tài liệu Reading cũ làm kiến trúc toàn hệ thống.
 5. Cập nhật file bàn giao khi hoàn thành task mới, ghi rõ thay đổi đã kiểm chứng và phần còn chờ.
 
@@ -260,3 +260,22 @@ Các lệnh kiểm tra có sẵn (chạy trong thư mục tương ứng khi phù
 - Bộ mẫu: 5 EXAM Full + 23 PRACTICE (mỗi kỹ năng một Full và mỗi Part một đề; Grammar có 2 Part, các kỹ năng khác 4 Part). Tạo và publish bằng repository hiện tại, ghi questions/snapshots/audit trong một transaction. Chạy lại cùng ADMIN bỏ qua đề đã có, giữ cả đề đã sửa/lưu trữ; cần ADMIN đang hoạt động. Không tạo tài khoản hay attempt.
 - Đã kiểm chứng: typecheck backend đạt, 5 kiểm thử seed đạt; `npm run db:seed:samples -- --dry-run` xác thực đủ 28 đề qua content validation, không kết nối database.
 - **Chưa chạy seed ghi vào database**, chưa kiểm chứng persistence bằng database thật. Task seed được commit riêng theo yêu cầu người dùng ngày 05/10/2026; tài liệu bàn giao được commit riêng, chưa push. Listening là câu hỏi/đáp án fixture, chưa đối chiếu nội dung các audio; Speaking có câu hỏi mô tả/so sánh tổng quát. Không gọi bộ mẫu này là đề chuẩn đánh giá năng lực.
+
+## 10. AI Writing: kế hoạch thử tích hợp ngày 11/10/2026
+
+- Người dùng yêu cầu tạm bỏ qua dataset kiểm định, viết kế hoạch chi tiết dùng API miễn phí để thử; dễ đổi provider; chỉ dùng các bảng chính.
+- Full Writing cần CEFR toàn bài, nhận xét chung/toàn bộ Part cho trang kết quả; điểm mạnh/yếu, tiêu chí và góp ý theo Part và từng câu cho trang chi tiết. Bài một Part có cùng hai phần output nhưng không CEFR.
+- Đã tạo `docs/AI_WRITING_IMPLEMENTATION_PLAN.md`: đề xuất Gemini Developer API với `gemini-2.5-flash-lite` (tài liệu chính thức kiểm tra có Free Tier; quota phải xác minh trong project người dùng), hướng dẫn lấy key/backend env/REST, interface provider, cấu trúc thư mục, rubric/prompt/validator, worker và UI.
+- Đề xuất chỉ thêm `assessment_jobs`; kết quả lưu `test_attempts.result`, đáp án dùng `attempt_progress`, đề dùng snapshot. Không nối bảng thống kê/budget/learning vào MVP.
+- Đã đọc code hiện tại: Writing Exam PENDING_AI/QUEUED; Practice chuyển sang UNASSESSED/NOT_STARTED nên phải nối enqueue riêng; hook result chưa polling. Kiểu AssessmentResult cần hỗ trợ AI; result_source hiện dùng AUTOMATIC được, không có enum AI.
+- Kế hoạch đề xuất MVP lấy CEFR và feedback làm kết quả, score/max_score NULL, chưa tự tạo `/50` khi công thức chưa chốt. Đây là **đề xuất**, không coi là người dùng đã bỏ yêu cầu điểm số trước đây. CEFR Full là ước lượng; bài trắng/thiếu bằng chứng được phép null.
+- Chưa triển khai AI, chưa tạo key/migration hay gọi chấm thực tế, chưa commit kế hoạch. Hai package-lock đang sửa là thay đổi có sẵn, giữ nguyên.
+
+## 11. Đồng bộ và commit AI Writing ngày 12/10/2026
+
+- Đã pull `develop` đến `98bba29`. Khi khôi phục thay đổi Writing có conflict ở hai service Exam/Practice; đã ghép cả Reading CEFR/result presentation mới và Writing enqueue/retry/status. Không còn conflict trong Git.
+- Phần AI Writing đã được triển khai trong workspace trước lượt pull này. Xem `docs/AI_WRITING_PROGRESS.md`, `docs/AI_WRITING_REVIEW_FIX_PLAN.md` và `docs/AI_WRITING_RUNBOOK.md` để biết triển khai, kiểm chứng từ phiên thực hiện và giới hạn còn lại; mục 10 là lịch sử kế hoạch, không phản ánh trạng thái code hiện tại.
+- Sửa lỗi thiếu `dist/main`: đặt cache incremental trong `dist`. Đã chạy hai lần Nest build đều thành công, có `dist/main.js`. Commit `7bac188` — `fix: sửa lỗi thiếu dist/main khi khởi động backend`.
+- Theo yêu cầu commit toàn bộ, chia phần còn lại: `fb6352f` — hạ tầng Gemini; `139c24d` — backend chấm Writing/hàng đợi; `64f5288` — giao diện kết quả và lịch sử. Tài liệu được commit riêng sau các task code. Chưa push trong lượt này.
+- `backend/.gitignore` đã bỏ qua `*.tsbuildinfo`; cache cũ không commit. Không đưa `.env` hay API key vào commit.
+- Kiểm tra trong lượt commit: frontend `npm test` đạt 81/81; test nhãn lịch sử riêng đạt 1/1; backend 8 suites/54 tests đạt (Writing/provider và hai service vừa merge); diff whitespace đạt. Hai lần Nest build thành công ở task sửa build trước đó.
