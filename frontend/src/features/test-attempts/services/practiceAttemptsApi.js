@@ -1,13 +1,16 @@
 import api from '../../../services/api.js';
 import { API_ENDPOINTS } from '../../../services/endpoint.js';
+import i18n from '../../../i18n/index.js';
 
 const silent = { notifyOnError: false };
 
 export const practiceAttemptsApi = {
-  start: payload => api.post(API_ENDPOINTS.practiceAttempts.list, payload, silent).then(response => response.data),
+  start: payload => api.post(API_ENDPOINTS.practiceAttempts.list,
+    { ...payload, feedbackLocale: i18n.language?.startsWith('vi') ? 'vi' : 'en' }, silent).then(response => response.data),
   get: (attemptId, signal) => api.get(API_ENDPOINTS.practiceAttempts.detail(attemptId), { ...silent, signal }).then(response => response.data),
   reveal: (attemptId, key) => api.post(API_ENDPOINTS.practiceAttempts.reveal(attemptId), { key }, silent).then(response => response.data),
-  complete: (attemptId, payload) => api.post(API_ENDPOINTS.practiceAttempts.complete(attemptId), payload, silent).then(response => response.data),
+  complete: (attemptId, payload) => api.post(API_ENDPOINTS.practiceAttempts.complete(attemptId),
+    { ...payload, feedbackLocale: i18n.language?.startsWith('vi') ? 'vi' : 'en' }, silent).then(response => response.data),
   abandon: attemptId => api.post(API_ENDPOINTS.practiceAttempts.abandon(attemptId), undefined, silent).then(response => response.data),
   result: (attemptId, signal) => api.get(API_ENDPOINTS.practiceAttempts.result(attemptId), { ...silent, signal }).then(response => response.data),
   partResult: (attemptId, partNumber, signal) => api.get(API_ENDPOINTS.practiceAttempts.partResult(attemptId, partNumber), { ...silent, signal }).then(response => response.data),

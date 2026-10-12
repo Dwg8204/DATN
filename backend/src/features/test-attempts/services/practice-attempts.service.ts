@@ -1,4 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
+import { WritingAssessmentCoordinator } from '../../writing-assessment/services/writing-assessment-coordinator.service';
+import { EntityManager } from 'typeorm';
+import { writingPart, writingSummary } from '../../writing-assessment/services/writing-result-presenter.service';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { paginate } from '../../../common/pagination/pagination.dto';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -21,6 +24,7 @@ export class PracticeAttemptsService {
     private readonly repository: TestAttemptsRepository,
     private readonly papers: AssessmentPaperFactory,
     private readonly grader: ObjectiveGraderService,
+    @Optional() private readonly writing?: WritingAssessmentCoordinator,
   ) {}
 
   async start(dto: StartPracticeAttemptDto, actor: AuthUser) {
@@ -60,9 +64,9 @@ export class PracticeAttemptsService {
       const scope = paper.mode === 'full' ? 'FULL_SKILL' : 'PART';
       const partNumber = scope === 'PART' ? Number(paper.mode.slice(4)) : null;
       await manager.query(
-        `INSERT INTO test_attempts(id,student_id,snapshot_id,component,purpose,scope,part_number,expires_at)
-         VALUES($1,$2,$3,$4,'PRACTICE',$5,$6,NULL)`,
-        [dto.attemptId, actor.id, test.snapshot_id, test.component, scope, partNumber],
+        `INSERT INTO test_attempts(id,student_id,snapshot_id,component,purpose,scope,part_number,expires_at,feedback_locale)
+         VALUES($1,$2,$3,$4,'PRACTICE',$5,$6,NULL,$7)`,
+        [dto.attemptId, actor.id, test.snapshot_id, test.component, scope, partNumber, dto.feedbackLocale ?? 'vi'],
       );
       const created = await this.repository.find(dto.attemptId, actor.id, manager);
       if (!created) throw new Error('New practice attempt was not found.');
@@ -106,13 +110,14 @@ export class PracticeAttemptsService {
       if (attempt.purpose !== 'PRACTICE') this.conflict('This attempt belongs to the exam flow.');
       if (attempt.status === 'SUBMITTED') {
         const progress = await this.repository.progress(attemptId, manager);
-        return this.summary(attempt, progress?.answers, paper);
+        return this.summary(attempt, progress?.answers, paper, manager);
       }
       if (attempt.status !== 'IN_PROGRESS') this.conflict('This practice attempt is no longer active.');
       const graded = this.grader.grade(paper.items, answers, metadata.component);
       const result: AssessmentResult = {
         ...graded,
-        method: graded.method === 'PENDING_AI' && attempt.component !== 'SPEAKING' ? 'UNASSESSED' : graded.method,
+        method: graded.method === 'PENDING_AI' && attempt.component !== 'SPEAKING' &&
+          !(attempt.component === 'WRITING' && this.writing?.enabled) ? 'UNASSESSED' : graded.method,
         assistance: { revealedKeys },
       };
       await manager.query(
@@ -122,8 +127,12 @@ export class PracticeAttemptsService {
       );
       const cefr = metadata.component === 'SPEAKING' && result.score != null && result.maxScore != null
         ? estimateCefr(metadata.component, result.score, result.maxScore) : null;
-      const completed = await this.repository.complete(manager, attemptId, result, undefined, cefr);
-      return this.summary(completed, answers, paper);
+      if (attempt.component === 'WRITING' && dto.feedbackLocale) {
+        await manager.query('UPDATE test_attempts SET feedback_locale=$2 WHERE id=$1 AND component=\'WRITING\'', [attemptId, dto.feedbackLocale]);
+      }
+      let completed = await this.repository.complete(manager, attemptId, result, undefined, cefr);
+      if (this.writing && attempt.component === 'WRITING') completed = await this.writing.enqueue(manager, completed);
+      return this.summary(completed, answers, paper, manager);
     });
   }
 
@@ -132,7 +141,7 @@ export class PracticeAttemptsService {
       const attempt = await this.repository.lockAttempt(attemptId, actor.id, manager);
       if (!attempt) this.notFound();
       if (attempt.purpose !== 'PRACTICE') this.conflict('This attempt belongs to the exam flow.');
-      if (attempt.status === 'SUBMITTED') return this.summary(attempt);
+      if (attempt.status === 'SUBMITTED') return this.summary(attempt, undefined, undefined, manager);
       if (attempt.status === 'IN_PROGRESS') {
         await manager.query(
           `DELETE FROM test_attempts WHERE id=$1 AND purpose='PRACTICE' AND status='IN_PROGRESS'`, [attemptId],
@@ -167,6 +176,7 @@ export class PracticeAttemptsService {
     return {
       attemptId, purpose: 'PRACTICE', component: attempt.component, partNumber,
       paper: paper.parts[String(partNumber)],
+      ...(attempt.component === 'WRITING' ? { writing: writingPart(result, attempt.component, partNumber, attempt.assessment_revision) } : {}),
       items: items.map(item => ({
         key: item.key,
         selectedAnswer: progress.answers[item.key] ?? null,
@@ -211,7 +221,12 @@ export class PracticeAttemptsService {
         ({ key, partNumber, kind, optionIds, ...(maxCharacters ? { maxCharacters } : {}) })) };
   }
 
-  private summary(attempt: LockedAttemptRow, answers?: Answers, paper?: AssessmentPaper) {
+  async retryWriting(attemptId: string, actor: AuthUser) {
+    if (!this.writing) throw new ApplicationError('WRITING_AI_DISABLED', 'Writing assessment is not enabled.', 503);
+    return this.writing.retry(attemptId, actor.id, 'PRACTICE');
+  }
+
+  private async summary(attempt: LockedAttemptRow, answers?: Answers, paper?: AssessmentPaper, manager?: EntityManager) {
     const cefrEstimate = readingCefrEstimate(attempt);
     return {
       attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null,
@@ -221,9 +236,10 @@ export class PracticeAttemptsService {
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
       estimatedCefr: attempt.component === 'READING' ? cefrEstimate?.level ?? null
-        : attempt.component === 'SPEAKING' ? attempt.estimated_cefr : null,
+        : attempt.component === 'SPEAKING' || attempt.component === 'WRITING' && attempt.scope === 'FULL_SKILL' ? attempt.estimated_cefr : null,
       ...(attempt.component === 'READING' ? { cefrEstimate } : {}),
-      result: attempt.result ? presentAssessmentResult(this.assessmentResult(attempt.result), answers, paper) : null,
+      ...(attempt.component === 'WRITING' && this.writing ? { assessment: await this.writing.status(attempt, manager) } : {}),
+      result: writingSummary(attempt.result ? presentAssessmentResult(this.assessmentResult(attempt.result), answers, paper) : null, attempt.component),
       submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: null,
     };

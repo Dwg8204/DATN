@@ -11,6 +11,7 @@ import { formatDuration } from '../../test-attempts/utils/attemptTime';
 import { getApiError } from '../../../services/apiError';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 import { useTranslation } from 'react-i18next';
+import { writingHistoryStatus } from '../utils/historyAssessment';
 
 const HISTORY_QUERY_SCHEMA = {
   purpose: { ...queryParam.enum(['EXAM', 'PRACTICE'], 'EXAM'), param: 'type' },
@@ -47,7 +48,7 @@ function remoteHistoryEntry(attempt) {
     timeSpent: attempt.startedAt && attempt.submittedAt ? formatDuration(attempt.startedAt, attempt.submittedAt) : '--:--:--',
     purpose: attempt.purpose ?? 'EXAM',
     reviewUrl: resultPath ? `${resultPath}?attemptId=${attempt.attemptId}${isPractice ? '&practice=true' : ''}` : null,
-    assessmentPending: attempt.component === 'WRITING' && attempt.gradingStatus !== 'COMPLETED',
+    assessmentStatus: writingHistoryStatus(attempt),
     simulatedScore: attempt.assessmentMethod === 'SIMULATED',
     cefrLevel: attempt.estimatedCefr,
   };
@@ -68,8 +69,8 @@ function HistoryCards({ entries, navigate, t, locale }) {
           <div className={styles.metaInfo}>
             <span className={styles.metaItem}><Calendar size={14} />{new Date(entry.submittedAt).toLocaleString(locale)}</span>
             <span className={styles.metaItem}><Clock size={14} />{entry.timeSpent}</span>
-            {entry.cefrLevel && <span className={styles.metaItem}><span className={styles.cefrBadge}>CEFR / Band: {entry.cefrLevel}</span></span>}
-            {entry.assessmentPending && <span className={styles.metaItem}>{t('history.assessmentPending')}</span>}
+            {entry.cefrLevel && <span className={styles.metaItem}><span className={styles.cefrBadge}>{entry.skill === 'writing' ? t('writingAi.cefr') : 'CEFR / Band'}: {entry.cefrLevel}</span></span>}
+            {entry.assessmentStatus && <span className={styles.metaItem}>{t(entry.assessmentStatus)}</span>}
             {entry.simulatedScore && <span className={styles.metaItem}>{t('history.simulatedScore')}</span>}
           </div>
         </div>

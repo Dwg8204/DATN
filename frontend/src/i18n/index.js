@@ -1,8 +1,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
+import { writingAiEn, writingAiVi } from '../features/writing/i18n';
 
 const resources = {
   en: { translation: {
+    writingAi: writingAiEn,
     common: { overview: 'Overview', practice: 'Practice', tests: 'Tests', search: 'Search', loading: 'Loading…',
       noTests: 'No tests found.', review: 'Review', start: 'Start', tryAgain: 'Try again', completed: 'Completed',
       notStarted: 'Not started', inProgress: 'In progress', fullTest: 'Full test', part: 'Part {{number}}', submitted: 'Submitted', duration: 'Duration', continue: 'Continue',
@@ -78,6 +80,7 @@ const resources = {
     footer: { description: 'Online Aptis preparation with realistic practice tests, instant results and detailed answer reviews.', about: 'About us', privacy: 'Privacy policy', terms: 'Terms of use', disclaimer: 'Disclaimer', contact: 'Contact', hotline: 'Hotline', email: 'Email', facebook: 'Facebook', location: 'Location', locationValue: 'Ho Chi Minh City, Vietnam', feedback: 'Send feedback', copyright: 'Copyright ©2026 AptiMate. All rights reserved.' },
   } },
   vi: { translation: {
+    writingAi: writingAiVi,
     common: { overview: 'Tổng quan', practice: 'Luyện tập', tests: 'Thi thử', search: 'Tìm kiếm', loading: 'Đang tải…',
       noTests: 'Không tìm thấy đề.', review: 'Xem lại', start: 'Bắt đầu', tryAgain: 'Làm lại', completed: 'Đã hoàn thành',
       notStarted: 'Chưa làm', inProgress: 'Đang làm', fullTest: 'Đề đầy đủ', part: 'Phần {{number}}', submitted: 'Đã nộp', duration: 'Thời gian', continue: 'Tiếp tục',

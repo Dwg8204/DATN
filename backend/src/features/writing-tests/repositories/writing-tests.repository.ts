@@ -4,13 +4,14 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { firstMutationRow } from '../../../common/database/mutation-result';
 import { ListWritingTestsQueryDto } from '../dto/list-writing-tests-query.dto';
+import { WritingWordLimit } from '../policies/writing-word-limits';
 import {
   WritingActor, WritingAudit, WritingTestAggregate, WritingTestMode, WritingTestStatus, WritingTestSummary,
 } from '../types/writing-test.type';
 
 type TestRow = {
   id: string; created_by: string; title: string; purpose: WritingTestAggregate['purpose']; scope: 'PART' | 'FULL_SKILL'; part_number: number | null;
-  cover: { url?: string } | null; part_contents: { schemaVersion?: number; parts?: Record<string, { context?: string; instruction?: string }> };
+  cover: { url?: string } | null; part_contents: { schemaVersion?: number; parts?: Record<string, { context?: string; instruction?: string; wordLimits?: Array<WritingWordLimit | null> }> };
   version: number; status: WritingTestStatus; published_snapshot_id: string | null; created_at: Date; updated_at: Date;
 };
 type SummaryRow = Pick<TestRow, 'id' | 'created_by' | 'title' | 'purpose' | 'scope' | 'part_number' | 'cover' | 'version' | 'status' | 'created_at' | 'updated_at'>;
@@ -269,12 +270,13 @@ export class WritingTestsRepository {
   }
 
   private partContents(test: WritingTestAggregate) {
-    const parts: Record<string, { context?: string; instruction?: string }> = {};
+    const parts: Record<string, { context?: string; instruction?: string; wordLimits?: Array<WritingWordLimit | null> }> = {};
     if (test.parts[1]) parts['1'] = { context: test.parts[1].context };
     if (test.parts[2]) parts['2'] = { instruction: test.parts[2].instruction };
     if (test.parts[3]) parts['3'] = { context: test.parts[3].context };
     if (test.parts[4]) parts['4'] = { context: test.parts[4].context };
-    return { schemaVersion: 1, parts };
+    for (const number of this.partNumbers(test.mode)) parts[number].wordLimits = test.parts[number]?.wordLimits;
+    return { schemaVersion: 2, parts };
   }
 
   private toQuestions(test: WritingTestAggregate): StoredQuestion[] {
@@ -319,6 +321,9 @@ export class WritingTestsRepository {
         context: metadata['4']?.context ?? '', informalPrompt: rows[0]?.content.prompt ?? '', informalSample: rows[0]?.sample_answer?.text ?? '',
         formalPrompt: rows[1]?.content.prompt ?? '', formalSample: rows[1]?.sample_answer?.text ?? '',
       };
+    }
+    for (const number of this.partNumbers(mode)) {
+      if (metadata[number]?.wordLimits !== undefined) aggregate.parts[number]!.wordLimits = metadata[number].wordLimits;
     }
     return aggregate;
   }

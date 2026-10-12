@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
+import { WritingAssessmentModule } from '../writing-assessment/writing-assessment.module';
 import { AssessmentPaperFactory } from './assessments/assessment-paper.factory';
 import { ObjectiveGraderService } from './assessments/objective-grader.service';
 import { TestAttemptsController } from './controllers/test-attempts.controller';
@@ -17,7 +18,7 @@ import { SpeakingGradingWorker } from './workers/speaking-grading.worker';
 import { SpeakingGradingController } from './controllers/speaking-grading.controller';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, WritingAssessmentModule],
   controllers: [TestAttemptsController, PracticeAttemptsController, SpeakingGradingController],
   providers: [AssessmentPaperFactory, ObjectiveGraderService, TestAttemptsRepository, TestAttemptsService, PracticeAttemptsService, StudentDashboardService, AttemptExpiryWorker,
     SpeakingGradingRepository, SpeakingAiConfig, SpeakingAudioService, SpeakingAiProvider, SpeakingGradingWorker],

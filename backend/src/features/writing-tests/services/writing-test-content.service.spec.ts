@@ -14,6 +14,28 @@ const draft = (): CreateWritingTestDto => ({
 
 describe('WritingTestContentService', () => {
   const service = new WritingTestContentService();
+  it('stores defaults for new tests and preserves explicit limits in the learner payload', () => {
+    const test = service.normalize(draft());
+    expect(test.parts[2]!.wordLimits).toEqual([{ minimum: 20, maximum: 30, policy: 'required' }]);
+    expect(test.parts[4]!.wordLimits).toEqual([
+      { minimum: 40, maximum: 50, policy: 'guidance' }, { minimum: 120, maximum: 150, policy: 'guidance' },
+    ]);
+    expect(service.learnerSafe(test)).toHaveProperty('parts.4.wordLimits', test.parts[4]!.wordLimits);
+  });
+  it('keeps declared custom limits and rejects malformed ranges', () => {
+    const input = draft();
+    input.parts[2]!.wordLimits = [{ minimum: 10, maximum: 15, policy: 'required' }];
+    expect(service.normalize(input).parts[2]!.wordLimits).toEqual(input.parts[2]!.wordLimits);
+    input.parts[2]!.wordLimits[0]!.maximum = 1;
+    expect(() => service.normalize(input)).toThrow('word limits are invalid');
+  });
+  it('does not add new defaults when publishing an old draft with unknown limits', () => {
+    const test = { ...draft(), purpose: 'EXAM' as const };
+    test.parts[2]!.instruction = 'Describe your trip.';
+    service.assertPublishable(test);
+    expect(test.parts[2]!.wordLimits).toEqual([null]);
+    expect(test.parts[4]!.wordLimits).toEqual([null, null]);
+  });
 
   it('validates and normalizes a full four-part test', () => {
     const test = service.normalize(draft());

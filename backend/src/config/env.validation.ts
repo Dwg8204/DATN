@@ -1,6 +1,14 @@
 import * as Joi from 'joi';
 
 export const environmentSchema = Joi.object({
+  WRITING_AI_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+  WRITING_AI_PROVIDER: Joi.string().valid('gemini').default('gemini'),
+  WRITING_AI_MODEL: Joi.string().pattern(/^[a-zA-Z0-9._-]+$/).default('gemini-3.1-flash-lite'),
+  WRITING_AI_REQUEST_TIMEOUT_MS: Joi.number().integer().min(1000).max(90000).default(60000),
+  WRITING_AI_MAX_OUTPUT_TOKENS: Joi.number().integer().min(512).max(16384).default(8192),
+  WRITING_AI_WORKER_CONCURRENCY: Joi.number().valid(1).default(1),
+  WRITING_AI_MIN_INTERVAL_MS: Joi.number().integer().min(5000).max(600000).default(15000),
+  WRITING_AI_MAX_ATTEMPTS: Joi.number().integer().min(1).max(3).default(3),
   SPEAKING_AI_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
   GROQ_API_KEY: Joi.when('SPEAKING_AI_ENABLED', { is: true, then: Joi.string().min(20).required(), otherwise: Joi.string().allow('') }),
   GEMINI_API_KEY: Joi.when('SPEAKING_AI_ENABLED', { is: true, then: Joi.string().min(20).required(), otherwise: Joi.string().allow('') }),

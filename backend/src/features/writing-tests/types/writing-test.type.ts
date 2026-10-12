@@ -1,25 +1,30 @@
 import { RoleCode } from '../../auth/types/auth-user.type';
 import { TestPurpose } from '../../../common/tests/test-purpose';
+import { WritingWordLimit } from '../policies/writing-word-limits';
 
 export type WritingTestMode = 'part1' | 'part2' | 'part3' | 'part4' | 'full';
 export type WritingTestStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
 export type WritingPart1 = {
+  wordLimits?: Array<WritingWordLimit | null>;
   context: string;
   questions: string[];
   sampleAnswers: string[];
 };
 export type WritingPart2 = {
+  wordLimits?: Array<WritingWordLimit | null>;
   instruction: string;
   prompt: string;
   sampleAnswer: string;
 };
 export type WritingPart3 = {
+  wordLimits?: Array<WritingWordLimit | null>;
   context: string;
   messages: string[];
   sampleAnswers: string[];
 };
 export type WritingPart4 = {
+  wordLimits?: Array<WritingWordLimit | null>;
   context: string;
   informalPrompt: string;
   informalSample: string;

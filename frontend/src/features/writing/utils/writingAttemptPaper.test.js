@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { partsInWritingPaper, resumableQuestionKey, resumePartFromAttempt, writingTaskFromPaper } from './writingAttemptPaper.js';
+import { partsInWritingPaper, resumableQuestionKey, resumePartFromAttempt, writingTaskFromPaper, writingWordGuide } from './writingAttemptPaper.js';
 import { wouldExceedAnswerLimit, writingAnswerCharacterLimit } from './writingAnswerLimits.js';
 
 const paper = {
@@ -13,6 +13,15 @@ const paper = {
     4: { context: 'Write two emails.', informalPrompt: 'Write to a friend.', informalKey: 'p4:q1', formalPrompt: 'Write to a manager.', formalKey: 'p4:q2' },
   },
 };
+
+test('uses only snapshot word limits, including distinct email ranges', () => {
+  assert.equal(writingWordGuide(writingTaskFromPaper(paper, 'part2'), 0), '');
+  const task = writingTaskFromPaper({ parts: { 4: { ...paper.parts[4], wordLimits: [
+    { minimum: 45, maximum: 55, policy: 'required' }, { minimum: 125, maximum: 155, policy: 'guidance' },
+  ] } } }, 'part4');
+  assert.equal(writingWordGuide(task, 0), '45–55');
+  assert.equal(writingWordGuide(task, 1), '125–155');
+});
 
 test('maps every Writing part to stable answer keys', () => {
   assert.deepEqual(partsInWritingPaper(paper), ['part1', 'part2', 'part3', 'part4']);

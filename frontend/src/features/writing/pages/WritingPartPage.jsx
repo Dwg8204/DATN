@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../../context/ToastContext';
 import InstructionBlock from '../../../components/common/InstructionBlock';
 import RichTextContent from '../../../components/common/RichTextContent';
@@ -14,6 +15,7 @@ import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal
 import styles from './WritingPartPage.module.css';
 
 export default function WritingPartPage() {
+  const { t } = useTranslation();
   const { part = 'part1' } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -122,7 +124,7 @@ export default function WritingPartPage() {
           return <article className={styles.taskCard} key={question.key}>
             <label htmlFor={inputProps.id}><span className={styles.number}>{index + 1}</span><RichTextContent value={question.text} /></label>
             {task.type === 'short' ? <input {...inputProps} /> : <textarea {...inputProps} rows={task.type === 'email' && index === 1 ? 10 : 6} />}
-            <div className={styles.wordCount}><span>{writingWordGuide(part, index)}</span><strong>{countWords(value)} words · {value.length}/{characterLimit} characters</strong></div>
+            <div className={styles.wordCount}><span>{writingWordGuide(task, index) ? `${writingWordGuide(task, index)} ${t('writingAi.wordUnit')} · ${t(`writingAi.${task.wordLimits[index].policy}`)}` : ''}</span><strong>{countWords(value)} words · {value.length}/{characterLimit} characters</strong></div>
             <PracticeAnswerReveal questionKey={question.key} />
           </article>;
         })}

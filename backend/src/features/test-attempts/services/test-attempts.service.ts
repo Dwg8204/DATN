@@ -1,4 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
+import { WritingAssessmentCoordinator } from '../../writing-assessment/services/writing-assessment-coordinator.service';
+import { EntityManager } from 'typeorm';
+import { writingPart, writingSummary } from '../../writing-assessment/services/writing-result-presenter.service';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { paginate } from '../../../common/pagination/pagination.dto';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -24,9 +27,10 @@ export class TestAttemptsService {
     private readonly repository: TestAttemptsRepository,
     private readonly paperFactory: AssessmentPaperFactory,
     private readonly grader: ObjectiveGraderService,
+    @Optional() private readonly writing?: WritingAssessmentCoordinator,
   ) {}
 
-  async start(testId: string, attemptId: string, actor: AuthUser, expectedMode?: string, expectedComponent?: SkillComponent) {
+  async start(testId: string, attemptId: string, actor: AuthUser, expectedMode?: string, expectedComponent?: SkillComponent, feedbackLocale: 'vi' | 'en' = 'vi') {
     const attempt = await this.repository.dataSource.transaction(async manager => {
       await manager.query('SELECT pg_advisory_xact_lock(hashtext($1),hashtext($2))', [actor.id, testId]);
       const existingId = await this.repository.find(attemptId, actor.id, manager);
@@ -59,10 +63,10 @@ export class TestAttemptsService {
       const scope = paper.mode === 'full' ? 'FULL_SKILL' : 'PART';
       const partNumber = scope === 'PART' ? Number(paper.mode.slice(4)) : null;
       await manager.query(
-        `INSERT INTO test_attempts(id,student_id,snapshot_id,component,purpose,scope,part_number,expires_at)
-         VALUES($1,$2,$3,$4,'EXAM',$5,$6,now() + ($7::integer * interval '1 minute'))`,
+        `INSERT INTO test_attempts(id,student_id,snapshot_id,component,purpose,scope,part_number,expires_at,feedback_locale)
+         VALUES($1,$2,$3,$4,'EXAM',$5,$6,now() + ($7::integer * interval '1 minute'),$8)`,
         [attemptId, actor.id, test.snapshot_id, test.component, scope, partNumber,
-          examDurationMinutes(test.component)]);
+          examDurationMinutes(test.component), feedbackLocale]);
       await manager.query('INSERT INTO attempt_progress(attempt_id) VALUES($1)', [attemptId]);
       const created = await this.repository.find(attemptId, actor.id, manager);
       if (!created) throw new Error('New attempt was not found.');
@@ -109,7 +113,7 @@ export class TestAttemptsService {
       const progress = await this.repository.progress(attemptId, manager, true);
       const attempt = await this.repository.lockAttempt(attemptId, actor.id, manager);
       if (!progress || !attempt) this.notFound();
-      if (attempt.status === 'SUBMITTED') return this.resultSummary(attempt, progress.answers, paper);
+      if (attempt.status === 'SUBMITTED') return this.resultSummary(attempt, progress.answers, paper, manager);
       if (attempt.status !== 'IN_PROGRESS' || progress.sealed_at) this.conflict('This test has already been submitted.');
       if (attempt.snapshot_id !== metadata.snapshot_id) this.conflict('This test changed while submitting.');
       const serverTime = await this.repository.serverTime(manager);
@@ -121,12 +125,17 @@ export class TestAttemptsService {
       if (!expired && dto.finalChanges && Object.keys(dto.finalChanges).length) {
         await this.repository.saveProgress(manager, attemptId, answers, progress.revision + 1, progress.progress);
       }
-      const result = this.grader.grade(paper.items, answers, metadata.component);
+      const graded = this.grader.grade(paper.items, answers, metadata.component);
+      const result = this.writing?.prepare(graded, metadata.component) ?? graded;
+      if (metadata.component === 'WRITING' && dto.feedbackLocale) {
+        await manager.query('UPDATE test_attempts SET feedback_locale=$2 WHERE id=$1 AND component=\'WRITING\'', [attemptId, dto.feedbackLocale]);
+      }
       await manager.query('UPDATE attempt_progress SET sealed_at=now() WHERE attempt_id=$1 AND sealed_at IS NULL', [attemptId]);
       const submittedAt = expired ? attempt.expires_at ?? serverTime : serverTime;
-      const completed = await this.repository.complete(manager, attemptId, result, submittedAt,
+      let completed = await this.repository.complete(manager, attemptId, result, submittedAt,
         this.estimatedCefr(metadata.component, result.score, result.maxScore));
-      return this.resultSummary(completed, answers, paper);
+      if (this.writing && metadata.component === 'WRITING') completed = await this.writing.enqueue(manager, completed);
+      return this.resultSummary(completed, answers, paper, manager);
     });
   }
 
@@ -161,6 +170,7 @@ export class TestAttemptsService {
     const outcomes = new Map(result.items.map(outcome => [outcome.key, outcome]));
     return {
       attemptId, component: attempt.component, partNumber, paper: paper.parts[String(partNumber)],
+      ...(attempt.component === 'WRITING' ? { writing: writingPart(result as AssessmentResult, attempt.component, partNumber, attempt.assessment_revision) } : {}),
       items: items.map(item => ({
         key: item.key,
         selectedAnswer: answers[item.key] ?? null,
@@ -206,10 +216,12 @@ export class TestAttemptsService {
           if (!attempt || attempt.status !== 'IN_PROGRESS') return true;
           const paper = await this.paperFactory.getOrBuild(attempt.snapshot_id, attempt.component,
             () => this.repository.snapshot(attempt.snapshot_id, manager));
-          const result = this.grader.grade(paper.items, progress.answers, attempt.component);
+          const graded = this.grader.grade(paper.items, progress.answers, attempt.component);
+          const result = this.writing?.prepare(graded, attempt.component) ?? graded;
           await manager.query('UPDATE attempt_progress SET sealed_at=now() WHERE attempt_id=$1', [attempt.id]);
-          await this.repository.complete(manager, attempt.id, result, attempt.expires_at ?? undefined,
+          const completed = await this.repository.complete(manager, attempt.id, result, attempt.expires_at ?? undefined,
             this.estimatedCefr(attempt.component, result.score, result.maxScore));
+          if (this.writing && attempt.component === 'WRITING') await this.writing.enqueue(manager, completed);
           this.expiryRetries.delete(attempt.id);
           return true;
         });
@@ -256,7 +268,12 @@ export class TestAttemptsService {
         ({ key, partNumber, kind, optionIds, ...(maxCharacters ? { maxCharacters } : {}) })) };
   }
 
-  private resultSummary(attempt: LockedAttemptRow, answers?: ProgressRow['answers'], paper?: AssessmentPaper) {
+  async retryWriting(attemptId: string, actor: AuthUser) {
+    if (!this.writing) throw new ApplicationError('WRITING_AI_DISABLED', 'Writing assessment is not enabled.', 503);
+    return this.writing.retry(attemptId, actor.id, 'EXAM');
+  }
+
+  private async resultSummary(attempt: LockedAttemptRow, answers?: ProgressRow['answers'], paper?: AssessmentPaper, manager?: EntityManager) {
     const cefrEstimate = readingCefrEstimate(attempt);
     const result = attempt.component === 'LISTENING' && isLegacyListeningResult(attempt.result)
       ? normalizeLegacyListeningResult(attempt.result) : attempt.result;
@@ -268,7 +285,8 @@ export class TestAttemptsService {
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
       estimatedCefr: attempt.component === 'READING' ? cefrEstimate?.level ?? null : attempt.estimated_cefr,
       ...(attempt.component === 'READING' ? { cefrEstimate } : {}),
-      result: presentAssessmentResult(result as AssessmentResult | null, answers, paper), submittedAt: attempt.submitted_at,
+      ...(attempt.component === 'WRITING' && this.writing ? { assessment: await this.writing.status(attempt, manager) } : {}),
+      result: writingSummary(presentAssessmentResult(result as AssessmentResult | null, answers, paper), attempt.component), submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: attempt.expires_at,
       submittedAfterExpiry: !!attempt.expires_at && !!attempt.submitted_at &&
         new Date(attempt.submitted_at).getTime() >= new Date(attempt.expires_at).getTime() };

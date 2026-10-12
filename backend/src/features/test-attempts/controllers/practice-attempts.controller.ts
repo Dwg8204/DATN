@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, ParseIntPipe, ParseUUIDPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
@@ -57,6 +57,12 @@ export class PracticeAttemptsController {
   @Get(':attemptId/result')
   result(@Param('attemptId', new ParseUUIDPipe()) attemptId: string, @CurrentUser() actor: AuthUser) {
     return this.attempts.result(attemptId, actor);
+  }
+
+  @Post(':attemptId/assessment/retry')
+  @HttpCode(202)
+  retryAssessment(@Param('attemptId', new ParseUUIDPipe()) attemptId: string, @CurrentUser() actor: AuthUser) {
+    return this.attempts.retryWriting(attemptId, actor);
   }
 
   @Get(':attemptId/result/parts/:partNumber')
