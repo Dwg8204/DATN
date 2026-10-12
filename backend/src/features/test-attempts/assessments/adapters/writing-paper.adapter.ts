@@ -1,6 +1,7 @@
 import { WritingTestAggregate } from '../../../writing-tests/types/writing-test.type';
 import { PaperAdapter } from './paper-adapter.type';
 import { writingAnswerMaxCharacters } from '../writing-answer-limits';
+import { writingQuestionWordLimits } from '../../../writing-tests/policies/writing-word-limits';
 
 export const writingPaperAdapter: PaperAdapter = snapshot => {
   const test = snapshot as unknown as WritingTestAggregate;
@@ -32,6 +33,9 @@ export const writingPaperAdapter: PaperAdapter = snapshot => {
     add('p4:q2', 4, part.formalSample);
     parts['4'] = { context: part.context, informalPrompt: part.informalPrompt, informalKey: 'p4:q1',
       formalPrompt: part.formalPrompt, formalKey: 'p4:q2' };
+  }
+  for (const number of Object.keys(parts).map(Number)) {
+    (parts[number] as Record<string, unknown>).wordLimits = writingQuestionWordLimits(number, test.parts[number as 1 | 2 | 3 | 4]!);
   }
   return { parts, items };
 };

@@ -44,7 +44,8 @@ function bandStats(rows: DashboardAttemptRow[]) {
     const skill = SKILLS[row.component];
     const score = validPercentage(row, 'full');
     if (score != null) scoresBySkill.set(skill, [...(scoresBySkill.get(skill) ?? []), score]);
-    if ((row.result?.method === 'OBJECTIVE' || row.result?.method === 'AI') && row.estimatedCefr && BANDS[row.estimatedCefr]) {
+    // Writing AI has no calibrated numeric score; keep its experimental CEFR out of the cross-skill average.
+    if (row.component !== 'WRITING' && (row.result?.method === 'OBJECTIVE' || row.result?.method === 'AI') && row.estimatedCefr && BANDS[row.estimatedCefr]) {
       bySkill.set(skill, [...(bySkill.get(skill) ?? []), BANDS[row.estimatedCefr]]);
     }
   }

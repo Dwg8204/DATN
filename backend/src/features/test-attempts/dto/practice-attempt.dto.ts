@@ -1,7 +1,10 @@
-import { ArrayMaxSize, IsArray, IsObject, IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsIn, IsObject, IsOptional, IsString, IsUUID, Matches, MaxLength } from 'class-validator';
 import { Answer } from '../types/attempt.type';
 
 export class StartPracticeAttemptDto {
+  @IsOptional()
+  @IsIn(['vi', 'en'])
+  feedbackLocale?: 'vi' | 'en';
   @IsUUID()
   testId!: string;
 
@@ -20,6 +23,9 @@ export class RevealPracticeAnswerDto {
 }
 
 export class CompletePracticeAttemptDto {
+  @IsOptional()
+  @IsIn(['vi', 'en'])
+  feedbackLocale?: 'vi' | 'en';
   @IsObject()
   answers!: Record<string, Answer | null>;
 

@@ -1,3 +1,5 @@
+import type { WritingAssessment, FeedbackLocale } from '../../writing-assessment/contracts/writing-assessment-output';
+
 export type SkillComponent = 'GRAMMAR_VOCAB' | 'READING' | 'LISTENING' | 'WRITING' | 'SPEAKING';
 export type AttemptPurpose = 'EXAM' | 'PRACTICE';
 export type AnswerKind = 'CHOICE' | 'MATCH' | 'TEXT' | 'AUDIO';
@@ -40,6 +42,7 @@ export type AttemptRow = {
   status: 'IN_PROGRESS' | 'SUBMITTED' | 'ABANDONED';
   grading_status: string;
   assessment_revision: number;
+  feedback_locale?: FeedbackLocale;
   result: AssessmentResult | Record<string, unknown> | null;
   score: string | null;
   max_score: string | null;
@@ -89,6 +92,7 @@ export type AssessmentResult = {
   items: ItemOutcome[];
   assistance?: { revealedKeys: string[] };
   gradingNotice?: string;
+  writing?: WritingAssessment;
   speaking?: {
     provider: 'RANDOM' | 'LLM'; version: string; assessedAt: string;
     criteria: { grammarVocabulary: number; pronunciation: number; fluency: number; taskFulfillment: number };

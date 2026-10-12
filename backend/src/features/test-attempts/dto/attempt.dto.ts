@@ -4,6 +4,9 @@ import { PaginationQueryDto } from '../../../common/pagination/pagination.dto';
 import { Answer } from '../types/attempt.type';
 
 export class StartAttemptDto {
+  @IsOptional()
+  @IsIn(['vi', 'en'])
+  feedbackLocale?: 'vi' | 'en';
   @IsUUID()
   testId!: string;
 
@@ -31,6 +34,9 @@ export class SaveProgressDto {
 }
 
 export class SubmitAttemptDto {
+  @IsOptional()
+  @IsIn(['vi', 'en'])
+  feedbackLocale?: 'vi' | 'en';
   @IsInt()
   @Min(0)
   @Max(2_147_483_647)

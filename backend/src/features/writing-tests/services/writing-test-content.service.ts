@@ -4,6 +4,7 @@ import { plainRichText, richTextWordCount, sanitizeRichText } from '../../../com
 import { defaultTestPurpose } from '../../../common/tests/test-purpose';
 import { CreateWritingTestDto } from '../dto/save-writing-test.dto';
 import { WritingTestAggregate, WritingTestMode } from '../types/writing-test.type';
+import { defaultWritingWordLimits, isWritingWordLimit, writingQuestionWordLimits } from '../policies/writing-word-limits';
 
 type WritingPartNumber = 1 | 2 | 3 | 4;
 
@@ -44,6 +45,15 @@ export class WritingTestContentService {
         };
       }
     }
+    for (const number of this.partNumbers(mode)) {
+      const supplied = input.parts[number]?.wordLimits;
+      if (supplied !== undefined && (!Array.isArray(supplied) || supplied.length !== defaultWritingWordLimits(number).length ||
+        supplied.some(limit => limit !== null && !isWritingWordLimit(limit)))) this.invalid(`Part ${number} word limits are invalid.`);
+      const part = parts[number]!;
+      // An explicit instruction takes precedence over default guidance for new content.
+      const explicit = writingQuestionWordLimits(number, part);
+      part.wordLimits = supplied ?? defaultWritingWordLimits(number).map((limit, index) => explicit[index] ?? limit);
+    }
     const title = this.plain(input.details?.title ?? '').trim();
     const pictureUrl = this.normalizeCover(input.details?.pictureUrl ?? '');
     return { mode, purpose: input.purpose ?? defaultTestPurpose(mode), details: { title, pictureUrl }, parts };
@@ -55,6 +65,8 @@ export class WritingTestContentService {
     for (const number of this.partNumbers(test.mode)) {
       const part = test.parts[number];
       if (!part) this.invalid(`Part ${number} content is required.`);
+      if (part.wordLimits && (part.wordLimits.length !== defaultWritingWordLimits(number).length ||
+        part.wordLimits.some(limit => limit !== null && !isWritingWordLimit(limit)))) this.invalid(`Part ${number} word limits are invalid.`);
       if (number === 1) {
         const value = part as NonNullable<WritingTestAggregate['parts'][1]>;
         this.assertText(value.context, 10_000, 'Part 1 context', 150);
@@ -87,6 +99,10 @@ export class WritingTestContentService {
 
   assertPublishable(test: WritingTestAggregate): void {
     this.assertDraftShape(test);
+    for (const number of this.partNumbers(test.mode)) {
+      const part = test.parts[number]!;
+      part.wordLimits ??= writingQuestionWordLimits(number, part);
+    }
     if (test.details.title.length < 3) this.invalid('Test title must contain at least 3 characters.');
     for (const number of this.partNumbers(test.mode)) {
       const part = test.parts[number];
@@ -120,6 +136,9 @@ export class WritingTestContentService {
     if (test.parts[4]) parts['4'] = {
       context: test.parts[4].context, informalPrompt: test.parts[4].informalPrompt, formalPrompt: test.parts[4].formalPrompt,
     };
+    for (const number of this.partNumbers(test.mode)) {
+      (parts[number] as Record<string, unknown>).wordLimits = writingQuestionWordLimits(number, test.parts[number]!);
+    }
     return { id: test.id, mode: test.mode, details: test.details, parts, status: test.status, version: test.version };
   }
 
