@@ -35,7 +35,7 @@ export default function ReadingAttemptResultPage() {
   const assistance = data.result.assistance?.revealedKeys?.length ?? 0;
   const isFullResult = data.scope === 'FULL_SKILL'
     || (!data.scope && [1, 2, 3, 4].every(number => view.parts.some(part => part.partNumber === number)));
-  const overviewColumns = readingOverviewColumns(view, { compact: isFullResult });
+  const overviewColumns = readingOverviewColumns(view, { compact: isFullResult, splitPartTwo: false });
   const hasCefrEstimate = data.cefrEstimate?.kind === 'PRACTICE_ESTIMATE' && !!data.cefrEstimate.level;
   const showCefr = !isPractice || isFullResult;
   return <div className={styles.page}><main className={styles.contentWrap}>
@@ -58,8 +58,8 @@ export default function ReadingAttemptResultPage() {
         </dl>
       </div></section>
     </div>
-    <section className={`${styles.detailBox} ${isFullResult ? styles.fullPracticeOverview : ''}`}><h2 className={styles.resultLabel}>Answer overview</h2><div className={styles.columnsWrapper}>
-      {overviewColumns.map(part => <div className={`${styles.partColumn} ${!isFullResult ? styles.sentenceColumn : ''} ${isFullResult && part.partNumber === 4 ? styles.headingColumn : ''}`} key={part.key}><h3 className={styles.partTitle}>Part {part.partNumber}</h3>
+    <section className={`${styles.detailBox} ${isFullResult ? `${styles.fullPracticeOverview} ${styles.equalPartOverview}` : ''}`}><h2 className={styles.resultLabel}>Answer overview</h2><div className={styles.columnsWrapper}>
+      {overviewColumns.map(part => <div className={`${styles.partColumn} ${!isFullResult ? styles.sentenceColumn : ''}`} key={part.key}><h3 className={styles.partTitle}>Part {part.partNumber}</h3>
         {part.items.map(item => <button className={styles.answerRow} key={item.key}
           aria-label={`Question ${item.number}: ${statusLabels[item.status]}`}
           onClick={() => navigate(`${detailHref}&part=${part.partNumber}&question=${encodeURIComponent(item.key)}`)}>

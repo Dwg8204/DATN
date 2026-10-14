@@ -486,6 +486,21 @@
 .fullPracticeOverview .qId { width: auto; font-weight: 500; }
 .fullPracticeOverview .userAns { white-space: normal; overflow-wrap: anywhere; }
 .fullPracticeOverview .iconWrap { width: 16px; height: 20px; }
+.equalPartOverview .columnsWrapper { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.equalPartOverview .partColumn {
+  display: grid;
+  grid-template-columns: 20px minmax(0, max-content) 16px;
+  column-gap: 12px;
+  align-content: start;
+}
+.equalPartOverview .partTitle { grid-column: 1 / -1; }
+.equalPartOverview .answerRow {
+  width: 100%;
+  max-width: 100%;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  column-gap: 12px;
+}
 @media (max-width: 900px) {
   .fullPracticeOverview .columnsWrapper { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .fullPracticeOverview .headingColumn { grid-column: 1 / -1; }
