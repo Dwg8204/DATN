@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminConfirmDialog } from '../components/AdminFeedback';
@@ -18,6 +19,7 @@ const PARTS = [
 ];
 
 export default function GrammarTestDetailsPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const { test, updateDetails, goTo, saveDraft, publishTest } = useGrammarTestBuilder();
   const { showError, showSuccess, dismissToast } = useToast();
@@ -31,10 +33,10 @@ export default function GrammarTestDetailsPage() {
     setBusy(true);
     try {
       await saveDraft();
-      showSuccess('Test information saved as a draft.');
+      showSuccess(ui("Test information saved as a draft."));
       await goTo();
     } catch (error) {
-      showError(getApiError(error, 'Unable to save the test draft.'));
+      showError(getApiError(error, ui("Unable to save the test draft.")));
     } finally { setBusy(false); }
   };
   const requestSave = () => {
@@ -50,28 +52,28 @@ export default function GrammarTestDetailsPage() {
     setBusy(true);
     try {
       const saved = await publishTest();
-      showSuccess(test.id ? 'Grammar & Vocabulary test updated successfully.' : 'Grammar & Vocabulary test created successfully.');
+      showSuccess(test.id ? ui("Grammar & Vocabulary test updated successfully.") : ui("Grammar & Vocabulary test created successfully."));
       navigate(`/admin/tests/grammar/${saved.id}/preview`, { state: { toast: 'Test published successfully.' } });
     } catch (error) {
-      showError(getApiError(error, 'Unable to save or publish the test. Your draft is preserved.'));
+      showError(getApiError(error, ui("Unable to save or publish the test. Your draft is preserved.")));
     }
     finally { setBusy(false); }
   };
 
   return <div className={styles.page}>
-    <AdminConfirmDialog open={confirm} title={test.id ? 'Save changes to this test?' : 'Create this test?'} message={test.id ? 'Your changes will replace the saved Grammar & Vocabulary test.' : 'The test will be saved and displayed in the Grammar & Vocabulary test list.'} confirmLabel={test.id ? 'Save changes' : 'Create test'} onCancel={() => setConfirm(false)} onConfirm={persist} />
+    <AdminConfirmDialog open={confirm} title={test.id ? ui("Save changes to this test?") : ui("Create this test?")} message={test.id ? 'Your changes will replace the saved Grammar & Vocabulary test.' : 'The test will be saved and displayed in the Grammar & Vocabulary test list.'} confirmLabel={test.id ? ui("Save changes") : ui("Create test")} onCancel={() => setConfirm(false)} onConfirm={persist} />
     <AdminBreadcrumb current={test.details.title || 'New test'} purpose={test.purpose} />
     <section className={styles.information} inert={busy ? '' : undefined} aria-busy={busy}>
-      <h2>INFORMATION TEST</h2>
+      <h2>{ui("INFORMATION TEST")}</h2>
       <div className={styles.infoGrid}>
         <div className={styles.fields}>
-          <label><b>Title:</b><input value={test.details.title} onChange={event => updateDetails('title', event.target.value)} /></label>
-          <ImageField label="Test cover" value={test.details.pictureUrl} uploadFile={grammarMediaApi.uploadCover} onChange={value => updateDetails('pictureUrl', value)} />
-          <button className={styles.saveInfo} disabled={busy} onClick={saveInformation}>{busy ? 'Saving…' : 'Save draft'}</button>
+          <label><b>{ui("Title:")}</b><input value={test.details.title} onChange={event => updateDetails('title', event.target.value)} /></label>
+          <ImageField label={ui("Test cover")} value={test.details.pictureUrl} uploadFile={grammarMediaApi.uploadCover} onChange={value => updateDetails('pictureUrl', value)} />
+          <button className={styles.saveInfo} disabled={busy} onClick={saveInformation}>{busy ? ui("Saving…") : ui("Save draft")}</button>
         </div>
-        <aside><b>Preview</b><div><header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span><small>{test.status === 'PUBLISHED' ? 'Published' : 'Draft'}</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt="Test preview" /> : <strong>AptiMate<br /><em>Grammar</em></strong>}<button disabled={busy} onClick={requestSave}>{test.status === 'PUBLISHED' ? 'Update & preview' : 'Publish & preview'}</button></div></aside>
+        <aside><b>{ui("Preview")}</b><div><header><span>{test.mode === 'full' ? ui("Full test") : test.mode.replace('part', 'Part ')}</span><small>{test.status === 'PUBLISHED' ? ui("Published") : ui("Draft")}</small></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt={ui("Test preview")} /> : <strong>AptiMate<br /><em>{ui("Grammar")}</em></strong>}<button disabled={busy} onClick={requestSave}>{test.status === 'PUBLISHED' ? ui("Update & preview") : ui("Publish & preview")}</button></div></aside>
       </div>
     </section>
-    <section className={styles.content} inert={busy ? '' : undefined}><h2>CONTENT TEST</h2><div>{visible.map(part => <PartSummaryCard key={part.number} part={part} onEdit={() => goTo(part.number)} />)}</div><button className={styles.saveAll} disabled={busy} onClick={requestSave}>{busy ? 'Saving…' : test.status === 'PUBLISHED' ? 'Update & publish test' : 'Publish test & preview'}</button></section>
+    <section className={styles.content} inert={busy ? '' : undefined}><h2>{ui("CONTENT TEST")}</h2><div>{visible.map(part => <PartSummaryCard key={part.number} part={part} onEdit={() => goTo(part.number)} />)}</div><button className={styles.saveAll} disabled={busy} onClick={requestSave}>{busy ? ui("Saving…") : test.status === 'PUBLISHED' ? ui("Update & publish test") : ui("Publish test & preview")}</button></section>
   </div>;
 }

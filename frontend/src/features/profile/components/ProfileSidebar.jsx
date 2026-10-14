@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
@@ -8,6 +9,7 @@ import styles from './ProfileSidebar.module.css';
 import { useTranslation } from 'react-i18next';
 
 export default function ProfileSidebar({ activeTab }) {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -101,10 +103,10 @@ export default function ProfileSidebar({ activeTab }) {
       </div>
 
       <div className={`${styles.userInfo} ${styles.mobileHidden}`}>
-        <img src={user?.avatar?.url || user?.avatar || 'https://placehold.co/74x74'} alt="Avatar" className={styles.avatar} />
+        <img src={user?.avatar?.url || user?.avatar || 'https://placehold.co/74x74'} alt={ui("Avatar")} className={styles.avatar} />
         <div className={styles.userDetails}>
-          <div className={styles.name}>{user?.fullName || user?.name || [user?.firstName, user?.lastName].filter(Boolean).join(' ') || 'User'}</div>
-          <div className={styles.email}>{user?.email || 'email@example.com'}</div>
+          <div className={styles.name}>{user?.fullName || user?.name || [user?.firstName, user?.lastName].filter(Boolean).join(' ') || ui("User")}</div>
+          <div className={styles.email}>{user?.email || "email@example.com"}</div>
         </div>
       </div>
 

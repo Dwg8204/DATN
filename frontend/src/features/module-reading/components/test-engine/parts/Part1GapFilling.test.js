@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -28,7 +29,7 @@ function render(isPractice, answers = {}) {
     'react/jsx-runtime': { jsx, jsxs: jsx },
   };
   const module = { exports: {} };
-  runInNewContext(compiled, { module, require: name => mocks[name] });
+  runInNewContext(compiled, { module, require: withUiTranslationMocks(name => mocks[name]) });
   const tree = module.exports.default({ data, isPractice });
   return { tree, nodes: walk(tree), changes, reveals, revealOptions };
 }

@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useNavigate } from 'react-router-dom';
 import styles from './SpeakingFeedPage.module.css';
 
@@ -10,6 +11,7 @@ const popularDocs = Array.from({ length: 5 }, (_, index) => ({
 }));
 
 export default function SpeakingFeedPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
 
   const bandScores = [
@@ -45,24 +47,23 @@ export default function SpeakingFeedPage() {
       <div className={styles.section}>
         <div className={styles.titleContainer}>
           <div className={styles.title}>
-            <span className={styles.titleLight}>SPEAKING</span> FEED
-          </div>
+            <span className={styles.titleLight}>{ui("Speaking")}</span>{ ' ' + ui("Feed") }</div>
           <div className={styles.divider}></div>
         </div>
         <div className={styles.contentBlock}>
           <div className={styles.heading}>
-            <span className={styles.headingBold}>Speaking </span>
-            <span className={styles.headingLight}>band scores</span>
+            <span className={styles.headingBold}>{ ui("Speaking") + ' ' }</span>
+            <span className={styles.headingLight}>{ui("band scores")}</span>
           </div>
           <div className={styles.textBlock}>
-            <p>The Aptis Speaking test is assessed by experienced language experts to ensure objectivity and accuracy. Examiners evaluate your recorded responses against standardized assessment criteria, and their performance is subject to regular quality monitoring and review.</p>
-            <p>The Speaking test consists of four parts that increase in difficulty, assessing language proficiency from beginner to advanced levels (A1 – C2 on the CEFR scale). Candidates complete the test on a computer, and the total duration is approximately 12 minutes.</p>
-            <p>Your responses in the Speaking component are assessed against the following criteria:</p>
-            <p>Grammatical Range and Accuracy: The ability to use a variety of grammatical structures and appropriate vocabulary accurately.</p>
-            <p>Pronunciation: The clarity of speech, including individual sounds, word stress, and natural intonation.</p>
-            <p>Fluency: The speed and smoothness of speech, and the ability to link ideas together without excessive hesitation.</p>
-            <p>Task Fulfillment: The ability to address the prompt effectively, providing relevant answers and developing ideas within the given time limits.</p>
-            <p>Each part of the Speaking test focuses on specific skills, ranging from providing basic personal information to comparing and discussing abstract topics. To find out more about the detailed scoring levels, you can refer to the official AptiMate public band descriptors.</p>
+            <p>{ui("The Aptis Speaking test is assessed by experienced language experts to ensure objectivity and accuracy. Examiners evaluate your recorded responses against standardized assessment criteria, and their performance is subject to regular quality monitoring and review.")}</p>
+            <p>{ui("The Speaking test consists of four parts that increase in difficulty, assessing language proficiency from beginner to advanced levels (A1 – C2 on the CEFR scale). Candidates complete the test on a computer, and the total duration is approximately 12 minutes.")}</p>
+            <p>{ui("Your responses in the Speaking component are assessed against the following criteria:")}</p>
+            <p>{ui("Grammatical Range and Accuracy: The ability to use a variety of grammatical structures and appropriate vocabulary accurately.")}</p>
+            <p>{ui("Pronunciation: The clarity of speech, including individual sounds, word stress, and natural intonation.")}</p>
+            <p>{ui("Fluency: The speed and smoothness of speech, and the ability to link ideas together without excessive hesitation.")}</p>
+            <p>{ui("Task Fulfillment: The ability to address the prompt effectively, providing relevant answers and developing ideas within the given time limits.")}</p>
+            <p>{ui("Each part of the Speaking test focuses on specific skills, ranging from providing basic personal information to comparing and discussing abstract topics. To find out more about the detailed scoring levels, you can refer to the official AptiMate public band descriptors.")}</p>
           </div>
 
           <div className={styles.bandScoresGrid}>
@@ -71,11 +72,11 @@ export default function SpeakingFeedPage() {
                 <h3 className={styles.scoreBand}>{score.band}</h3>
                 <div className={styles.scoreDetail}>
                   <div className={styles.scoreRow}>
-                    <span className={styles.scoreLabel}>Skill level</span>
+                    <span className={styles.scoreLabel}>{ui("Skill level")}</span>
                     <span className={styles.scoreValue}>{score.level}</span>
                   </div>
                   <div className={styles.scoreRow}>
-                    <span className={styles.scoreLabel}>Description</span>
+                    <span className={styles.scoreLabel}>{ui("Description")}</span>
                     <span className={styles.scoreValue}>{score.desc}</span>
                   </div>
                 </div>
@@ -87,25 +88,25 @@ export default function SpeakingFeedPage() {
 
       <div className={styles.section}>
         <div className={styles.titleContainer}>
-          <div className={styles.title}>SPEAKING DOCUMENTS</div>
+          <div className={styles.title}>{ui("SPEAKING DOCUMENTS")}</div>
           <div className={styles.divider}></div>
         </div>
         <div className={styles.contentBlock}>
-          <div className={styles.documentLink}>Some tips for taking the APTIS Speaking test</div>
-          <div className={styles.documentLink}>APTIS Speaking practice test</div>
-          <div className={styles.documentLink}>Question types in the APTIS Speaking test</div>
-          <div className={styles.documentLink}>APTIS Speaking band scores</div>
+          <div className={styles.documentLink}>{ui("Some tips for taking the APTIS Speaking test")}</div>
+          <div className={styles.documentLink}>{ui("APTIS Speaking practice test")}</div>
+          <div className={styles.documentLink}>{ui("Question types in the APTIS Speaking test")}</div>
+          <div className={styles.documentLink}>{ui("APTIS Speaking band scores")}</div>
         </div>
       </div>
 
       <div className={styles.section}>
-        <div className={styles.popularTitle}>MOST POPULAR</div>
+        <div className={styles.popularTitle}>{ui("MOST POPULAR")}</div>
         <div className={styles.popularGrid}>
           {popularDocs.map((doc) => (
             <div key={doc.id} className={styles.popularCard}>
               <div className={styles.cardHeader}>
                 <div className={styles.cardHeaderTop}>
-                  <div className={styles.cardTitle}>{doc.title}</div>
+                  <div className={styles.cardTitle}>{ui(doc.title)}</div>
                   <div className={styles.cardSubTitle}>{doc.subTitle}</div>
                 </div>
                 <div className={styles.cardBadge}>
@@ -119,10 +120,8 @@ export default function SpeakingFeedPage() {
           ))}
         </div>
       </div>
-      
-      <button className={styles.goToTestBtn} onClick={() => navigate('/speaking/tests')}>
-        View Test List
-      </button>
+
+      <button className={styles.goToTestBtn} onClick={() => navigate('/speaking/tests')}>{ui("View Test List")}</button>
     </div>
   );
 }

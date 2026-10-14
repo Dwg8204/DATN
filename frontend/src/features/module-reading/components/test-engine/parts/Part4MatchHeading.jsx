@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../../../i18n/useUiTranslation.jsx";
 import { useContext } from 'react';
 import AnswerSelect from '../../../../../components/common/AnswerSelect';
 import { ReadingTestContext } from '../../../context/ReadingTestContext';
@@ -5,6 +6,7 @@ import styles from './Part4MatchHeading.module.css';
 import RichTextContent from '../../../../../components/common/RichTextContent';
 
 const Part4MatchHeading = ({ data }) => {
+  const ui = useUiTranslation();
   const { answers, handleAnswerChange, renderAnswerReveal } = useContext(ReadingTestContext);
   if (!data) return null;
 
@@ -13,7 +15,7 @@ const Part4MatchHeading = ({ data }) => {
   return (
     <div className={styles.part}>
       <div className={styles.content}>
-          <h2 className={styles.title}>{data.title || 'Mission to Mars'}</h2>
+          <h2 className={styles.title}>{data.title || "Mission to Mars"}</h2>
           <div className={styles.paragraphList}>
             {data.paragraphs.map((paragraph, index) => (
               <article key={paragraph.id} id={`question-${index + 23}`} className={styles.paragraphRow}>
@@ -24,8 +26,8 @@ const Part4MatchHeading = ({ data }) => {
                     value={answers[paragraph.id] || ''}
                     onChange={(event) => handleAnswerChange(paragraph.id, event.target.value)}
                     options={headingOptions}
-                    placeholder={`Question ${index + 23}`}
-                    ariaLabel={`Heading for paragraph ${index + 1}`}
+                    placeholder={ui("Question {{value0}}", {value0:(index + 23)})}
+                    ariaLabel={ui("Heading for paragraph {{value0}}", {value0:(index + 1)})}
                   />
                   {renderAnswerReveal?.(paragraph.id)}
                 </div>

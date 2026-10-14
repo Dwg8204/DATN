@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import { forwardRef } from 'react';
 
 const CustomInput = forwardRef(function CustomInput(
@@ -12,11 +13,12 @@ const CustomInput = forwardRef(function CustomInput(
   },
   ref,
 ) {
+  const ui = useUiTranslation();
   return (
     <label className={`form-field ${className}`.trim()}>
       {label ? (
         <span className="form-field__label">
-          {label}
+          {ui(label)}
           {required ? <span aria-hidden="true"> *</span> : null}
         </span>
       ) : null}
@@ -27,9 +29,12 @@ const CustomInput = forwardRef(function CustomInput(
           .replace(/\s+/g, ' ')}
         aria-invalid={Boolean(error)}
         {...props}
+        placeholder={props.placeholder ? ui(props.placeholder) : undefined}
+        title={props.title ? ui(props.title) : undefined}
+        aria-label={props['aria-label'] ? ui(props['aria-label']) : undefined}
       />
-      {error ? <span className="form-field__message form-field__message--error">{error}</span> : null}
-      {!error && helperText ? <span className="form-field__message">{helperText}</span> : null}
+      {error ? <span className="form-field__message form-field__message--error">{ui.error(error)}</span> : null}
+      {!error && helperText ? <span className="form-field__message">{ui(helperText)}</span> : null}
     </label>
   );
 });

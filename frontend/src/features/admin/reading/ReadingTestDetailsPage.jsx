@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AdminConfirmDialog, AdminValidationToast } from '../components/AdminFeedback';
@@ -11,6 +12,7 @@ import { validateReadingTest } from './validation/readingValidation';
 import styles from '../writing/WritingTestDetailsPage.module.css';
 import { Field } from './components/EditorFields';
 export default function ReadingTestDetailsPage() {
+  const ui = useUiTranslation();
   const {
     test,
     setTest,
@@ -46,7 +48,7 @@ export default function ReadingTestDetailsPage() {
         }
       });
     } catch (error) {
-      setErrors([getApiError(error, 'Unable to save this Reading test.')]);
+      setErrors([getApiError(error, ui("Unable to save this Reading test."))]);
     } finally {
       setConfirm(false);
       setSaving(false);
@@ -56,7 +58,7 @@ export default function ReadingTestDetailsPage() {
     if (saving) return;
     setSaving(true);
     try { await saveDraft(); await goTo(); }
-    catch (error) { setErrors([getApiError(error, 'Unable to save the draft. Your local changes are preserved.')]); }
+    catch (error) { setErrors([getApiError(error, ui("Unable to save the draft. Your local changes are preserved."))]); }
     finally { setSaving(false); }
   };
   const parts = READING_PARTS.filter(p => test.mode === 'full' || test.mode === `part${p.number}`);
@@ -65,42 +67,42 @@ export default function ReadingTestDetailsPage() {
       <AdminValidationToast errors={errors} onClose={() => setErrors([])} />
       <AdminConfirmDialog
         open={confirm}
-        title={test.id ? 'Save changes to this test?' : 'Create Reading test?'}
+        title={test.id ? ui("Save changes to this test?") : ui("Create Reading test?")}
         message="Confirm to save this Reading test and make it available in the test list."
-        confirmLabel={saving ? 'Saving…' : 'Save test'}
+        confirmLabel={saving ? ui("Saving…") : ui("Save test")}
         onCancel={() => setConfirm(false)}
         onConfirm={persist}
       />
       <AdminBreadcrumb current={test.details.title || 'New Reading test'} purpose={test.purpose} />
       <section className={styles.information} inert={saving ? '' : undefined}>
-        <h2>INFORMATION TEST</h2>
+        <h2>{ui("INFORMATION TEST")}</h2>
         <div className={styles.infoGrid}>
           <div className={styles.fields}>
-            <Field label="Title" value={test.details.title} onChange={value => detail('title', value)} />
-            <ImageField label="Test cover" value={test.details.pictureUrl} onChange={value => detail('pictureUrl', value)} />
-            <button className={styles.saveInfo} disabled={saving} onClick={saveInformation}>Save draft</button>
+            <Field label={ui("Title")} value={test.details.title} onChange={value => detail('title', value)} />
+            <ImageField label={ui("Test cover")} value={test.details.pictureUrl} onChange={value => detail('pictureUrl', value)} />
+            <button className={styles.saveInfo} disabled={saving} onClick={saveInformation}>{ui("Save draft")}</button>
           </div>
           <aside>
-            <b>Preview</b>
+            <b>{ui("Preview")}</b>
             <div>
-              <header><span>{test.mode === 'full' ? 'Full test' : test.mode.replace('part', 'Part ')}</span></header>
+              <header><span>{test.mode === 'full' ? ui("Full test") : test.mode.replace('part', 'Part ')}</span></header>
               {test.details.pictureUrl
-                ? <img src={test.details.pictureUrl} alt="Cover" />
-                : <strong>AptiMate<br /><em>Reading</em></strong>}
-              <button onClick={requestSave}>Preview</button>
+                ? <img src={test.details.pictureUrl} alt={ui("Cover")} />
+                : <strong>AptiMate<br /><em>{ui("Reading")}</em></strong>}
+              <button onClick={requestSave}>{ui("Preview")}</button>
             </div>
           </aside>
         </div>
       </section>
       <section className={styles.content} inert={saving ? '' : undefined}>
-        <h2>CONTENT TEST</h2>
+        <h2>{ui("CONTENT TEST")}</h2>
         <div>
           {parts.map(part => (
             <PartSummaryCard key={part.number} part={part} onEdit={() => goTo(part.number)} />
           ))}
         </div>
         <button className={styles.saveAll} onClick={requestSave} disabled={saving}>
-          {test.id ? 'Update test & preview' : 'Save test & preview'}
+          {test.id ? ui("Update test & preview") : ui("Save test & preview")}
         </button>
       </section>
     </div>

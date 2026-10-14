@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useState } from 'react';
 import { Edit3, Eye, LoaderCircle, LockKeyhole, Plus, Search, Trash2 } from 'lucide-react';
 import Modal from '../../../components/common/Modal';
@@ -43,6 +44,7 @@ function displayDate(value) {
 }
 
 export default function UserManagementPage() {
+  const ui = useUiTranslation();
   const [urlState, setUrlState] = useUrlQueryState(USER_QUERY_SCHEMA);
   const { role, query, page, pageSize } = urlState;
   const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
@@ -103,7 +105,7 @@ export default function UserManagementPage() {
       else reload();
     } catch (error) {
       setConfirmRole(false);
-      setEditorError(getApiError(error, isPromotion ? 'Unable to promote this user.' : 'Unable to create the teacher account.'));
+      setEditorError(getApiError(error, isPromotion ? ui("Unable to promote this user.") : ui("Unable to create the teacher account.")));
     } finally {
       setBusy(false);
     }
@@ -121,7 +123,7 @@ export default function UserManagementPage() {
       else reload();
     } catch (error) {
       setDeleteTarget(null);
-      setNotice({ type: 'error', message: getApiError(error, 'Unable to delete this account.') });
+      setNotice({ type: 'error', message: getApiError(error, ui("Unable to delete this account.")) });
     } finally {
       setBusy(false);
     }
@@ -133,7 +135,7 @@ export default function UserManagementPage() {
     try {
       setDetail(await adminUsersApi.detail(user.id));
     } catch (error) {
-      setNotice({ type: 'error', message: getApiError(error, 'Unable to load account details.') });
+      setNotice({ type: 'error', message: getApiError(error, ui("Unable to load account details.")) });
     } finally {
       setDetailLoadingId('');
     }
@@ -143,13 +145,13 @@ export default function UserManagementPage() {
     const editLocked = user.role !== 'STUDENT';
     const deleteLocked = user.role === 'ADMIN';
     return <div className={styles.actions}>
-      <button disabled={detailLoadingId === user.id} title="View details" aria-label={`View ${user.fullName}`} onClick={() => viewDetails(user)}>
+      <button disabled={detailLoadingId === user.id} title={ui("View details")} aria-label={ui("View {{value0}}", {value0:(user.fullName)})} onClick={() => viewDetails(user)}>
         {detailLoadingId === user.id ? <LoaderCircle className={styles.spin} /> : <Eye />}
       </button>
-      <button disabled={editLocked} title={editLocked ? `${roleLabel(user.role)} accounts cannot be promoted` : 'Promote to Teacher'} aria-label={editLocked ? `Cannot edit ${user.fullName}` : `Promote ${user.fullName} to Teacher`} onClick={() => { setEditor({ ...user }); setEditorError(''); }}>
+      <button disabled={editLocked} title={editLocked ? ui("{{value0}} accounts cannot be promoted", {value0:(roleLabel(user.role))}) : ui("Promote to Teacher")} aria-label={editLocked ? ui("Cannot edit {{value0}}", {value0:(user.fullName)}) : ui("Promote {{value0}} to Teacher", {value0:(user.fullName)})} onClick={() => { setEditor({ ...user }); setEditorError(''); }}>
         {editLocked ? <LockKeyhole /> : <Edit3 />}
       </button>
-      <button disabled={deleteLocked} title={deleteLocked ? 'Admin accounts cannot be deleted' : 'Delete'} aria-label={deleteLocked ? `Cannot delete ${user.fullName}` : `Delete ${user.fullName}`} onClick={() => setDeleteTarget(user)}><Trash2 /></button>
+      <button disabled={deleteLocked} title={deleteLocked ? ui("Admin accounts cannot be deleted") : ui("Delete")} aria-label={deleteLocked ? ui("Cannot delete {{value0}}", {value0:(user.fullName)}) : ui("Delete {{value0}}", {value0:(user.fullName)})} onClick={() => setDeleteTarget(user)}><Trash2 /></button>
     </div>;
   };
 
@@ -167,24 +169,24 @@ export default function UserManagementPage() {
 
   return <div className={styles.page}>
     <AdminToast message={notice?.message} type={notice?.type} onClose={() => setNotice(null)} />
-    {detail && <Modal title="Account details" onClose={() => setDetail(null)}><dl>{detailRows.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl></Modal>}
-    <AdminConfirmDialog open={confirmRole} title="Promote this user?" message={editor ? `${editor.fullName} will receive Teacher permissions. This role cannot be promoted to Admin.` : ''} confirmLabel={busy ? 'Promoting…' : 'Promote'} onCancel={() => { if (!busy) setConfirmRole(false); }} onConfirm={() => save(true)} />
-    <AdminConfirmDialog open={Boolean(deleteTarget)} title="Delete this account?" message={deleteTarget ? `“${deleteTarget.fullName}” will lose access to AptiMate. Their related test data will be retained.` : ''} confirmLabel={busy ? 'Deleting…' : 'Delete'} onCancel={() => { if (!busy) setDeleteTarget(null); }} onConfirm={remove} />
+    {detail && <Modal title={ui("Account details")} onClose={() => setDetail(null)}><dl>{detailRows.map(([label, value]) => <div key={label}><dt>{ui(label)}</dt><dd>{value}</dd></div>)}</dl></Modal>}
+    <AdminConfirmDialog open={confirmRole} title={ui("Promote this user?")} message={editor ? `${editor.fullName} will receive Teacher permissions. This role cannot be promoted to Admin.` : ''} confirmLabel={busy ? ui("Promoting…") : ui("Promote")} onCancel={() => { if (!busy) setConfirmRole(false); }} onConfirm={() => save(true)} />
+    <AdminConfirmDialog open={Boolean(deleteTarget)} title={ui("Delete this account?")} message={deleteTarget ? `“${deleteTarget.fullName}” will lose access to AptiMate. Their related test data will be retained.` : ''} confirmLabel={busy ? ui("Deleting…") : ui("Delete")} onCancel={() => { if (!busy) setDeleteTarget(null); }} onConfirm={remove} />
     <UserEditorDialog user={confirmRole ? null : editor} error={editorError} onClearError={() => setEditorError('')} busy={busy} originalRole={editor?.id ? 'STUDENT' : undefined} onChange={updateEditor} onCancel={() => { if (!busy) { setEditor(null); setEditorError(''); } }} onSave={save} />
 
     <header className={styles.toolbar}>
-      <nav className={styles.components} aria-label="Account type">{ROLE_TABS.map(item => <button className={role === item.id ? styles.activeComponent : ''} onClick={() => changeRole(item.id)} key={item.id}>{item.label}</button>)}</nav>
-      <div className={styles.tools}><label><Search /><input value={query} onChange={event => setUrlState({ query: event.target.value, page: 1 })} placeholder="Search people" /></label>{role === 'TEACHER' && <button className={styles.add} onClick={() => { setEditor({ ...EMPTY_TEACHER }); setEditorError(''); }}><Plus />Add teacher</button>}</div>
+      <nav className={styles.components} aria-label={ui("Account type")}>{ROLE_TABS.map(item => <button className={role === item.id ? styles.activeComponent : ''} onClick={() => changeRole(item.id)} key={item.id}>{ui(item.label)}</button>)}</nav>
+      <div className={styles.tools}><label><Search /><input value={query} onChange={event => setUrlState({ query: event.target.value, page: 1 })} placeholder={ui("Search people")} /></label>{role === 'TEACHER' && <button className={styles.add} onClick={() => { setEditor({ ...EMPTY_TEACHER }); setEditorError(''); }}><Plus />{ui("Add teacher")}</button>}</div>
     </header>
 
     <section className={styles.panel} aria-busy={loading}>
-      <header><div><h2>Team members</h2><span>{pagination.totalItems} {pagination.totalItems === 1 ? 'account' : 'accounts'}</span></div></header>
-      <div className={styles.tableWrap}><table><thead><tr><th>Name</th><th className={styles.alignRight}>Status</th><th className={styles.alignRight}>Date added</th><th className={styles.actionColumn}>Actions</th></tr></thead><tbody>
+      <header><div><h2>{ui("Team members")}</h2><span>{pagination.totalItems} {pagination.totalItems === 1 ? ui("account") : ui("accounts")}</span></div></header>
+      <div className={styles.tableWrap}><table><thead><tr><th>{ui("Name")}</th><th className={styles.alignRight}>{ui("Status")}</th><th className={styles.alignRight}>{ui("Date Added")}</th><th className={styles.actionColumn}>{ui("Actions")}</th></tr></thead><tbody>
         {users.map(user => <tr key={user.id}><td><div className={styles.person}><Avatar name={user.fullName} /><span><b>{user.fullName}</b><small>{user.email}</small></span></div></td><td className={styles.alignRight}><span className={`${styles.status} ${user.status === 'ACTIVE' ? styles.activeStatus : ''}`}>{statusLabel(user.status)}</span></td><td className={styles.alignRight}>{displayDate(user.createdAt)}</td><td className={styles.actionColumn}>{actions(user)}</td></tr>)}
       </tbody></table></div>
-      <div className={styles.mobileList}>{users.map(user => <article key={user.id}><header><div className={styles.person}><Avatar name={user.fullName} /><span><b>{user.fullName}</b><small>{user.email}</small></span></div><span className={`${styles.status} ${user.status === 'ACTIVE' ? styles.activeStatus : ''}`}>{statusLabel(user.status)}</span></header><dl><div><dt>Date added</dt><dd>{displayDate(user.createdAt)}</dd></div><div><dt>Role</dt><dd>{roleLabel(user.role)}</dd></div></dl>{actions(user)}</article>)}</div>
-      {loading && <div className={styles.loading} role="status"><LoaderCircle className={styles.spin} />Loading accounts…</div>}
-      {!loading && !users.length && <div className={styles.empty}><p>{loadError ? 'Accounts could not be loaded.' : 'No accounts found.'}</p>{loadError && <button type="button" onClick={reload}>Try again</button>}</div>}
+      <div className={styles.mobileList}>{users.map(user => <article key={user.id}><header><div className={styles.person}><Avatar name={user.fullName} /><span><b>{user.fullName}</b><small>{user.email}</small></span></div><span className={`${styles.status} ${user.status === 'ACTIVE' ? styles.activeStatus : ''}`}>{statusLabel(user.status)}</span></header><dl><div><dt>{ui("Date Added")}</dt><dd>{displayDate(user.createdAt)}</dd></div><div><dt>{ui("Role")}</dt><dd>{roleLabel(user.role)}</dd></div></dl>{actions(user)}</article>)}</div>
+      {loading && <div className={styles.loading} role="status"><LoaderCircle className={styles.spin} />{ui("Loading accounts…")}</div>}
+      {!loading && !users.length && <div className={styles.empty}><p>{loadError ? ui("Accounts could not be loaded.") : ui("No accounts found.")}</p>{loadError && <button type="button" onClick={reload}>{ui("Try again")}</button>}</div>}
       <Pagination page={page} totalItems={pagination.totalItems} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
     </section>
   </div>;

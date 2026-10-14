@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useEffect, useContext, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ReadingTestContext } from '../context/ReadingTestContext';
@@ -19,6 +20,7 @@ import DataLoadError from '../../../components/common/DataLoadError';
 import { getPart2Texts } from '../utils/part2Texts';
 
 export default function ReadingTestPage() {
+  const ui = useUiTranslation();
   const { showError } = useToast();
   const { testId } = useParams();
   const navigate = useNavigate();
@@ -26,8 +28,8 @@ export default function ReadingTestPage() {
   const hasPartParam = searchParams.has('part');
   const mode = searchParams.get('mode') || 'full';
 
-  const { 
-    testData, setTestData, 
+  const {
+    testData, setTestData,
     currentPart, setCurrentPart,
     setIsStarted, setTimeLeft,
     answers
@@ -47,13 +49,13 @@ export default function ReadingTestPage() {
         if (cancelled) return;
           setTestData(data);
           setIsStarted(true);
-          
+
           let initialPart = 1;
           if (mode === 'part1') initialPart = 1;
           else if (mode === 'part2') initialPart = 2;
           else if (mode === 'part3') initialPart = 3;
           else if (mode === 'part4') initialPart = 4;
-          
+
           if (!hasPartParam) setCurrentPart(initialPart);
           setLoading(false);
       } catch {
@@ -65,7 +67,7 @@ export default function ReadingTestPage() {
         setLoading(false);
       }
     };
-    
+
     fetchTestData();
 
     return () => {
@@ -109,7 +111,7 @@ export default function ReadingTestPage() {
     try {
       localStorage.setItem(fakeSessionId, JSON.stringify(sessionData));
     } catch {
-      showError('Your answers could not be saved on this browser. Free some browser storage and submit again. Keep this page open to avoid losing your work.');
+      showError(ui("Your answers could not be saved on this browser. Free some browser storage and submit again. Keep this page open to avoid losing your work."));
       return;
     }
 
@@ -137,7 +139,7 @@ export default function ReadingTestPage() {
   const handleNextPart = () => {
     if (currentPart < 4) setCurrentPart(currentPart + 1);
   };
-  
+
   const handlePrevPart = () => {
     if (currentPart > 1) setCurrentPart(currentPart - 1);
   };
@@ -244,7 +246,7 @@ export default function ReadingTestPage() {
   }
 
   if (loadError || !testData) {
-    return <DataLoadError title="Reading test is unavailable" message={loadError || 'This test could not be found. Please return to the test list.'} />;
+    return <DataLoadError title={ui("Reading test is unavailable")} message={loadError || 'This test could not be found. Please return to the test list.'} />;
   }
 
   const { footerQuestions, currentQuestionIds, answeredIds } = getFooterData();
@@ -255,7 +257,7 @@ export default function ReadingTestPage() {
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div className={styles.partTitle}>{headerInfo.title}</div>
+          <div className={styles.partTitle}>{ui(headerInfo.title)}</div>
           <div className={styles.skillTitle}>{headerInfo.skill}</div>
         </div>
 
@@ -268,8 +270,8 @@ export default function ReadingTestPage() {
         </div>
       </div>
 
-      <TestFooter 
-        partLabel={`Part ${currentPart}`}
+      <TestFooter
+        partLabel={ui("Part {{value0}}", {value0:(currentPart)})}
         questions={footerQuestions}
         answeredIds={answeredIds}
         currentPageQuestionIds={currentQuestionIds}
@@ -291,7 +293,7 @@ export default function ReadingTestPage() {
         hasNext={currentPart < 4}
       />
 
-      <SubmitModal 
+      <SubmitModal
         isOpen={showSubmitModal}
         onBack={() => setShowSubmitModal(false)}
         onNext={confirmSubmit}

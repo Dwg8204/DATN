@@ -1,8 +1,10 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import { useEffect, useRef, useState } from 'react';
 import { Presentation } from 'lucide-react';
 import styles from './PowerPointPreview.module.css';
 
 export default function PowerPointPreview({ source, fileName }) {
+  const ui = useUiTranslation();
   const containerRef = useRef(null);
   const [status, setStatus] = useState('loading');
 
@@ -28,7 +30,7 @@ export default function PowerPointPreview({ source, fileName }) {
   }, [source]);
 
   return <div className={styles.preview}>
-    {status !== 'ready' && <div className={styles.message}><Presentation /><strong>{status === 'loading' ? 'Loading PowerPoint preview…' : 'PowerPoint preview could not be loaded.'}</strong>{status === 'error' && <span>Please download {fileName} to open it.</span>}</div>}
+    {status !== 'ready' && <div className={styles.message}><Presentation /><strong>{status === 'loading' ? ui("Loading PowerPoint preview…") : ui("PowerPoint preview could not be loaded.")}</strong>{status === 'error' && <span>{ ui("Please download") + ' ' }{fileName}{ ' ' + ui("to open it.") }</span>}</div>}
     <div ref={containerRef} className={`${styles.slides} ${status !== 'ready' ? styles.hidden : ''}`} />
   </div>;
 }

@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './AnswerSelect.module.css';
 
@@ -10,7 +11,9 @@ export default function AnswerSelect({
   status = 'default',
   disabled = false,
   ariaLabel = 'Select an answer',
+  translateLabels = false,
 }) {
+  const ui = useUiTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const rootRef = useRef(null);
@@ -42,7 +45,7 @@ export default function AnswerSelect({
       <button
         type="button"
         disabled={disabled}
-        aria-label={ariaLabel}
+        aria-label={ui(ariaLabel)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         className={`${styles.select} ${value !== '' ? styles.hasValue : ''} ${styles[status] || ''}`}
@@ -59,12 +62,12 @@ export default function AnswerSelect({
         }}
       >
         <span className={`${styles.selectedText} ${!selectedOption ? styles.placeholder : ''}`}>
-          {selectedOption?.label || placeholder}
+          {selectedOption ? translateLabels ? ui(selectedOption.label) : selectedOption.label : ui(placeholder)}
         </span>
         <span className={`${styles.chevron} ${isOpen ? styles.chevronOpen : ''}`} aria-hidden="true" />
       </button>
       {isOpen && !disabled && (
-        <div className={styles.menu} role="listbox" aria-label={ariaLabel}>
+        <div className={styles.menu} role="listbox" aria-label={ui(ariaLabel)}>
           {normalizedOptions.map((option, index) => {
             const isSelected = String(option.value) === String(value);
             return (
@@ -77,7 +80,7 @@ export default function AnswerSelect({
                 onMouseEnter={() => setActiveIndex(index)}
                 onClick={() => handleSelect(option.value)}
               >
-                {option.label}
+                {translateLabels ? ui(option.label) : option.label}
               </button>
             );
           })}

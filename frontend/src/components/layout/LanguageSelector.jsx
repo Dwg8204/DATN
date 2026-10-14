@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -10,13 +11,14 @@ const LANGUAGES = [
 ];
 
 function CountryFlag({ country }) {
+  const ui = useUiTranslation();
   if (country === 'vn') {
-    return <svg className={styles.flag} viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Vietnam flag">
+    return <svg className={styles.flag} viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice" role="img" aria-label={ui("Vietnam flag")}>
       <rect width="30" height="20" rx="2" fill="#da251d" />
       <path d="m15 4.2 1.35 4.1h4.32l-3.5 2.54 1.34 4.12L15 12.42l-3.5 2.54 1.34-4.12-3.5-2.54h4.32z" fill="#ffdf00" />
     </svg>;
   }
-  return <svg className={styles.flag} viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice" role="img" aria-label="United Kingdom flag">
+  return <svg className={styles.flag} viewBox="0 0 30 20" preserveAspectRatio="xMidYMid slice" role="img" aria-label={ui("United Kingdom flag")}>
     <rect width="30" height="20" rx="2" fill="#012169" />
     <path d="M0 0 30 20M30 0 0 20" stroke="#fff" strokeWidth="4" />
     <path d="M0 0 30 20M30 0 0 20" stroke="#c8102e" strokeWidth="1.7" />
@@ -26,6 +28,7 @@ function CountryFlag({ country }) {
 }
 
 export default function LanguageSelector() {
+  const ui = useUiTranslation();
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);
@@ -61,7 +64,7 @@ export default function LanguageSelector() {
         onClick={() => setOpen(current => !current)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={`${t('language.current')}: ${t(activeLanguage.labelKey)}. ${t('language.select')}`}
+        aria-label={ui("{{value0}}: {{value1}}. {{value2}}", {value0:(t('language.current')),value1:(t(activeLanguage.labelKey)),value2:(t('language.select'))})}
       >
         <CountryFlag country={activeLanguage.country} />
         <ChevronDown className={open ? styles.chevronOpen : ''} aria-hidden="true" />

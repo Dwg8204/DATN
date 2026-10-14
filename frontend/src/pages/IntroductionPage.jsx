@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../i18n/useUiTranslation.jsx";
 import React from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import styles from './IntroductionPage.module.css';
@@ -86,6 +87,7 @@ export default function IntroductionPage({
   startButtonText = 'Start test',
   onStartTest,
 }) {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const { skill } = useParams();
   const [searchParams] = useSearchParams();
@@ -127,7 +129,7 @@ export default function IntroductionPage({
           const attemptId = started.attemptId;
           const params = new URLSearchParams({ attemptId });
           if (testId) params.set('testId', testId);
-        
+
           if (actualMode === 'full') {
             navigate(`/${skill}/test/part1?${params.toString()}`);
           } else {
@@ -150,7 +152,7 @@ export default function IntroductionPage({
         }
       }
     } catch (e) {
-      showError(getApiError(e, 'Unable to start this test. Please try again.'));
+      showError(getApiError(e, ui("Unable to start this test. Please try again.")));
     } finally {
       setIsStarting(false);
     }
@@ -170,7 +172,7 @@ export default function IntroductionPage({
 
           {/* Instructions */}
           <div className={styles.infoBlock}>
-            <span className={styles.infoTitle}>INSTRUCTIONS TO CANDIDATES</span>
+            <span className={styles.infoTitle}>{ui("INSTRUCTIONS TO CANDIDATES")}</span>
             <span className={styles.infoText}>
               {finalInstructions.split('\n').map((line, i) => (
                 <span key={i}>
@@ -183,7 +185,7 @@ export default function IntroductionPage({
 
           {/* Information */}
           <div className={styles.infoBlockWide}>
-            <span className={styles.infoTitle}>INFORMATION FOR CANDIDATES</span>
+            <span className={styles.infoTitle}>{ui("INFORMATION FOR CANDIDATES")}</span>
             <span className={styles.infoTextWide}>
               {finalInformation.split('\n').map((line, i) => (
                 <span key={i}>
@@ -199,7 +201,7 @@ export default function IntroductionPage({
         <div className={styles.actionBlock}>
           <span className={styles.warning}>{warningText}</span>
           <button className={styles.startBtn} onClick={handleStartTest} disabled={isStarting}>
-            <span className={styles.startBtnText}>{isStarting ? 'Starting...' : startButtonText}</span>
+            <span className={styles.startBtnText}>{isStarting ? ui("Starting...") : startButtonText}</span>
           </button>
         </div>
       </div>

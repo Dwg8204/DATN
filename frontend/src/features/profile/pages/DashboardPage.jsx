@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useEffect } from 'react';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
@@ -22,6 +23,7 @@ const SKILL_COLORS = {
 };
 
 export default function DashboardPage() {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const [dashboard, setDashboard] = useState(null);
   const [loadError, setLoadError] = useState('');
@@ -63,7 +65,7 @@ export default function DashboardPage() {
                 <span className={styles.badge}>{t('dashboard.exam')}</span>
               </div>
               <p className={styles.subtitle}>{t('dashboard.subtitle')}</p>
-              {loadError && <p role="alert">{loadError}</p>}
+              {loadError && <p role="alert">{ui.error(loadError)}</p>}
             </div>
             <div className={styles.headerActions}>
             </div>
@@ -90,7 +92,7 @@ export default function DashboardPage() {
               <div className={styles.kpiInfo}>
                 <div className={styles.kpiLabel} style={{ color: '#d97706', opacity: 0.85 }}>{t('dashboard.averageScore')}</div>
                 <div className={styles.kpiValueRow}>
-                  <span className={styles.kpiValue}>{avgCriteriaScore == null ? 'N/A' : `${avgCriteriaScore}%`}</span>
+                  <span className={styles.kpiValue}>{avgCriteriaScore == null ? ui("N/A") : ui("{{value0}}%", {value0:(avgCriteriaScore)})}</span>
                 </div>
                 <div className={styles.kpiProgressBar}>
                   <div className={styles.kpiProgressFill} style={{ width: `${avgCriteriaScore ?? 0}%`, background: '#f59e0b' }}></div>
@@ -212,9 +214,9 @@ export default function DashboardPage() {
                         className={`${styles.filterBtn} ${partFilter === part ? styles.active : ''}`}
                         onClick={() => setPartFilter(part)}
                       >
-                        {label}
+                        {ui(label)}
                         {part !== 'all' && partCounts[part] !== undefined && (
-                          ` (${partCounts[part]})`
+                          ui("({{value0}})", {value0:(partCounts[part])})
                         )}
                       </button>
                     );

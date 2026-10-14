@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -15,6 +16,7 @@ const ITEMS_PER_PAGE = 1;
 const PAGE_QUERY_SCHEMA = { currentPage: { ...queryParam.positiveInt(1), param: 'page' } };
 
 export default function Part1ListeningPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
@@ -34,7 +36,7 @@ export default function Part1ListeningPage() {
   })), [questions]);
 
   if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
-  if (!paper?.parts?.['1']) return <AttemptPageState error="Part 1 is not included in this test." />;
+  if (!paper?.parts?.['1']) return <AttemptPageState error={ui("Part 1 is not included in this test.")} />;
 
   const goToPartTwo = async () => {
     await flush();
@@ -56,12 +58,10 @@ export default function Part1ListeningPage() {
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div><div className={styles.partTitle}>Part 1</div><div className={styles.skillTitle}>Listening Test</div></div>
+          <div><div className={styles.partTitle}>{ui("Part 1")}</div><div className={styles.skillTitle}>{ui("LISTENING TEST")}</div></div>
           <SaveIndicator status={saveStatus} />
         </div>
-        <InstructionBlock title={`Question ${startIndex + 1} of ${questions.length}`}>
-          Listen to the recording and choose the correct answer (A, B or C) for each question.
-        </InstructionBlock>
+        <InstructionBlock title={ui("Question {{value0}} of {{value1}}", {value0:(startIndex + 1),value1:(questions.length)})}>{ui("Listen to the recording and choose the correct answer (A, B or C) for each question.")}</InstructionBlock>
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
             {currentQuestions.map((question, localIndex) => {
@@ -93,7 +93,7 @@ export default function Part1ListeningPage() {
         </div>
       </div>
       <TestFooter
-        partLabel="Part 1"
+        partLabel={ui("Part 1")}
         questions={footerQuestions}
         answeredIds={Object.keys(answers).filter(key => key.startsWith('p1:'))}
         currentPageQuestionIds={currentQuestions.map(question => question.key)}
@@ -101,7 +101,7 @@ export default function Part1ListeningPage() {
         onPrevClick={() => setCurrentPage(page => Math.max(1, page - 1))}
         onNextClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
         onSubmitClick={isFullTest ? () => void goToPartTwo().catch(() => undefined) : () => setShowSubmitModal(true)}
-        submitLabel={isFullTest ? 'Next Part' : submitting ? 'Submitting…' : 'Submit'}
+        submitLabel={isFullTest ? ui("Next Part") : submitting ? ui("Submitting…") : ui("Submit")}
         submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={currentPage > 1}
         hasNext={currentPage < totalPages}

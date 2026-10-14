@@ -1,3 +1,5 @@
+import { uiLocale } from '../../../i18n/translateUi.js';
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import Pagination from '../../../components/common/Pagination';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -60,6 +62,7 @@ const MOCK_TESTS = [
 ];
 
 export default function SpeakingTestListPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [urlState, setUrlState] = useUrlQueryState(LIST_QUERY_SCHEMA);
   const { activeTab, page, pageSize, query } = urlState;
@@ -98,7 +101,7 @@ export default function SpeakingTestListPage() {
     const comp = completedTests[test.id];
     if (comp) {
       const d = new Date(comp.submittedAt);
-      const formattedDate = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.toLocaleString('en-US', { month: 'short' })} ${d.getDate().toString().padStart(2, '0')}, ${d.getFullYear()}`;
+      const formattedDate = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.toLocaleString(uiLocale(), { month: 'short' })} ${d.getDate().toString().padStart(2, '0')}, ${d.getFullYear()}`;
       return {
         ...test,
         status: 'Completed',
@@ -113,13 +116,11 @@ export default function SpeakingTestListPage() {
   return (
     <div className={styles.page}>
       <div className={styles.titleContainer}>
-        <span className={styles.title}>SPEAKING TEST</span>
+        <span className={styles.title}>{ui("SPEAKING TEST")}</span>
       </div>
 
       <div className={styles.tabsBox}>
-        <div className={styles.tabsLabel}>
-          Choose part
-          <div className={styles.tabsIcon}>
+        <div className={styles.tabsLabel}>{ui("Choose part")}<div className={styles.tabsIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M7 10L12 15L17 10" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -132,7 +133,7 @@ export default function SpeakingTestListPage() {
               className={`${styles.tabItem} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
               onClick={() => setActiveTab(tab.id)}
             >
-              <span className={styles.tabText}>{tab.label}</span>
+              <span className={styles.tabText}>{ui(tab.label)}</span>
             </div>
           ))}
         </div>
@@ -147,43 +148,41 @@ export default function SpeakingTestListPage() {
                   <circle cx="11" cy="11" r="7" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                   <path d="M20 20L16 16" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                <input type="text" className={styles.searchInput} placeholder="Search by test name." value={query} onChange={e => setQuery(e.target.value)} />
+                <input type="text" className={styles.searchInput} placeholder={ui("Search by test name.")} value={query} onChange={e => setQuery(e.target.value)} />
               </div>
             </div>
             <button className={styles.searchBtn}>
-              <span className={styles.searchBtnText}>Search</span>
+              <span className={styles.searchBtnText}>{ui("Search")}</span>
             </button>
           </div>
 
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
               {testsToRender.length === 0 ? (
-                <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>
-                  No tests available for this part yet.
-                </div>
+                <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>{ui("No tests available for this part yet.")}</div>
               ) : (
                 testsToRender.slice((page - 1) * pageSize, page * pageSize).map((test) => (
                   <div key={test.id} className={styles.testCard}>
                     <div className={styles.cardTop}>
-                      <div className={styles.cardTitle}>{test.title}</div>
+                      <div className={styles.cardTitle}>{ui(test.title)}</div>
                       <div className={styles.cardInfoRow}>
                         <div className={styles.cardImageWrapper}>
-                          <img className={styles.cardImage} src={test.thumbnail || 'https://placehold.co/157x79'} alt="Thumbnail" />
+                          <img className={styles.cardImage} src={test.thumbnail || 'https://placehold.co/157x79'} alt={ui("Thumbnail")} />
                         </div>
                         {test.status === 'Completed' ? (
                           <div className={styles.cardDetails}>
                             <div className={styles.cardDesc} style={{ whiteSpace: 'pre-line' }}>{test.desc}</div>
                             <div className={styles.statsList}>
                               <div className={styles.statItem}>
-                                <span className={styles.statLabel}>Submitted:</span>
+                                <span className={styles.statLabel}>{ui("Submitted:")}</span>
                                 <span className={styles.statValue}>{test.submitted}</span>
                               </div>
                               <div className={styles.statItem}>
-                                <span className={styles.statLabel}>Duration:</span>
+                                <span className={styles.statLabel}>{ui("Duration:")}</span>
                                 <span className={styles.statValue}>{test.duration}</span>
                               </div>
                               <div className={styles.statItem}>
-                                <span className={styles.statLabel}>Accuracy:</span>
+                                <span className={styles.statLabel}>{ui("Accuracy:")}</span>
                                 <span className={`${styles.statValue} ${test.accuracy >= 80 ? styles.statValueSuccess : styles.statValueDanger}`}>
                                   {test.accuracy}%
                                 </span>
@@ -201,7 +200,7 @@ export default function SpeakingTestListPage() {
                     <div className={styles.cardActions}>
                       {test.status === 'Completed' && (
                         <button className={styles.reviewBtn} onClick={() => handleReview(test)}>
-                          <span className={styles.reviewBtnText}>Review</span>
+                          <span className={styles.reviewBtnText}>{ui("Review")}</span>
                         </button>
                       )}
                       <button className={styles.doTestBtn} onClick={() => {
@@ -212,7 +211,7 @@ export default function SpeakingTestListPage() {
                           handleDoTestPart(test.id, partNum);
                         }
                       }}>
-                        <span className={styles.doTestBtnText}>{test.status === 'Completed' ? 'Try again' : 'Do the test'}</span>
+                        <span className={styles.doTestBtnText}>{test.status === 'Completed' ? ui("Try again") : ui("Do the test")}</span>
                       </button>
                     </div>
 
@@ -222,11 +221,11 @@ export default function SpeakingTestListPage() {
 
                     {test.status === 'Completed' ? (
                       <div className={styles.statusBadgeCompleted}>
-                        <span className={styles.statusBadgeCompletedText}>Completed</span>
+                        <span className={styles.statusBadgeCompletedText}>{ui("Completed")}</span>
                       </div>
                     ) : (
                       <div className={styles.statusBadgeNotStarted}>
-                        <span className={styles.statusBadgeNotStartedText}>Not Started</span>
+                        <span className={styles.statusBadgeNotStartedText}>{ui("Not started")}</span>
                       </div>
                     )}
                   </div>

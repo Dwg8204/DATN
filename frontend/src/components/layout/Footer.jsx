@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import { Link } from 'react-router-dom';
 import styles from './Footer.module.css';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +22,7 @@ const contactItems = [
 ];
 
 export default function Footer() {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const { theme } = useTheme();
   return (
@@ -30,7 +32,7 @@ export default function Footer() {
           <Link to="/">
             <img
               src={theme === 'dark' ? LOGO_DARK : LOGO_LIGHT}
-              alt="AptiMate Logo"
+              alt={ui("AptiMate Logo")}
               className={styles.footerLogo}
             />
           </Link>

@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import Pagination from '../../../components/common/Pagination';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import ConfirmModal from '../../../components/common/ConfirmModal';
@@ -21,6 +22,7 @@ const positiveQueryInt = (value, fallback, maximum = 100) => {
 const latestAccuracy = (attempt) => attempt?.lastAccuracy ?? attempt?.bestAccuracy ?? 0;
 
 export default function DictationPage() {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const { showError, showSuccess, showInfo, dismissToast } = useToast();
   const { user, isAuthReady, authConnectionError, retryAuth } = useAuth();
@@ -500,7 +502,7 @@ export default function DictationPage() {
               />
             </label>
 
-            <section className={styles.topicGrid} aria-label={`${mode} topics`}>
+            <section className={styles.topicGrid} aria-label={ui("{{value0}} topics", {value0:(mode)})}>
             {paginatedTopics.map((topic) => {
               const lessons = allExercises.filter((item) => item.folderId === topic.id);
               const cards = allFlashcards.filter((item) => item.folderId === topic.id);
@@ -543,7 +545,7 @@ export default function DictationPage() {
           {activeExercises.map((item, index) => (
             <button key={item.id} disabled={saving} className={index === exerciseIndex ? styles.activeLesson : ''} onClick={() => { setExerciseIndex(index); resetExercise(); }}>
               <span className={styles.lessonNumber}>{index + 1}</span>
-              <span><strong>{item.title}</strong><small>{item.topic}</small></span>
+              <span><strong>{ui(item.title)}</strong><small>{item.topic}</small></span>
               {progress[item.id] && <span className={styles.best}>{latestAccuracy(progress[item.id])}%</span>}
             </button>
           ))}
@@ -551,7 +553,7 @@ export default function DictationPage() {
 
         <main className={styles.practiceCard}>
           <div className={styles.cardHeader}>
-            <div><span>{t('dictation.lesson', { number: exerciseIndex + 1 })}</span><h2>{exercise.title}</h2></div>
+            <div><span>{t('dictation.lesson', { number: exerciseIndex + 1 })}</span><h2>{ui(exercise.title)}</h2></div>
           </div>
 
           <div className={styles.player}>
@@ -615,7 +617,7 @@ export default function DictationPage() {
               <button type="button" onClick={() => setCardIndex((cardIndex + 1) % activeFlashcards.length)}>{t('dictation.next')} <ChevronRight /></button>
             </div>
             <div className={styles.wordDots} aria-label={t('dictation.cardProgress')}>
-              {activeFlashcards.map((card, index) => <button type="button" key={card.id} className={index === cardIndex ? styles.activeWordDot : ''} onClick={() => setCardIndex(index)} aria-label={`${index + 1}`} />)}
+              {activeFlashcards.map((card, index) => <button type="button" key={card.id} className={index === cardIndex ? styles.activeWordDot : ''} onClick={() => setCardIndex(index)} aria-label={ui("{{value0}}", {value0:(index + 1)})} />)}
             </div>
           </main>
         </>
@@ -693,7 +695,7 @@ export default function DictationPage() {
                   const answered = Boolean(quizAnswer);
                   const isCorrect = option.id === currentQuizCard.id;
                   const isChosen = option.id === quizAnswer;
-                  return <button type="button" key={option.id} disabled={answered} className={answered && isCorrect ? styles.correctQuizOption : answered && isChosen ? styles.wrongQuizOption : ''} onClick={() => answerQuiz(option.id)}>{option.label}</button>;
+                  return <button type="button" key={option.id} disabled={answered} className={answered && isCorrect ? styles.correctQuizOption : answered && isChosen ? styles.wrongQuizOption : ''} onClick={() => answerQuiz(option.id)}>{ui(option.label)}</button>;
                 })}
               </div>
               {quizAnswer && <button type="button" className={styles.nextActivity} onClick={nextQuiz}>{t('dictation.next')} <ChevronRight /></button>}

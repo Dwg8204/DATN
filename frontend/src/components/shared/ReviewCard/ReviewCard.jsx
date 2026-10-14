@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import styles from './ReviewCard.module.css';
 
 export default function ReviewCard({
@@ -8,6 +9,7 @@ export default function ReviewCard({
   ratingValue = '5.0',
   comment = '',
 }) {
+  const ui = useUiTranslation();
   return (
     <div className={styles.card}>
       <div className={styles.userInfo}>
@@ -18,7 +20,7 @@ export default function ReviewCard({
         </div>
       </div>
       <div className={styles.ratingRow}>
-        <img src={ratingImage} alt="Rating" className={styles.ratingImage} />
+        <img src={ratingImage} alt={ui("Rating")} className={styles.ratingImage} />
         <span className={styles.ratingValue}>{ratingValue}</span>
       </div>
       <span className={styles.comment}>{comment}</span>

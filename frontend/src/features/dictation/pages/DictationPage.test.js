@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -43,7 +44,7 @@ function harness(tab = 'words', topicMode = null) {
     '../components/VocabularyWordInput': component,
   };
   const module = { exports: {} };
-  runInNewContext(compiled, { module, require: name => { if (!(name in mocks)) throw new Error(`Unexpected import: ${name}`); return mocks[name]; }, URLSearchParams,
+  runInNewContext(compiled, { module, require: withUiTranslationMocks(name => { if (!(name in mocks)) throw new Error(`Unexpected import: ${name}`); return mocks[name]; }), URLSearchParams,
     SpeechSynthesisUtterance: class { constructor(text) { this.text = text; } },
     window: { speechSynthesis: { cancel() {}, speak: utterance => spoken.push(utterance) }, addEventListener() {}, removeEventListener() {}, localStorage: { getItem: () => null }, confirm: () => { throw new Error('Native confirmation must not be used'); } } });
   return {

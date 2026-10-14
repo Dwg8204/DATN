@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, BrainCircuit, LayoutGrid, List, BookOpen } from 'lucide-react';
@@ -13,9 +14,10 @@ const FLASHCARD_QUERY_SCHEMA = {
 };
 
 const FlashcardPage = () => {
+  const ui = useUiTranslation();
   const { showError } = useToast();
   const navigate = useNavigate();
-  
+
   const [vocabData, setVocabData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -24,7 +26,7 @@ const FlashcardPage = () => {
   const setViewMode = value => setUrlState({ viewMode: value });
   const setCardMode = value => setUrlState({ cardMode: value });
   const setFilter = value => setUrlState({ filter: String(value) });
-  
+
   // State for flashcard engine
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
@@ -35,7 +37,7 @@ const FlashcardPage = () => {
       try {
         const dataModule = await import('../services/mockData/vocab.json');
         const data = dataModule.default || dataModule;
-        
+
         if (cancelled) return;
         setVocabData(data.words || []);
         setLoading(false);
@@ -93,9 +95,9 @@ const FlashcardPage = () => {
               <ArrowLeft className="w-5 h-5" />
             </a>
             <div className="flex items-center gap-1 text-sm text-gray-500">
-              <span className="font-semibold text-gray-900 text-lg">Flashcard</span>
+              <span className="font-semibold text-gray-900 text-lg">{ui("Flashcard")}</span>
               <span className="text-gray-400 text-lg">/</span>
-              <span className="font-semibold text-gray-900 text-lg">Nghĩa</span>
+              <span className="font-semibold text-gray-900 text-lg">{ui("Meaning")}</span>
             </div>
           </div>
         </header>
@@ -107,7 +109,7 @@ const FlashcardPage = () => {
   }
 
 
-  if (loadError) return <DataLoadError title="Flashcards are unavailable" message={loadError} />;
+  if (loadError) return <DataLoadError title={ui("Flashcards are unavailable")} message={loadError} />;
 
   return (
     <div className="min-h-screen bg-[#d9d9d9] flex flex-col pb-12">
@@ -121,44 +123,38 @@ const FlashcardPage = () => {
               className={`text-base sm:text-xl font-bold transition-colors mr-1 sm:mr-2 ${
                 viewMode === 'list' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-700'
               }`}
-            >
-              Dictation
-            </button>
+            >{ui("Dictation")}</button>
             <span className="text-gray-300 text-base sm:text-xl font-light mx-1 sm:mx-2">|</span>
             <button
               onClick={() => { setCardMode('flashcard'); setViewMode('flashcard'); setIsFlipped(false); setCurrentIndex(0); }}
               className={`text-base sm:text-xl font-bold transition-colors ${
                 viewMode === 'flashcard' && cardMode === 'flashcard' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-700'
               }`}
-            >
-              Flashcard
-            </button>
+            >{ui("Flashcard")}</button>
             <span className="text-gray-300 text-base sm:text-xl font-light mx-1 sm:mx-2">/</span>
             <button
               onClick={() => { setCardMode('nghia'); setViewMode('flashcard'); setIsFlipped(false); setCurrentIndex(0); }}
               className={`text-base sm:text-xl font-bold transition-colors ${
                 viewMode === 'flashcard' && cardMode === 'nghia' ? 'text-blue-500' : 'text-gray-400 hover:text-gray-700'
               }`}
-            >
-              Nghĩa
-            </button>
+            >{ui("Meaning")}</button>
           </div>
 
           <div className="hidden sm:flex items-center gap-4 text-sm font-medium">
-            <span className="text-gray-600">👤 User Profile</span>
+            <span className="text-gray-600">{ui("👤 User Profile")}</span>
           </div>
         </div>
       </header>
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 flex flex-col">
-        
+
         {viewMode === 'flashcard' ? (
-          
+
           /* FLASHCARD ENGINE */
           <div className="flex-1 flex flex-col items-center justify-center w-full bg-white p-4 sm:p-8 rounded-lg shadow-sm">
-            
+
             {/* Flashcard Container */}
-            <div 
+            <div
               className="relative w-full max-w-2xl h-[300px] sm:h-[400px] cursor-pointer group rounded-xl"
               onClick={handleFlip}
               style={{ backgroundColor: '#e6c8b3' }} // Match the pale tan color from mockup
@@ -205,22 +201,22 @@ const FlashcardPage = () => {
             {/* Bottom Controls */}
             <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-4 sm:gap-8 mt-6 sm:mt-8 text-gray-500">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-blue-500">Auto play</span>
+                <span className="text-sm font-semibold text-blue-500">{ui("Auto play")}</span>
                 <div className="w-8 h-4 bg-red-500 rounded-full flex items-center p-0.5 cursor-pointer">
                   <div className="w-3 h-3 bg-white rounded-full translate-x-4"></div>
                 </div>
               </div>
               <button className="text-red-500 hover:text-red-600"><RefreshCw className="w-5 h-5" /></button>
-              
+
               <div className="flex items-center gap-4">
-                <button 
+                <button
                   onClick={(e) => { e.stopPropagation(); setCurrentIndex(prev => prev > 0 ? prev - 1 : filteredVocab.length - 1); setIsFlipped(false); }}
                   className="font-bold hover:text-gray-800"
                 >
                   {'<'}
                 </button>
                 <span className="font-medium text-sm text-gray-700">{currentIndex + 1} / {filteredVocab.length}</span>
-                <button 
+                <button
                   onClick={(e) => { e.stopPropagation(); setCurrentIndex(prev => prev < filteredVocab.length - 1 ? prev + 1 : 0); setIsFlipped(false); }}
                   className="font-bold hover:text-gray-800"
                 >
@@ -231,26 +227,26 @@ const FlashcardPage = () => {
               <button className="hover:text-gray-800"><RefreshCw className="w-5 h-5" /></button>
               <button className="hover:text-gray-800"><LayoutGrid className="w-5 h-5" /></button>
             </div>
-            
+
           </div>
-          
+
         ) : (
-          
+
           /* LIST VIEW (DICTATION / NOTEBOOK) */
           <div className="w-full flex flex-col lg:flex-row gap-4 sm:gap-8">
             {/* Left Column: Word List */}
             <div className="flex-1 bg-white rounded-lg shadow-sm p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row gap-3 justify-between sm:items-center mb-6">
-                <h2 className="text-lg sm:text-xl font-bold text-gray-800">My Vocabulary's Notebook</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800">{ui("My Vocabulary's Notebook")}</h2>
                 <div className="relative">
-                  <input type="text" placeholder="Search..." className="border border-gray-200 rounded-md py-1.5 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                  <input type="text" placeholder={ui("Search...")} className="border border-gray-200 rounded-md py-1.5 px-3 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500" />
                   <span className="absolute right-2 top-2 text-gray-400">🔍</span>
                 </div>
               </div>
 
               <div className="flex gap-4 border-b border-gray-100 pb-2 mb-4">
-                <button className="text-blue-500 font-medium text-sm border-b-2 border-blue-500 pb-2">All words</button>
-                <button className="text-gray-500 hover:text-gray-700 text-sm pb-2">Your list</button>
+                <button className="text-blue-500 font-medium text-sm border-b-2 border-blue-500 pb-2">{ui("All words")}</button>
+                <button className="text-gray-500 hover:text-gray-700 text-sm pb-2">{ui("Your list")}</button>
               </div>
 
               <div className="space-y-4">
@@ -270,7 +266,7 @@ const FlashcardPage = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="flex justify-center items-center mt-6 gap-2 text-gray-500">
                 <button className="p-1 hover:text-gray-800 font-bold">{'<'}</button>
                 <button className="w-6 h-6 rounded bg-gray-200 text-gray-800 text-sm font-medium flex items-center justify-center">1</button>
@@ -284,36 +280,32 @@ const FlashcardPage = () => {
             {/* Right Column: Notebook Tools */}
             <div className="w-full lg:w-[300px] shrink-0">
               <div className="bg-red-50/50 rounded-lg p-4 sm:p-6 border border-red-100">
-                <h3 className="font-bold text-gray-800 mb-6">Notebook tools</h3>
-                
+                <h3 className="font-bold text-gray-800 mb-6">{ui("Notebook tools")}</h3>
+
                 <div className="space-y-4 mb-8">
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">View mode</span>
-                    <button className="text-gray-400 bg-white border border-gray-200 px-2 py-1 rounded w-24 text-left flex justify-between items-center">
-                      List view <span className="text-xs">▼</span>
+                    <span className="text-gray-600">{ui("View mode")}</span>
+                    <button className="text-gray-400 bg-white border border-gray-200 px-2 py-1 rounded w-24 text-left flex justify-between items-center">{ ui("List view") + ' ' }<span className="text-xs">▼</span>
                     </button>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">Audio accent</span>
+                    <span className="text-gray-600">{ui("Audio accent")}</span>
                     <button className="text-gray-400 bg-white border border-gray-200 px-2 py-1 rounded w-24 text-left flex justify-between items-center">
                       UK <span className="text-xs">▼</span>
                     </button>
                   </div>
                   <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-600">Translation mode</span>
-                    <button className="text-gray-400 bg-white border border-gray-200 px-2 py-1 rounded w-24 text-left flex justify-between items-center">
-                      Auto <span className="text-xs">▼</span>
+                    <span className="text-gray-600">{ui("Translation mode")}</span>
+                    <button className="text-gray-400 bg-white border border-gray-200 px-2 py-1 rounded w-24 text-left flex justify-between items-center">{ ui("Auto") + ' ' }<span className="text-xs">▼</span>
                     </button>
                   </div>
                 </div>
 
-                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-md transition-colors text-sm">
-                  Review & practice
-                </button>
+                <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-md transition-colors text-sm">{ui("Review & practice")}</button>
               </div>
             </div>
           </div>
-          
+
         )}
 
       </main>

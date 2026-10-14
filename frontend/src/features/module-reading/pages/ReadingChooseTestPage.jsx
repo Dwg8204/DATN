@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import Pagination from '../../../components/common/Pagination';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -23,6 +24,7 @@ const LIST_QUERY_SCHEMA = {
 };
 
 export default function ReadingChooseTestPage() {
+  const ui = useUiTranslation();
   const { showError } = useToast();
   const navigate = useNavigate();
   const [tests, setTests] = useState([]);
@@ -78,13 +80,11 @@ export default function ReadingChooseTestPage() {
   return (
     <div className={styles.page}>
       <div className={styles.titleContainer}>
-        <span className={styles.title}>READING TEST</span>
+        <span className={styles.title}>{ui("READING TEST")}</span>
       </div>
 
       <div className={styles.tabsBox}>
-        <div className={styles.tabsLabel}>
-          Choose part
-          <div className={styles.tabsIcon}>
+        <div className={styles.tabsLabel}>{ui("Choose part")}<div className={styles.tabsIcon}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M7 10L12 15L17 10" stroke="#131927" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -97,7 +97,7 @@ export default function ReadingChooseTestPage() {
               className={`${styles.tabItem} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
               onClick={() => setActiveTab(tab.id)}
             >
-              <span className={styles.tabText}>{tab.label}</span>
+              <span className={styles.tabText}>{ui(tab.label)}</span>
             </div>
           ))}
         </div>
@@ -105,7 +105,7 @@ export default function ReadingChooseTestPage() {
 
       <div className={styles.mainContent}>
         <div className={styles.testSection}>
-          {loadError && <DataLoadError title="Reading tests are unavailable" message={loadError} />}
+          {loadError && <DataLoadError title={ui("Reading tests are unavailable")} message={loadError} />}
           {/* Search Row */}
           <div className={styles.searchRow}>
             <div className={styles.searchInputContainer}>
@@ -117,14 +117,14 @@ export default function ReadingChooseTestPage() {
                 <input
                   type="text"
                   className={styles.searchInput}
-                  placeholder="Search by test name."
+                  placeholder={ui("Search by test name.")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
             <button className={styles.searchBtn}>
-              <span className={styles.searchBtnText}>Search</span>
+              <span className={styles.searchBtnText}>{ui("Search")}</span>
             </button>
           </div>
 
@@ -132,13 +132,9 @@ export default function ReadingChooseTestPage() {
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
               {loading ? (
-                <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>
-                  Loading tests...
-                </div>
+                <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>{ui("Loading tests…")}</div>
               ) : filteredTests.length === 0 && !loadError ? (
-                <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>
-                  No tests available for this search/part yet.
-                </div>
+                <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>{ui("No tests available for this search/part yet.")}</div>
               ) : (
                 filteredTests.slice((page - 1) * pageSize, page * pageSize).map((test, index) => {
                   // Simulate status based on mock index (Completed or Not Started)
@@ -147,7 +143,7 @@ export default function ReadingChooseTestPage() {
                   return (
                     <div key={test.id} className={styles.testCard}>
                       <div className={styles.cardTop}>
-                        <div className={styles.cardTitle}>{test.title}</div>
+                        <div className={styles.cardTitle}>{ui(test.title)}</div>
                         <div className={styles.cardInfoRow}>
                           <div className={styles.cardImageWrapper}>
                             <img className={styles.cardImage} src={test.thumbnail} alt={test.title} />
@@ -155,18 +151,18 @@ export default function ReadingChooseTestPage() {
 
                           {isCompleted ? (
                             <div className={styles.cardDetails}>
-                              <div className={styles.cardDesc}>Aptis Practice Tests<br />Reading skill</div>
+                              <div className={styles.cardDesc}>{ui("Aptis Practice Tests")}<br />{ui("Reading skill")}</div>
                               <div className={styles.statsList}>
                                 <div className={styles.statItem}>
-                                  <span className={styles.statLabel}>Submitted:</span>
-                                  <span className={styles.statValue}>20:15 - Jan 06, 2026</span>
+                                  <span className={styles.statLabel}>{ui("Submitted:")}</span>
+                                  <span className={styles.statValue}>{ui("20:15 - Jan 06, 2026")}</span>
                                 </div>
                                 <div className={styles.statItem}>
-                                  <span className={styles.statLabel}>Duration:</span>
+                                  <span className={styles.statLabel}>{ui("Duration:")}</span>
                                   <span className={styles.statValue}>00:15:30</span>
                                 </div>
                                 <div className={styles.statItem}>
-                                  <span className={styles.statLabel}>Accuracy:</span>
+                                  <span className={styles.statLabel}>{ui("Accuracy:")}</span>
                                   <span className={`${styles.statValue} ${styles.statValueSuccess}`}>
                                     85%
                                   </span>
@@ -175,10 +171,7 @@ export default function ReadingChooseTestPage() {
                             </div>
                           ) : (
                             <div className={styles.cardDetails}>
-                              <div className={styles.cardDesc} style={{ whiteSpace: 'pre-line' }}>
-                                Aptis general practice material.<br />
-                                Time limit: {test.duration} mins.<br />
-                                Level: {test.level}
+                              <div className={styles.cardDesc} style={{ whiteSpace: 'pre-line' }}>{ui("Aptis general practice material.")}<br />{ ui("Time limit:") + ' ' }{test.duration}{ ' ' + ui("mins.") }<br />{ ui("Level:") + ' ' }{test.level}
                               </div>
                             </div>
                           )}
@@ -191,29 +184,29 @@ export default function ReadingChooseTestPage() {
                             className={styles.reviewBtn}
                             onClick={() => navigate(`/reading/review/sess-mock`)}
                           >
-                            <span className={styles.reviewBtnText}>Review</span>
+                            <span className={styles.reviewBtnText}>{ui("Review")}</span>
                           </button>
                         )}
                         <button className={styles.doTestBtn} onClick={() => handleDoTest(test.id)}>
                           <span className={styles.doTestBtnText}>
-                            {isCompleted ? 'Try again' : 'Do the test'}
+                            {isCompleted ? ui("Try again") : ui("Do the test")}
                           </span>
                         </button>
                       </div>
 
                       <div className={styles.partBadge}>
                         <span className={styles.partBadgeText}>
-                          {activeTab === 'full' ? 'Full Test' : `Part ${activeTab.replace('part', '')}`}
+                          {activeTab === 'full' ? ui("Full test") : ui("Part {{value0}}", {value0:(activeTab.replace('part', ''))})}
                         </span>
                       </div>
 
                       {isCompleted ? (
                         <div className={styles.statusBadgeCompleted}>
-                          <span className={styles.statusBadgeCompletedText}>Completed</span>
+                          <span className={styles.statusBadgeCompletedText}>{ui("Completed")}</span>
                         </div>
                       ) : (
                         <div className={styles.statusBadgeNotStarted}>
-                          <span className={styles.statusBadgeNotStartedText}>Not Started</span>
+                          <span className={styles.statusBadgeNotStartedText}>{ui("Not started")}</span>
                         </div>
                       )}
                     </div>

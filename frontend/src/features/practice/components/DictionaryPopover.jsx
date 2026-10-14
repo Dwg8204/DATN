@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BookOpen, ChevronDown, ChevronUp, FolderPlus, Plus, RotateCcw, Volume2, X } from 'lucide-react';
 import styles from './DictionaryPopover.module.css';
@@ -26,6 +27,7 @@ async function lookup(word, signal, forceRefresh = false) {
 }
 
 export default function DictionaryPopover({ active }) {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const [request, setRequest] = useState(null);
   const [state, setState] = useState({ loading: false, data: null, error: '' });
@@ -128,7 +130,7 @@ export default function DictionaryPopover({ active }) {
     setFoldersOpen(false);
   };
 
-  return <section ref={panelRef} className={styles.popover} role="dialog" aria-label={`Dictionary definition for ${request.word}`}
+  return <section ref={panelRef} className={styles.popover} role="dialog" aria-label={ui("Dictionary definition for {{value0}}", {value0:(request.word)})}
     style={{ '--anchor-x': `${request.x}px`, '--anchor-y': `${request.y}px` }}>
     <header>
       <div><h2>{request.word}</h2><p>{entry?.phonetic || entry?.phonetics?.find(item => item.text)?.text || ''}</p></div>
@@ -144,7 +146,7 @@ export default function DictionaryPopover({ active }) {
     </nav>
     <div className={styles.content}>
       {state.loading && <p>{t('dictionary.loading')}</p>}
-      {state.error && <p className={styles.error}>{state.error}</p>}
+      {state.error && <p className={styles.error}>{ui.error(state.error)}</p>}
       {!state.loading && !state.error && tab === 'meaning' && <>
         {translations.length ? translations.map(translation => <article key={translation.partOfSpeech}>
           <span>{t(`dictionary.parts.${translation.partOfSpeech}`, { defaultValue: translation.partOfSpeech })}</span>

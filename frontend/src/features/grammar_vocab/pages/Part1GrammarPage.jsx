@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -15,6 +16,7 @@ const ITEMS_PER_PAGE = 3;
 const PAGE_QUERY_SCHEMA = { currentPage: { ...queryParam.positiveInt(1), param: 'page' } };
 
 export default function Part1GrammarPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
@@ -34,7 +36,7 @@ export default function Part1GrammarPage() {
   })), [questions]);
 
   if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
-  if (!paper?.parts?.['1']) return <AttemptPageState error="Part 1 is not included in this test." />;
+  if (!paper?.parts?.['1']) return <AttemptPageState error={ui("Part 1 is not included in this test.")} />;
 
   const goToPartTwo = async () => {
     await flush();
@@ -57,10 +59,10 @@ export default function Part1GrammarPage() {
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div><div className={styles.partTitle}>Part 1</div><div className={styles.skillTitle}>Grammar &amp; Vocabulary</div></div>
+          <div><div className={styles.partTitle}>{ui("Part 1")}</div><div className={styles.skillTitle}>{ui("Grammar & Vocabulary")}</div></div>
           <SaveIndicator status={saveStatus} />
         </div>
-        <InstructionBlock title={`Questions ${startIndex + 1}-${Math.min(startIndex + ITEMS_PER_PAGE, questions.length)}`}>
+        <InstructionBlock title={ui("Questions {{value0}}-{{value1}}", {value0:(startIndex + 1),value1:(Math.min(startIndex + ITEMS_PER_PAGE, questions.length))})}>
           <RichTextContent value={paper.parts['1'].instruction || 'Choose the correct letter, A, B or C.'} />
         </InstructionBlock>
         <div className={styles.questionsContainer}>
@@ -87,7 +89,7 @@ export default function Part1GrammarPage() {
         </div>
       </div>
       <TestFooter
-        partLabel="Part 1"
+        partLabel={ui("Part 1")}
         questions={footerQuestions}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={currentQuestions.map(question => question.key)}
@@ -95,7 +97,7 @@ export default function Part1GrammarPage() {
         onPrevClick={() => setCurrentPage(page => Math.max(1, page - 1))}
         onNextClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
         onSubmitClick={isFullTest ? () => void goToPartTwo().catch(() => undefined) : () => setShowSubmitModal(true)}
-        submitLabel={isFullTest ? 'Next Part' : submitting ? 'Submitting…' : 'Submit'}
+        submitLabel={isFullTest ? ui("Next Part") : submitting ? ui("Submitting…") : ui("Submit")}
         submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={currentPage > 1}
         hasNext={currentPage < totalPages}

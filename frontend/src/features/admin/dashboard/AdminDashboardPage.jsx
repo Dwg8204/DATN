@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import DashboardActivityChart from './components/DashboardActivityChart';
 import DashboardMetricCard from './components/DashboardMetricCard';
 import DashboardPeriodFilter from './components/DashboardPeriodFilter';
@@ -13,8 +14,9 @@ const DASHBOARD_QUERY_SCHEMA = {
 };
 
 function DashboardSkeleton() {
+  const ui = useUiTranslation();
   return (
-    <div className={styles.skeletonGrid} aria-label="Loading dashboard" role="status">
+    <div className={styles.skeletonGrid} aria-label={ui("Loading dashboard")} role="status">
       <div className={styles.skeletonCard} />
       <div className={styles.skeletonCard} />
       <div className={styles.skeletonChart} />
@@ -24,6 +26,7 @@ function DashboardSkeleton() {
 }
 
 export default function AdminDashboardPage() {
+  const ui = useUiTranslation();
   const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
   const { period, testSkill, activitySkill } = urlState;
   const setPeriod = value => setUrlState({ period: value });
@@ -35,27 +38,27 @@ export default function AdminDashboardPage() {
     <div className={styles.page} aria-busy={loading}>
       <div className={styles.toolbar}>
         <DashboardPeriodFilter value={period} onChange={setPeriod} />
-        {data && <span className={styles.updatedAt}>Updated {formatGeneratedAt(data.generatedAt)} (UTC+7)</span>}
+        {data && <span className={styles.updatedAt}>{ ui("Updated") + ' ' }{formatGeneratedAt(data.generatedAt)} (UTC+7)</span>}
       </div>
 
       {loading && !data ? <DashboardSkeleton /> : null}
       {error && !data ? (
         <section className={styles.errorState} role="alert">
-          <strong>Dashboard data could not be loaded.</strong>
-          <span>{error}</span>
-          <button type="button" onClick={retry}>Try again</button>
+          <strong>{ui("Dashboard data could not be loaded.")}</strong>
+          <span>{ui.error(error)}</span>
+          <button type="button" onClick={retry}>{ui("Try again")}</button>
         </section>
       ) : null}
 
       {data ? (
         <>
-          {error && <div className={styles.refreshError} role="status">The latest refresh failed. Showing the previous data. <button type="button" onClick={retry}>Try again</button></div>}
+          {error && <div className={styles.refreshError} role="status">{ ui("The latest refresh failed. Showing the previous data.") + ' ' }<button type="button" onClick={retry}>{ui("Try again")}</button></div>}
           <section className={styles.metricGrid}>
-            <DashboardMetricCard id="learners" title="Active Learners" metric={data.metrics.activeLearners} />
-            <DashboardMetricCard id="users" title="New Users" metric={data.metrics.newUsers} />
+            <DashboardMetricCard id="learners" title={ui("Active Learners")} metric={data.metrics.activeLearners} />
+            <DashboardMetricCard id="users" title={ui("New Users")} metric={data.metrics.newUsers} />
           </section>
-          <DashboardActivityChart title="Tests Created" data={data.series.testsCreated} skill={testSkill} onSkillChange={setTestSkill} />
-          <DashboardActivityChart title="Test Activity" data={data.series.testActivity} skill={activitySkill} onSkillChange={setActivitySkill} />
+          <DashboardActivityChart title={ui("Tests Created")} data={data.series.testsCreated} skill={testSkill} onSkillChange={setTestSkill} />
+          <DashboardActivityChart title={ui("Test Activity")} data={data.series.testActivity} skill={activitySkill} onSkillChange={setActivitySkill} />
         </>
       ) : null}
     </div>

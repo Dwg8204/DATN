@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { Navigate, useLocation } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { hasAnyRole } from '../utils/authorization';
 import styles from './RoleGuard.module.css';
 
 export default function RoleGuard({ allowedRoles, children }) {
+  const ui = useUiTranslation();
   const { user, isAuthReady, authConnectionError, retryAuth } = useAuth();
   const { showError } = useToast();
   const location = useLocation();
@@ -15,15 +17,15 @@ export default function RoleGuard({ allowedRoles, children }) {
 
   useEffect(() => {
     if (!isAuthReady || authConnectionError) return;
-    if (!authenticated) showError('Please sign in to continue.');
-    else if (!authorized) showError('You do not have permission to access this page.');
+    if (!authenticated) showError(ui("Please sign in to continue."));
+    else if (!authorized) showError(ui("You do not have permission to access this page."));
   }, [authenticated, authorized, isAuthReady, authConnectionError, showError]);
 
   if (!isAuthReady) {
-    return <div className={styles.loading} role="status"><LoaderCircle aria-hidden="true" /><span>Checking access...</span></div>;
+    return <div className={styles.loading} role="status"><LoaderCircle aria-hidden="true" /><span>{ui("Checking access...")}</span></div>;
   }
   if (authConnectionError) {
-    return <div className={styles.loading} role="alert"><span>Unable to verify access. Reconnect and retry. Your local test draft is preserved.</span><button type="button" onClick={retryAuth}>Retry</button></div>;
+    return <div className={styles.loading} role="alert"><span>{ui("Unable to verify access. Reconnect and retry. Your local test draft is preserved.")}</span><button type="button" onClick={retryAuth}>{ui("Retry")}</button></div>;
   }
   if (!authenticated) {
     return <Navigate to="/login" replace state={{ from: `${location.pathname}${location.search}` }} />;

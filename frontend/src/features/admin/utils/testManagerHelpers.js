@@ -1,3 +1,4 @@
+import { uiLocale } from '../../../i18n/translateUi.js';
 export function filterTests(tests, { query, component, section, status }) {
   const normalized = query.trim().toLocaleLowerCase();
   return tests.filter((test) => (
@@ -9,7 +10,7 @@ export function filterTests(tests, { query, component, section, status }) {
 }
 
 export function formatAdminDate(value) {
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).format(new Date(value));
+  return new Intl.DateTimeFormat(uiLocale(), { month: 'short', day: '2-digit', year: 'numeric' }).format(new Date(value));
 }
 
 export { paginate } from '../../../components/common/paginationUtils.js';

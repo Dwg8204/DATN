@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
@@ -13,6 +14,7 @@ import styles from './ProfilePage.module.css';
 import { useTranslation } from 'react-i18next';
 
 export default function ProfilePage() {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const { user, updateProfile } = useAuth();
   const navigate = useNavigate();
@@ -72,7 +74,7 @@ export default function ProfilePage() {
   const executeSave = async () => {
     setIsSaving(true);
     setShowConfirm(false);
-    
+
     // Validate empty names
     if (!firstName.trim()) {
       setToastType('error');
@@ -96,7 +98,7 @@ export default function ProfilePage() {
         bio,
         phone
       };
-      
+
       await profileApi.updateProfile(updates);
 
       if (avatarFile) {
@@ -138,80 +140,80 @@ export default function ProfilePage() {
     <div className={styles.page}>
       <div className={styles.container}>
         <ProfileSidebar activeTab="info" />
-        
+
         <div className={styles.content}>
           <div className={styles.avatarSection}>
-            <img src={avatarBase64 || user?.avatar?.url || user?.avatar || 'https://placehold.co/100x100'} alt="Large Avatar" className={styles.largeAvatar} />
-            <input 
-              type="file" 
-              accept="image/*" 
-              style={{ display: 'none' }} 
-              ref={fileInputRef} 
-              onChange={handleFileChange} 
+            <img src={avatarBase64 || user?.avatar?.url || user?.avatar || 'https://placehold.co/100x100'} alt={ui("Large Avatar")} className={styles.largeAvatar} />
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              ref={fileInputRef}
+              onChange={handleFileChange}
             />
             <button className={styles.uploadBtn} onClick={() => fileInputRef.current?.click()}>
               <Plus size={20} />
             </button>
           </div>
-          
+
           <form className={styles.form} onSubmit={handleFormSubmit}>
             <div className={styles.inputRow}>
               <div className={styles.inputCol}>
                 <label className={styles.label}>{t('account.firstName')}</label>
-                <input 
-                  type="text" 
-                  className={styles.input} 
-                  value={firstName} 
-                  onChange={e => setFirstName(e.target.value)} 
+                <input
+                  type="text"
+                  className={styles.input}
+                  value={firstName}
+                  onChange={e => setFirstName(e.target.value)}
                 />
               </div>
               <div className={styles.inputCol}>
                 <label className={styles.label}>{t('account.lastName')}</label>
-                <input 
-                  type="text" 
-                  className={styles.input} 
-                  value={lastName} 
-                  onChange={e => setLastName(e.target.value)} 
+                <input
+                  type="text"
+                  className={styles.input}
+                  value={lastName}
+                  onChange={e => setLastName(e.target.value)}
                 />
               </div>
             </div>
-            
+
             <div className={styles.inputCol}>
               <label className={styles.label}>{t('account.bio')}</label>
-              <textarea 
-                className={styles.textarea} 
-                rows="4" 
-                value={bio} 
+              <textarea
+                className={styles.textarea}
+                rows="4"
+                value={bio}
                 onChange={e => setBio(e.target.value)}
               />
             </div>
-            
+
             <div className={styles.inputCol}>
               <label className={styles.label}>{t('account.phone')}</label>
-              <input 
-                type="text" 
-                className={styles.input} 
-                placeholder="(+84)" 
-                value={phone} 
+              <input
+                type="text"
+                className={styles.input}
+                placeholder="(+84)"
+                value={phone}
                 onChange={e => setPhone(e.target.value)}
               />
             </div>
-            
+
             <div className={styles.actions}>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 className={styles.changePasswordBtn}
                 onClick={() => navigate('/profile/change-password')}
               >
                 <Key size={16} style={{ marginRight: '8px' }} />
                 {t('account.changePassword')}
               </button>
-              
+
               <button type="submit" className={styles.saveBtn} disabled={isSaving}>
                 {t(isSaving ? 'account.saving' : 'account.saveChanges')}
               </button>
             </div>
-            
+
             <div className={`${styles.mobileGoalSummary} ${styles.desktopHidden}`}>
               {goalConfig.active && goalProgress && (
                 <div className={styles.mobileGoalGrid}>
@@ -237,9 +239,9 @@ export default function ProfilePage() {
                   </div>
                 </div>
               )}
-              
-              <button 
-                type="button" 
+
+              <button
+                type="button"
                 className={styles.mobileSetGoalBtn}
                 onClick={() => setShowGoalForm(!showGoalForm)}
               >
@@ -250,7 +252,7 @@ export default function ProfilePage() {
             <div className={`${styles.goalTrackerContainer} ${!showGoalForm ? styles.mobileHiddenForm : ''}`}>
               <div className={styles.sectionDivider}></div>
               <h3 className={styles.sectionTitle}>{t('goal.tracker')}</h3>
-              
+
               <div className={styles.goalSettings}>
               <div className={styles.goalInputGroup}>
                 <label className={styles.label}>{t('goal.targetBand')}</label>
@@ -281,7 +283,7 @@ export default function ProfilePage() {
           </form>
 
           {showConfirm && (
-            <ConfirmModal 
+            <ConfirmModal
               title={t('account.saveTitle')}
               message={t('account.saveConfirm')}
               onConfirm={executeSave}
@@ -298,10 +300,10 @@ export default function ProfilePage() {
             </div>
           )}
 
-          <ToastNotification 
-            message={toastMessage} 
+          <ToastNotification
+            message={toastMessage}
             type={toastType}
-            onClose={() => setToastMessage('')} 
+            onClose={() => setToastMessage('')}
           />
         </div>
       </div>

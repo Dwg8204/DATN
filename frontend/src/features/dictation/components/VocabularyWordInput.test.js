@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -36,7 +37,7 @@ function harness(knownWords = []) {
     './VocabularyWordInput.module.css': { __esModule: true, default: new Proxy({}, { get: (_target, key) => key }) },
   };
   const module = { exports: {} };
-  runInNewContext(compiled, { module, require: name => mocks[name], AbortController, Date, Map,
+  runInNewContext(compiled, { module, require: withUiTranslationMocks(name => mocks[name]), AbortController, Date, Map,
     window: { setTimeout: (fn, delay) => { const id = ++timerId; timers.set(id, { fn, delay }); return id; }, clearTimeout: id => timers.delete(id) } });
   return {
     item, calls, resolved, timers, setGet: callback => { get = callback; },

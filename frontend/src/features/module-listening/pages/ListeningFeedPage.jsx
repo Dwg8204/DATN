@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useNavigate } from 'react-router-dom';
 import styles from './ListeningFeedPage.module.css';
 
@@ -10,6 +11,7 @@ const popularDocs = Array.from({ length: 5 }, (_, index) => ({
 }));
 
 export default function ListeningFeedPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
 
   const bandScores = [
@@ -45,20 +47,19 @@ export default function ListeningFeedPage() {
       <div className={styles.section}>
         <div className={styles.titleContainer}>
           <div className={styles.title}>
-            <span className={styles.titleLight}>LISTENING</span> FEED
-          </div>
+            <span className={styles.titleLight}>{ui("Listening")}</span>{ ' ' + ui("Feed") }</div>
           <div className={styles.divider}></div>
         </div>
         <div className={styles.contentBlock}>
           <div className={styles.heading}>
-            <span className={styles.headingBold}>Listening </span>
-            <span className={styles.headingLight}>band scores</span>
+            <span className={styles.headingBold}>{ ui("Listening") + ' ' }</span>
+            <span className={styles.headingLight}>{ui("band scores")}</span>
           </div>
           <div className={styles.textBlock}>
-            <p>The Aptis Listening test consists of 17 tasks with a total of 20 questions based on a variety of audio recordings. It focuses on listening skills in real-life situations. Your final score is calculated based on the number of correct answers you provide.</p>
-            <p>The questions in the Listening test are based on four different task types: identifying specific information from short messages or conversations (Part 1), matching information from four speakers talking about the same topic (Part 2), inferring opinions from a conversation between a man and a woman (Part 3), and inferring opinions from longer monologues on a range of topics (Part 4).</p>
-            <p>You will have approximately 40 minutes to complete the Listening test. Each correct answer is worth one mark, and the total score is converted to the Aptis scale from A1 to C. Each audio recording can be played a maximum of two times.</p>
-            <p>For example, to achieve a B2 level in the Listening test, you need to reach the required score threshold according to the Aptis scale, demonstrating your ability to process real-life information and infer meaning across a range of contexts.</p>
+            <p>{ui("The Aptis Listening test consists of 17 tasks with a total of 20 questions based on a variety of audio recordings. It focuses on listening skills in real-life situations. Your final score is calculated based on the number of correct answers you provide.")}</p>
+            <p>{ui("The questions in the Listening test are based on four different task types: identifying specific information from short messages or conversations (Part 1), matching information from four speakers talking about the same topic (Part 2), inferring opinions from a conversation between a man and a woman (Part 3), and inferring opinions from longer monologues on a range of topics (Part 4).")}</p>
+            <p>{ui("You will have approximately 40 minutes to complete the Listening test. Each correct answer is worth one mark, and the total score is converted to the Aptis scale from A1 to C. Each audio recording can be played a maximum of two times.")}</p>
+            <p>{ui("For example, to achieve a B2 level in the Listening test, you need to reach the required score threshold according to the Aptis scale, demonstrating your ability to process real-life information and infer meaning across a range of contexts.")}</p>
           </div>
 
           <div className={styles.bandScoresGrid}>
@@ -67,11 +68,11 @@ export default function ListeningFeedPage() {
                 <h3 className={styles.scoreBand}>{score.band}</h3>
                 <div className={styles.scoreDetail}>
                   <div className={styles.scoreRow}>
-                    <span className={styles.scoreLabel}>Skill level</span>
+                    <span className={styles.scoreLabel}>{ui("Skill level")}</span>
                     <span className={styles.scoreValue}>{score.level}</span>
                   </div>
                   <div className={styles.scoreRow}>
-                    <span className={styles.scoreLabel}>Description</span>
+                    <span className={styles.scoreLabel}>{ui("Description")}</span>
                     <span className={styles.scoreValue}>{score.desc}</span>
                   </div>
                 </div>
@@ -83,25 +84,25 @@ export default function ListeningFeedPage() {
 
       <div className={styles.section}>
         <div className={styles.titleContainer}>
-          <div className={styles.title}>LISTENING DOCUMENTS</div>
+          <div className={styles.title}>{ui("LISTENING DOCUMENTS")}</div>
           <div className={styles.divider}></div>
         </div>
         <div className={styles.contentBlock}>
-          <div className={styles.documentLink}>Some tips for taking the APTIS Listening test</div>
-          <div className={styles.documentLink}>APTIS Listening practice test</div>
-          <div className={styles.documentLink}>Question types in the APTIS Listening test</div>
-          <div className={styles.documentLink}>APTIS Listening band scores</div>
+          <div className={styles.documentLink}>{ui("Some tips for taking the APTIS Listening test")}</div>
+          <div className={styles.documentLink}>{ui("APTIS Listening practice test")}</div>
+          <div className={styles.documentLink}>{ui("Question types in the APTIS Listening test")}</div>
+          <div className={styles.documentLink}>{ui("APTIS Listening band scores")}</div>
         </div>
       </div>
 
       <div className={styles.section}>
-        <div className={styles.popularTitle}>MOST POPULAR</div>
+        <div className={styles.popularTitle}>{ui("MOST POPULAR")}</div>
         <div className={styles.popularGrid}>
           {popularDocs.map((doc) => (
             <div key={doc.id} className={styles.popularCard}>
               <div className={styles.cardHeader}>
                 <div className={styles.cardHeaderTop}>
-                  <div className={styles.cardTitle}>{doc.title}</div>
+                  <div className={styles.cardTitle}>{ui(doc.title)}</div>
                   <div className={styles.cardSubTitle}>{doc.subTitle}</div>
                 </div>
                 <div className={styles.cardBadge}>
@@ -115,10 +116,8 @@ export default function ListeningFeedPage() {
           ))}
         </div>
       </div>
-      
-      <button className={styles.goToTestBtn} onClick={() => navigate('/listening/tests')}>
-        View Test List
-      </button>
+
+      <button className={styles.goToTestBtn} onClick={() => navigate('/listening/tests')}>{ui("View Test List")}</button>
     </div>
   );
 }

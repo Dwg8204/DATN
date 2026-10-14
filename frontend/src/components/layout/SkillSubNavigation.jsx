@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { SKILL_NAVIGATION, skillMenuItems } from '../../config/skillNavigation';
@@ -14,6 +15,7 @@ const auxiliaryNavigation = [{
   }];
 
 export default function SkillSubNavigation() {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const { pathname, search } = useLocation();
   const skill = SKILL_NAVIGATION.find(({ pathPrefix }) => pathname.startsWith(pathPrefix));
@@ -26,7 +28,7 @@ export default function SkillSubNavigation() {
   if (!navigation) return null;
 
   return (
-    <nav className={styles.navigation} aria-label={`${navigation.label} navigation`}>
+    <nav className={styles.navigation} aria-label={ui("{{value0}} navigation", {value0:(navigation.label)})}>
       {navigation.items.map((item) => (
         <NavLink
           key={item.to}

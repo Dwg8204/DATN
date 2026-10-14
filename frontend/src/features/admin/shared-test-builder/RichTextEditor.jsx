@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useRef, useState } from 'react';
 import { Bold, IndentDecrease, IndentIncrease, Italic, List, ListOrdered, Redo2, RemoveFormatting, Underline, Undo2 } from 'lucide-react';
 import { AdminToast } from '../components/AdminFeedback';
@@ -5,6 +6,7 @@ import { countRichTextWords, sanitizeRichText, toRichTextHtml } from '../../../c
 import styles from './RichTextEditor.module.css';
 
 export default function RichTextEditor({ label, value, onChange, maxWords = 500, minHeight = 150 }) {
+  const ui = useUiTranslation();
   const editorRef = useRef(null);
   const [notice, setNotice] = useState('');
   const html = toRichTextHtml(value);
@@ -33,11 +35,11 @@ export default function RichTextEditor({ label, value, onChange, maxWords = 500,
   ];
   return <label className={styles.field}>
     <AdminToast message={notice} type="error" onClose={() => setNotice('')}/>
-    <span>{label}</span>
+    <span>{ui(label)}</span>
     <div className={styles.frame}>
-      <div className={styles.toolbar} role="toolbar" aria-label={`${label} formatting`}>{tools.map(([commandName, title, Icon]) => <button type="button" title={title} aria-label={title} key={commandName} onMouseDown={event => event.preventDefault()} onClick={() => command(commandName)}><Icon/></button>)}</div>
+      <div className={styles.toolbar} role="toolbar" aria-label={ui("{{value0}} formatting", {value0:(label)})}>{tools.map(([commandName, title, Icon]) => <button type="button" title={title} aria-label={title} key={commandName} onMouseDown={event => event.preventDefault()} onClick={() => command(commandName)}><Icon/></button>)}</div>
       <div ref={editorRef} className={styles.editor} style={{ minHeight }} contentEditable suppressContentEditableWarning onInput={sync} onBlur={sync} data-placeholder={`Enter ${label.toLowerCase()}…`}/>
     </div>
-    <small>{countRichTextWords(value)} / {maxWords} words</small>
+    <small>{countRichTextWords(value)} / {maxWords}{ ' ' + ui("words") }</small>
   </label>;
 }

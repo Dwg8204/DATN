@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import InstructionBlock from '../../../components/common/InstructionBlock.jsx';
@@ -49,6 +50,7 @@ function findPaperPart(paper, number) {
 }
 
 export default function ReadingAttemptPage() {
+  const ui = useUiTranslation();
   const { part = 'part1' } = useParams();
   const number = Number(part.replace('part', ''));
   const navigate = useNavigate();
@@ -81,7 +83,7 @@ export default function ReadingAttemptPage() {
   }, [answers, current, number]);
 
   if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
-  if (!data || ![1, 2, 3, 4].includes(number)) return <AttemptPageState error="This Reading part is not available." />;
+  if (!data || ![1, 2, 3, 4].includes(number)) return <AttemptPageState error={ui("This Reading part is not available.")} />;
 
   const handleLegacyAnswer = (key, value) => {
     if (number === 1) {
@@ -132,19 +134,19 @@ export default function ReadingAttemptPage() {
     } };
 
   return <div className={`${styles.page} ${number === 1 && !isPractice ? styles.partOneExamPage : ''}`}><main className={`${styles.content} ${number === 1 && !isPractice ? styles.partOneExam : ''}`}>
-    <header className={styles.heading}><div><strong>Reading · Part {number}</strong><span>{paper.title}</span></div><SaveIndicator status={saveStatus} /></header>
-    <InstructionBlock title={number === 1 && !isPractice ? 'Instructions' : `Part ${number}`}
+    <header className={styles.heading}><div><strong>{ ui("Reading · Part") + ' ' }{number}</strong><span>{ui(paper.title)}</span></div><SaveIndicator status={saveStatus} /></header>
+    <InstructionBlock title={number === 1 && !isPractice ? ui("Instructions") : ui("Part {{value0}}", {value0:(number)})}
       className={number === 1 && !isPractice ? styles.partOneInstructions : ''}>{instructions[number]}</InstructionBlock>
     <ReadingTestContext.Provider value={provider}>
       <div className={styles.task}>{number === 1 ? <Part1GapFilling data={data} isPractice={isPractice} /> : number === 2 ? <Part2TextCohesion data={data} />
         : number === 3 ? <Part3OpinionMatch data={data} /> : <Part4MatchHeading data={data} />}</div>
     </ReadingTestContext.Provider>
   </main>
-  <TestFooter partLabel={`Part ${number}`} questions={questionIds.map((id, index) => ({ id, displayLabel: index + 1 }))}
+  <TestFooter partLabel={ui("Part {{value0}}", {value0:(number)})} questions={questionIds.map((id, index) => ({ id, displayLabel: index + 1 }))}
     answeredIds={answeredIds} currentPageQuestionIds={questionIds} onQuestionClick={() => undefined}
     onPrevClick={() => number > 1 && navigate(`/reading/test/part${number - 1}?${searchParams.toString()}`)}
     onNextClick={() => number < 4 && navigate(`/reading/test/part${number + 1}?${searchParams.toString()}`)}
-    onSubmitClick={primary} submitLabel={isFull && number < 4 ? 'Next Part' : 'Submit'} hasPrev={isFull && number > 1} hasNext={isFull && number < 4} />
+    onSubmitClick={primary} submitLabel={isFull && number < 4 ? ui("Next Part") : ui("Submit")} hasPrev={isFull && number > 1} hasNext={isFull && number < 4} />
   <SubmitModal isOpen={showSubmit} onBack={() => setShowSubmit(false)} onNext={finish} />
   </div>;
 }

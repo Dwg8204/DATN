@@ -1,8 +1,9 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import React, { useEffect, useRef } from 'react';
 import styles from './TestFooter.module.css';
 
-export default function TestFooter({ 
-  partLabel = 'Part 1', 
+export default function TestFooter({
+  partLabel = 'Part 1',
   questions = [],
   answeredIds = [],
   currentPageQuestionIds = [],
@@ -16,6 +17,7 @@ export default function TestFooter({
   hideNext: _hideNext = false, // backward compatibility with Part4
   submitDisabled = false,
 }) {
+  const ui = useUiTranslation();
   const questionListRef = useRef(null);
   const questionNodeRefs = useRef(new Map());
   const validQuestions = questions.filter(
@@ -44,14 +46,14 @@ export default function TestFooter({
             const isAnswered = answeredIds.includes(String(q.id));
             const isOnCurrentPage = currentPageQuestionIds.some((id) => String(id) === String(q.id));
             return (
-              <div 
-                key={q.id} 
+              <div
+                key={q.id}
                 ref={(node) => {
                   if (node) questionNodeRefs.current.set(String(q.id), node);
                   else questionNodeRefs.current.delete(String(q.id));
                 }}
                 className={`
-                  ${styles.questionNode} 
+                  ${styles.questionNode}
                   ${isAnswered ? styles.nodeAnswered : (isOnCurrentPage ? styles.nodeCurrentPage : '')}
                   ${isOnCurrentPage ? styles.nodeCurrentOutline : ''}
                 `}
@@ -63,11 +65,11 @@ export default function TestFooter({
           })}
         </div>
       </div>
-      
+
       <div className={styles.rightSection}>
         <div className={styles.navArrows}>
-          <button 
-            className={`${styles.arrowBtn} ${styles.arrowBtnPrev} ${!hasPrev ? styles.arrowBtnDisabled : ''}`} 
+          <button
+            className={`${styles.arrowBtn} ${styles.arrowBtnPrev} ${!hasPrev ? styles.arrowBtnDisabled : ''}`}
             onClick={hasPrev ? onPrevClick : undefined}
           >
             <div className={styles.arrowIconWrap}>
@@ -76,8 +78,8 @@ export default function TestFooter({
               </svg>
             </div>
           </button>
-          <button 
-            className={`${styles.arrowBtn} ${styles.arrowBtnNext} ${!hasNext ? styles.arrowBtnDisabled : ''}`} 
+          <button
+            className={`${styles.arrowBtn} ${styles.arrowBtnNext} ${!hasNext ? styles.arrowBtnDisabled : ''}`}
             onClick={hasNext ? onNextClick : undefined}
           >
             <div className={styles.arrowIconWrap}>
@@ -88,7 +90,7 @@ export default function TestFooter({
           </button>
         </div>
         <button className={styles.submitBtn} onClick={onSubmitClick} disabled={submitDisabled}>
-          <span className={styles.submitBtnText}>{submitLabel}</span>
+          <span className={styles.submitBtnText}>{ui(submitLabel)}</span>
         </button>
       </div>
     </div>

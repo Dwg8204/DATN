@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../i18n/useUiTranslation.jsx";
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/common/Pagination';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -67,6 +68,7 @@ const MOCK_TESTS = [
 ];
 
 export default function TestListPage({ purpose = 'EXAM' }) {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const { skill } = useParams();
   const navigate = useNavigate();
@@ -126,7 +128,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
         });
       })
         .catch(error => {
-          if (error.code !== 'ERR_CANCELED') setGrammarState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, 'Unable to load Grammar & Vocabulary tests.') });
+          if (error.code !== 'ERR_CANCELED') setGrammarState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, ui("Unable to load Grammar & Vocabulary tests.")) });
         });
     }, query.trim() ? 300 : 0);
     return () => { window.clearTimeout(timer); controller.abort(); };
@@ -169,7 +171,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
           });
         })
         .catch(error => {
-          if (error.code !== 'ERR_CANCELED') setWritingState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, 'Unable to load Writing tests.') });
+          if (error.code !== 'ERR_CANCELED') setWritingState({ tests: [], totalItems: 0, loading: false, error: getApiError(error, ui("Unable to load Writing tests.")) });
         });
     }, query.trim() ? 300 : 0);
     return () => { window.clearTimeout(timer); controller.abort(); };
@@ -208,7 +210,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
         })
         .catch(error => {
           if (error.code !== 'ERR_CANCELED') catalog.setState({ tests: [], totalItems: 0, loading: false,
-            error: getApiError(error, `Unable to load ${catalog.label} tests.`) });
+            error: getApiError(error, ui("Unable to load {{value0}} tests.", {value0:(catalog.label)})) });
         });
     }, query.trim() ? 300 : 0);
     return () => { window.clearTimeout(timer); controller.abort(); };
@@ -266,7 +268,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
       const firstPart = started.scope === 'PART' ? `part${started.partNumber}` : 'part1';
       navigate(`/${skill}/test/${firstPart}?attemptId=${started.attemptId}&practice=true`);
     } catch (error) {
-      const message = getApiError(error, 'Unable to start this practice.');
+      const message = getApiError(error, ui("Unable to start this practice."));
       if (skill === 'grammar-vocab') setGrammarState(current => ({ ...current, error: message }));
       else if (skill === 'writing') setWritingState(current => ({ ...current, error: message }));
       else if (skill === 'listening') setListeningState(current => ({ ...current, error: message }));
@@ -303,7 +305,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
   return (
     <div className={styles.page}>
       <div className={styles.titleContainer}>
-        <span className={styles.title}>{title}</span>
+        <span className={styles.title}>{ui(title)}</span>
       </div>
 
       <div className={styles.tabsBox}>
@@ -322,7 +324,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
               className={`${styles.tabItem} ${activeTab === tab.id ? styles.tabItemActive : styles.tabItemInactive}`}
               onClick={() => setActiveTab(tab.id)}
             >
-              <span className={styles.tabText}>{tab.label}</span>
+              <span className={styles.tabText}>{ui(tab.label)}</span>
             </div>
           ))}
         </div>
@@ -350,10 +352,10 @@ export default function TestListPage({ purpose = 'EXAM' }) {
               {(managedState ? filteredTests : filteredTests.slice((page - 1) * pageSize, page * pageSize)).map((test) => (
                 <div key={test.id} className={styles.testCard}>
                   <div className={styles.cardTop}>
-                    <div className={styles.cardTitle}>{test.title}</div>
+                    <div className={styles.cardTitle}>{ui(test.title)}</div>
                     <div className={styles.cardInfoRow}>
                       <div className={styles.cardImageWrapper}>
-                        <img className={styles.cardImage} src={test.pictureUrl || 'https://placehold.co/157x79'} alt="Thumbnail" />
+                        <img className={styles.cardImage} src={test.pictureUrl || 'https://placehold.co/157x79'} alt={ui("Thumbnail")} />
                       </div>
                       {test.status === 'Completed' ? (
                         <div className={styles.cardDetails}>
@@ -368,9 +370,9 @@ export default function TestListPage({ purpose = 'EXAM' }) {
                               <span className={styles.statValue}>{test.duration}</span>
                             </div>
                             <div className={styles.statItem}>
-                              <span className={styles.statLabel}>{skill === 'writing' ? `${t('common.score')}:` : `${t('common.accuracy')}:`}</span>
+                              <span className={styles.statLabel}>{skill === 'writing' ? ui("{{value0}}:", {value0:(t('common.score'))}) : ui("{{value0}}:", {value0:(t('common.accuracy'))})}</span>
                               <span className={`${styles.statValue} ${test.accuracy == null ? '' : test.accuracy >= 80 ? styles.statValueSuccess : styles.statValueDanger}`}>
-                                {test.accuracy == null ? t('common.awaitingScore') : `${test.accuracy}%`}
+                                {test.accuracy == null ? t('common.awaitingScore') : ui("{{value0}}%", {value0:(test.accuracy)})}
                               </span>
                             </div>
                           </div>
@@ -411,9 +413,9 @@ export default function TestListPage({ purpose = 'EXAM' }) {
               ))}
             </div>
           </div>
-          
+
           {managedState?.loading && <p>{t('common.loading')}</p>}
-          {managedState?.error && <p>{managedState.error}</p>}
+          {managedState?.error && <p>{ui.error(managedState.error)}</p>}
           <Pagination page={page} totalItems={managedState?.totalItems ?? filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper}>
             <CommentSection />

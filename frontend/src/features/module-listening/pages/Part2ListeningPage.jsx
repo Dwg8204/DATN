@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -11,6 +12,7 @@ import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal
 import styles from './Part2ListeningPage.module.css';
 
 export default function Part2ListeningPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, flush, submit, approveNavigation } = useTestAttempt();
@@ -19,7 +21,7 @@ export default function Part2ListeningPage() {
   const isFullTest = paper?.mode === 'full';
 
   if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
-  if (!part) return <AttemptPageState error="Part 2 is not included in this test." />;
+  if (!part) return <AttemptPageState error={ui("Part 2 is not included in this test.")} />;
 
   const goToPartThree = async () => {
     await flush();
@@ -42,10 +44,10 @@ export default function Part2ListeningPage() {
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div><div className={styles.partTitle}>Part 2</div><div className={styles.skillTitle}>Listening Test</div></div>
+          <div><div className={styles.partTitle}>{ui("Part 2")}</div><div className={styles.skillTitle}>{ui("LISTENING TEST")}</div></div>
           <SaveIndicator status={saveStatus} />
         </div>
-        <InstructionBlock title={`Question 14`}>
+        <InstructionBlock title={ui("Question 14", {})}>
           {part.instruction}
         </InstructionBlock>
         <div className={styles.mainArea}>
@@ -66,8 +68,8 @@ export default function Part2ListeningPage() {
                             const opt = part.options.find(o => o.text === event.target.value);
                             if (opt) setAnswer(speaker.key, { kind: 'MATCH', optionId: opt.id });
                           }}
-                          placeholder="Select statement"
-                          ariaLabel={`Answer for ${speaker.name}`}
+                          placeholder={ui("Select statement")}
+                          ariaLabel={ui("Answer for {{value0}}", {value0:(speaker.name)})}
                           options={part.options.map((opt) => ({ value: opt.text, label: `${opt.id}. ${opt.text}` }))}
                         />
                         <PracticeAnswerReveal questionKey={speaker.key} options={part.options} />
@@ -84,7 +86,7 @@ export default function Part2ListeningPage() {
         </div>
       </div>
       <TestFooter
-        partLabel="Part 2"
+        partLabel={ui("Part 2")}
         questions={[{ id: 'p2', displayLabel: 14 }]}
         answeredIds={isAnswered ? ['p2'] : []}
         currentPageQuestionIds={['p2']}
@@ -92,7 +94,7 @@ export default function Part2ListeningPage() {
         onPrevClick={() => { const params = new URLSearchParams(searchParams); params.set('attemptId', attemptId); navigate(`/listening/test/part1?${params}`); }}
         onNextClick={() => {}}
         onSubmitClick={isFullTest ? () => void goToPartThree().catch(() => undefined) : () => setShowSubmitModal(true)}
-        submitLabel={isFullTest ? 'Next Part' : submitting ? 'Submitting…' : 'Submit'}
+        submitLabel={isFullTest ? ui("Next Part") : submitting ? ui("Submitting…") : ui("Submit")}
         submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={isFullTest}
         hasNext={false}
