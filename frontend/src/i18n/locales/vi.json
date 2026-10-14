@@ -1752,5 +1752,33 @@
     "n_a_08d2e9": "Không áp dụng",
     "cefr_band_d89103": "CEFR / Mức",
     "20_15_jan_06_2026_d80bfc": "20:15 - 06 tháng 01, 2026"
+  },
+  "comments": {
+    "title": "Bình luận",
+    "count": "{{count}} bình luận",
+    "placeholder": "Viết bình luận…",
+    "replyPlaceholder": "Viết câu trả lời…",
+    "send": "Gửi",
+    "sending": "Đang gửi…",
+    "reply": "Trả lời",
+    "delete": "Xóa",
+    "deleted": "Bình luận này đã được xóa.",
+    "login": "Đăng nhập để bình luận",
+    "loading": "Đang tải bình luận…",
+    "empty": "Chưa có bình luận. Hãy là người bình luận đầu tiên!",
+    "loadError": "Không thể tải bình luận. Vui lòng thử lại.",
+    "sendError": "Không thể lưu bình luận. Vui lòng thử lại.",
+    "unavailable": "Bình luận không còn khả dụng.",
+    "sessionExpired": "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+    "rateLimit": "Bạn đang gửi bình luận quá nhanh. Vui lòng đợi một chút.",
+    "replyingTo": "Đang trả lời {{name}}",
+    "cancel": "Hủy",
+    "retry": "Thử lại",
+    "more": "Xem thêm bình luận",
+    "roles": {
+      "ADMIN": "Quản trị viên",
+      "TEACHER": "Giáo viên",
+      "STUDENT": "Học viên"
+    }
   }
 }

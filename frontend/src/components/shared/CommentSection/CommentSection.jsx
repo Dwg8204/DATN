@@ -1,228 +1,127 @@
-import React, { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../../context/AuthContext';
+import { commentsApi } from './commentsApi';
+import CommentItem from './CommentItem';
 import styles from './CommentSection.module.css';
 
-const MOCK_COMMENTS = [
-  {
-    id: 1,
-    author: 'Walter Mitty',
-    role: 'Student',
-    time: '10 min ago',
-    avatar: 'https://placehold.co/55x55',
-    content: 'Wow, the listening test was such an amazing experience! The audio quality was crystal clear, and the variety of accents really helped me prepare for the real exam. I loved how challenging but fair the questions were!',
-    replies: [
-      {
-        id: 11,
-        author: 'Walter Mitty',
-        role: 'Student',
-        time: '10 min ago',
-        avatar: 'https://placehold.co/55x55',
-        mention: 'Walter Mitty',
-        content: 'Wow, the listening test was such an amazing experience! The audio quality was crystal clear...',
-      }
-    ]
-  }
-];
+// Every skill/session owns its state, so old requests cannot fill another skill's screen.
+export default function CommentSection({ skill }) {
+  const { user, isAuthReady } = useAuth();
+  return <SkillComments key={`${skill}:${user?.id ?? 'guest'}`} skill={skill} user={user} isAuthReady={isAuthReady} />;
+}
 
-export default function CommentSection({ initialComments = MOCK_COMMENTS }) {
-  const [comments, setComments] = useState(initialComments);
-  const [replyingTo, setReplyingTo] = useState(null); // stores comment id
+function SkillComments({ skill, user, isAuthReady }) {
+  const { t } = useTranslation();
+  const location = useLocation();
+  const [comments, setComments] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+  const [revision, setRevision] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [content, setContent] = useState('');
   const [replyText, setReplyText] = useState('');
-  const [mainCommentText, setMainCommentText] = useState('');
+  const [target, setTarget] = useState(null);
+  const replyInput = useRef(null);
+  const mutationLock = useRef(false);
 
-  const handleMainCommentSubmit = () => {
-    if (!mainCommentText.trim()) return;
-    const newComment = {
-      id: Date.now(),
-      author: 'Current User',
-      role: 'Student',
-      time: 'Just now',
-      avatar: 'https://placehold.co/55x55',
-      content: mainCommentText.trim(),
-      replies: []
-    };
-    setComments([newComment, ...comments]);
-    setMainCommentText('');
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true); setLoadError(false);
+    commentsApi.list(skill, page, controller.signal).then(result => {
+      if (controller.signal.aborted) return;
+      setComments(previous => page === 1 ? result.comments : [...previous, ...result.comments.filter(c => !previous.some(p => p.id === c.id))]);
+      setTotal(result.total); setHasMore(result.hasMore);
+    }).catch(() => { if (!controller.signal.aborted) setLoadError(true); })
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
+  }, [skill, page, revision]);
+
+  useEffect(() => { if (target) replyInput.current?.focus(); }, [target]);
+
+  const mutationError = failure => {
+    const code = failure.response?.data?.error?.code;
+    if (failure.response?.status === 401) return 'comments.sessionExpired';
+    if (code === 'COMMENT_NOT_FOUND') return 'comments.unavailable';
+    if (failure.response?.status === 429) return 'comments.rateLimit';
+    return 'comments.sendError';
   };
 
-  const handleReplySubmit = (parentId, repliedUserName) => {
-    if (!replyText.trim()) return;
-    const newReply = {
-      id: Date.now(),
-      author: 'Current User',
-      role: 'Student',
-      time: 'Just now',
-      avatar: 'https://placehold.co/55x55',
-      mention: repliedUserName,
-      content: replyText.trim()
-    };
-    
-    setComments(comments.map(c => {
-      if (c.id === parentId) {
-        return { ...c, replies: [...(c.replies || []), newReply] };
-      }
-      return c;
-    }));
-    
-    setReplyText('');
-    setReplyingTo(null);
+  const submit = async (event, replying = false) => {
+    event.preventDefault();
+    const text = (replying ? replyText : content).trim();
+    if (!text || mutationLock.current || loading || !user) return;
+    mutationLock.current = true;
+    setBusy(true); setError('');
+    try {
+      const created = await commentsApi.create(skill, text, replying ? target.id : undefined);
+      setComments(previous => created.parentId
+        ? previous.map(root => root.id === created.parentId ? { ...root, replies: [...root.replies, created] } : root)
+        : [created, ...previous]);
+      setTotal(value => value + 1);
+      if (replying) { setReplyText(''); setTarget(null); } else setContent('');
+    } catch (failure) { setError(mutationError(failure)); }
+    finally { mutationLock.current = false; setBusy(false); }
   };
 
-  const totalComments = comments.length + comments.reduce((acc, c) => acc + (c.replies?.length || 0), 0);
+  const remove = async comment => {
+    if (mutationLock.current || loading) return;
+    mutationLock.current = true;
+    setBusy(true); setError('');
+    try {
+      await commentsApi.remove(skill, comment.id);
+      const deleted = item => item.id === comment.id ? { ...item, content: '', deletedAt: new Date().toISOString() } : item;
+      setComments(previous => previous.map(root => ({ ...deleted(root), replies: root.replies.map(deleted) })));
+      setTotal(value => Math.max(0, value - 1));
+      if (target?.id === comment.id) { setTarget(null); setReplyText(''); }
+    } catch (failure) { setError(mutationError(failure)); }
+    finally { mutationLock.current = false; setBusy(false); }
+  };
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.iconWrap}>
-          <div className={styles.iconInner}>
-            <div className={styles.iconShape}></div>
-          </div>
-        </div>
-        <div className={styles.replyCount}>{totalComments} replies</div>
-      </div>
-
-      <div className={styles.mainInputContainer}>
-        <div className={styles.avatar}>
-          <img className={styles.avatarImg} src="https://placehold.co/55x55" alt="Current User" />
-        </div>
-        <div className={styles.inputWrap}>
-          <input 
-            type="text" 
-            className={styles.replyInput} 
-            placeholder="Write a comment...." 
-            value={mainCommentText}
-            onChange={(e) => setMainCommentText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleMainCommentSubmit();
-            }}
-          />
-        </div>
-        <div className={styles.sendBtnWrap}>
-          <button className={styles.sendBtn} onClick={handleMainCommentSubmit}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <div className={styles.commentList}>
-        {comments.map(comment => (
-          <div key={comment.id} className={styles.commentThread}>
-            <div className={styles.commentItem}>
-              <div className={styles.avatar}>
-                <img className={styles.avatarImg} src={comment.avatar} alt={comment.author} />
-              </div>
-              <div className={styles.commentBody}>
-                <div className={styles.commentMeta}>
-                  <div className={styles.authorName}>{comment.author}</div>
-                  {comment.role && (
-                    <div className={styles.roleBadge}>
-                      <span className={styles.roleText}>{comment.role}</span>
-                    </div>
-                  )}
-                  <div className={styles.time}>{comment.time}</div>
-                </div>
-                <div className={styles.commentContent}>
-                  {comment.content}
-                </div>
-                <div className={styles.commentActions}>
-                  <button className={styles.likeBtn}>
-                    <div className={styles.likeIconWrap}>
-                      <div className={styles.likeIcon}></div>
-                    </div>
-                  </button>
-                  <button 
-                    className={styles.replyBtn}
-                    onClick={() => {
-                      setReplyingTo(comment.id);
-                      setReplyText('');
-                    }}
-                  >
-                    Reply
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Replies */}
-            {(comment.replies && comment.replies.length > 0) && (
-              <div className={styles.repliesContainer}>
-                {comment.replies.map(reply => (
-                  <div key={reply.id} className={styles.commentItem}>
-                    <div className={styles.avatar}>
-                      <img className={styles.avatarImg} src={reply.avatar} alt={reply.author} />
-                    </div>
-                    <div className={styles.commentBody}>
-                      <div className={styles.commentMeta}>
-                        <div className={styles.authorName}>{reply.author}</div>
-                        {reply.role && (
-                          <div className={styles.roleBadge}>
-                            <span className={styles.roleText}>{reply.role}</span>
-                          </div>
-                        )}
-                        <div className={styles.time}>{reply.time}</div>
-                      </div>
-                      <div className={styles.commentContent}>
-                        {reply.mention && <span className={styles.mention}>@{reply.mention}</span>}
-                        {reply.content}
-                      </div>
-                      <div className={styles.commentActions}>
-                        <button className={styles.likeBtn}>
-                          <div className={styles.likeIconWrap}>
-                            <div className={styles.likeIcon}></div>
-                          </div>
-                        </button>
-                        <button 
-                          className={styles.replyBtn}
-                          onClick={() => {
-                            setReplyingTo(comment.id);
-                            setReplyText(`@${reply.author} `);
-                          }}
-                        >
-                          Reply
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Reply Input for this thread */}
-            {replyingTo === comment.id && (
-              <div className={styles.repliesContainer}>
-                <div className={styles.replyInputContainer}>
-                  <div className={styles.avatar}>
-                    <img className={styles.avatarImg} src="https://placehold.co/55x55" alt="Current User" />
-                  </div>
-                  <div className={styles.inputWrap}>
-                    <input 
-                      type="text" 
-                      className={styles.replyInput} 
-                      placeholder="Write a comment...." 
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleReplySubmit(comment.id, comment.author);
-                      }}
-                    />
-                  </div>
-                  <div className={styles.sendBtnWrap}>
-                    <button className={styles.sendBtn} onClick={() => handleReplySubmit(comment.id, comment.author)}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+  const chooseReply = comment => { setTarget(comment); setReplyText(''); setError(''); };
+  const composer = replying => <form className={styles.mainInputContainer} onSubmit={event => submit(event, replying)}>
+    <div className={styles.inputWrap}>
+      <textarea ref={replying ? replyInput : undefined} className={styles.replyInput} rows={2} maxLength={2000}
+        aria-label={t(replying ? 'comments.replyPlaceholder' : 'comments.placeholder')}
+        placeholder={t(replying ? 'comments.replyPlaceholder' : 'comments.placeholder')}
+        value={replying ? replyText : content} disabled={busy}
+        onChange={event => replying ? setReplyText(event.target.value) : setContent(event.target.value)}
+        onKeyDown={event => { if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) submit(event, replying); }} />
     </div>
-  );
+    <button className={styles.submitButton} type="submit" disabled={busy || loading || !(replying ? replyText : content).trim()}>
+      {t(busy ? 'comments.sending' : 'comments.send')}
+    </button>
+  </form>;
+
+  return <section className={styles.container} aria-label={t('comments.title')}>
+    <h2 className={styles.replyCount}>{t('comments.count', { count: total })}</h2>
+    {!isAuthReady ? <p role="status">{t('comments.loading')}</p> : user ? composer(false) :
+      <Link to="/login" state={{ from: location.pathname + location.search }}>{t('comments.login')}</Link>}
+    {error && <p className={styles.error} role="alert">{t(error)}</p>}
+    {loading && <p role="status">{t('comments.loading')}</p>}
+    {loadError && <div role="alert"><p>{t('comments.loadError')}</p>
+      <button type="button" disabled={busy} onClick={() => setRevision(value => value + 1)}>{t('comments.retry')}</button></div>}
+    {!loading && !loadError && !comments.length && <p>{t('comments.empty')}</p>}
+    <div className={styles.commentList}>
+      {comments.map(root => <div className={styles.commentThread} key={root.id}>
+        <CommentItem comment={root} userId={user?.id} busy={busy || loading} onReply={chooseReply} onDelete={remove} />
+        <div className={styles.repliesContainer}>
+          {root.replies.map(reply => <CommentItem key={reply.id} comment={reply} userId={user?.id}
+            busy={busy || loading} onReply={chooseReply} onDelete={remove} />)}
+          {target && (target.parentId ?? target.id) === root.id && <div>
+            <p>{t('comments.replyingTo', { name: target.author })}</p>
+            {target.authorId !== user?.id && <span className={styles.mention}>@{target.author}</span>}
+            {composer(true)}
+            <button className={styles.replyBtn} type="button" disabled={busy} onClick={() => { setTarget(null); setReplyText(''); }}>{t('comments.cancel')}</button>
+          </div>}
+        </div>
+      </div>)}
+    </div>
+    {hasMore && !loadError && <button type="button" disabled={loading || busy} onClick={() => setPage(value => value + 1)}>{t('comments.more')}</button>}
+  </section>;
 }

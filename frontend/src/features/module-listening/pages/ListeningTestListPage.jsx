@@ -215,7 +215,7 @@ export default function ListeningTestListPage() {
 
           <Pagination page={page} totalItems={totalItems} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper} style={{ marginTop: '32px' }}>
-            <CommentSection />
+            <CommentSection skill="listening" />
           </div>
         </div>
       </div>

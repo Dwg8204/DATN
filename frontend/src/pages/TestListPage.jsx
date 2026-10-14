@@ -418,7 +418,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
           {managedState?.error && <p>{ui.error(managedState.error)}</p>}
           <Pagination page={page} totalItems={managedState?.totalItems ?? filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper}>
-            <CommentSection />
+            <CommentSection key={skill} skill={skill} />
           </div>
         </div>
       </div>

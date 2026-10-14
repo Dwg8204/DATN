@@ -1752,5 +1752,33 @@
     "n_a_08d2e9": "N/A",
     "cefr_band_d89103": "CEFR / Band",
     "20_15_jan_06_2026_d80bfc": "20:15 - Jan 06, 2026"
+  },
+  "comments": {
+    "title": "Comments",
+    "count": "{{count}} comments",
+    "placeholder": "Write a comment…",
+    "replyPlaceholder": "Write a reply…",
+    "send": "Send",
+    "sending": "Sending…",
+    "reply": "Reply",
+    "delete": "Delete",
+    "deleted": "This comment has been deleted.",
+    "login": "Sign in to comment",
+    "loading": "Loading comments…",
+    "empty": "No comments yet. Be the first to comment!",
+    "loadError": "Unable to load comments. Please try again.",
+    "sendError": "Unable to save your comment. Please try again.",
+    "unavailable": "The comment is no longer available.",
+    "sessionExpired": "Your session has expired. Please sign in again.",
+    "rateLimit": "You are sending comments too quickly. Please wait a moment.",
+    "replyingTo": "Replying to {{name}}",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "more": "Load more comments",
+    "roles": {
+      "ADMIN": "Administrator",
+      "TEACHER": "Teacher",
+      "STUDENT": "Student"
+    }
   }
 }

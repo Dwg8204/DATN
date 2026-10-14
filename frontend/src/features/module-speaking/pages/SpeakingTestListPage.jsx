@@ -236,7 +236,7 @@ export default function SpeakingTestListPage() {
 
           <Pagination page={page} totalItems={filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper} style={{ marginTop: '32px' }}>
-            <CommentSection />
+            <CommentSection skill="speaking" />
           </div>
         </div>
       </div>
