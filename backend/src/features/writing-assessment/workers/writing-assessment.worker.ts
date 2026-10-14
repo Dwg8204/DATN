@@ -37,9 +37,13 @@ export class WritingAssessmentWorker implements OnModuleInit, OnModuleDestroy {
   }
   async runOnce(): Promise<void> {
     let job: WritingJob | null = null;
+    const started = Date.now();
+    let stage = 'claim';
     try {
       job = await this.jobs.claim(this.config.minIntervalMs);
       if (!job) return;
+      this.logger.log(`Writing assessment started: job=${job.id} attempt=${job.attempt_id} run=${job.attempt_count} model=${job.config_snapshot.model}`);
+      stage = 'build_input';
       const data = await this.jobs.context(job);
       const previous = data.result as AssessmentResult;
       const input = this.builder.build(
@@ -52,6 +56,7 @@ export class WritingAssessmentWorker implements OnModuleInit, OnModuleDestroy {
       );
       if (writingInputHash(input, job.config_snapshot) !== job.input_hash)
         throw new AiError('WRITING_INPUT_CHANGED');
+      stage = 'assess';
       const writing = await this.assessor.assess(input, job.config_snapshot);
       writing.metadata = {
         provider: job.config_snapshot.provider,
@@ -87,10 +92,13 @@ export class WritingAssessmentWorker implements OnModuleInit, OnModuleDestroy {
           skipped: [...byKey.values()].filter((question) => question.responseStatus === 'BLANK').length,
         },
       };
+      stage = 'persist';
       await this.jobs.finish(job, result);
+      this.logger.log(`Writing assessment completed: job=${job.id} elapsedMs=${Date.now() - started}`);
     } catch (error) {
       const failure = error instanceof AiError ? error : new AiError('WRITING_AI_UNAVAILABLE', true);
-      this.logger.warn(`Writing assessment failed: ${failure.code}`);
+      const rule = failure.validationRule?.replace(/[^a-zA-Z0-9_.:\[\]-]/g, '').slice(0, 240);
+      this.logger.warn(`Writing assessment failed: job=${job?.id ?? 'none'} attempt=${job?.attempt_id ?? 'none'} stage=${stage} code=${failure.code} rule=${rule ?? 'none'} retryable=${failure.retryable} elapsedMs=${Date.now() - started}`);
       if (job) {
         const invalidOutput = [
           'AI_INVALID_RESPONSE',
