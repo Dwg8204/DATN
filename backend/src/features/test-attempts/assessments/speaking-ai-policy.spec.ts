@@ -8,6 +8,21 @@ const raw = () => ({ responses: [{ key: 'p1:q1', status: 'ASSESSED',
   criteria: { grammarVocabulary: 80, pronunciation: 70, fluency: 90, taskFulfillment: 60 },
   feedback: 'Nói rõ hơn; ví dụ: I enjoy reading.', qualityFlags: [] }], estimatedCefr: 'B2', cefrReason: 'Chỉ ghi một câu; phạm vi bằng chứng hạn chế.' });
 describe('Speaking AI policy', () => {
+  it('validates exact Part coverage and saves Part feedback without changing scores', () => {
+    const feedback = [1, 2, 3, 4].map(partNumber => ({ partNumber, overview: 'Nhận xét tổng hợp.', strengths: [], weaknesses: [], suggestions: ['Trả lời đầy đủ.'] }));
+    const input = { ...raw(), partFeedback: feedback };
+    const checked = validateSpeakingAssessment(input, ['p1:q1'], false, [1, 2, 3, 4]);
+    const result = finalizeSpeaking(paper, {}, checked, 'test', assessSpeaking(paper.items, {}));
+    expect(result.score).toBe(9.38);
+    expect(result.speaking?.partFeedback?.[0]).toEqual(feedback[0]);
+    expect(result.speaking?.partFeedback?.[1].strengths).toEqual([]);
+    expect(result.speaking?.partFeedback?.[1].overview).toContain('chưa gửi bản ghi âm');
+    expect(() => validateSpeakingAssessment(raw(), ['p1:q1'], false, [1])).toThrow();
+    expect(() => validateSpeakingAssessment(input, ['p1:q1'], false, [1])).toThrow();
+    expect(() => validateSpeakingAssessment({ ...input, partFeedback: [feedback[0], feedback[0]] }, ['p1:q1'])).toThrow();
+    expect(() => validateSpeakingAssessment({ ...input, partFeedback: [{ ...feedback[0], overview: ' ' }] }, ['p1:q1'])).toThrow();
+    expect(() => validateSpeakingAssessment({ ...input, partFeedback: [{ ...feedback[0], strengths: ['', 'x'] }] }, ['p1:q1'])).toThrow();
+  });
   it('requires all four detailed criteria for new grading and persists feedback without changing scores', () => {
     const input = raw();
     const details = { criterionFeedback: Object.fromEntries(CRITERIA_KEYS.map(key => [key,

@@ -6,7 +6,7 @@ import { runInNewContext } from 'node:vm';
 import { transformSync } from 'esbuild';
 
 const code = transformSync(readFileSync(new URL('./TestHeader.jsx', import.meta.url), 'utf8'), { loader: 'jsx', format: 'cjs', jsx: 'automatic' }).code;
-function harness(pathname, props) {
+function harness(pathname, props, theme = 'light') {
   let index = 0;
   const slots = [], destinations = [];
   const jsx = (type, props) => ({ type, props });
@@ -16,6 +16,7 @@ function harness(pathname, props) {
       return [slots[n], next => { slots[n] = next; }]; }, useEffect: () => {} },
     'react-router-dom': { useNavigate: () => to => destinations.push(to), useLocation: () => ({ pathname }) },
     'react-i18next': { useTranslation: () => ({ t: key => key }) },
+    '../../context/ThemeContext': { useTheme: () => ({ theme }) },
     './TestHeader.module.css': { __esModule: true, default: { logoBtn: 'logoBtn', modalOverlay: 'modalOverlay', exitBtn: 'exitBtn' } },
     '../../features/module-reading/utils/readingSessionStorage': { getReadingRemainingSeconds: () => null },
     'react/jsx-runtime': { jsx, jsxs: jsx },
