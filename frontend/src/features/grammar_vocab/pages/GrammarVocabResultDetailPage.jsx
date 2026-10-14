@@ -1,3 +1,5 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AnswerExplanation from '../../../components/common/AnswerExplanation';
@@ -41,6 +43,7 @@ function Part1Review({ questions, itemMap }) {
 }
 
 function Part2Review({ wordSet, itemMap }) {
+  const ui = useUiTranslation();
   return <div className={styles.part2Layout}>
     <div className={styles.matchingList}>{wordSet.targetWords.map(target => {
       const item = itemMap.get(target.key);
@@ -54,21 +57,22 @@ function Part2Review({ wordSet, itemMap }) {
         </div>
         <div className={styles.answerComparison}>
           <div className={styles.answerLine}>
-            <span>Your answer</span>
-            <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? `${selected.id}. ${selected.text}` : 'No answer'}</div>
+            <span>{ui("Your answer")}</span>
+            <div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? ui("{{value0}}. {{value1}}", {value0:(selected.id),value1:(selected.text)}) : ui("No answer")}</div>
           </div>
           {correct && <div className={styles.answerLine}>
-            <span>Correct answer</span><div className={styles.correctField}>{correct.id}. {correct.text}</div>
+            <span>{ui("Correct answer")}</span><div className={styles.correctField}>{correct.id}. {correct.text}</div>
           </div>}
         </div>
         <AnswerExplanation text={item?.explanation} />
       </article>;
     })}</div>
-    <aside className={styles.optionBank}><h2>Options</h2>{wordSet.options.map(option => <div key={option.id}><strong>{option.id}</strong><span>{option.text}</span></div>)}</aside>
+    <aside className={styles.optionBank}><h2>{ui("Options")}</h2>{wordSet.options.map(option => <div key={option.id}><strong>{option.id}</strong><span>{option.text}</span></div>)}</aside>
   </div>;
 }
 
 export default function GrammarVocabResultDetailPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const attemptId = searchParams.get('attemptId');
@@ -95,8 +99,8 @@ export default function GrammarVocabResultDetailPage() {
   const currentQuestionIds = isPart1 ? visibleQuestions.map(question => question.key) : visibleSet?.targetWords.map(target => target.key) ?? [];
   const answeredIds = (detail.data?.items ?? []).filter(item => item.selectedAnswer).map(item => item.key);
 
-  if (summary.loading || summary.error) return <AttemptPageState loading={summary.loading} error={summary.error} />;
-  if (!activePart || detail.loading || detail.error) return <AttemptPageState loading={!detail.error} error={detail.error} />;
+  if (summary.loading || summary.error) return <AttemptPageState loading={summary.loading} error={summary.error}  backHref={isPractice ? '/grammar-vocab/practice' : '/grammar-vocab/tests'} />;
+  if (!activePart || detail.loading || detail.error) return <AttemptPageState loading={!detail.error} error={detail.error}  backHref={isPractice ? '/grammar-vocab/practice' : '/grammar-vocab/tests'} />;
 
   const changePart = part => setUrlState({ selectedPart: part, currentPage: 1 });
   const previous = () => {
@@ -116,18 +120,19 @@ export default function GrammarVocabResultDetailPage() {
 
   return <div className={styles.page}>
     <main className={styles.content}>
+      <ResultBackButton to={`/grammar-vocab/result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}`} />
       <div className={styles.scoreWrap}>
-        <AttemptScoreSummary score={summary.data?.score} maxScore={summary.data?.maxScore} title="Final score" subtitle="Grammar & Vocabulary" />
+        <AttemptScoreSummary score={summary.data?.score} maxScore={summary.data?.maxScore} title={ui("Final score")} subtitle={ui("Grammar & Vocabulary")} />
       </div>
-      {availableParts.length > 1 && <div className={styles.partTabs}>{availableParts.map(part => <button key={part} className={activePart === part ? styles.activeTab : ''} onClick={() => changePart(part)}>Part {part} · {part === 1 ? 'Grammar' : 'Vocabulary'}</button>)}</div>}
+      {availableParts.length > 1 && <div className={styles.partTabs}>{availableParts.map(part => <button key={part} className={activePart === part ? styles.activeTab : ''} onClick={() => changePart(part)}>{ ui("Part") + ' ' }{part} · {part === 1 ? ui("Grammar") : ui("Vocabulary")}</button>)}</div>}
       <div className={styles.sectionHeader}>
-        <strong>{isPart1 ? `Questions ${startIndex + 1}-${Math.min(startIndex + PART1_ITEMS_PER_PAGE, questions.length)}` : `Questions ${currentPage * 5 + 21}-${currentPage * 5 + 25}`}</strong>
-        <span>{isPart1 ? 'Choose the correct letter, A, B or C.' : 'Review each word and its selected match.'}</span>
+        <strong>{isPart1 ? ui("Questions {{value0}}-{{value1}}", {value0:(startIndex + 1),value1:(Math.min(startIndex + PART1_ITEMS_PER_PAGE, questions.length))}) : ui("Questions {{value0}}-{{value1}}", {value0:(currentPage * 5 + 21),value1:(currentPage * 5 + 25)})}</strong>
+        <span>{isPart1 ? ui("Choose the correct letter, A, B or C.") : ui("Review each word and its selected match.")}</span>
       </div>
       {isPart1 ? <Part1Review questions={visibleQuestions} itemMap={itemMap} /> : <Part2Review wordSet={visibleSet} itemMap={itemMap} />}
     </main>
     <TestFooter
-      partLabel={`Part ${activePart}`}
+      partLabel={ui("Part {{value0}}", {value0:(activePart)})}
       questions={footerQuestions}
       answeredIds={answeredIds}
       currentPageQuestionIds={currentQuestionIds}
@@ -138,7 +143,7 @@ export default function GrammarVocabResultDetailPage() {
       onPrevClick={previous}
       onNextClick={next}
       onSubmitClick={() => navigate(isPractice ? '/grammar-vocab/practice' : '/grammar-vocab/tests')}
-      submitLabel="Take another test"
+      submitLabel={ui("Take another test")}
       hasPrev={currentPage > 1 || availableParts.indexOf(activePart) > 0}
       hasNext={currentPage < totalPages || availableParts.indexOf(activePart) < availableParts.length - 1}
     />

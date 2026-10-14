@@ -1,4 +1,5 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import { useMemo } from 'react';
 import AssessmentProgress from '../../test-attempts/components/AssessmentProgress.jsx';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -34,7 +35,7 @@ export default function SpeakingAttemptDetailPage() {
     : paper.questions ?? [];
   const itemByKey = new Map((detail.data.items ?? []).map(item => [item.key, item]));
   return <div className={styles.page}><main>
-
+    <ResultBackButton to={`/speaking/result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}`} />
     <header><div><span>{ui("SPEAKING RESULT")}</span><h1>{summary.data.title || ui("Submitted responses")}</h1></div>
       {parts.length > 1 && <AnswerSelect value={String(activePart)} onChange={event => setUrl({ part: Number(event.target.value) })}
         options={parts.map(part => ({ value: String(part), label: `Part ${part}` }))} ariaLabel={ui("Result part")} />}</header>

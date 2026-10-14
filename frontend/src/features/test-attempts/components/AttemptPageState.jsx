@@ -1,4 +1,5 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import AssessmentProgress from './AssessmentProgress.jsx';
 import styles from './AttemptPageState.module.css';
 import { useTestAttempt } from '../context/testAttemptContextStore';
@@ -12,7 +13,7 @@ export function AttemptPageState({ loading, error, backHref = '/grammar-vocab/te
       <span className={loading ? styles.spinner : styles.errorIcon} aria-hidden="true">{error ? '!' : ''}</span>
       <h1>{error ? ui("Unable to open this test") : ui("Loading your test…")}</h1>
       {error && <p>{ui.error(error)}</p>}
-      {error && <a href={backHref}>{ui("Back to test list")}</a>}
+      {error && <ResultBackButton to={backHref} />}
     </main>
   );
 }

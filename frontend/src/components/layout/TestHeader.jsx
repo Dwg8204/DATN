@@ -12,7 +12,7 @@ function formatRemainingTime(totalSeconds) {
 }
 
 export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, controlledTimer = false,
-  onConfirmExit, showTimer = true, showExit = true, finalizingExpired = false, exitMode = 'exam' }) {
+  onConfirmExit, showTimer = true, showExit = true, confirmExit = showExit, finalizingExpired = false, exitMode = 'exam' }) {
   const ui = useUiTranslation();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -48,6 +48,10 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
     : (timeRemaining || (remainingSeconds === null ? '' : formatRemainingTime(remainingSeconds)));
 
   const handleExitClick = () => {
+    if (!confirmExit) {
+      navigate('/');
+      return;
+    }
     setShowExitModal(true);
   };
 
@@ -103,7 +107,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
         </div>
       </div>
 
-      {showExitModal && (
+      {confirmExit && showExitModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.exitModal}>
             <div className={styles.closeIcon} onClick={handleCloseModal}>

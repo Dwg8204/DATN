@@ -1,3 +1,5 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import React, { useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { MOCK_SPEAKING_RESULT } from '../data/speakingResultMockData';
@@ -17,6 +19,7 @@ function getStatColor(percentage) {
 }
 
 export default function SpeakingResultPage() {
+  const ui = useUiTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const testId = searchParams.get('testId') || '1';
@@ -43,7 +46,7 @@ export default function SpeakingResultPage() {
     if (historyIdParam) return;
     if (historySaved.current) return;
     historySaved.current = true;
-    
+
     const newHistoryId = `hist_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     saveHistoryEntry({
@@ -73,9 +76,6 @@ export default function SpeakingResultPage() {
     }
   };
 
-  const handleBackToTests = () => {
-    navigate('/speaking/tests');
-  };
 
   const tabs = isFullTest
     ? [1, 2, 3, 4]
@@ -88,13 +88,13 @@ export default function SpeakingResultPage() {
         {/* Top Section */}
         <div className={styles.topSection}>
           <div className={styles.cefrBox}>
-            <div className={styles.cefrLabel}>CEFR level</div>
+            <div className={styles.cefrLabel}>{ui("CEFR Level")}</div>
             <div className={styles.cefrValue}>{result.cefrLevel}</div>
           </div>
 
           <div className={styles.reportBox}>
-            <div className={styles.reportTitle}>Report</div>
-            <div className={styles.reportSub}>View detail feedback for each section of your speaking.</div>
+            <div className={styles.reportTitle}>{ui("Report")}</div>
+            <div className={styles.reportSub}>{ui("View detail feedback for each section of your speaking.")}</div>
             <div className={styles.divider}></div>
 
             <div className={styles.criteriaGrid}>
@@ -138,8 +138,7 @@ export default function SpeakingResultPage() {
                   onClick={() => setActivePart(num)}
                 >
                   <div className={activePart === num ? styles.tabItemActive : ''}>
-                    <span className={activePart === num ? styles.tabText : styles.tabTextInactive}>
-                      Part {num}
+                    <span className={activePart === num ? styles.tabText : styles.tabTextInactive}>{ ui("Part") + ' ' }{num}
                     </span>
                   </div>
                 </div>
@@ -152,18 +151,18 @@ export default function SpeakingResultPage() {
         {currentPartData && (
           <div className={styles.mainBody}>
             <div className={styles.transcriptCol}>
-              <div className={styles.transcriptBadge}>Part {activePart}</div>
+              <div className={styles.transcriptBadge}>{ ui("Part") + ' ' }{activePart}</div>
 
               <div className={styles.qnaScrollArea}>
                 {currentPartData.qna.map((item, idx) => (
                   <div key={idx} className={styles.qnaPair}>
                     <div className={styles.examinerText}>
                       <span style={{ fontWeight: 'bold' }}>
-                        {activePart === 4 ? 'Examiner:' : `Examiner: Q${item.id}:`}
+                        {activePart === 4 ? ui("Examiner:") : ui("Examiner: Q{{value0}}:", {value0:(item.id)})}
                       </span> {item.question}
                     </div>
                     <div className={styles.candidateText}>
-                      <span style={{ fontWeight: 'bold' }}>Candidate:</span> {item.answer}
+                      <span style={{ fontWeight: 'bold' }}>{ui("Candidate:")}</span> {item.answer}
                     </div>
                   </div>
                 ))}
@@ -175,21 +174,15 @@ export default function SpeakingResultPage() {
                 <div
                   className={`${styles.fbTab} ${activeFeedbackTab === 'grammar' ? styles.fbTabActive : styles.fbTabInactive}`}
                   onClick={() => setActiveFeedbackTab('grammar')}
-                >
-                  Grammar
-                </div>
+                >{ui("Grammar")}</div>
                 <div
                   className={`${styles.fbTab} ${activeFeedbackTab === 'vocab' ? styles.fbTabActive : styles.fbTabInactive}`}
                   onClick={() => setActiveFeedbackTab('vocab')}
-                >
-                  Vocab
-                </div>
+                >{ui("Vocab")}</div>
                 <div
                   className={`${styles.fbTab} ${activeFeedbackTab === 'coherence' ? styles.fbTabActive : styles.fbTabInactive}`}
                   onClick={() => setActiveFeedbackTab('coherence')}
-                >
-                  Lập luận & Mạch lạc
-                </div>
+                >{ui("Reasoning & Coherence")}</div>
               </div>
 
               <div style={{ marginTop: '20px' }}>
@@ -199,7 +192,7 @@ export default function SpeakingResultPage() {
                       <div className={styles.feedbackText}>{currentPartData.grammarFeedback}</div>
                     </div>
                     <div className={styles.feedbackCard}>
-                      <div className={styles.feedbackText}>Pronunciation: {currentPartData.pronunciationFeedback}</div>
+                      <div className={styles.feedbackText}>{ ui("Pronunciation:") + ' ' }{currentPartData.pronunciationFeedback}</div>
                     </div>
                   </>
                 )}
@@ -211,14 +204,14 @@ export default function SpeakingResultPage() {
                     </div>
                   </>
                 )}
-                
+
                 {activeFeedbackTab === 'coherence' && (
                   <>
                     <div className={styles.feedbackCard}>
                       <div className={styles.feedbackText}>{currentPartData.coherenceFeedback}</div>
                     </div>
                     <div className={styles.feedbackCard}>
-                      <div className={styles.feedbackText}>Fluency: {currentPartData.fluencyFeedback}</div>
+                      <div className={styles.feedbackText}>{ ui("Fluency:") + ' ' }{currentPartData.fluencyFeedback}</div>
                     </div>
                   </>
                 )}
@@ -229,8 +222,8 @@ export default function SpeakingResultPage() {
 
         {/* Actions */}
         <div className={styles.actionRow}>
-          <button className={styles.backBtn} onClick={handleBackToTests}>Back to tests</button>
-          <button className={styles.tryAgainBtn} onClick={handleTryAgain}>Try again</button>
+          <ResultBackButton to="/speaking/tests" />
+          <button className={styles.tryAgainBtn} onClick={handleTryAgain}>{ui("Try again")}</button>
         </div>
 
       </div>

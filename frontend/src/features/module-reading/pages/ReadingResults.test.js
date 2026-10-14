@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -52,6 +53,7 @@ function harness(kind, { practice = false, part = 2, page = 1, question = '', ou
   } };
   const h = { url: { part, page, question }, navigated: [], apiCalls: [], effects: [], scrolled: [] };
   const mocks = {
+    '../../../components/common/ResultBackButton.jsx': component(props => jsx('a', { href: props.to, children: 'Back' })),
     react: { useMemo: factory => factory(), useEffect: effect => h.effects.push(effect) }, 'react/jsx-runtime': { jsx, jsxs: jsx },
     'react-router-dom': { useNavigate: () => href => h.navigated.push(href),
       useSearchParams: () => [new URLSearchParams(`attemptId=attempt-1${practice ? '&practice=true' : ''}`)] },
@@ -78,7 +80,7 @@ function harness(kind, { practice = false, part = 2, page = 1, question = '', ou
     './ReadingAttemptDetailPage.module.css': component(new Proxy({}, { get: (_target, key) => key })),
   };
   const module = { exports: {} };
-  runInNewContext(files[kind], { module, require: name => mocks[name], URLSearchParams,
+  runInNewContext(files[kind], { module, require: withUiTranslationMocks(name => mocks[name]), URLSearchParams,
     document: { getElementById: id => ({ scrollIntoView: options => h.scrolled.push({ id, ...options }) }) } });
   h.render = () => module.exports.default();
   return h;
@@ -131,8 +133,7 @@ for (const practice of [false, true]) {
     question.props.onClick();
     assert.match(h.navigated[0], /part=2&question=t1%3Aq1/);
     assert.equal(h.navigated[0].includes('practice=true'), practice);
-    nodes.find(node => node.type === 'button' && node.props.children === 'Back to tests').props.onClick();
-    assert.equal(h.navigated[1], practice ? '/reading/practice' : '/reading/tests');
+    assert.equal(nodes.find(node => node.type === 'a' && node.props.children === 'Back').props.href, practice ? '/reading/practice' : '/reading/tests');
     assert.ok(h.apiCalls.every(component => component === 'READING'));
   });
 

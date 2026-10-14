@@ -1,3 +1,5 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import RichTextContent from '../../../components/common/RichTextContent';
@@ -43,6 +45,7 @@ function Part1Review({ questions, itemMap }) {
 }
 
 function Part2Review({ speakers, options, itemMap }) {
+  const ui = useUiTranslation();
   return <div className={styles.contentRow}>
     <div className={styles.qaBox} style={{ flex: 1 }}>
       <div className={styles.matchingList}>{speakers.map(speaker => {
@@ -54,8 +57,8 @@ function Part2Review({ speakers, options, itemMap }) {
           <div className={styles.matchingRow}>
             <span className={styles.targetWord}>{speaker.name} =</span>
             <div className={styles.answerColumn}>
-              <div className={styles.answerEntry}><small>Your answer</small><div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? selected.text : 'No answer'}</div></div>
-              {status !== 'correct' && correct && <div className={styles.answerEntry}><small>Correct answer</small><div className={styles.correctField}><strong>{correct.text}</strong></div></div>}
+              <div className={styles.answerEntry}><small>{ui("Your answer")}</small><div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? selected.text : ui("No answer")}</div></div>
+              {status !== 'correct' && correct && <div className={styles.answerEntry}><small>{ui("Correct answer")}</small><div className={styles.correctField}><strong>{correct.text}</strong></div></div>}
             </div>
             <StatusBadge outcome={item?.outcome?.outcome} />
           </div>
@@ -66,6 +69,7 @@ function Part2Review({ speakers, options, itemMap }) {
 }
 
 function Part3Review({ statements, options, itemMap }) {
+  const ui = useUiTranslation();
   return <div className={styles.contentRow}>
     <div className={styles.qaBox} style={{ flex: 1 }}>
       <div className={styles.matchingList}>{statements.map((stmt) => {
@@ -80,8 +84,8 @@ function Part3Review({ statements, options, itemMap }) {
               <StatusBadge outcome={item?.outcome?.outcome} />
             </div>
             <div className={styles.answerColumn}>
-              <div className={styles.answerEntry}><small>Your answer</small><div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? selected.text : 'No answer'}</div></div>
-              {status !== 'correct' && correct && <div className={styles.answerEntry}><small>Correct answer</small><div className={styles.correctField}><strong>{correct.text}</strong></div></div>}
+              <div className={styles.answerEntry}><small>{ui("Your answer")}</small><div className={`${styles.answerField} ${styles[`${status}Field`]}`}>{selected ? selected.text : ui("No answer")}</div></div>
+              {status !== 'correct' && correct && <div className={styles.answerEntry}><small>{ui("Correct answer")}</small><div className={styles.correctField}><strong>{correct.text}</strong></div></div>}
             </div>
           </div>
         </article>;
@@ -118,6 +122,7 @@ function Part4Review({ recordings, itemMap, currentRecordingIndex, isFullTest })
 }
 
 export default function ListeningDetailResultPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const attemptId = searchParams.get('attemptId');
@@ -125,26 +130,26 @@ export default function ListeningDetailResultPage() {
   const [urlState, setUrlState] = useUrlQueryState(DETAIL_QUERY_SCHEMA);
   const { selectedPart, currentPage } = urlState;
   const setCurrentPage = next => setUrlState(current => ({ currentPage: typeof next === 'function' ? next(current.currentPage) : next }));
-  
+
   const summary = useAttemptResult(attemptId, 'LISTENING');
   const availableParts = useMemo(() => summary.data?.result?.parts?.map(part => part.partNumber).sort((a, b) => a - b) ?? [], [summary.data]);
   const activePart = availableParts.includes(selectedPart) ? selectedPart : availableParts[0] ?? null;
-  
+
   const detail = useAttemptPartResult(attemptId, activePart, 'LISTENING');
   const paper = detail.data?.paper;
   const itemMap = useMemo(() => new Map((detail.data?.items ?? []).map(item => [item.key, item])), [detail.data]);
-  
+
   const isFullTest = availableParts.length > 1;
 
-  if (summary.loading || summary.error) return <AttemptPageState loading={summary.loading} error={summary.error} />;
-  if (!activePart || detail.loading || detail.error) return <AttemptPageState loading={!detail.error} error={detail.error} />;
+  if (summary.loading || summary.error) return <AttemptPageState loading={summary.loading} error={summary.error}  backHref={isPractice ? '/listening/practice' : '/listening/tests'} />;
+  if (!activePart || detail.loading || detail.error) return <AttemptPageState loading={!detail.error} error={detail.error}  backHref={isPractice ? '/listening/practice' : '/listening/tests'} />;
 
   let content = null;
   let totalPages = 1;
   let footerQuestions = [];
   let currentQuestionIds = [];
   let audioUrl = null;
-  
+
   if (activePart === 1) {
     const questions = paper?.questions ?? [];
     totalPages = questions.length;
@@ -217,8 +222,9 @@ export default function ListeningDetailResultPage() {
 
   return <div className={styles.page}>
     <main className={styles.content}>
-      <AttemptScoreSummary score={summary.data?.score} maxScore={summary.data?.maxScore} title="Final score" subtitle="Listening" />
-      {isFullTest && <div className={styles.partTabs}>{availableParts.map(part => <button key={part} className={activePart === part ? styles.activeTab : ''} onClick={() => changePart(part)}>Part {part}</button>)}</div>}
+      <ResultBackButton to={`/listening/result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}`} />
+      <AttemptScoreSummary score={summary.data?.score} maxScore={summary.data?.maxScore} title={ui("Final score")} subtitle={ui("Listening")} />
+      {isFullTest && <div className={styles.partTabs}>{availableParts.map(part => <button key={part} className={activePart === part ? styles.activeTab : ''} onClick={() => changePart(part)}>{ ui("Part") + ' ' }{part}</button>)}</div>}
       <div className={styles.sectionHeader}>
         <strong>{getSectionTitle()}</strong>
         <span>{getSectionSubtitle()}</span>
@@ -229,7 +235,7 @@ export default function ListeningDetailResultPage() {
       </div>
     </main>
     <TestFooter
-      partLabel={`Part ${activePart}`}
+      partLabel={ui("Part {{value0}}", {value0:(activePart)})}
       questions={footerQuestions}
       answeredIds={answeredIds}
       currentPageQuestionIds={currentQuestionIds}
@@ -240,7 +246,7 @@ export default function ListeningDetailResultPage() {
       onPrevClick={previous}
       onNextClick={next}
       onSubmitClick={() => navigate(isPractice ? '/listening/practice' : '/listening/tests')}
-      submitLabel="Take another test"
+      submitLabel={ui("Take another test")}
       hasPrev={currentPage > 1 || availableParts.indexOf(activePart) > 0}
       hasNext={currentPage < totalPages || availableParts.indexOf(activePart) < availableParts.length - 1}
     />

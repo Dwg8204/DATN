@@ -1,3 +1,4 @@
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AttemptPageState } from '../../test-attempts/components/AttemptPageState';
@@ -71,9 +72,7 @@ export default function WritingResultPage() {
           >
             {t('writingAi.detail')}
           </button>
-          <button onClick={() => navigate(isPractice ? '/writing/practice' : '/writing/tests')}>
-            {t('writingAi.another')}
-          </button>
+          <ResultBackButton to={isPractice ? '/writing/practice' : '/writing/tests'} />
         </div>
       </main>
     </div>

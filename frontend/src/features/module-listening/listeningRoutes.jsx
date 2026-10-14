@@ -40,7 +40,7 @@ export const listeningTestRoutes = [
   },
   {
     path: 'listening/detail-result',
-    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false, confirmExit: false }} /></AttemptRoleGuard>,
     children: [
       { index: true, element: <ListeningDetailResultPage /> },
     ],

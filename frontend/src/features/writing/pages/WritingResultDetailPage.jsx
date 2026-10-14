@@ -1,5 +1,5 @@
-import { ArrowLeft } from 'lucide-react';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -118,15 +118,7 @@ export default function WritingResultDetailPage() {
   return (
     <div className={styles.page}>
       <main>
-        <button
-          className={styles.back}
-          onClick={() =>
-            navigate(`/writing/result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)
-          }
-        >
-          <ArrowLeft />
-          {t('writingAi.back')}
-        </button>
+        <ResultBackButton to={`/writing/result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}`} />
         <div className={styles.title}>
           <div>
             <span>{t('writingAi.part', { number: partNumber })}</span>

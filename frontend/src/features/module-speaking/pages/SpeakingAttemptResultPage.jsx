@@ -1,4 +1,5 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import AssessmentProgress from '../../test-attempts/components/AssessmentProgress.jsx';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import RichTextContent from '../../../components/common/RichTextContent.jsx';
@@ -141,7 +142,7 @@ export default function SpeakingAttemptResultPage() {
     </nav>}
     {activePart && <PartContent attemptId={attemptId} partNumber={activePart} attempt={data} isPractice={isPractice} />}
     <div className={styles.actionRow}>
-      <button className={styles.backBtn} onClick={() => navigate(isPractice ? '/speaking/practice' : '/speaking/tests')}>Back to tests</button>
+      <ResultBackButton to={isPractice ? '/speaking/practice' : '/speaking/tests'} />
       <button className={styles.tryAgainBtn} onClick={() => navigate(`/speaking/detail-result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}>{ui("View detail result")}</button>
     </div>
   </div></div>;
