@@ -1,4 +1,10 @@
 {
+  "speakingDetailedFeedback": {
+    "weaknesses": "Điểm yếu",
+    "overallStrengths": "Điểm mạnh tổng quát",
+    "nextSteps": "Hướng luyện tập tiếp theo",
+    "aiReference": "Câu trả lời AI gợi ý · Chỉ để tham khảo"
+  },
   "writingAi": {
     "wordUnit": "từ",
     "guidance": "độ dài gợi ý",

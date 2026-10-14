@@ -13,6 +13,15 @@ import styles from './SpeakingAttemptDetailPage.module.css';
 import { speakingResultParts } from '../utils/speakingResultParts.js';
 
 const SCHEMA = { part: queryParam.positiveInt(1, 4) };
+const CRITERIA = [
+  ['grammarVocabulary', 'Grammar & Vocabulary'], ['pronunciation', 'Pronunciation'],
+  ['fluency', 'Fluency'], ['taskFulfillment', 'Task Fulfillment'],
+];
+
+function FeedbackList({ label, items }) {
+  if (!items?.length) return null;
+  return <div><strong className={styles.feedbackHeading}>{label}</strong><ul>{items.map((text, index) => <li key={index}>{text}</li>)}</ul></div>;
+}
 
 export default function SpeakingAttemptDetailPage() {
   const ui = useUiTranslation();
@@ -52,10 +61,26 @@ export default function SpeakingAttemptDetailPage() {
           <audio controls preload="none" src={item.selectedAnswer.mediaKey} aria-label={ui("Your recording for question {{value0}}", {value0:(index + 1)})} />
           <p><em>{ui("Transcript (English):")}</em></p>
           <p>{item?.assessment?.transcript || ui("No transcript is available, or the speech is unclear.")}</p>
-          {item?.assessment && <div><strong>{ui("Feedback")}</strong><p>{item.assessment.feedback}</p>
-            {Object.entries(item.assessment.criteria).map(([key, score]) => <p key={key}>{key}: {score}%</p>)}</div>}
+          {item?.assessment && <div><strong className={styles.feedbackHeading}>{ui("Feedback")}</strong><p>{item.assessment.feedback}</p>
+            <div className={styles.criterionGrid}>{CRITERIA.map(([key, label]) => {
+              const feedback = item.assessment.details?.criterionFeedback?.[key];
+              return <section key={key} className={styles.criterionCard}>
+                <h3>{ui(label)} <span>{item.assessment.criteria[key]}%</span></h3>
+                {feedback && <><p>{feedback.comment}</p>
+                  <FeedbackList label={ui("Strengths")} items={feedback.strengths} />
+                  <FeedbackList label={ui("Weaknesses")} items={feedback.weaknesses} />
+                  <FeedbackList label={ui("Suggestions")} items={feedback.suggestions} /></>}
+              </section>;
+            })}</div>
+            {item.assessment.details && <section className={styles.overallFeedback}>
+              <FeedbackList label={ui("Overall strengths")} items={item.assessment.details.strengths} />
+              <FeedbackList label={ui("Areas to improve")} items={item.assessment.details.weaknesses} />
+              <FeedbackList label={ui("Next steps")} items={item.assessment.details.suggestions} />
+            </section>}</div>}
         </>}
-        {item?.sampleAnswer && <div className={styles.sample}><strong>{ui("Sample answer")}</strong><RichTextContent value={item.sampleAnswer} /></div>}
+        {item?.sampleAnswer && <div className={styles.sample}><strong className={styles.feedbackHeading}>{ui("Sample answer")}</strong><RichTextContent value={item.sampleAnswer} /></div>}
+        {!item?.sampleAnswer && item?.assessment?.details?.suggestedAnswer && <div className={styles.sample}>
+          <strong className={styles.feedbackHeading}>{ui("AI suggested answer · Reference only")}</strong><p>{item.assessment.details.suggestedAnswer}</p></div>}
       </div></article>;
     })}</div>
     <button className={styles.back} onClick={() => navigate(isPractice ? '/speaking/practice' : '/speaking/tests')}>{ui("Take another")}</button>

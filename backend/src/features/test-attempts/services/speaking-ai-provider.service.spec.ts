@@ -3,13 +3,17 @@ import { SpeakingAiConfig } from './speaking-ai-config.service';
 import { SpeakingAudioService } from './speaking-audio.service';
 import { SpeakingGradingRepository, SpeakingJob } from '../repositories/speaking-grading.repository';
 import { AssessmentPaper } from '../types/attempt.type';
+import { CRITERIA_KEYS, SPEAKING_PROMPT_VERSION } from '../assessments/speaking-ai-policy';
 
 const paper: AssessmentPaper = { component: 'SPEAKING', title: 'Test', mode: 'part1',
   parts: { '1': { questions: [{ key: 'p1:q1', text: 'What do you like?' }] } },
   items: [{ key: 'p1:q1', partNumber: 1, kind: 'AUDIO', points: 0, sampleAnswer: 'I like books.' }] };
 const result = { responses: [{ key: 'p1:q1', status: 'ASSESSED', criteria: {
   grammarVocabulary: 50, pronunciation: 50, fluency: 50, taskFulfillment: 50,
-}, feedback: 'Hãy bổ sung lý do: I like reading because it is relaxing.', qualityFlags: [] }], estimatedCefr: 'B1', cefrReason: 'Cần thêm bằng chứng.' };
+}, feedback: 'Hãy bổ sung lý do: I like reading because it is relaxing.', qualityFlags: [], details: {
+  criterionFeedback: Object.fromEntries(CRITERIA_KEYS.map(key => [key, { comment: 'Diễn đạt ý chính rõ ràng.', strengths: [], weaknesses: [], suggestions: ['Bổ sung lý do.'] }])),
+  strengths: ['Diễn đạt rõ ý chính.'], weaknesses: [], suggestions: [], suggestedAnswer: null,
+} }], estimatedCefr: 'B1', cefrReason: 'Cần thêm bằng chứng.' };
 describe('Speaking provider integration contract (mock HTTP only)', () => {
   const original = global.fetch;
   afterEach(() => { global.fetch = original; });
@@ -54,7 +58,7 @@ describe('Speaking provider integration contract (mock HTTP only)', () => {
   it('cached assessment makes retries idempotent without provider requests', async () => {
     const { provider, job, audio } = fixture();
     job.responses.__assessment = JSON.stringify(result);
-    job.responses.__assessmentPromptVersion = 'speaking-rubric-v2';
+    job.responses.__assessmentPromptVersion = SPEAKING_PROMPT_VERSION;
     const request = jest.fn(); global.fetch = request;
     await expect(provider.assess(job, paper, [{ key: 'p1:q1', mediaKey: 'url' }])).resolves.toEqual(result);
     expect(request).not.toHaveBeenCalled();

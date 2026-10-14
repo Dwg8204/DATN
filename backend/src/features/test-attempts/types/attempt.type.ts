@@ -80,7 +80,8 @@ export type ItemOutcome = {
   selectedAnswer?: Answer | null;
   /** Human-readable selected option, resolved from the snapshot for display only. */
   selectedAnswerText?: string | null;
-  assessment?: { transcript: string; feedback: string; criteria: Record<string, number>; qualityFlags: string[] };
+  assessment?: { transcript: string; feedback: string; criteria: Record<string, number>; qualityFlags: string[];
+    details?: import('../assessments/speaking-ai-policy').SpeakingFeedbackDetail };
 };
 export type AssessmentResult = {
   schemaVersion: 1;

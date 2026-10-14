@@ -66,7 +66,9 @@ export default function DictationPage() {
   const [quizAnswer, setQuizAnswer] = useState('');
   const [quizScore, setQuizScore] = useState(0);
   const [matchingWord, setMatchingWord] = useState('');
+  const [wrongMatch, setWrongMatch] = useState(null);
   const [matchedCards, setMatchedCards] = useState([]);
+  useEffect(() => { setWrongMatch(null); }, [requestedTopic, mode]);
   const notebookTab = searchParams.get('tab') === 'sentences' ? 'sentences' : 'words';
   const topicQuery = searchParams.get('q') || '';
   const notebookQuery = searchParams.get('q') || '';
@@ -238,10 +240,12 @@ export default function DictationPage() {
   const selectMatchingMeaning = (cardId) => {
     if (!matchingWord || matchedCards.includes(cardId)) return;
     if (matchingWord === cardId) {
+      setWrongMatch(null);
       setMatchedCards((cards) => [...cards, cardId]);
       setMatchingWord('');
       showSuccess(t('dictation.matchCorrect'));
     } else {
+      setWrongMatch({ word: matchingWord, meaning: cardId });
       showInfo(t('dictation.matchTryAgain'));
     }
   };
@@ -695,7 +699,7 @@ export default function DictationPage() {
                   const answered = Boolean(quizAnswer);
                   const isCorrect = option.id === currentQuizCard.id;
                   const isChosen = option.id === quizAnswer;
-                  return <button type="button" key={option.id} disabled={answered} className={answered && isCorrect ? styles.correctQuizOption : answered && isChosen ? styles.wrongQuizOption : ''} onClick={() => answerQuiz(option.id)}>{ui(option.label)}</button>;
+                  return <button type="button" key={option.id} disabled={answered} aria-pressed={isChosen} className={answered && isCorrect ? styles.correctQuizOption : answered && isChosen ? styles.wrongQuizOption : ''} onClick={() => answerQuiz(option.id)}><span>{ui(option.label)}</span>{answered && isCorrect ? <Check size={18} aria-label="Correct" /> : answered && isChosen ? <X size={18} aria-label="Incorrect" /> : null}</button>;
                 })}
               </div>
               {quizAnswer && <button type="button" className={styles.nextActivity} onClick={nextQuiz}>{t('dictation.next')} <ChevronRight /></button>}
@@ -712,8 +716,8 @@ export default function DictationPage() {
             <section className={styles.matchingCard}>
               <p>{t('dictation.matchInstructions')}</p>
               <div className={styles.matchingGrid}>
-                <div>{matchingCards.map((card) => <button type="button" key={card.id} disabled={matchedCards.includes(card.id)} className={matchingWord === card.id ? styles.selectedMatch : matchedCards.includes(card.id) ? styles.completedMatch : ''} onClick={() => setMatchingWord(card.id)}>{card.word}</button>)}</div>
-                <div>{matchingMeanings.map((card) => <button type="button" key={card.id} disabled={matchedCards.includes(card.id)} className={matchedCards.includes(card.id) ? styles.completedMatch : ''} onClick={() => selectMatchingMeaning(card.id)}>{card.meaning}</button>)}</div>
+                <div>{matchingCards.map((card) => <button type="button" key={card.id} disabled={matchedCards.includes(card.id)} aria-pressed={matchingWord === card.id} className={matchedCards.includes(card.id) ? styles.completedMatch : wrongMatch?.word === card.id ? styles.wrongQuizOption : matchingWord === card.id ? styles.selectedMatch : ''} onClick={() => { setWrongMatch(null); setMatchingWord(card.id); }}><span>{card.word}</span>{matchedCards.includes(card.id) ? <Check size={18} /> : wrongMatch?.word === card.id ? <X size={18} /> : null}</button>)}</div>
+                <div>{matchingMeanings.map((card) => <button type="button" key={card.id} disabled={matchedCards.includes(card.id)} className={matchedCards.includes(card.id) ? styles.completedMatch : wrongMatch?.meaning === card.id ? styles.wrongQuizOption : ''} onClick={() => selectMatchingMeaning(card.id)}><span>{card.meaning}</span>{matchedCards.includes(card.id) ? <Check size={18} /> : wrongMatch?.meaning === card.id ? <X size={18} /> : null}</button>)}</div>
               </div>
               {matchingCards.length > 0 && matchedCards.length === matchingCards.length && <div className={styles.matchComplete}><Check /> {t('dictation.matchComplete')}</div>}
             </section>

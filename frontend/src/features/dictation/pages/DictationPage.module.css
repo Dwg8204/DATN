@@ -317,6 +317,16 @@
 :global([data-theme="dark"]) .quizOptions button { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
 :global([data-theme="dark"]) .matchingCard { background: var(--bg-surface) !important; border-color: var(--border) !important; }
 :global([data-theme="dark"]) .matchingGrid button { background: var(--bg-hover) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+.quizOptions button, .matchingGrid button { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.quizOptions button svg, .matchingGrid button svg { flex-shrink: 0; }
+:global([data-theme="dark"]) .matchingGrid button.selectedMatch { background: #da1e21 !important; border-color: #EF4444 !important; color: #fff !important; }
+:global([data-theme="dark"]) .quizOptions button.correctQuizOption,
+:global([data-theme="dark"]) .matchingGrid button.completedMatch { background: #0F2D1F !important; border-color: #22C55E !important; color: #fff !important; text-decoration: none; opacity: 1; }
+:global([data-theme="dark"]) .quizOptions button.wrongQuizOption,
+:global([data-theme="dark"]) .matchingGrid button.wrongQuizOption { background: #331417 !important; border-color: #EF4444 !important; color: #fff !important; opacity: 1; }
+:global([data-theme="dark"]) .correctQuizOption svg,
+:global([data-theme="dark"]) .completedMatch svg { color: #22C55E; }
+:global([data-theme="dark"]) .wrongQuizOption svg { color: #EF4444; }
 :global([data-theme="dark"]) .wordDetailCard { background: var(--bg-surface) !important; border-color: var(--border) !important; }
 :global([data-theme="dark"]) .wordDetailMain h2 { color: var(--text-primary) !important; }
 :global([data-theme="dark"]) .wordDetailMain p { color: var(--text-muted) !important; }

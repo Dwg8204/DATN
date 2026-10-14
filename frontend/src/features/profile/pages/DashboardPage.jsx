@@ -29,7 +29,7 @@ export default function DashboardPage() {
   const [loadError, setLoadError] = useState('');
   const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
   const { skillFilter, partFilter, dateFilter } = urlState;
-  const setSkillFilter = value => setUrlState({ skillFilter: value });
+  const setSkillFilter = value => setUrlState({ skillFilter: value, partFilter: 'all' });
   const setPartFilter = value => setUrlState({ partFilter: value });
   const setDateFilter = value => setUrlState({ dateFilter: value });
 
@@ -159,37 +159,37 @@ export default function DashboardPage() {
               <div className={styles.filterBtnGroup}>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'all' ? styles.active : ''}`}
-                  onClick={() => { setSkillFilter('all'); setPartFilter('all'); }}
+                  onClick={() => setSkillFilter('all')}
                 >
                   {t('dashboard.all')}
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'listening' ? styles.active : ''}`}
-                  onClick={() => { setSkillFilter('listening'); setPartFilter('all'); }}
+                  onClick={() => setSkillFilter('listening')}
                 >
                   {t('nav.listening')} ({skillCounts.listening})
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'reading' ? styles.active : ''}`}
-                  onClick={() => { setSkillFilter('reading'); setPartFilter('all'); }}
+                  onClick={() => setSkillFilter('reading')}
                 >
                   {t('nav.reading')} ({skillCounts.reading})
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'writing' ? styles.active : ''}`}
-                  onClick={() => { setSkillFilter('writing'); setPartFilter('all'); }}
+                  onClick={() => setSkillFilter('writing')}
                 >
                   {t('nav.writing')} ({skillCounts.writing})
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'speaking' ? styles.active : ''}`}
-                  onClick={() => { setSkillFilter('speaking'); setPartFilter('all'); }}
+                  onClick={() => setSkillFilter('speaking')}
                 >
                   {t('nav.speaking')} ({skillCounts.speaking})
                 </button>
                 <button
                   className={`${styles.filterBtn} ${skillFilter === 'grammar' ? styles.active : ''}`}
-                  onClick={() => { setSkillFilter('grammar'); setPartFilter('all'); }}
+                  onClick={() => setSkillFilter('grammar')}
                 >
                   {t('nav.grammar')} ({skillCounts.grammar})
                 </button>

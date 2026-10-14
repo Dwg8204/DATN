@@ -1,5 +1,5 @@
 import { assessSpeaking } from './speaking-assessment';
-import { finalizeSpeaking, validateSpeakingAssessment } from './speaking-ai-policy';
+import { CRITERIA_KEYS, finalizeSpeaking, validateSpeakingAssessment } from './speaking-ai-policy';
 import { AssessmentPaper } from '../types/attempt.type';
 
 const paper: AssessmentPaper = { component: 'SPEAKING', mode: 'full', title: 'Speaking', parts: {},
@@ -8,6 +8,21 @@ const raw = () => ({ responses: [{ key: 'p1:q1', status: 'ASSESSED',
   criteria: { grammarVocabulary: 80, pronunciation: 70, fluency: 90, taskFulfillment: 60 },
   feedback: 'Nói rõ hơn; ví dụ: I enjoy reading.', qualityFlags: [] }], estimatedCefr: 'B2', cefrReason: 'Chỉ ghi một câu; phạm vi bằng chứng hạn chế.' });
 describe('Speaking AI policy', () => {
+  it('requires all four detailed criteria for new grading and persists feedback without changing scores', () => {
+    const input = raw();
+    const details = { criterionFeedback: Object.fromEntries(CRITERIA_KEYS.map(key => [key,
+      { comment: 'Bạn diễn đạt rõ ý chính.', strengths: [], weaknesses: [], suggestions: ['Bổ sung lý do.'] }])),
+      strengths: [], weaknesses: [], suggestions: [], suggestedAnswer: 'I enjoy reading because it helps me relax.' };
+    const detailed = { ...input, responses: [{ ...input.responses[0], details }] };
+    const checked = validateSpeakingAssessment(detailed, ['p1:q1'], true);
+    const result = finalizeSpeaking(paper, {}, checked, 'test', assessSpeaking(paper.items, {}));
+    expect(result.score).toBe(9.38);
+    expect(result.items[0].assessment?.details).toEqual(details);
+    delete details.criterionFeedback.fluency;
+    expect(() => validateSpeakingAssessment(detailed, ['p1:q1'], true)).toThrow();
+    expect(() => validateSpeakingAssessment(raw(), ['p1:q1'], true)).toThrow();
+    expect(() => validateSpeakingAssessment(raw(), ['p1:q1'])).not.toThrow();
+  });
   it('live submissions queue AI instead of generating random points', () => {
     const result = assessSpeaking(paper.items, { 'p1:q1': { kind: 'AUDIO', mediaKey: 'https://example.com/audio' } });
     expect(result.method).toBe('PENDING_AI');
