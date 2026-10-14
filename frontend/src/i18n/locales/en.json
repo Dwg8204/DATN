@@ -1,5 +1,9 @@
 {
   "speakingDetailedFeedback": {
+    "cefr": "Estimated Speaking CEFR",
+    "noCefr": "A Speaking CEFR estimate is not available for this result.",
+    "noPartFeedback": "No overall feedback for this Part was saved with this result. You can review the available feedback for each response.",
+    "savedRecording": "Your submitted recordings are kept unchanged. Suggested answers are shown separately.",
     "weaknesses": "Weaknesses",
     "overallStrengths": "Overall strengths",
     "nextSteps": "Next steps",

@@ -47,13 +47,17 @@ export class SpeakingAiProvider {
 
   async assess(job: SpeakingJob, paper: AssessmentPaper, recordings: Array<{ key: string; mediaKey: string }>): Promise<AiAssessment> {
     const keys = recordings.map(recording => recording.key);
-    if (job.responses.__assessment && job.responses.__assessmentPromptVersion === SPEAKING_PROMPT_VERSION) return validateSpeakingAssessment(JSON.parse(job.responses.__assessment), keys);
+    const expectedParts = [...new Set(paper.items.map(item => item.partNumber))];
+    if (job.responses.__assessment && job.responses.__assessmentPromptVersion === SPEAKING_PROMPT_VERSION) return validateSpeakingAssessment(JSON.parse(job.responses.__assessment), keys, true, expectedParts);
     // Check inference access before downloading media or using Groq quota.
     if (Date.now() >= this.modelVerifiedUntil) {
       await this.gemini('countTokens', { contents: [{ role: 'user', parts: [{ text: 'Speaking model availability check' }] }] });
       this.modelVerifiedUntil = Date.now() + 5 * 60_000;
     }
     const parts: GeminiPart[] = [{ text: JSON.stringify({ title: paper.title, mode: paper.mode,
+      partCoverage: expectedParts.map(partNumber => ({ partNumber,
+        responseKeys: paper.items.filter(item => item.partNumber === partNumber).map(item => item.key),
+        recordedKeys: paper.items.filter(item => item.partNumber === partNumber && keys.includes(item.key)).map(item => item.key) })),
       totalQuestions: paper.items.length, skippedKeys: paper.items.filter(item => !keys.includes(item.key)).map(item => item.key) }) }];
     let mediaBytes = 0;
     const loadedImages = new Set<number>();
@@ -119,7 +123,7 @@ export class SpeakingAiProvider {
     let decoded: unknown;
     try { decoded = JSON.parse(candidate.content?.parts?.map(part => part.text ?? '').join('') ?? ''); }
     catch { throw new Error('AI_INVALID_RESPONSE'); }
-    const result = validateSpeakingAssessment(decoded, keys, true);
+    const result = validateSpeakingAssessment(decoded, keys, true, expectedParts);
     await this.jobs.cache(job, '__assessment', JSON.stringify(result));
     await this.jobs.cache(job, '__assessmentPromptVersion', SPEAKING_PROMPT_VERSION);
     return result;

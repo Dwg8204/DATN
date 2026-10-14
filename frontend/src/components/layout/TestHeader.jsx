@@ -4,6 +4,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './TestHeader.module.css';
 import { getReadingRemainingSeconds } from '../../features/module-reading/utils/readingSessionStorage';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../context/ThemeContext';
+
+const LOGO_LIGHT = 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png';
+const LOGO_DARK = 'https://res.cloudinary.com/dkrisyrlh/image/upload/v1790742935/aptimate/branding/logo_white_text_transparent_v2.png';
 
 function formatRemainingTime(totalSeconds) {
   const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
@@ -14,6 +18,7 @@ function formatRemainingTime(totalSeconds) {
 export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, controlledTimer = false,
   onConfirmExit, showTimer = true, showExit = true, confirmExit = showExit, finalizingExpired = false, exitMode = 'exam' }) {
   const ui = useUiTranslation();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const location = useLocation();
@@ -78,7 +83,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
         <div className={styles.leftSide}>
           <button className={styles.logoBtn} onClick={handleExitClick} title={t('test.exit')} disabled={finalizingExpired}>
             <img
-              src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png"
+              src={theme === 'dark' ? LOGO_DARK : LOGO_LIGHT}
               alt={ui("AptiMate Logo")}
               className={styles.logo}
             />

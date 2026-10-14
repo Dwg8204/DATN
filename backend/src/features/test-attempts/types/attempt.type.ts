@@ -100,6 +100,7 @@ export type AssessmentResult = {
     averagePercentage: number;
     estimatedCefr?: string | null;
     cefrReason?: string;
+    partFeedback?: Array<{ partNumber: number; overview: string; strengths: string[]; weaknesses: string[]; suggestions: string[] }>;
     model?: string;
   };
 };

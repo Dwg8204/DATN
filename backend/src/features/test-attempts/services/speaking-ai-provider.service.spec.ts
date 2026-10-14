@@ -13,7 +13,7 @@ const result = { responses: [{ key: 'p1:q1', status: 'ASSESSED', criteria: {
 }, feedback: 'Hãy bổ sung lý do: I like reading because it is relaxing.', qualityFlags: [], details: {
   criterionFeedback: Object.fromEntries(CRITERIA_KEYS.map(key => [key, { comment: 'Diễn đạt ý chính rõ ràng.', strengths: [], weaknesses: [], suggestions: ['Bổ sung lý do.'] }])),
   strengths: ['Diễn đạt rõ ý chính.'], weaknesses: [], suggestions: [], suggestedAnswer: null,
-} }], estimatedCefr: 'B1', cefrReason: 'Cần thêm bằng chứng.' };
+} }], estimatedCefr: 'B1', cefrReason: 'Cần thêm bằng chứng.', partFeedback: [{ partNumber: 1, overview: 'Bạn trả lời rõ ý.', strengths: [], weaknesses: [], suggestions: [] }] };
 describe('Speaking provider integration contract (mock HTTP only)', () => {
   const original = global.fetch;
   afterEach(() => { global.fetch = original; });
