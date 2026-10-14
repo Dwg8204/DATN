@@ -1,3 +1,5 @@
+import { uiLocale } from '../../../i18n/translateUi.js';
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useRef, useState } from 'react';
 import { Check, Clipboard, History, MessageCircle, Plus, Send, Sparkles, Trash2, X } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
@@ -17,6 +19,7 @@ function makeTitle(value) {
 }
 
 function Message({ message }) {
+  const ui = useUiTranslation();
   const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
 
@@ -40,7 +43,7 @@ function Message({ message }) {
         {!isUser && (
           <button type="button" className={styles.copyButton} onClick={copyMessage}>
             {copied ? <Check size={13} /> : <Clipboard size={13} />}
-            {copied ? 'Copied' : 'Copy'}
+            {copied ? ui("Copied") : ui("Copy")}
           </button>
         )}
       </div>
@@ -49,6 +52,7 @@ function Message({ message }) {
 }
 
 export default function ChatAssistantWidget() {
+  const ui = useUiTranslation();
   const { user } = useAuth();
   const userKey = user?.id || user?.email || 'guest';
   const [isOpen, setIsOpen] = useState(false);
@@ -168,26 +172,26 @@ export default function ChatAssistantWidget() {
   return (
     <div className={styles.widget}>
       {isOpen && (
-        <section className={styles.panel} aria-label="AptiMate AI Assistant">
+        <section className={styles.panel} aria-label={ui("AptiMate AI Assistant")}>
           <header className={styles.header}>
             <span className={styles.headerIcon}><Sparkles size={19} /></span>
             <div>
-              <strong>AptiMate Assistant</strong>
-              <small><i /> Online · AI learning support</small>
+              <strong>{ui("AptiMate Assistant")}</strong>
+              <small><i />{ ' ' + ui("Online · AI learning support") }</small>
             </div>
             <button
               type="button"
               onClick={() => setShowHistory(current => !current)}
-              title="Chat history"
-              aria-label="Open chat history"
+              title={ui("Chat history")}
+              aria-label={ui("Open chat history")}
               aria-pressed={showHistory}
             >
               <History size={19} />
             </button>
-            <button type="button" onClick={startNewChat} disabled={isThinking} title="New chat" aria-label="Start a new chat">
+            <button type="button" onClick={startNewChat} disabled={isThinking} title={ui("New chat")} aria-label={ui("Start a new chat")}>
               <Plus size={20} />
             </button>
-            <button type="button" onClick={() => setIsOpen(false)} title="Close" aria-label="Close assistant">
+            <button type="button" onClick={() => setIsOpen(false)} title={ui("Close")} aria-label={ui("Close assistant")}>
               <X size={21} />
             </button>
           </header>
@@ -195,8 +199,8 @@ export default function ChatAssistantWidget() {
           {showHistory ? (
             <div className={styles.historyPanel}>
               <div className={styles.historyHeading}>
-                <div><strong>Chat history</strong><small>{sessions.length} conversation{sessions.length === 1 ? '' : 's'}</small></div>
-                <button type="button" onClick={startNewChat}><Plus size={16} /> New chat</button>
+                <div><strong>{ui("Chat history")}</strong><small>{sessions.length}{ ' ' + ui("conversation") }{sessions.length === 1 ? '' : 's'}</small></div>
+                <button type="button" onClick={startNewChat}><Plus size={16} />{ ' ' + ui("New chat") }</button>
               </div>
               <div className={styles.historyList}>
                 {sessions.length ? sessions.map(session => (
@@ -207,21 +211,21 @@ export default function ChatAssistantWidget() {
                     <button type="button" className={styles.historyOpen} onClick={() => openSession(session.id)}>
                       <MessageCircle size={17} />
                       <span>
-                        <strong>{session.title}</strong>
-                        <small>{new Date(session.updatedAt).toLocaleString('en-GB', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</small>
+                        <strong>{ui(session.title)}</strong>
+                        <small>{new Date(session.updatedAt).toLocaleString(uiLocale(), { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</small>
                       </span>
                     </button>
                     <button
                       type="button"
                       className={styles.deleteHistory}
-                      aria-label={`Delete ${session.title}`}
+                      aria-label={ui("Delete {{value0}}", {value0:(session.title)})}
                       onClick={event => deleteSession(event, session.id)}
                     >
                       <Trash2 size={15} />
                     </button>
                   </div>
                 )) : (
-                  <div className={styles.emptyHistory}><History size={28} /><strong>No chat history yet</strong><span>Start a conversation and it will appear here.</span></div>
+                  <div className={styles.emptyHistory}><History size={28} /><strong>{ui("No chat history yet")}</strong><span>{ui("Start a conversation and it will appear here.")}</span></div>
                 )}
               </div>
             </div>
@@ -229,8 +233,8 @@ export default function ChatAssistantWidget() {
             {!messages.length && (
               <div className={styles.welcome}>
                 <span><Sparkles size={22} /></span>
-                <h2>How can I help you?</h2>
-                <p>Ask me about Aptis skills, test feedback, or your study plan.</p>
+                <h2>{ui("How can I help you?")}</h2>
+                <p>{ui("Ask me about Aptis skills, test feedback, or your study plan.")}</p>
                 <div className={styles.suggestions}>
                   {SUGGESTIONS.map(suggestion => (
                     <button type="button" key={suggestion} onClick={() => { setDraft(suggestion); inputRef.current?.focus(); }}>
@@ -258,14 +262,14 @@ export default function ChatAssistantWidget() {
               rows="1"
               onChange={event => setDraft(event.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Ask AptiMate Assistant..."
-              aria-label="Chat message"
+              placeholder={ui("Ask AptiMate Assistant...")}
+              aria-label={ui("Chat message")}
             />
-            <button type="submit" disabled={!draft.trim() || isThinking} aria-label="Send message">
+            <button type="submit" disabled={!draft.trim() || isThinking} aria-label={ui("Send message")}>
               <Send size={18} />
             </button>
           </form>}
-          {!showHistory && <small className={styles.disclaimer}>AI may make mistakes. Check important information.</small>}
+          {!showHistory && <small className={styles.disclaimer}>{ui("AI may make mistakes. Check important information.")}</small>}
         </section>
       )}
 
@@ -273,11 +277,11 @@ export default function ChatAssistantWidget() {
         type="button"
         className={`${styles.launcher} ${isOpen ? styles.launcherOpen : ''}`}
         onClick={() => setIsOpen(current => !current)}
-        aria-label={isOpen ? 'Close AptiMate Assistant' : 'Open AptiMate Assistant'}
+        aria-label={isOpen ? ui("Close AptiMate Assistant") : ui("Open AptiMate Assistant")}
         aria-expanded={isOpen}
       >
         {isOpen ? <X size={25} /> : <MessageCircle size={27} />}
-        {!isOpen && <span className={styles.launcherLabel}>Ask AptiMate</span>}
+        {!isOpen && <span className={styles.launcherLabel}>{ui("Ask AptiMate")}</span>}
       </button>
     </div>
   );

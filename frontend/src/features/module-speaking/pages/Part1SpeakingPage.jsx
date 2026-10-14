@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -13,6 +14,7 @@ const QUESTION_VISIBLE_DURATION = 10000; // 10 seconds
 const MAX_RECORD_TIME = 30; // seconds
 
 export default function Part1SpeakingPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
@@ -146,13 +148,10 @@ export default function Part1SpeakingPage() {
       <div className={styles.contentWrap}>
         {/* Header — part title only, no red skill label */}
         <div className={styles.headerBlock}>
-          <div className={styles.partTitle}>Part 1: Sentence comprehension</div>
+          <div className={styles.partTitle}>{ui("Part 1: Sentence Comprehension")}</div>
         </div>
 
-        <InstructionBlock title={`Question ${currentPage} of ${totalPages}`}>
-          In this part, I'm going to ask you three short questions about yourself and your interests.
-          You will have 30 seconds to reply to each question. Begin speaking when you are ready.
-        </InstructionBlock>
+        <InstructionBlock title={ui("Question {{value0}} of {{value1}}", {value0:(currentPage),value1:(totalPages)})}>{ui("In this part, I'm going to ask you three short questions about yourself and your interests. You will have 30 seconds to reply to each question. Begin speaking when you are ready.")}</InstructionBlock>
 
         {/* Question card */}
         <div className={styles.questionCard}>
@@ -163,9 +162,7 @@ export default function Part1SpeakingPage() {
             {showQuestionText ? (
               <RichTextContent className={styles.questionText} value={currentQuestion.text}/>
             ) : (
-              <button className={styles.showQuestionBtn} onClick={handleShowQuestion}>
-                Show question
-              </button>
+              <button className={styles.showQuestionBtn} onClick={handleShowQuestion}>{ui("Show question")}</button>
             )}
           </div>
         </div>
@@ -185,7 +182,7 @@ export default function Part1SpeakingPage() {
       </div>
 
       <TestFooter
-        partLabel="Part 1"
+        partLabel={ui("Part 1")}
         questions={PART1_QUESTIONS}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={[currentQuestion.id]}

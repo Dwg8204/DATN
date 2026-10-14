@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../../../i18n/useUiTranslation.jsx";
 import React, { useContext, useMemo, useState } from 'react';
 import { shuffleSentences } from '../../../utils/shuffleSentences';
 import { ReadingTestContext } from '../../../context/ReadingTestContext';
@@ -24,9 +25,9 @@ const DraggableSentence = ({ id, sentence, isSelected, onSelect }) => {
   });
 
   return (
-    <div 
-      ref={setNodeRef} 
-      {...listeners} 
+    <div
+      ref={setNodeRef}
+      {...listeners}
       {...attributes}
       onClick={() => onSelect(id)}
       className={`bg-white border rounded-lg p-4 my-3 flex items-center cursor-grab active:cursor-grabbing hover:border-blue-400 hover:shadow-sm transition-all w-full min-h-[60px] touch-none ${
@@ -47,6 +48,7 @@ const DroppableGap = ({
   hasSelectedSentence,
   isSelected,
 }) => {
+  const ui = useUiTranslation();
   const { isOver, setNodeRef: setDroppableNodeRef } = useDroppable({
     id: `gap-${id}`,
     data: { type: 'gap', position: id }
@@ -84,19 +86,20 @@ const DroppableGap = ({
   }
 
   return (
-    <div 
+    <div
       ref={setNodeRef}
       onClick={() => hasSelectedSentence && onPlace(id)}
       className={`min-h-[60px] w-full border-2 rounded-lg px-4 py-3 my-3 text-sm transition-colors flex items-center shadow-inner ${
         isOver || hasSelectedSentence ? 'border-blue-400 border-solid bg-blue-50 text-blue-500' : 'border-gray-200 border-solid bg-gray-100 text-gray-400'
       }`}
     >
-      {isOver ? 'Drop here' : hasSelectedSentence ? 'Tap to place the selected sentence' : ''}
+      {isOver ? ui("Drop here") : hasSelectedSentence ? ui("Tap to place the selected sentence") : ''}
     </div>
   );
 };
 
 const CohesionText = ({ data, questionStart }) => {
+  const ui = useUiTranslation();
   const shuffled = useMemo(() => shuffleSentences(data?.sentences || []), [data?.sentences]);
   const { answers, handleSentencePlacement, renderAnswerReveal } = useContext(ReadingTestContext);
   const [activeId, setActiveId] = useState(null);
@@ -142,25 +145,23 @@ const CohesionText = ({ data, questionStart }) => {
       onDragStart={handleDragStart} onDragEnd={handleDragEnd}
       onDragCancel={() => { setActiveId(null); setSelectedSentenceId(null); }}>
       <div className="flex flex-col h-full bg-transparent animate-in fade-in">
-        
+
         <div className="py-2 sm:py-6 flex-1 flex flex-col md:flex-row gap-6 md:gap-10">
-          
+
           {/* Left: Gaps */}
           <div className="w-full md:w-1/2 flex flex-col">
             <div className="mb-4">
-              <h3 className={`font-bold text-gray-900 mb-1 ${styles.taskTitle}`}>Questions {questionStart}–{questionStart + 4}</h3>
+              <h3 className={`font-bold text-gray-900 mb-1 ${styles.taskTitle}`}>{ ui("Questions") + ' ' }{questionStart}–{questionStart + 4}</h3>
               <p className={`font-bold text-gray-800 text-sm ${styles.taskTitle}`}>{data.title || "Report on the noise level"}</p>
-              <p className="mt-2 text-xs text-gray-600 md:hidden">
-                On mobile, tap a sentence, then tap a position. Tap a placed sentence and another position to swap them.
-              </p>
+              <p className="mt-2 text-xs text-gray-600 md:hidden">{ui("On mobile, tap a sentence, then tap a position. Tap a placed sentence and another position to swap them.")}</p>
             </div>
-            
+
             <div className="flex-1 w-full space-y-2">
               {/* The opening sentence is fixed and is not a draggable answer. */}
               <div className="bg-gray-100 border border-gray-300 rounded-lg px-4 py-3 min-h-[60px] w-full flex items-center shadow-inner my-3">
                 <RichTextContent className="text-sm font-medium text-gray-800" value={openingSentence?.content}/>
               </div>
-              
+
               {/* Droppable gaps */}
               {[2, 3, 4, 5, 6].map(position => {
                 const sentence = data.sentences.find(s => s.correctPosition !== 1 && answers[s.id] === position);
@@ -187,7 +188,7 @@ const CohesionText = ({ data, questionStart }) => {
             <div className="flex-1">
               {availableSentences.length === 0 ? (
                 <div className="text-center p-8 bg-gray-50 rounded-lg border border-gray-200 border-dashed">
-                  <p className="text-gray-500 font-medium text-sm">All sentences placed!</p>
+                  <p className="text-gray-500 font-medium text-sm">{ui("All sentences placed!")}</p>
                 </div>
               ) : (
                 availableSentences.map(sentence => (

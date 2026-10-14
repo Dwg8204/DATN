@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { validatePassword } from '../utils/passwordValidation';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,10 +10,11 @@ import { useToast } from '../../../context/ToastContext';
 import { validateEmail } from '../utils/emailValidation';
 
 export default function SignupPage() {
+  const ui = useUiTranslation();
   const { login } = useAuth();
   const navigate = useNavigate();
   const { showError, showSuccess, dismissToast } = useToast();
-  
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -38,10 +40,10 @@ export default function SignupPage() {
     try {
       const result = await authApi.register({ firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim(), password, confirmPassword });
       login(result);
-      showSuccess('Your account has been created successfully.');
+      showSuccess(ui("Your account has been created successfully."));
       navigate('/');
     } catch (requestError) {
-      showError(getApiError(requestError, 'Unable to create your account. Please try again.'));
+      showError(getApiError(requestError, ui("Unable to create your account. Please try again.")));
     } finally {
       setBusy(false);
     }
@@ -49,12 +51,12 @@ export default function SignupPage() {
   return (
     <div className={styles.signupWrapper}>
       <div className={styles.container}>
-        <span className={styles.title}>SIGN UP TO YOUR ACCOUNT</span>
+        <span className={styles.title}>{ui("SIGN UP TO YOUR ACCOUNT")}</span>
         <form className={styles.signupForm} onSubmit={handleSignup} noValidate>
           <div className={styles.signupFormGroup}>
             <div className={styles.inputRow}>
               <div className={styles.inputColMargin}>
-                <span className={styles.label}>First Name</span>
+                <span className={styles.label}>{ui("First name")}</span>
                 <input
                   type="text"
                   className={`${styles.input} ${styles.inputHalf}`}
@@ -63,7 +65,7 @@ export default function SignupPage() {
                 />
               </div>
               <div className={styles.inputCol}>
-                <span className={styles.label}>Last Name</span>
+                <span className={styles.label}>{ui("Last name")}</span>
                 <input
                   type="text"
                   className={`${styles.input} ${styles.inputHalf}`}
@@ -73,7 +75,7 @@ export default function SignupPage() {
               </div>
             </div>
             <div className={styles.inputCol}>
-              <span className={styles.label}>Email</span>
+              <span className={styles.label}>{ui("Email")}</span>
               <input
                 type="email"
                 className={`${styles.input} ${styles.inputFull}`}
@@ -83,7 +85,7 @@ export default function SignupPage() {
               />
             </div>
             <div className={styles.inputCol}>
-              <span className={styles.label}>Password</span>
+              <span className={styles.label}>{ui("Password")}</span>
               <PasswordInput
                 className={`${styles.input} ${styles.inputFull}`}
                 autoComplete="new-password"
@@ -92,7 +94,7 @@ export default function SignupPage() {
               />
             </div>
             <div className={styles.inputCol}>
-              <span className={styles.label}>Confirm password</span>
+              <span className={styles.label}>{ui("Confirm password")}</span>
               <PasswordInput
                 className={`${styles.input} ${styles.inputFull}`}
                 autoComplete="new-password"
@@ -102,12 +104,12 @@ export default function SignupPage() {
             </div>
           </div>
           <button type="submit" disabled={busy} className={styles.submitBtnSignup}>
-            <span className={styles.submitBtnText}>SIGN UP</span>
+            <span className={styles.submitBtnText}>{ui("SIGN UP")}</span>
           </button>
         </form>
         <div className={styles.signupBottomLink}>
-          <span className={styles.bottomText}>Already have account?</span>
-          <Link to="/login" className={styles.bottomAction}>SIGN IN</Link>
+          <span className={styles.bottomText}>{ui("Already have account?")}</span>
+          <Link to="/login" className={styles.bottomAction}>{ui("Sign in")}</Link>
         </div>
       </div>
     </div>

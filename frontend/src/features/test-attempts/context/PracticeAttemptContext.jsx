@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useToast } from '../../../context/ToastContext.jsx';
@@ -14,6 +15,7 @@ export function PracticeAttemptProvider({ expectedComponent, children }) {
 }
 
 function PracticeAttemptSession({ attemptId, expectedComponent, children }) {
+  const ui = useUiTranslation();
   const { showError } = useToast();
   const [attempt, setAttempt] = useState(null);
   const [answers, setAnswers] = useState({});
@@ -38,7 +40,7 @@ function PracticeAttemptSession({ attemptId, expectedComponent, children }) {
       setLoadError('');
     }).catch(error => {
       if (!active || error.code === 'ERR_CANCELED') return;
-      const message = normalizeApiError(error, error.message || 'Unable to load this practice.').message;
+      const message = normalizeApiError(error, error.message || ui("Unable to load this practice.")).message;
       setLoadError(message);
       showError(message);
     }).finally(() => { if (active) setLoading(false); });
@@ -63,7 +65,7 @@ function PracticeAttemptSession({ attemptId, expectedComponent, children }) {
       if (mountedRef.current) setRevealedAnswers(current => ({ ...current, [key]: revealed }));
       return revealed;
     } catch (error) {
-      showError(normalizeApiError(error, 'Unable to reveal this answer.').message);
+      showError(normalizeApiError(error, ui("Unable to reveal this answer.")).message);
       throw error;
     }
   }, [attemptId, revealedAnswers, showError]);
@@ -79,7 +81,7 @@ function PracticeAttemptSession({ attemptId, expectedComponent, children }) {
       if (mountedRef.current) setAttempt(current => ({ ...current, ...result, canAnswer: false }));
       return result;
     } catch (error) {
-      showError(normalizeApiError(error, 'Unable to complete this practice.').message);
+      showError(normalizeApiError(error, ui("Unable to complete this practice.")).message);
       throw error;
     } finally {
       if (mountedRef.current) setSubmitting(false);

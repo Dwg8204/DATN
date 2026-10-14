@@ -1,15 +1,17 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 ﻿import React from 'react';
 import Modal from './Modal';
 
 export default function ConfirmModal({ title, message, onConfirm, onCancel, confirmText = 'Confirm', cancelText = 'Cancel', busy = false }) {
+  const ui = useUiTranslation();
   const cancel = () => { if (!busy) onCancel(); };
   return (
     <Modal title={title} onClose={cancel}>
       <div aria-busy={busy} style={{ padding: '24px 0', fontSize: '16px', overflowWrap: 'anywhere' }}>
-        {message}
+        {ui(message)}
       </div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
-        <button 
+        <button
           type="button"
           disabled={busy}
           onClick={cancel}
@@ -17,7 +19,7 @@ export default function ConfirmModal({ title, message, onConfirm, onCancel, conf
         >
           {cancelText}
         </button>
-        <button 
+        <button
           type="button"
           disabled={busy}
           onClick={() => { if (!busy) onConfirm(); }}

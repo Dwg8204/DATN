@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useState } from 'react';
 import { Bell, BellRing, CheckCheck, Clock3, Download, Eye, Mail, Paperclip, Trash2, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
@@ -17,6 +18,7 @@ const NOTIFICATION_QUERY_SCHEMA = { filter: queryParam.enum(['all', 'unread'], '
 const notificationContent = (item, t) => t(`notifications.default${String(item.id).charAt(0).toUpperCase()}${String(item.id).slice(1)}`, { defaultValue: item.content });
 
 export default function NotificationsPage() {
+  const ui = useUiTranslation();
   const { t, i18n } = useTranslation();
   const location = useLocation();
   const [urlState, setUrlState] = useUrlQueryState(NOTIFICATION_QUERY_SCHEMA);
@@ -116,7 +118,7 @@ export default function NotificationsPage() {
           <dl><div><dt>{t('notifications.dateTime')}</dt><dd>{formatNotificationDate(selected.date, i18n.language === 'vi' ? 'vi-VN' : 'en-GB')}</dd></div><div><dt>{t('notifications.type')}</dt><dd>{t(`notifications.types.${selected.type}`, { defaultValue: selected.type })}</dd></div><div><dt>{t('notifications.sentTo')}</dt><dd>{t(`notifications.targets.${selected.target}`, { defaultValue: selected.target })}</dd></div></dl>
           {selected.fileName && <div className={styles.attachment}>
             <Paperclip />
-            <div><strong>{selected.fileName}</strong>{selected.fileSize > 0 && <small>{selected.fileSize < 1048576 ? `${(selected.fileSize / 1024).toFixed(1)} KB` : `${(selected.fileSize / 1048576).toFixed(1)} MB`}</small>}</div>
+            <div><strong>{selected.fileName}</strong>{selected.fileSize > 0 && <small>{selected.fileSize < 1048576 ? ui("{{value0}} KB", {value0:((selected.fileSize / 1024).toFixed(1))}) : ui("{{value0}} MB", {value0:((selected.fileSize / 1048576).toFixed(1))})}</small>}</div>
             {selected.fileData ? <div className={styles.attachmentActions}>
               <button type="button" onClick={() => setPreviewAttachment(selected)}><Eye />{t('notifications.preview')}</button>
               <a href={selected.fileData} download={selected.fileName}><Download />{t('notifications.download')}</a>

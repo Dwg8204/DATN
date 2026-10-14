@@ -278,4 +278,46 @@ Các lệnh kiểm tra có sẵn (chạy trong thư mục tương ứng khi phù
 - Sửa lỗi thiếu `dist/main`: đặt cache incremental trong `dist`. Đã chạy hai lần Nest build đều thành công, có `dist/main.js`. Commit `7bac188` — `fix: sửa lỗi thiếu dist/main khi khởi động backend`.
 - Theo yêu cầu commit toàn bộ, chia phần còn lại: `fb6352f` — hạ tầng Gemini; `139c24d` — backend chấm Writing/hàng đợi; `64f5288` — giao diện kết quả và lịch sử. Tài liệu được commit riêng sau các task code. Chưa push trong lượt này.
 - `backend/.gitignore` đã bỏ qua `*.tsbuildinfo`; cache cũ không commit. Không đưa `.env` hay API key vào commit.
-- Kiểm tra trong lượt commit: frontend `npm test` đạt 81/81; test nhãn lịch sử riêng đạt 1/1; diff whitespace đạt. Các bộ test backend được gọi lại nhưng chưa có kết quả, không coi là đã pass sau merge; hai lần build thành công ở task sửa build trước đó.
+- Kiểm tra trong lượt commit: frontend `npm test` đạt 81/81; test nhãn lịch sử riêng đạt 1/1; backend 8 suites/54 tests đạt (Writing/provider và hai service vừa merge); diff whitespace đạt. Hai lần Nest build thành công ở task sửa build trước đó.
+
+
+## 12. Thanh tiến độ chấm bài và kết quả Writing — 14/10/2026
+
+Đã triển khai theo `docs/ASSESSMENT_PROGRESS_AND_WRITING_RESULT_PLAN.md`: thanh % ước lượng dùng chung cho 5 kỹ năng, overlay khi nộp bài, trạng thái chờ AI trên Writing/Speaking và polling chung tối đa 5 phút. % chỉ lên 100 khi có kết quả hợp lệ; dừng khi lỗi, tắt AI hoặc hết phiên kiểm tra. Ba kỹ năng khách quan tiếp tục chấm theo đáp án.
+
+Writing tổng quát giữ CEFR cho Full, thông tin bài và feedback chung; comment theo Part nằm ở trang chi tiết. Part không có CEFR. Job Writing mới dùng locale vi và prompt v3; snapshot cũ vẫn đọc được. Speaking rubric v2 yêu cầu nhận xét tiếng Việt; chỉ dùng lại cache assessment cùng prompt version và giữ transcript tiếng Anh.
+
+Đã qua 85 frontend test chính, 94 test Reading/Practice, 68 backend test liên quan và 2 browser test đa trường hợp; build frontend đạt. Chưa kiểm tra lượt chấm thật qua Gemini/Groq; test browser/provider dùng mock. Không có migration mới, chưa commit/push. Chi tiết và hành vi dữ liệu cũ xem mục 10 của tài liệu kế hoạch.
+
+
+### Điều chỉnh điều hướng trang kết quả — 14/10/2026
+
+Đã rà soát Grammar, Vocabulary (dùng chung grammar-vocab, Part 2), Reading, Listening, Writing, Speaking và kết quả Reading legacy. Logo TestHeader không còn mở xác nhận thoát khi xem kết quả/chi tiết; các route chi tiết đặt confirmExit=false. Trang đang làm bài tiếp tục có xác nhận thoát.
+
+ResultBackButton trong components/common dùng chung mẫu nút Back của Writing. Detail quay về summary theo attemptId/practice; summary quay về danh sách đúng kỹ năng và Exam/Practice. Error state cũng dùng nút chung. Audit chi tiết: docs/RESULT_NAVIGATION_AUDIT.md. Kiểm thử frontend chính 87/87 và Reading/Practice 94/94 đạt; chưa commit/push.
+
+
+## 13. Rà soát Anh–Việt — 14/10/2026
+
+Bộ dịch chuyển sang frontend/src/i18n/locales/en.json và vi.json, có 1.708 khóa khớp nhau: 504 khóa cũ và 1.204 cặp UI bổ sung. Giao diện hardcode trên khoảng 170+ file được chuyển sang helper useUiTranslation/UiText hoặc t hiện có. Có dịch nhãn động, metadata, lỗi/toast/progress, kiểm tra dữ liệu Admin và một số formatter ngày giờ theo locale.
+
+AnswerSelect mặc định giữ nguyên lựa chọn đáp án tiếng Anh; bộ lọc UI dùng translateLabels. Nội dung đề/bài làm/transcript và feedback AI đã lưu giữ theo dữ liệu/chính sách cũ. Không dịch lại AI khi đổi ngôn ngữ. Xem docs/I18N_AUDIT.md để bổ sung bản dịch và các ngoại lệ dữ liệu động.
+
+Đã qua 90 frontend test chính, 94 test Reading/Practice, 3 browser test đổi ngôn ngữ/Writing/Speaking và build frontend. Chưa commit/push. Không gọi API dịch bên ngoài.
+
+
+## 14. Triển khai comment thật theo kỹ năng (14/10/2026)
+
+- Thay comment mock bằng `CommentsModule` + API GET/POST/DELETE và bảng `skill_comments`. Mỗi skill có một màn thảo luận chung; Tests/Practice của cùng skill dùng chung, khác skill tách biệt.
+- Chỉ hai cấp; trả lời reply vẫn thuộc root. Server suy ra người được @ từ `replyToId`; self reply so sánh user ID và không @. Trigger DB chặn cấp 3, chéo skill và thay đổi định danh/thread.
+- Đọc public, gửi/reply cần JWT, xóa mềm chỉ owner; giữ reply sau xóa. Nội dung thuần tối đa 2.000 ký tự, giới hạn 10 lần gửi/phút.
+- Frontend có trạng thái loading/trống/lỗi/retry/phân trang, giữ draft khi gửi thất bại, mutation lock, hủy request khi đổi skill/session. Dùng danh tính thật; bỏ nút like mẫu không hoạt động. Chưa realtime hoặc sửa comment.
+- Migration `1760000013000-AddSkillComments.ts` đã áp dụng thành công vào DB local. Không thêm env mới. DB máy khác cần `npm run db:migrate`.
+- Thêm 24 khóa comments mỗi ngôn ngữ; hiện 1.732 khóa Anh/Việt đồng bộ.
+- Kiểm tra: 7 test backend comment, PostgreSQL integration rollback, 1 browser test comment mobile, 90 test frontend hồi quy, build backend/frontend thành công.
+- Chi tiết và lệnh chạy: `docs/COMMENTS_IMPLEMENTATION.md`. Chưa commit/push; giữ nguyên thay đổi các task trước.
+
+
+## 15. Commit theo từng task (14/10/2026)
+
+Đã tách các thay đổi từ mục 12–14 thành 7 commit tiếng Việt: đồng bộ Anh–Việt; tiến độ chấm bài và kết quả/feedback Writing; điều hướng trang kết quả; comment hai cấp theo skill; icon gửi; icon trả lời/xóa; tài liệu bàn giao. Các ghi chú chưa commit trong mục trước mô tả trạng thái tại lúc triển khai; trạng thái hiện tại đã commit, chưa push. Không đưa env, API key hoặc cache build vào Git.

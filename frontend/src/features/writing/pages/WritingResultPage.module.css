@@ -59,3 +59,7 @@
 :global([data-theme="dark"]) .summaryList > div { border-bottom-color: var(--border); }
 :global([data-theme="dark"]) .actions button { background: var(--bg-surface); color: var(--brand-hover); border-color: var(--brand-hover); }
 :global([data-theme="dark"]) .actions button:first-child { background: var(--brand); color: var(--bg-surface); border-color: var(--brand); }
+
+.overview { display: grid; grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr); gap: 24px; align-items: stretch; }
+.overview > section { height: 100%; box-sizing: border-box; }
+@media (max-width: 700px) { .overview { grid-template-columns: 1fr; gap: 18px; } }

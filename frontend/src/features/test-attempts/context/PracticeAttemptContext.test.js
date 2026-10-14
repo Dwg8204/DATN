@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -74,7 +75,7 @@ function practiceHarness(initial = {}) {
     './testAttemptContextStore.js': { TestAttemptContext: { Provider: 'context' }, AttemptTimerContext: { Provider: 'timer' } },
   };
   const module = { exports: {} };
-  runInNewContext(compiled, { module, require: name => mocks[name], AbortController });
+  runInNewContext(compiled, { module, require: withUiTranslationMocks(name => mocks[name]), AbortController });
   const session = module.exports.PracticeAttemptProvider({ expectedComponent: 'READING' });
   return h;
 }

@@ -1,9 +1,10 @@
+import { UiText } from "../../i18n/useUiTranslation.jsx";
 import { createElement, lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 import TestLayout from '../../components/layout/TestLayout';
 import AttemptRoleGuard from '../test-attempts/components/AttemptRoleGuard.jsx';
 
-const load = element => <Suspense fallback={<div role="status">Loading…</div>}>{element}</Suspense>;
+const load = element => <Suspense fallback={<div role="status"><UiText text={"Loading…"} /></div>}>{element}</Suspense>;
 const lazyElement = importer => load(createElement(lazy(importer)));
 
 const writingAttemptLayout = lazyElement(() => import('./components/WritingAttemptLayout'));
@@ -28,7 +29,7 @@ export const writingTestRoutes = [
   },
   {
     path: '/writing/result-detail',
-    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false, confirmExit: false }} /></AttemptRoleGuard>,
     children: [{ index: true, element: writingResultDetailPage }],
   },
 ];

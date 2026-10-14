@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -42,7 +43,7 @@ function harness(isPractice) {
     '../components/test-engine/parts/Part4MatchHeading.jsx': component,
   };
   const module = { exports: {} };
-  runInNewContext(compiled, { module, require: name => mocks[name], URLSearchParams });
+  runInNewContext(compiled, { module, require: withUiTranslationMocks(name => mocks[name]), URLSearchParams });
   return { get answers() { return answers; }, get batches() { return batches; },
     context: () => walk(module.exports.default()).find(node => node.type === provider).props.value };
 }

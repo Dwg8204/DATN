@@ -1,15 +1,17 @@
+import { useUiTranslation } from "../../../../i18n/useUiTranslation.jsx";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import DashboardSkillFilter from './DashboardSkillFilter';
 import { DASHBOARD_SKILLS, formatCount, SKILL_COLORS } from '../utils/dashboardFormatters';
 import styles from '../AdminDashboardPage.module.css';
 
 export default function DashboardActivityChart({ title, data, skill, onSkillChange }) {
+  const ui = useUiTranslation();
   const visibleSkills = DASHBOARD_SKILLS.filter(item => item.value !== 'ALL' && (skill === 'ALL' || skill === item.value));
   const hasData = data.some(point => visibleSkills.some(item => Number(point[item.value]) > 0));
   return (
     <article className={styles.chartPanel}>
       <header className={styles.chartHeader}>
-        <div><h2>{title}</h2><p>Activity grouped by the selected period</p></div>
+        <div><h2>{ui(title)}</h2><p>{ui("Activity grouped by the selected period")}</p></div>
         <DashboardSkillFilter value={skill} onChange={onSkillChange}/>
       </header>
       <div className={styles.chartScroller}>
@@ -24,7 +26,7 @@ export default function DashboardActivityChart({ title, data, skill, onSkillChan
               {visibleSkills.map(item => <Bar key={item.value} dataKey={item.value} name={item.label} fill={SKILL_COLORS[item.value]} radius={[3,3,0,0]} maxBarSize={32}/>)}
             </BarChart>
           </ResponsiveContainer>
-          {!hasData && <div className={styles.emptyChart}>No activity in this period.</div>}
+          {!hasData && <div className={styles.emptyChart}>{ui("No activity in this period.")}</div>}
         </div>
       </div>
     </article>

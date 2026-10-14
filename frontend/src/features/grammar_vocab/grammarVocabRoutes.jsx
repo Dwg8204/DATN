@@ -17,7 +17,7 @@ export const grammarVocabRoutes = [
   },
   {
     path: '/grammar-vocab/result-detail',
-    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false, confirmExit: false }} /></AttemptRoleGuard>,
     children: [
       { index: true, element: <GrammarVocabResultDetailPage /> },
     ],

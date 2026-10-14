@@ -24,6 +24,7 @@ import { NotificationsModule } from './features/notifications/notifications.modu
 import { VocabularyModule } from './features/vocabulary/vocabulary.module';
 import { ReadingTestsModule } from './features/reading-tests/reading-tests.module';
 import { DictionaryModule } from './features/dictionary/dictionary.module';
+import { CommentsModule } from './features/comments/comments.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, cache: true, load: [configuration], validationSchema: environmentSchema }),
@@ -46,6 +47,7 @@ import { DictionaryModule } from './features/dictionary/dictionary.module';
     TestAttemptsModule,
     ReadingTestsModule,
     DictionaryModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: AccountThrottlerGuard }],

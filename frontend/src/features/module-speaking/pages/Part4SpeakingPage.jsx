@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -14,6 +15,7 @@ const THINKING_DURATION = 60; // 60 seconds
 const MAX_RECORD_TIME = 120; // 120 seconds (2 minutes)
 
 export default function Part4SpeakingPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const testId = searchParams.get('testId') || '1';
@@ -27,10 +29,10 @@ export default function Part4SpeakingPage() {
 
   // Phases: 'initial', 'thinking', 'recording', 'finished'
   const [phase, setPhase] = useState('initial');
-  
+
   // Timer for the current phase
   const [timeLeft, setTimeLeft] = useState(INITIAL_DURATION);
-  
+
   // For the recorder component
   const [isRecording, setIsRecording] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -105,17 +107,13 @@ export default function Part4SpeakingPage() {
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div className={styles.partTitle}>Part 4: Speak on a given topic</div>
+          <div className={styles.partTitle}>{ui("Part 4: Speak on a given topic")}</div>
         </div>
 
-        <InstructionBlock title={`Question 1 of 1`}>
-          In this part, you will have 1 minute to prepare and 2 minutes to speak on a topic.
-          Read the questions carefully. You can start recording early if you are ready.
-        </InstructionBlock>
+        <InstructionBlock title={ui("Question 1 of 1", {})}>{ui("In this part, you will have 1 minute to prepare and 2 minutes to speak on a topic. Read the questions carefully. You can start recording early if you are ready.")}</InstructionBlock>
 
         {phase === 'thinking' && (
-          <div className={styles.thinkingBanner}>
-            Preparation time remaining: <span className={styles.thinkingTime}>00:{timeLeft.toString().padStart(2, '0')}</span>
+          <div className={styles.thinkingBanner}>{ ui("Preparation time remaining:") + ' ' }<span className={styles.thinkingTime}>00:{timeLeft.toString().padStart(2, '0')}</span>
           </div>
         )}
 
@@ -133,9 +131,9 @@ export default function Part4SpeakingPage() {
                 </div>
               ))}
             </div>
-            
+
             <div className={styles.imageSection}>
-              <img src={picture3} alt="Reference" className={styles.pictureImg} />
+              <img src={picture3} alt={ui("Reference")} className={styles.pictureImg} />
             </div>
           </div>
 
@@ -155,7 +153,7 @@ export default function Part4SpeakingPage() {
       </div>
 
       <TestFooter
-        partLabel="Part 4"
+        partLabel={ui("Part 4")}
         questions={[{id: 1}]}
         answeredIds={Object.keys(answers).length > 0 ? ['1'] : []}
         currentPageQuestionIds={['1']}

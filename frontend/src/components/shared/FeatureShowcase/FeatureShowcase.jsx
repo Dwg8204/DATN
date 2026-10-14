@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import PaginationDots from '../../common/PaginationDots';
@@ -12,6 +13,7 @@ export default function FeatureShowcase({
   activeDot = 0,
   features,
 }) {
+  const ui = useUiTranslation();
   const slides = useMemo(() => features || [
     { title: featureTitle, description: featureDescription, image: featureImage },
     {
@@ -58,14 +60,14 @@ export default function FeatureShowcase({
       <div className={styles.content}>
         <span className={styles.sectionTitle}>{sectionTitle}</span>
         <div className={styles.carouselFrame}>
-          <button type="button" className={`${styles.arrowButton} ${styles.arrowPrevious}`} aria-label="Previous feature" onClick={() => goToSlide(currentSlide - 1)}>
+          <button type="button" className={`${styles.arrowButton} ${styles.arrowPrevious}`} aria-label={ui("Previous feature")} onClick={() => goToSlide(currentSlide - 1)}>
             <ChevronLeft aria-hidden="true" />
           </button>
           <div ref={carouselRef} className={styles.carouselViewport} onScroll={handleScroll}>
             {slides.map((slide) => (
               <div key={slide.title} className={styles.showcase}>
                 <div className={styles.textWrap}>
-                  <span className={styles.featureTitle}>{slide.title}</span>
+                  <span className={styles.featureTitle}>{ui(slide.title)}</span>
                   <span className={styles.featureDescription}>{slide.description}</span>
                 </div>
                 <div className={styles.imageWrap}>
@@ -74,7 +76,7 @@ export default function FeatureShowcase({
               </div>
             ))}
           </div>
-          <button type="button" className={`${styles.arrowButton} ${styles.arrowNext}`} aria-label="Next feature" onClick={() => goToSlide(currentSlide + 1)}>
+          <button type="button" className={`${styles.arrowButton} ${styles.arrowNext}`} aria-label={ui("Next feature")} onClick={() => goToSlide(currentSlide + 1)}>
             <ChevronRight aria-hidden="true" />
           </button>
         </div>

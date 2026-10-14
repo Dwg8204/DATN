@@ -98,6 +98,15 @@
 .criteria details p {
   margin-top: 8px;
 }
+.questionFeedback { display: block; }
+.feedbackToggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; min-height: 32px; }
+.feedbackToggle::-webkit-details-marker { display: none; }
+.feedbackToggle:focus-visible { outline: 2px solid var(--brand, #a11d33); outline-offset: 5px; border-radius: 4px; }
+.feedbackToggle > span { font-size: 26px; font-weight: 700; color: var(--brand, #a11d33); }
+.collapseIcon { display: none; }
+.questionFeedback[open] > .feedbackToggle .expandIcon { display: none; }
+.questionFeedback[open] > .feedbackToggle .collapseIcon { display: inline; }
+.feedbackBody { display: grid; gap: 14px; padding-top: 16px; }
 @media (max-width: 650px) {
   .grid {
     grid-template-columns: 1fr;

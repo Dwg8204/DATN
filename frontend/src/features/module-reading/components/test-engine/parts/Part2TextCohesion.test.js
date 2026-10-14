@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -41,7 +42,7 @@ function harness(initial = {}) {
     './Part2TextCohesion.module.css': { __esModule: true, default: { taskTitle: 'taskTitle' } },
   };
   const module = { exports: {} };
-  runInNewContext(compiled, { module, require: name => mocks[name] });
+  runInNewContext(compiled, { module, require: withUiTranslationMocks(name => mocks[name]) });
   return {
     moves, get answers() { return answers; },
     render(index = 0) { cursor = 0; slots = stores[index]; const root = module.exports.default({ data });

@@ -1,3 +1,6 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
+import AssessmentProgress from '../../test-attempts/components/AssessmentProgress.jsx';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import RichTextContent from '../../../components/common/RichTextContent.jsx';
 import { AttemptPageState } from '../../test-attempts/components/AttemptPageState.jsx';
@@ -20,10 +23,11 @@ function getStatColor(value) {
   return '#DA1E21';
 }
 
-function PartContent({ attemptId, partNumber, attempt }) {
+function PartContent({ attemptId, partNumber, attempt, isPractice }) {
+  const ui = useUiTranslation();
   const { data, loading, error } = useAttemptPartResult(attemptId, partNumber, 'SPEAKING', attempt.assessmentRevision);
-  if (loading || error) return <AttemptPageState loading={loading} error={error} />;
-  if (!data) return <AttemptPageState error={`Part ${partNumber} is unavailable.`} />;
+  if (loading || (error && !data)) return <AttemptPageState loading={loading} error={error}  backHref={isPractice ? '/speaking/practice' : '/speaking/tests'} />;
+  if (!data) return <AttemptPageState error={ui("Part {{value0}} is unavailable.", {value0:(partNumber)})}  backHref={isPractice ? '/speaking/practice' : '/speaking/tests'} />;
 
   const paper = data.paper;
   const questions = partNumber === 4
@@ -34,57 +38,58 @@ function PartContent({ attemptId, partNumber, attempt }) {
   const status = speakingPartStatus(attempt, partNumber);
 
   return <div className={styles.mainBody}>
-    <section className={styles.transcriptCol} aria-label={`Part ${partNumber} responses`}>
-      <span className={styles.transcriptBadge}>Part {partNumber}</span>
+    <section className={styles.transcriptCol} aria-label={ui("Part {{value0}} responses", {value0:(partNumber)})}>
+      <span className={styles.transcriptBadge}>{ ui("Part") + ' ' }{partNumber}</span>
       <div className={styles.qnaScrollArea}>{questions.map((question, index) => {
         const answer = answers.get(question.key);
         const hasAudio = answer?.kind === 'AUDIO' && Boolean(answer.mediaKey);
         return <div className={styles.qnaPair} key={question.key}>
           <div className={styles.examinerText}>
-            <strong>{partNumber === 4 ? 'Examiner:' : `Examiner: Q${index + 1}:`}</strong>
+            <strong>{partNumber === 4 ? ui("Examiner:") : ui("Examiner: Q{{value0}}:", {value0:(index + 1)})}</strong>
             <RichTextContent value={question.text} />
             {question.prompts?.map((prompt, promptIndex) =>
               <RichTextContent key={promptIndex} value={`${promptIndex + 1}. ${prompt.text}`} />)}
           </div>
           <div className={styles.candidateText}>
-            <strong>Candidate:</strong> {hasAudio ? 'Recording submitted' : 'Skipped — no recording submitted'}
+            <strong>{ui("Candidate:")}</strong> {hasAudio ? ui("Recording submitted") : ui("Skipped — no recording submitted")}
             {hasAudio && <>
               <audio className={extra.audio} controls preload="none" src={answer.mediaKey}
-                aria-label={`Your recording for Part ${partNumber}, question ${index + 1}`} />
-              <p className={extra.mockNotice}>Transcript (English):</p>
-              <p>{outcomes.get(question.key)?.assessment?.transcript || 'Chưa có transcript; bài đang chờ xử lý hoặc không có lời nói rõ ràng.'}</p>
+                aria-label={ui("Your recording for Part {{value0}}, question {{value1}}", {value0:(partNumber),value1:(index + 1)})} />
+              <p className={extra.mockNotice}>{ui("Transcript (English):")}</p>
+              <p>{outcomes.get(question.key)?.assessment?.transcript || ui("No transcript is available; processing is pending or the speech is unclear.")}</p>
             </>}
           </div>
         </div>;
       })}</div>
     </section>
-    <aside className={styles.feedbackCol} aria-label={`Part ${partNumber} feedback`}>
+    <aside className={styles.feedbackCol} aria-label={ui("Part {{value0}} feedback", {value0:(partNumber)})}>
       <div className={styles.feedbackCard}><div className={styles.feedbackText}>
-        <strong>Part {partNumber}: {status.recorded} recorded, {Math.max(status.skipped, questions.length - status.recorded)} skipped</strong>
+        <strong>{ ui("Part") + ' ' }{partNumber}: {status.recorded}{' '}{ ui("recorded,") + ' ' }{Math.max(status.skipped, questions.length - status.recorded)}{ ' ' + ui("Skipped") }</strong>
       </div></div>
       {status.recorded > 0 ? <>
         <div className={styles.feedbackCard}><div className={styles.feedbackText}>
-          {attempt.result?.gradingNotice || 'Bản ghi âm đang chờ AI chấm; chưa có feedback thật.'}
+          {attempt.result?.gradingNotice || ui("The recording is awaiting AI assessment; no assessment feedback is available yet.")}
         </div></div>
         {(data.items ?? []).filter(item => item.assessment).map((item, index) => <div key={item.key} className={styles.feedbackCard}>
-          <div className={styles.feedbackText}><strong>Response {index + 1}</strong><p>{item.assessment.feedback}</p>
-            {CRITERIA.map(({ key, label }) => <p key={key}>{label}: {item.assessment.criteria[key]}%</p>)}
+          <div className={styles.feedbackText}><strong>{ ui("Response") + ' ' }{index + 1}</strong><p>{item.assessment.feedback}</p>
+            {CRITERIA.map(({ key, label }) => <p key={key}>{ui(label)}: {item.assessment.criteria[key]}%</p>)}
             {item.assessment.qualityFlags?.length > 0 && <p>{item.assessment.qualityFlags.join(' · ')}</p>}
           </div></div>)}
-      </> : <div className={styles.feedbackCard}><div className={styles.feedbackText}>Skipped — there is no recording to review.</div></div>}
+      </> : <div className={styles.feedbackCard}><div className={styles.feedbackText}>{ui("Skipped — there is no recording to review.")}</div></div>}
     </aside>
   </div>;
 }
 
 export default function SpeakingAttemptResultPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const attemptId = params.get('attemptId');
   const isPractice = params.get('practice') === 'true';
-  const { data, loading, error } = useAttemptResult(attemptId, 'SPEAKING');
-  if (loading || error) return <AttemptPageState loading={loading} error={error}
+  const { data, loading, error, paused, refresh } = useAttemptResult(attemptId, 'SPEAKING');
+  if (loading || (error && !data)) return <AttemptPageState loading={loading} error={error}
     backHref={isPractice ? '/speaking/practice' : '/speaking/tests'} />;
-  if (!data?.result) return <AttemptPageState error="This Speaking result is not available." />;
+  if (!data?.result) return <AttemptPageState error={ui("This Speaking result is not available.")}  backHref={isPractice ? '/speaking/practice' : '/speaking/tests'} />;
 
   const parts = speakingResultParts(data);
   const requestedPart = Number(params.get('part'));
@@ -97,22 +102,23 @@ export default function SpeakingAttemptResultPage() {
   });
 
   return <div className={styles.page}><div className={styles.contentWrap}>
+    {data.result.method !== 'PENDING_AI' && <AssessmentProgress attemptId={attemptId} data={data} error={error} refresh={refresh} />}
     <div className={styles.topSection}>
       <section className={styles.cefrBox}>
-        <h1 className={styles.cefrLabel}>{assessment?.provider === 'RANDOM' ? 'CEFR · Simulated' : 'CEFR · AI estimate'}</h1>
+        <h1 className={styles.cefrLabel}>{assessment?.provider === 'RANDOM' ? ui("CEFR · Simulated") : ui("CEFR · AI estimate")}</h1>
         <strong className={styles.cefrValue}>{assessment ? data.estimatedCefr || '—' : '—'}</strong>
-        <span className={extra.totalScore}>{assessment && data.score != null ? `${Number(data.score).toFixed(2)} / 50 · Practice score` : 'Not assessed'}</span>
+        <span className={extra.totalScore}>{assessment && data.score != null ? ui("{{value0}} / 50 · Practice score", {value0:(Number(data.score).toFixed(2))}) : ui("Not assessed")}</span>
       </section>
       <section className={styles.reportBox}>
-        <h2 className={styles.reportTitle}>Report</h2>
-        <p className={styles.reportSub}>{assessment?.provider === 'RANDOM' ? 'Kết quả mô phỏng cũ; audio chưa được AI phân tích.' : data.result.gradingNotice || 'Bài đang chờ AI chấm. Nếu chờ lâu, hãy tải lại trang hoặc liên hệ quản trị viên.'}</p>
+        <h2 className={styles.reportTitle}>{ui("Report")}</h2>
+        <p className={styles.reportSub}>{assessment?.provider === 'RANDOM' ? ui("Legacy simulated result; the audio has not been analyzed by AI.") : data.result.gradingNotice || ui("Your test is awaiting AI assessment. If the wait is long, refresh the page or contact an administrator.")}</p>
         {assessment?.cefrReason && <p className={styles.reportSub}>{assessment.cefrReason}</p>}
-        {data.result.method === 'PENDING_AI' && <SpeakingAiConsentGate requireWhenDisabled><p>Đã xác nhận gửi audio. Kết quả sẽ tự cập nhật khi chấm xong.</p></SpeakingAiConsentGate>}
+        {data.result.method === 'PENDING_AI' && <SpeakingAiConsentGate requireWhenDisabled><AssessmentProgress attemptId={attemptId} data={data} error={error} paused={paused} refresh={refresh} /></SpeakingAiConsentGate>}
         <div className={styles.divider} />
         {assessment ? <div className={styles.criteriaGrid}>{CRITERIA.map(({ key, label }) => {
           const value = assessment.criteria[key];
           return <div key={key} className={styles.criteriaItem}>
-            <div className={styles.criteriaCircleWrap} role="img" aria-label={`${label}: ${value}%`}>
+            <div className={styles.criteriaCircleWrap} role="img" aria-label={ui("{{value0}}: {{value1}}%", {value0:(label),value1:(value)})}>
               <svg viewBox="0 0 100 100" width="100" height="100" aria-hidden="true">
                 <circle cx="50" cy="50" r="46" fill="white" stroke="#E0E0E0" strokeWidth="8" />
                 <circle cx="50" cy="50" r="46" fill="transparent" stroke={getStatColor(value)} strokeWidth="8"
@@ -120,24 +126,24 @@ export default function SpeakingAttemptResultPage() {
               </svg>
               <span className={styles.criteriaPctText}>{value}%</span>
             </div>
-            <span className={styles.criteriaName}>{label}</span>
+            <span className={styles.criteriaName}>{ui(label)}</span>
           </div>;
-        })}</div> : <p className={extra.pending}>No criterion scores are available for this attempt.</p>}
+        })}</div> : <p className={extra.pending}>{ui("No criterion scores are available for this attempt.")}</p>}
       </section>
     </div>
-    {parts.length > 1 && <nav className={styles.tabsRow} aria-label="Speaking parts">
+    {parts.length > 1 && <nav className={styles.tabsRow} aria-label={ui("Speaking parts")}>
       <div className={styles.tabsContainer}>{parts.map(partNumber =>
         <button type="button" key={partNumber} onClick={() => setActivePart(partNumber)}
           className={`${styles.tabItem} ${extra.partButton}`} aria-current={activePart === partNumber ? 'page' : undefined}>
           <span className={activePart === partNumber ? styles.tabItemActive : ''}>
-            <span className={activePart === partNumber ? styles.tabText : styles.tabTextInactive}>Part {partNumber}</span>
+            <span className={activePart === partNumber ? styles.tabText : styles.tabTextInactive}>{ ui("Part") + ' ' }{partNumber}</span>
           </span>
         </button>)}</div>
     </nav>}
-    {activePart && <PartContent attemptId={attemptId} partNumber={activePart} attempt={data} />}
+    {activePart && <PartContent attemptId={attemptId} partNumber={activePart} attempt={data} isPractice={isPractice} />}
     <div className={styles.actionRow}>
-      <button className={styles.backBtn} onClick={() => navigate(isPractice ? '/speaking/practice' : '/speaking/tests')}>Back to tests</button>
-      <button className={styles.tryAgainBtn} onClick={() => navigate(`/speaking/detail-result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}>View detail result</button>
+      <ResultBackButton to={isPractice ? '/speaking/practice' : '/speaking/tests'} />
+      <button className={styles.tryAgainBtn} onClick={() => navigate(`/speaking/detail-result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}>{ui("View detail result")}</button>
     </div>
   </div></div>;
 }

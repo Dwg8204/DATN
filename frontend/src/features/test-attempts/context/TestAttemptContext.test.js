@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -116,10 +117,10 @@ function attemptHarness(initial = {}) {
     'react/jsx-runtime': { jsx, jsxs: jsx },
   };
   const autosaveModule = { exports: {} };
-  runInNewContext(autosaveCompiled, { module: autosaveModule, require: name => mocks[name], window: mockWindow });
+  runInNewContext(autosaveCompiled, { module: autosaveModule, require: withUiTranslationMocks(name => mocks[name]), window: mockWindow });
   mocks['./useAttemptAutosave.js'] = autosaveModule.exports;
   const module = { exports: {} };
-  runInNewContext(compiled, { module, require: name => mocks[name], window: mockWindow,
+  runInNewContext(compiled, { module, require: withUiTranslationMocks(name => mocks[name]), window: mockWindow,
     document: { addEventListener() {}, removeEventListener() {} }, AbortController, Date: ClockDate, URLSearchParams });
   const session = module.exports.TestAttemptProvider({ expectedComponent: remote.component });
   return harness;

@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +8,7 @@ import { useToast } from '../../../context/ToastContext';
 import { validateEmail } from '../utils/emailValidation';
 
 export default function ForgotPasswordEmailPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const { showError, showSuccess, dismissToast } = useToast();
   const [email, setEmail] = useState('');
@@ -25,10 +27,10 @@ export default function ForgotPasswordEmailPage() {
     try {
       await authApi.requestPasswordOtp(email.trim());
       sessionStorage.setItem('aptimate.password-reset.email', email.trim().toLowerCase());
-      showSuccess('If an account exists for this email, an OTP has been sent. Please check your inbox.');
+      showSuccess(ui("If an account exists for this email, an OTP has been sent. Please check your inbox."));
       navigate('/forgot-password/verify-otp');
     } catch (requestError) {
-      showError(getApiError(requestError, 'Unable to send the OTP. Please try again.'));
+      showError(getApiError(requestError, ui("Unable to send the OTP. Please try again.")));
     } finally {
       setBusy(false);
     }
@@ -37,12 +39,12 @@ export default function ForgotPasswordEmailPage() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
-        <span className={styles.title}>FORGOT PASSWORD</span>
+        <span className={styles.title}>{ui("FORGOT PASSWORD")}</span>
         <form className={styles.form} onSubmit={handleSendOTP} noValidate>
           <div className={styles.formGroup}>
             <div className={styles.signupFormGroup}>
               <div className={styles.inputCol}>
-                <span className={styles.label} style={{ alignSelf: 'flex-start' }}>Email</span>
+                <span className={styles.label} style={{ alignSelf: 'flex-start' }}>{ui("Email")}</span>
                 <input
                   type="email"
                   className={`${styles.input} ${styles.inputFull}`}
@@ -57,10 +59,10 @@ export default function ForgotPasswordEmailPage() {
             <button type="submit" disabled={busy} aria-busy={busy} className={styles.submitBtn}>
               <span className={styles.submitBtnText}>
                 {busy && <LoaderCircle className={styles.loadingIcon} aria-hidden="true" />}
-                {busy ? 'SENDING OTP...' : 'SEND OTP'}
+                {busy ? ui("SENDING OTP...") : ui("SEND OTP")}
               </span>
             </button>
-            {busy && <p className={styles.loadingHint} role="status">Connecting to the email service. This may take a few seconds.</p>}
+            {busy && <p className={styles.loadingHint} role="status">{ui("Connecting to the email service. This may take a few seconds.")}</p>}
           </div>
         </form>
       </div>

@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -64,6 +65,7 @@ test('expired attempt pauses after bounded failures and resumes on reconnection'
     'react-router-dom': { useNavigate: () => destination => destinations.push(destination) },
     '../../../components/layout/TestLayout.jsx': { default: () => null },
     '../../../context/ToastContext.jsx': { useToast: () => toast },
+    './AssessmentProgress.jsx': { default: () => null },
     './AttemptNavigationGuard.jsx': { default: () => null },
     '../../practice/components/DictionaryPopover.jsx': { default: () => null },
     '../context/testAttemptContextStore.js': { useAttemptTimer: () => 0, useTestAttempt: () => context },
@@ -73,7 +75,7 @@ test('expired attempt pauses after bounded failures and resumes on reconnection'
     'react/jsx-runtime': { jsx, jsxs: jsx, Fragment: 'fragment' },
   };
   const module = { exports: {} };
-  runInNewContext(compiled, { module, require: name => mocks[name],
+  runInNewContext(compiled, { module, require: withUiTranslationMocks(name => mocks[name]),
     window: { setTimeout: (callback, delay) => { timers.push({ callback, delay }); return timers.length; },
       addEventListener: (name, callback) => { if (name === 'online') online.add(callback); },
       removeEventListener: (name, callback) => { if (name === 'online') online.delete(callback); } } });

@@ -1,3 +1,4 @@
+import { UiText } from "../../i18n/useUiTranslation.jsx";
 import { lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 import AdminLayout from './layout/AdminLayout';
@@ -30,7 +31,7 @@ const SpeakingBuilderLayout = lazy(() => import('./speaking/context/SpeakingBuil
 const SpeakingTestDetailsPage = lazy(() => import('./speaking/SpeakingTestDetailsPage'));
 const SpeakingPartEditorPage = lazy(() => import('./speaking/SpeakingPartEditorPage'));
 const SpeakingTestPreviewPage = lazy(() => import('./speaking/SpeakingTestPreviewPage'));
-const load = (element) => <Suspense fallback={<div style={{ padding: 24 }}>Loading...</div>}>{element}</Suspense>;
+const load = (element) => <Suspense fallback={<div style={{ padding: 24 }}><UiText text={"Loading..."} /></div>}>{element}</Suspense>;
 const adminOnly = (element) => <RoleGuard allowedRoles={['ADMIN']}>{element}</RoleGuard>;
 
 function AdminHomeRedirect() {
@@ -64,7 +65,7 @@ export const adminRoutes = [
       { path: 'tests/writing/:testId/preview', element: load(<WritingTestPreviewPage />) },
       { path: 'tests/grammar/:testId/preview', element: load(<GrammarTestPreviewPage />) },
       { path: 'users', element: adminOnly(load(<UserManagementPage />)) },
-      { path: 'feedback', element: adminOnly(<AdminPlaceholderPage title="Feedback" />) },
+      { path: 'feedback', element: adminOnly(<AdminPlaceholderPage title={<UiText text="Feedback" />} />) },
       { path: 'notifications', element: adminOnly(load(<NotificationPage />)) },
       {
         path: 'tests/new/writing',

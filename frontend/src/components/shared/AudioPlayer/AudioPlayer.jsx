@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './AudioPlayer.module.css';
 import { useToast } from '../../../context/ToastContext';
@@ -10,6 +11,7 @@ function formatTime(seconds) {
 }
 
 export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowSkip = true }) {
+  const ui = useUiTranslation();
   const { showError } = useToast();
   const audioRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -73,7 +75,7 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
       showError(message);
       return;
     }
-    
+
     if (isPlaying) {
       audioRef.current.pause();
       setIsPlaying(false);
@@ -128,13 +130,13 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
         setIsPlaying(false);
         setAudioError('Unable to load this recording. Check your connection and try again.');
       }} />
-      
+
       {!compact && (
         <div className={styles.audioPlaceholder}>
-          <img src="https://placehold.co/600x250?text=Audio+Visualizer" alt="Audio Visualizer" className={styles.audioImage} />
+          <img src="https://placehold.co/600x250?text=Audio+Visualizer" alt={ui("Audio Visualizer")} className={styles.audioImage} />
         </div>
       )}
-      
+
       <div className={styles.audioControlsRow}>
         <div className={styles.topRow}>
           <div className={styles.timeDisplay}>
@@ -143,8 +145,8 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
 
           <div className={styles.progressContainer}>
             <div className={styles.progressTrack} onClick={handleTimeSeek}>
-              <div 
-                className={styles.progressFill} 
+              <div
+                className={styles.progressFill}
                 style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
               ></div>
             </div>
@@ -157,9 +159,9 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
 
         <div className={styles.bottomRow}>
           <div className={styles.playbackControls}>
-            <button 
-              className={styles.rewindBtn} 
-              onClick={skipBackward} 
+            <button
+              className={styles.rewindBtn}
+              onClick={skipBackward}
               disabled={!allowSkip || (isMaxPlaysReached && !isPlaying)}
               style={{ opacity: allowSkip ? 1 : 0.35, cursor: allowSkip ? 'pointer' : 'not-allowed' }}
             >
@@ -169,7 +171,7 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
                 <path d="M21 13v2a4 4 0 0 1-4 4H3" />
               </svg>
             </button>
-            
+
             <button className={styles.playBtn} onClick={togglePlay} disabled={isMaxPlaysReached && !isPlaying}>
               {isPlaying ? (
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="white">
@@ -182,10 +184,10 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
                 </svg>
               )}
             </button>
-            
-            <button 
-              className={styles.forwardBtn} 
-              onClick={skipForward} 
+
+            <button
+              className={styles.forwardBtn}
+              onClick={skipForward}
               disabled={!allowSkip || (isMaxPlaysReached && !isPlaying)}
               style={{ opacity: allowSkip ? 1 : 0.35, cursor: allowSkip ? 'pointer' : 'not-allowed' }}
             >
@@ -210,11 +212,9 @@ export default function AudioPlayer({ src, maxPlays = 2, compact = false, allowS
       </div>
 
       {audioError && <p className={styles.audioError} role="status">{audioError}</p>}
-      
+
       {isMaxPlaysReached && (
-        <div className={styles.playWarning}>
-          Max plays reached (2/2)
-        </div>
+        <div className={styles.playWarning}>{ui("Max plays reached (2/2)")}</div>
       )}
     </div>
   );

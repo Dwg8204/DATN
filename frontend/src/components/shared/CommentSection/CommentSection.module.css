@@ -121,6 +121,8 @@
 }
 
 .commentContent {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   color: rgba(0, 0, 0, 0.80);
   font-size: 14px;
   line-height: 24px;
@@ -136,8 +138,12 @@
 .commentActions {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 8px;
 }
+
+.actionIcon { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: none; border-radius: 50%; background: transparent; color: var(--text-primary, #334155); cursor: pointer; transition: background .15s ease, color .15s ease; }
+.actionIcon:hover:not(:disabled) { background: rgba(0, 136, 232, .1); color: #0088e8; }
+.deleteIcon:hover:not(:disabled) { background: rgba(218, 30, 33, .1); color: #da1e21; }
 
 .likeBtn {
   padding: 3px;
@@ -206,6 +212,9 @@
 }
 
 .replyInput {
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
   flex: 1;
   border: none;
   background: transparent;
@@ -246,6 +255,12 @@
   width: 100%;
   margin-bottom: 20px;
 }
+
+.avatarFallback { display: grid; place-items: center; width: 100%; height: 100%; background: #e0efff; color: #175c98; font-weight: 700; }
+.submitButton { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border: 0; border-radius: 50%; background: #da1e21; color: white; cursor: pointer; }
+.container button:disabled { opacity: .55; cursor: not-allowed; }
+.container button:focus-visible, .replyInput:focus-visible { outline: 2px solid #0088e8; outline-offset: 3px; }
+.error { color: #da1e21; }
 
 @media (max-width: 700px) {
   .container,

@@ -3,7 +3,7 @@ import { AI_PROVIDER, AiProvider } from '../../../common/ai/ai-provider.interfac
 import { WritingInput } from '../contracts/writing-assessment-input';
 import { WritingAssessment, WRITING_CRITERIA } from '../contracts/writing-assessment-output';
 import { writingOutputSchema } from '../contracts/writing-assessment.schema';
-import { WRITING_SYSTEM_PROMPT, WRITING_SYSTEM_PROMPT_V2 } from '../prompts/writing-system-v1';
+import { WRITING_SYSTEM_PROMPT, WRITING_SYSTEM_PROMPT_V2, WRITING_SYSTEM_PROMPT_V3 } from '../prompts/writing-system-v1';
 import { WritingJobConfig } from '../writing-ai-config.service';
 import { WritingAssessmentValidator } from './writing-assessment-validator.service';
 
@@ -16,10 +16,16 @@ export class WritingAssessmentService {
   async assess(input: WritingInput, config: WritingJobConfig): Promise<WritingAssessment> {
     if (input.parts.every((part) => part.questions.every((question) => !question.response.trim())))
       return this.blank(input);
+    const prompts: Record<string, string> = {
+      'writing-prompt-v1': WRITING_SYSTEM_PROMPT,
+      'writing-prompt-v2': WRITING_SYSTEM_PROMPT_V2,
+      'writing-prompt-v3': WRITING_SYSTEM_PROMPT_V3,
+    };
+    const systemInstruction = prompts[config.promptVersion];
+    if (!systemInstruction) throw new Error('WRITING_PROMPT_VERSION_UNSUPPORTED');
     const value = await this.provider.generateStructured({
       model: config.model,
-      systemInstruction:
-        config.promptVersion === 'writing-prompt-v1' ? WRITING_SYSTEM_PROMPT : WRITING_SYSTEM_PROMPT_V2,
+      systemInstruction,
       input,
       outputSchema: writingOutputSchema(input.scope, true),
       maxOutputTokens: config.maxOutputTokens,

@@ -1,8 +1,10 @@
+import { useUiTranslation } from "../../../../i18n/useUiTranslation.jsx";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import { formatCount } from '../utils/dashboardFormatters';
 import styles from '../AdminDashboardPage.module.css';
 
 export default function DashboardMetricCard({ id, title, metric }) {
+  const ui = useUiTranslation();
   const changeClass = metric.changePercent > 0
     ? styles.positive
     : metric.changePercent < 0 ? styles.negative : styles.neutral;
@@ -10,13 +12,13 @@ export default function DashboardMetricCard({ id, title, metric }) {
     <article className={styles.metricCard}>
       <div className={styles.metricHeader}>
         <div>
-          <h2>{title}</h2>
+          <h2>{ui(title)}</h2>
           <div className={styles.metricValueRow}>
             <strong>{formatCount(metric.value)}</strong>
-            <span className={changeClass}>{metric.changeLabel}</span>
+            <span className={changeClass}>{ui(metric.changeLabel)}</span>
           </div>
         </div>
-        <span className={styles.comparisonHint}>vs previous period</span>
+        <span className={styles.comparisonHint}>{ui("vs previous period")}</span>
       </div>
       <div className={styles.metricChart}>
         <ResponsiveContainer width="100%" height="100%">

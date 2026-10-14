@@ -10,13 +10,15 @@
     "test:dictation": "node --test src/features/dictation/utils/legacyStudyImport.test.js src/features/dictation/hooks/useStudyData.test.js src/features/dictation/pages/DictationPage.test.js src/features/dictation/components/VocabularyWordInput.test.js",
     "test:reading": "node --test src/features/module-reading/utils/readingResultSections.test.js src/features/module-reading/utils/part2Placement.test.js src/features/module-reading/components/test-engine/parts/Part1GapFilling.test.js src/features/module-reading/components/test-engine/parts/Part2TextCohesion.test.js src/features/module-reading/pages/ReadingAttemptPage.test.js src/features/test-attempts/context/PracticeAttemptContext.test.js src/features/module-reading/utils/readingResultPresentation.test.js src/features/module-reading/pages/ReadingResults.test.js",
     "test:reading:layout": "node --test tests/readingPart1.layout.test.mjs",
+    "test:i18n:ui": "node --test tests/i18n.browser.test.mjs",
     "test:writing:ui": "node --test tests/writingAssessment.browser.test.mjs",
     "test:writing:unit": "node --test src/features/writing/utils/writingAttemptPaper.test.js src/features/profile/utils/historyAssessment.test.js",
-    "test": "node --test src/features/auth/utils/passwordValidation.test.js src/features/test-attempts/utils/attemptTime.test.js src/features/test-attempts/utils/attemptSavePolicy.test.js src/features/test-attempts/utils/answerDisplay.test.js src/features/test-attempts/context/TestAttemptContext.test.js src/features/test-attempts/components/SharedAttemptFrame.test.js src/features/test-attempts/components/AttemptRoleGuard.test.js src/features/writing/utils/writingAttemptPaper.test.js src/features/module-reading/utils/readingResultSections.test.js src/features/module-reading/components/test-engine/parts/Part1GapFilling.test.js src/features/dictation/pages/DictationPage.test.js src/hooks/useUrlQueryState.test.js src/utils/historyStorage.test.js src/features/admin/shared-test-builder/builderDraftStorage.test.js",
+    "test": "node --test src/i18n/uiLookup.test.js src/components/layout/TestHeader.test.js src/features/test-attempts/utils/assessmentProgress.test.js src/features/test-attempts/hooks/useAssessmentPolling.test.js src/features/auth/utils/passwordValidation.test.js src/features/test-attempts/utils/attemptTime.test.js src/features/test-attempts/utils/attemptSavePolicy.test.js src/features/test-attempts/utils/answerDisplay.test.js src/features/test-attempts/context/TestAttemptContext.test.js src/features/test-attempts/components/SharedAttemptFrame.test.js src/features/test-attempts/components/AttemptRoleGuard.test.js src/features/writing/utils/writingAttemptPaper.test.js src/features/module-reading/utils/readingResultSections.test.js src/features/module-reading/components/test-engine/parts/Part1GapFilling.test.js src/features/dictation/pages/DictationPage.test.js src/hooks/useUrlQueryState.test.js src/utils/historyStorage.test.js src/features/admin/shared-test-builder/builderDraftStorage.test.js",
     "preview": "vite preview",
     "test:builder": "node --test src/features/admin/shared-test-builder/builderDraftStorage.test.js",
     "test:builder:e2e": "node --test tests/adminBuilder.browser.test.mjs",
-    "test:catalog:e2e": "node --test tests/publicCatalog.browser.test.mjs"
+    "test:catalog:e2e": "node --test tests/publicCatalog.browser.test.mjs",
+    "test:comments:ui": "node --test tests/comments.browser.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

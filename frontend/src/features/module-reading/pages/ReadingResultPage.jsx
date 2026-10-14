@@ -1,3 +1,6 @@
+import { translateUi as uiFeedback } from '../../../i18n/translateUi.js';
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { calculateScore } from '../services/gradingService';
@@ -24,20 +27,21 @@ function formatTestingTime(seconds) {
 }
 
 function AnswerStatusIcon({ status }) {
+  const ui = useUiTranslation();
   if (status === 'skipped') {
     return <span className={styles.skippedIcon}>—</span>;
   }
 
   if (status === 'correct') {
     return (
-      <svg className={styles.statusIcon} viewBox="0 0 24 24" aria-label="Correct answer">
+      <svg className={styles.statusIcon} viewBox="0 0 24 24" aria-label={ui("Correct answer")}>
         <path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     );
   }
 
   return (
-    <svg className={`${styles.statusIcon} ${styles.wrongIcon}`} viewBox="0 0 24 24" aria-label="Incorrect answer">
+    <svg className={`${styles.statusIcon} ${styles.wrongIcon}`} viewBox="0 0 24 24" aria-label={ui("Incorrect answer")}>
       <path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
@@ -55,6 +59,7 @@ function ScoreRing({ percentage, size = 'large', children }) {
 }
 
 const ReadingResultPage = () => {
+  const ui = useUiTranslation();
   const { showError } = useToast();
   const { sessionId } = useParams();
   const navigate = useNavigate();
@@ -77,13 +82,13 @@ const ReadingResultPage = () => {
         }
 
         const sessionData = JSON.parse(sessionDataString);
-        
+
         const testData = sessionData.testSnapshot || await loadReadingTest(sessionData.testId);
         if (cancelled) return;
 
         const gradedResults = calculateScore(sessionData.answers, testData, sessionData.mode || 'full');
-        setResults({ 
-          ...gradedResults, 
+        setResults({
+          ...gradedResults,
           timeSpent: sessionData.timeSpent,
           userAnswers: sessionData.answers,
           mode: sessionData.mode || 'full',
@@ -173,41 +178,41 @@ const ReadingResultPage = () => {
     const p2Pct = results.part2.total > 0 ? (results.part2.score / results.part2.total) : 0;
     const p3Pct = results.part3.total > 0 ? (results.part3.score / results.part3.total) : 0;
     const p4Pct = results.part4.total > 0 ? (results.part4.score / results.part4.total) : 0;
-    
-    let feedback = "Chúc mừng bạn đã hoàn thành bài thi! ";
-    
+
+    let feedback = uiFeedback("Congratulations on completing the test! ");
+
     const parts = [
       { part: 1, name: "Hoàn thành câu (Part 1)", pct: p1Pct, scoreStr: `${results.part1.score}/${results.part1.total}` },
       { part: 2, name: "Mạch lạc văn bản (Part 2)", pct: p2Pct, scoreStr: `${results.part2.score}/${results.part2.total}` },
       { part: 3, name: "Ghép ý kiến (Part 3)", pct: p3Pct, scoreStr: `${results.part3.score}/${results.part3.total}` },
       { part: 4, name: "Ghép tiêu đề (Part 4)", pct: p4Pct, scoreStr: `${results.part4.score}/${results.part4.total}` }
     ];
-    
+
     parts.sort((a, b) => b.pct - a.pct);
     const best = parts[0];
     const worst = parts[parts.length - 1];
-    
+
     if (best.pct >= 0.7) {
-      feedback += `Bạn có kỹ năng ${best.name.replace(/\s*\(Part\s*\d+\)/, '')} rất xuất sắc. `;
+      feedback += uiFeedback("Your {{value0}} skills are excellent. ", {value0:(uiFeedback(best.name.replace(/\s*\(Part\s*\d+\)/, '')))});
     } else {
-      feedback += "Bạn đã hoàn thành tốt các câu hỏi trong bài làm của mình. ";
+      feedback += uiFeedback("You did well on the questions in your test. ");
     }
-    
+
     if (worst.pct < 0.6) {
-      feedback += `Tuy nhiên, tỷ lệ đúng ở phần ${worst.name.replace(/\s*\(Part\s*\d+\)/, '')} (${worst.name.split(' ').pop()}) đang khá thấp (${worst.scoreStr}). Điều này cho thấy bạn cần ôn tập thêm về `;
+      feedback += uiFeedback("However, accuracy in {{value0}} ({{value1}}) is low ({{value2}}). You should practise ", {value0:(uiFeedback(worst.name.replace(/\s*\(Part\s*\d+\)/, ''))),value1:(worst.name.split(' ').pop()),value2:(worst.scoreStr)});
       if (worst.part === 1) {
-        feedback += "ngữ pháp cơ bản, từ vựng theo ngữ cảnh và các cấu trúc liên kết câu đơn giản.";
+        feedback += uiFeedback("basic grammar, vocabulary in context and simple sentence-linking structures.");
       } else if (worst.part === 2) {
-        feedback += "cách sử dụng các từ nối (linking words), đại từ thay thế và rèn luyện tư duy logic để sắp xếp các câu thành một đoạn văn hoàn chỉnh.";
+        feedback += uiFeedback("linking words, reference pronouns and logical sentence ordering to build a complete paragraph.");
       } else if (worst.part === 3) {
-        feedback += "kỹ năng đọc lướt (scanning) để định vị nhanh thông tin chi tiết và nhận diện các từ đồng nghĩa (synonyms) của người nói.";
+        feedback += uiFeedback("scanning to quickly find details and recognize synonyms used by speakers.");
       } else {
-        feedback += "cách nắm bắt ý chính (topic sentence) của từng đoạn văn dài và phân tích các phương án gây nhiễu.";
+        feedback += uiFeedback("identifying the main idea of each long paragraph and analyzing distractors.");
       }
     } else {
-      feedback += "Các kỹ năng của bạn khá đồng đều. Hãy tiếp tục luyện tập để đạt kết quả cao hơn nữa!";
+      feedback += uiFeedback("Your skills are well balanced. Keep practising to achieve even better results!");
     }
-    
+
     return feedback;
   };
 
@@ -219,7 +224,7 @@ const ReadingResultPage = () => {
     );
   }
 
-  if (loadError || !results || !stats) return <DataLoadError title="Test result is unavailable" message={loadError || 'Please return to the Reading test list and open your result again.'} />;
+  if (loadError || !results || !stats) return <DataLoadError title={ui("Test result is unavailable")} message={loadError || 'Please return to the Reading test list and open your result again.'} />;
 
   return (
     <div className={styles.page}>
@@ -227,33 +232,32 @@ const ReadingResultPage = () => {
         <section className={styles.summarySection}>
           <div className={styles.bandCard}>
             <div>
-              <h2>CEFR Level</h2>
-              <p>Your current CEFR level</p>
+              <h2>{ui("CEFR Level")}</h2>
+              <p>{ui("Your current CEFR level")}</p>
             </div>
             <div className={styles.bandValue} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <strong style={{ fontSize: '48px', color: '#a11d33', lineHeight: '1.2' }}>{results.overall.cefr}</strong>
-              <span style={{ fontSize: '14px', color: '#666', fontWeight: 'normal', lineHeight: '1.5' }}>
-                Score: {results.overall.score}/{results.overall.total}
+              <span style={{ fontSize: '14px', color: '#666', fontWeight: 'normal', lineHeight: '1.5' }}>{ ui("Score:") + ' ' }{results.overall.score}/{results.overall.total}
               </span>
             </div>
           </div>
 
           <div className={styles.resultCard}>
-            <h2>Result</h2>
+            <h2>{ui("Result")}</h2>
             <div className={styles.resultOverview}>
               <ScoreRing percentage={stats.percentage}>{stats.percentage}%</ScoreRing>
               <div className={styles.resultStats}>
-                <div><strong>Testing time</strong><strong>{formatTestingTime(results.timeSpent)}</strong></div>
-                <div><strong className={styles.correctText}>Correct</strong><span>{stats.correct} sections</span></div>
-                <div><strong className={styles.wrongText}>Wrong</strong><span>{stats.wrong} sections</span></div>
-                <div><strong className={styles.skipText}>Skip</strong><span>{stats.skipped} sections</span></div>
+                <div><strong>{ui("Testing time")}</strong><strong>{formatTestingTime(results.timeSpent)}</strong></div>
+                <div><strong className={styles.correctText}>{ui("Correct")}</strong><span>{stats.correct}{ ' ' + ui("sections") }</span></div>
+                <div><strong className={styles.wrongText}>{ui("Wrong")}</strong><span>{stats.wrong}{ ' ' + ui("sections") }</span></div>
+                <div><strong className={styles.skipText}>{ui("Skip")}</strong><span>{stats.skipped}{ ' ' + ui("sections") }</span></div>
               </div>
             </div>
           </div>
         </section>
 
         <section className={styles.panel}>
-          <h2>Result</h2>
+          <h2>{ui("Result")}</h2>
           <div className={styles.answerGrid}>
             {stats.questions.map((item) => (
               <div className={styles.answerRow} key={item.id}>
@@ -266,12 +270,12 @@ const ReadingResultPage = () => {
         </section>
 
         <section className={styles.panel}>
-          <h2>Feedback</h2>
+          <h2>{ui("Feedback")}</h2>
           <p className={styles.feedback}>{getFeedbackText()}</p>
         </section>
 
         <section className={styles.panel}>
-          <h2>Statistics</h2>
+          <h2>{ui("Statistics")}</h2>
           <div className={styles.statistics}>
             {stats.groupStats.map((stat) => (
               <div className={styles.statisticItem} key={stat.label}>
@@ -288,12 +292,8 @@ const ReadingResultPage = () => {
           <button
             className={styles.primaryButton}
             onClick={() => navigate(`/reading/review/${sessionId}`)}
-          >
-            View detail result
-          </button>
-          <button className={styles.secondaryButton} onClick={() => navigate('/reading/tests')}>
-            Take another test
-          </button>
+          >{ui("View detail result")}</button>
+<ResultBackButton to="/reading/tests" />
         </div>
       </div>
     </div>

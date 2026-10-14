@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -12,6 +13,7 @@ import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal
 import styles from './Part4ListeningPage.module.css';
 
 export default function Part4ListeningPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, submit, approveNavigation } = useTestAttempt();
@@ -20,12 +22,12 @@ export default function Part4ListeningPage() {
 
   const part = paper?.parts?.['4'];
   const isFullTest = paper?.mode === 'full';
-  
+
   const recordings = useMemo(() => part?.recordings ?? [], [part]);
   const allQuestions = useMemo(() => recordings.flatMap(r => r.subQuestions), [recordings]);
 
   if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
-  if (!part) return <AttemptPageState error="Part 4 is not included in this test." />;
+  if (!part) return <AttemptPageState error={ui("Part 4 is not included in this test.")} />;
 
   const currentRecording = recordings[currentRecordingIdx];
   const allQuestionLabels = allQuestions.map((_, idx) => isFullTest ? 16 + idx : 1 + idx);
@@ -53,12 +55,10 @@ export default function Part4ListeningPage() {
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div><div className={styles.partTitle}>Part 4</div><div className={styles.skillTitle}>Listening Test</div></div>
+          <div><div className={styles.partTitle}>{ui("Part 4")}</div><div className={styles.skillTitle}>{ui("LISTENING TEST")}</div></div>
           <SaveIndicator status={saveStatus} />
         </div>
-        <InstructionBlock title={`Questions ${allQuestionLabels.join(', ')}`}>
-          Listen and choose the correct answer to the question.
-        </InstructionBlock>
+        <InstructionBlock title={ui("Questions {{value0}}", {value0:(allQuestionLabels.join(', '))})}>{ui("Listen and choose the correct answer to the question.")}</InstructionBlock>
         <div className={styles.mainArea}>
           <div className={styles.questionSection}>
             <div className={styles.questionItem}>
@@ -94,8 +94,8 @@ export default function Part4ListeningPage() {
           </div>
         </div>
       </div>
-      <TestFooter 
-        partLabel="Part 4" 
+      <TestFooter
+        partLabel={ui("Part 4")}
         questions={footerQuestions}
         answeredIds={Object.keys(answers).filter(key => key.startsWith('p4:'))}
         currentPageQuestionIds={currentRecording.subQuestions.map(q => q.key)}
@@ -107,7 +107,7 @@ export default function Part4ListeningPage() {
         }}
         onNextClick={() => setCurrentRecordingIdx(prev => prev + 1)}
         onSubmitClick={() => setShowSubmitModal(true)}
-        submitLabel={submitting ? 'Submitting…' : 'Submit'}
+        submitLabel={submitting ? ui("Submitting…") : ui("Submit")}
         submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={currentRecordingIdx > 0 || isFullTest}
         hasNext={currentRecordingIdx < recordings.length - 1}

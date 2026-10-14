@@ -1,3 +1,4 @@
+import { UiText } from "../../i18n/useUiTranslation.jsx";
 import React from 'react';
 import { AlertTriangle } from 'lucide-react';
 
@@ -23,30 +24,24 @@ class ErrorBoundary extends React.Component {
             <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
               <AlertTriangle className="w-8 h-8" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Oops, something went wrong!</h1>
-            <p className="text-gray-600 mb-6">
-              We encountered an unexpected error. Please try refreshing the page or go back to the homepage.
-            </p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2"><UiText text={"Oops, something went wrong!"} /></h1>
+            <p className="text-gray-600 mb-6"><UiText text={"We encountered an unexpected error. Please try refreshing the page or go back to the homepage."} /></p>
             <div className="space-y-3">
-              <button 
+              <button
                 onClick={() => window.location.reload()}
                 className="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors"
-              >
-                Refresh Page
-              </button>
-              <button 
+              ><UiText text={"Refresh Page"} /></button>
+              <button
                 onClick={() => window.location.href = '/'}
                 className="w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-colors"
-              >
-                Go to Homepage
-              </button>
+              ><UiText text={"Go to Homepage"} /></button>
             </div>
           </div>
         </div>
       );
     }
 
-    return this.props.children; 
+    return this.props.children;
   }
 }
 

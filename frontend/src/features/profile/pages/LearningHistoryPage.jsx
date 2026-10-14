@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import Pagination from '../../../components/common/Pagination';
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -55,6 +56,7 @@ function remoteHistoryEntry(attempt) {
 }
 
 function HistoryCards({ entries, navigate, t, locale }) {
+  const ui = useUiTranslation();
   return <div className={styles.historyList}>{entries.map(entry =>
     <div key={entry.id} className={`${styles.card} ${entry.reviewUrl ? styles.clickableCard : ''}`}
       onClick={entry.reviewUrl ? () => navigate(entry.reviewUrl) : undefined}>
@@ -69,7 +71,7 @@ function HistoryCards({ entries, navigate, t, locale }) {
           <div className={styles.metaInfo}>
             <span className={styles.metaItem}><Calendar size={14} />{new Date(entry.submittedAt).toLocaleString(locale)}</span>
             <span className={styles.metaItem}><Clock size={14} />{entry.timeSpent}</span>
-            {entry.cefrLevel && <span className={styles.metaItem}><span className={styles.cefrBadge}>{entry.skill === 'writing' ? t('writingAi.cefr') : 'CEFR / Band'}: {entry.cefrLevel}</span></span>}
+            {entry.cefrLevel && <span className={styles.metaItem}><span className={styles.cefrBadge}>{entry.skill === 'writing' ? t('writingAi.cefr') : ui("CEFR / Band")}: {entry.cefrLevel}</span></span>}
             {entry.assessmentStatus && <span className={styles.metaItem}>{t(entry.assessmentStatus)}</span>}
             {entry.simulatedScore && <span className={styles.metaItem}>{t('history.simulatedScore')}</span>}
           </div>
@@ -84,6 +86,7 @@ function HistoryCards({ entries, navigate, t, locale }) {
 }
 
 export default function LearningHistoryPage() {
+  const ui = useUiTranslation();
   const { t, i18n } = useTranslation();
   const [urlState, setUrlState] = useUrlQueryState(HISTORY_QUERY_SCHEMA);
   const { page, pageSize, sortOrder, skillFilter, partFilter, appliedSearch, purpose } = urlState;
@@ -114,7 +117,7 @@ export default function LearningHistoryPage() {
       error: '',
     })).catch(error => {
       if (error.code !== 'ERR_CANCELED') setRemote({ requestKey: remoteRequestKey, entries: [], total: 0,
-        error: getApiError(error, 'Unable to load your test history.') });
+        error: getApiError(error, ui("Unable to load your test history.")) });
     });
     return () => controller.abort();
   }, [appliedSearch, page, pageSize, partFilter, purpose, remoteRequestKey, skillFilter, sortOrder]);
@@ -167,7 +170,7 @@ export default function LearningHistoryPage() {
             <div className={styles.searchSortRow}>
               <div className={styles.sortRow}>
                 <span className={styles.filterLabel}>{t('history.sortBy')}:</span>
-                <AnswerSelect className={styles.select} value={sortOrder} onChange={handleSortChange} options={[{ value: 'desc', label: t('history.newest') }, { value: 'asc', label: t('history.oldest') }]} ariaLabel={t('history.sortHistory')} />
+                <AnswerSelect translateLabels className={styles.select} value={sortOrder} onChange={handleSortChange} options={[{ value: 'desc', label: t('history.newest') }, { value: 'asc', label: t('history.oldest') }]} ariaLabel={t('history.sortHistory')} />
               </div>
 
               <div className={styles.searchRow}>
@@ -222,7 +225,7 @@ export default function LearningHistoryPage() {
                         className={`${styles.filterBtn} ${partFilter === part && !appliedSearch ? styles.active : ''}`}
                         onClick={() => handlePartChange(part)}
                       >
-                        {label}
+                        {ui(label)}
                       </button>
                     );
                   })}
@@ -232,7 +235,7 @@ export default function LearningHistoryPage() {
           </div>
 
           {remoteLoading ? <div className={styles.emptyState}><p>{t('history.loading')}</p></div> : remote.error ? (
-            <div className={styles.emptyState}><h3>{t('history.loadError')}</h3><p>{remote.error}</p></div>
+            <div className={styles.emptyState}><h3>{t('history.loadError')}</h3><p>{ui.error(remote.error)}</p></div>
           ) : remote.entries.length === 0 ? (
             <div className={styles.emptyState}>
               <ClipboardList size={48} />

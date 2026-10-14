@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X, CircleCheck, CircleAlert, Info } from 'lucide-react';
@@ -25,6 +26,7 @@ export default function ToastNotification({ message, type = 'success', onClose, 
 }
 
 export function ToastViewport({ message, type = 'success', onClose, duration = 4500 }) {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -52,7 +54,7 @@ export function ToastViewport({ message, type = 'success', onClose, duration = 4
       onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false); }}
     >
       <div className={styles.icon}><Icon aria-hidden="true" /></div>
-      <div className={styles.message}><strong>{t(variant.titleKey)}</strong><p>{message}</p></div>
+      <div className={styles.message}><strong>{t(variant.titleKey)}</strong><p>{ui(message)}</p></div>
       <button type="button" className={styles.closeBtn} onClick={onClose} aria-label={t('toast.close')}>
         <X size={18} aria-hidden="true" />
       </button>

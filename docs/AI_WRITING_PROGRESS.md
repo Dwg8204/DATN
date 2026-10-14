@@ -2,7 +2,7 @@
 
 ## Cập nhật gần nhất — đã sửa review R1–R6 (11/10/2026)
 
-Ngày 12/10/2026: đã đồng bộ develop đến `98bba29`, giải quyết conflict Reading/Writing và commit code thành các nhóm backend/provider/frontend. Tài liệu được commit riêng; chưa push trong lượt này. Các dòng “chưa commit/push” bên dưới là trạng thái lịch sử của các phiên triển khai/review. Sau merge đã xác minh hai lần Nest build và 81 test frontend cùng một test nhãn lịch sử; chưa xác minh lại bộ test backend.
+Ngày 12/10/2026: đã đồng bộ develop đến `98bba29`, giải quyết conflict Reading/Writing và commit code thành các nhóm backend/provider/frontend. Tài liệu được commit riêng; chưa push trong lượt này. Các dòng “chưa commit/push” bên dưới là trạng thái lịch sử của các phiên triển khai/review. Sau merge đã xác minh hai lần Nest build, 81 test frontend cùng một test nhãn lịch sử và 8 suite/54 test backend (Writing/provider và hai service vừa merge).
 
 Đã triển khai `AI_WRITING_REVIEW_FIX_PLAN.md`: kiểm tra nhận xét không rỗng, evidence và policy câu trắng; wordLimits trong nội dung đề/snapshot; input/rubric/prompt v2 cho job mới và giữ input/prompt v1 cho job đang chờ; retry thủ công đúng 3/24h và cooldown DB; trạng thái lịch sử đúng; nhãn đã xem mẫu và locale ở detail.
 

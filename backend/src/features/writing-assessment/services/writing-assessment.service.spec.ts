@@ -18,6 +18,16 @@ export const testWritingConfig: WritingJobConfig = {
   inputVersion: 2,
 };
 describe('Writing assessment single-call flow', () => {
+  it('uses the Vietnamese v3 instruction and preserves English correction evidence', async () => {
+    const { input, result } = writingFixture();
+    const provider = { generateStructured: jest.fn(async (_request: Parameters<AiProvider['generateStructured']>[0]) => result) };
+    const service = new WritingAssessmentService(provider, new WritingAssessmentValidator());
+    await service.assess(input, { ...testWritingConfig, promptVersion: 'writing-prompt-v3' });
+    const request = provider.generateStructured.mock.calls[0][0] as unknown as Parameters<AiProvider['generateStructured']>[0];
+    expect(request.systemInstruction).toContain('Write ALL explanatory prose in natural Vietnamese');
+    expect(request.systemInstruction).toContain('correction.replacement');
+    expect(request.input).toMatchObject({ feedbackLocale: 'vi' });
+  });
   it('returns summary and all details in one provider request', async () => {
     const { input, result } = writingFixture();
     const provider = { generateStructured: jest.fn(async () => result) };

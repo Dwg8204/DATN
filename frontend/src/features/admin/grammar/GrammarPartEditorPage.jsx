@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { MatchingSetEditor, MultipleChoiceQuestionEditor, QuestionGroup } from '../shared-test-builder/ObjectiveQuestionEditors';
@@ -10,6 +11,7 @@ import { revealFirstEditorError } from '../shared-test-builder/editorNavigation'
 import EditorBackButton from '../shared-test-builder/EditorBackButton';
 
 export default function GrammarPartEditorPage() {
+  const ui = useUiTranslation();
   const { partNumber: raw } = useParams();
   const partNumber = Number(raw) === 2 ? 2 : 1;
   const { test, updatePart, goTo } = useGrammarTestBuilder();
@@ -33,12 +35,12 @@ export default function GrammarPartEditorPage() {
     <AdminValidationToast errors={errors} onClose={() => setErrors([])} />
     <main>
       <EditorBackButton onClick={close}/>
-      <header><strong>Part {partNumber}</strong><span>{partNumber === 1 ? 'Grammar multiple choice (25 questions. Choose A, B or C.)' : 'Vocabulary matching (5 sets. 25 questions.)'}</span></header>
-      <div className={styles.intro}><h2>{partNumber === 1 ? 'Questions (Multiple Choice)' : 'Questions (Vocabulary Matching)'}</h2><p>{partNumber === 1 ? 'Enter each question, provide three different answer options and select exactly one correct answer.' : 'Each set must contain five different target words. A correct answer can be assigned to only one target within the same set.'}</p></div>
+      <header><strong>{ ui("Part") + ' ' }{partNumber}</strong><span>{partNumber === 1 ? ui("Grammar multiple choice (25 questions. Choose A, B or C.)") : ui("Vocabulary matching (5 sets. 25 questions.)")}</span></header>
+      <div className={styles.intro}><h2>{partNumber === 1 ? ui("Questions (Multiple Choice)") : ui("Questions (Vocabulary Matching)")}</h2><p>{partNumber === 1 ? ui("Enter each question, provide three different answer options and select exactly one correct answer.") : ui("Each set must contain five different target words. A correct answer can be assigned to only one target within the same set.")}</p></div>
       <section className={styles.groups} ref={scopeRef}><CollapsibleToolbar scopeRef={scopeRef}/>
-        {partNumber === 1 ? Array.from({ length: 5 }, (_, group) => <QuestionGroup key={group} title={`Questions ${group * 5 + 1}–${group * 5 + 5}`} summary="Choose one correct answer from A, B or C" defaultOpen={group === 0}>{test.parts[1].questions.slice(group * 5, group * 5 + 5).map((question, index) => <MultipleChoiceQuestionEditor key={question.id} question={question} index={group * 5 + index} onChange={(value) => updateQuestion(group * 5 + index, value)} />)}</QuestionGroup>) : test.parts[2].sets.map((set, index) => <QuestionGroup key={set.setId} title={`Questions ${26 + index * 5}–${30 + index * 5}`} summary="Match target words with unique answers from the answer bank" defaultOpen={index === 0}><MatchingSetEditor set={set} index={index} onChange={(value) => updateSet(index, value)} /></QuestionGroup>)}
+        {partNumber === 1 ? Array.from({ length: 5 }, (_, group) => <QuestionGroup key={group} title={ui("Questions {{value0}}–{{value1}}", {value0:(group * 5 + 1),value1:(group * 5 + 5)})} summary="Choose one correct answer from A, B or C" defaultOpen={group === 0}>{test.parts[1].questions.slice(group * 5, group * 5 + 5).map((question, index) => <MultipleChoiceQuestionEditor key={question.id} question={question} index={group * 5 + index} onChange={(value) => updateQuestion(group * 5 + index, value)} />)}</QuestionGroup>) : test.parts[2].sets.map((set, index) => <QuestionGroup key={set.setId} title={ui("Questions {{value0}}–{{value1}}", {value0:(26 + index * 5),value1:(30 + index * 5)})} summary="Match target words with unique answers from the answer bank" defaultOpen={index === 0}><MatchingSetEditor set={set} index={index} onChange={(value) => updateSet(index, value)} /></QuestionGroup>)}
       </section>
     </main>
-    <button className={styles.save} onClick={save}>Save change</button>
+    <button className={styles.save} onClick={save}>{ui("Save change")}</button>
   </div>;
 }

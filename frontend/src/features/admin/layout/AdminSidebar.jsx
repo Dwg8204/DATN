@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { ChevronDown, MoreVertical } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
@@ -7,24 +8,27 @@ import { useAuth } from '../../../context/AuthContext';
 import { hasAnyRole } from '../../auth/utils/authorization';
 
 function NavigationItem({ item, onClick }) {
+  const ui = useUiTranslation();
   const Icon = item.icon;
   return (
     <NavLink to={item.to} onClick={onClick} className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}>
-      <Icon aria-hidden="true" /><span>{item.label}</span>
+      <Icon aria-hidden="true" /><span>{ui(item.label)}</span>
     </NavLink>
   );
 }
 
 function NavigationAction({ item, disabled, onClick }) {
+  const ui = useUiTranslation();
   const Icon = item.icon;
   return (
     <button type="button" disabled={disabled} onClick={onClick} className={`${styles.navItem} ${styles.navAction}`}>
-      <Icon aria-hidden="true" /><span>{disabled ? 'Signing out...' : item.label}</span>
+      <Icon aria-hidden="true" /><span>{disabled ? ui("Signing out...") : item.label}</span>
     </button>
   );
 }
 
 function NavigationGroup({ item, collapsed }) {
+  const ui = useUiTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const sectionActive = location.pathname.startsWith('/admin/tests');
@@ -37,20 +41,21 @@ function NavigationGroup({ item, collapsed }) {
   return <div className={styles.navGroup}>
     <button type="button" className={`${styles.navItem} ${styles.navGroupButton} ${sectionActive ? styles.navItemActive : ''}`}
       aria-expanded={open} onClick={() => setOpen(value => !value)}>
-      <Icon aria-hidden="true" /><span>{item.label}</span><ChevronDown className={open ? styles.chevronOpen : ''} aria-hidden="true" />
+      <Icon aria-hidden="true" /><span>{ui(item.label)}</span><ChevronDown className={open ? styles.chevronOpen : ''} aria-hidden="true" />
     </button>
     {open && <div className={styles.navSubmenu}>
       {item.children.map(child => {
         const childPurpose = new URL(child.to, window.location.origin).searchParams.get('purpose');
         const active = sectionActive && purpose === childPurpose;
         return <button type="button" key={child.to} className={active ? styles.navSubmenuActive : ''}
-          onClick={() => navigate(child.to)}>{child.label}</button>;
+          onClick={() => navigate(child.to)}>{ui(child.label)}</button>;
       })}
     </div>}
   </div>;
 }
 
 export default function AdminSidebar({ collapsed }) {
+  const ui = useUiTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [signingOut, setSigningOut] = useState(false);
@@ -71,9 +76,9 @@ export default function AdminSidebar({ collapsed }) {
 
   return (
     <aside className={`${styles.sidebar} ${collapsed ? 'adminSidebarCollapsed' : ''}`}>
-      <Link className={`${styles.brand} adminHomeBrand`} to="/" aria-label="Back to AptiMate home"><img src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png" alt="AptiMate" /></Link>
+      <Link className={`${styles.brand} adminHomeBrand`} to="/" aria-label={ui("Back to AptiMate home")}><img src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png" alt="AptiMate" /></Link>
       <div className={styles.account}><div className={styles.avatar}>{initials}</div><div><strong title={displayName}>{displayName}</strong><span title={user?.email}>{user?.email}</span></div><MoreVertical /></div>
-      <nav className={styles.navigation} aria-label="Admin navigation">
+      <nav className={styles.navigation} aria-label={ui("Admin navigation")}>
         {visibleNavigation.map((item) => item.children
           ? <NavigationGroup item={item} collapsed={collapsed} key={item.to} />
           : <NavigationItem item={item} key={item.to} />)}

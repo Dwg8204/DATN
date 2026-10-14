@@ -41,12 +41,12 @@ export const readingTestRoutes = [
   },
   {
     path: 'reading/detail-result',
-    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false }} /></AttemptRoleGuard>,
+    element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false, confirmExit: false }} /></AttemptRoleGuard>,
     children: [{ index: true, element: <ReadingAttemptDetailPage /> }],
   },
   {
     path: 'reading/review/:sessionId',
-    element: <TestLayout headerProps={{ showTimer: false, showExit: false }} />,
+    element: <TestLayout headerProps={{ showTimer: false, showExit: false, confirmExit: false }} />,
     children: [
       {
         index: true,

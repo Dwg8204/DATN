@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TestFooter from '../../../components/layout/TestFooter';
@@ -15,6 +16,7 @@ const SETS_PER_PAGE = 2;
 const PAGE_QUERY_SCHEMA = { currentPage: { ...queryParam.positiveInt(1), param: 'page' } };
 
 export default function Part2GrammarPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const { attemptId, attempt, paper, answers, loading, loadError, saveStatus, submitting, timeExpired, isPractice, setAnswer, submit, approveNavigation } = useTestAttempt();
   const [urlState, setUrlState] = useUrlQueryState(PAGE_QUERY_SCHEMA);
@@ -32,7 +34,7 @@ export default function Part2GrammarPage() {
   })), [sets]);
 
   if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
-  if (!paper?.parts?.['2']) return <AttemptPageState error="Part 2 is not included in this test." />;
+  if (!paper?.parts?.['2']) return <AttemptPageState error={ui("Part 2 is not included in this test.")} />;
 
   const confirmSubmit = async () => {
     setShowSubmitModal(false);
@@ -46,7 +48,7 @@ export default function Part2GrammarPage() {
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         <div className={styles.headerBlock}>
-          <div><div className={styles.partTitle}>Part 2</div><div className={styles.skillTitle}>Grammar &amp; Vocabulary</div></div>
+          <div><div className={styles.partTitle}>{ui("Part 2")}</div><div className={styles.skillTitle}>{ui("Grammar & Vocabulary")}</div></div>
           <SaveIndicator status={saveStatus} />
         </div>
         {currentSets.map(set => {
@@ -54,7 +56,7 @@ export default function Part2GrammarPage() {
           const last = first + set.targetWords.length - 1;
           return (
             <div key={set.setId} className={styles.wordSetBlock}>
-              <InstructionBlock title={`Questions ${first}-${last}`}>
+              <InstructionBlock title={ui("Questions {{value0}}-{{value1}}", {value0:(first),value1:(last)})}>
                 <RichTextContent value={set.instruction} />
               </InstructionBlock>
               <div className={styles.matchingArea}>
@@ -67,8 +69,8 @@ export default function Part2GrammarPage() {
                           value={answers[target.key]?.optionId ?? ''}
                           disabled={submitting || timeExpired || !attempt?.canAnswer || saveStatus === 'conflict'}
                           onChange={event => setAnswer(target.key, { kind: 'MATCH', optionId: event.target.value })}
-                          placeholder={`Question ${allQuestions.findIndex(question => question.id === target.key) + 26}`}
-                          ariaLabel={`Answer for ${target.word}`}
+                          placeholder={ui("Question {{value0}}", {value0:(allQuestions.findIndex(question => question.id === target.key) + 26)})}
+                          ariaLabel={ui("Answer for {{value0}}", {value0:(target.word)})}
                           options={set.options.map(option => ({ value: option.id, label: `${option.id}. ${option.text}` }))}
                         />
                         <PracticeAnswerReveal questionKey={target.key} options={set.options} />
@@ -82,7 +84,7 @@ export default function Part2GrammarPage() {
         })}
       </div>
       <TestFooter
-        partLabel="Part 2"
+        partLabel={ui("Part 2")}
         questions={allQuestions}
         answeredIds={Object.keys(answers)}
         currentPageQuestionIds={currentSets.flatMap(set => set.targetWords.map(target => target.key))}
@@ -90,7 +92,7 @@ export default function Part2GrammarPage() {
         onPrevClick={() => setCurrentPage(page => Math.max(1, page - 1))}
         onNextClick={() => setCurrentPage(page => Math.min(totalPages, page + 1))}
         onSubmitClick={() => setShowSubmitModal(true)}
-        submitLabel={submitting ? 'Submitting…' : 'Submit'}
+        submitLabel={submitting ? ui("Submitting…") : ui("Submit")}
         submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
         hasPrev={currentPage > 1}
         hasNext={currentPage < totalPages}

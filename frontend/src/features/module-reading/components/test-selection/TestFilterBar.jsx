@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../../i18n/useUiTranslation.jsx";
 import { Search } from 'lucide-react';
 import AnswerSelect from '../../../../components/common/AnswerSelect';
 
@@ -14,8 +15,7 @@ const TestFilterBar = ({
   setSearchQuery,
   selectedLevel,
   setSelectedLevel,
-}) => (
-  <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+}) => { const ui = useUiTranslation(); return (<div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
     <div className="flex space-x-2 w-full md:w-auto bg-gray-100 p-1 rounded-lg">
       {tabs.map((tab) => (
         <button
@@ -27,7 +27,7 @@ const TestFilterBar = ({
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
-          {tab.label}
+          {ui(tab.label)}
         </button>
       ))}
     </div>
@@ -44,7 +44,7 @@ const TestFilterBar = ({
             'B2',
             'C1',
           ]}
-          ariaLabel="Filter by level"
+          ariaLabel={ui("Filter by level")}
         />
       </div>
 
@@ -55,13 +55,12 @@ const TestFilterBar = ({
         <input
           type="text"
           className="block w-full pl-10 pr-3 py-2 border border-gray-200 rounded-lg leading-5 bg-gray-50 placeholder-gray-500 focus:outline-none focus:bg-white focus:ring-2 focus:ring-red-500 focus:border-transparent transition-colors"
-          placeholder="Search tests..."
+          placeholder={ui("Search tests...")}
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
         />
       </div>
     </div>
-  </div>
-);
+  </div>); };
 
 export default TestFilterBar;

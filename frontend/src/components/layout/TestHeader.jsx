@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './TestHeader.module.css';
@@ -11,7 +12,8 @@ function formatRemainingTime(totalSeconds) {
 }
 
 export default function TestHeader({ testTakerId = 'Test taker ID', timeRemaining, controlledTimer = false,
-  onConfirmExit, showTimer = true, showExit = true, finalizingExpired = false, exitMode = 'exam' }) {
+  onConfirmExit, showTimer = true, showExit = true, confirmExit = showExit, finalizingExpired = false, exitMode = 'exam' }) {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const location = useLocation();
@@ -46,6 +48,10 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
     : (timeRemaining || (remainingSeconds === null ? '' : formatRemainingTime(remainingSeconds)));
 
   const handleExitClick = () => {
+    if (!confirmExit) {
+      navigate('/');
+      return;
+    }
     setShowExitModal(true);
   };
 
@@ -73,12 +79,12 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
           <button className={styles.logoBtn} onClick={handleExitClick} title={t('test.exit')} disabled={finalizingExpired}>
             <img
               src="https://res.cloudinary.com/dkrisyrlh/image/upload/v1783651299/logo_t%C3%A1ch_n%E1%BB%81n_wisae6.png"
-              alt="AptiMate Logo"
+              alt={ui("AptiMate Logo")}
               className={styles.logo}
             />
           </button>
           <div className={styles.testTakerInfo}>
-            <span className={styles.testTakerLabel}>{testTakerId}</span>
+            <span className={styles.testTakerLabel}>{ui(testTakerId)}</span>
           </div>
         </div>
 
@@ -101,7 +107,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
         </div>
       </div>
 
-      {showExitModal && (
+      {confirmExit && showExitModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.exitModal}>
             <div className={styles.closeIcon} onClick={handleCloseModal}>
@@ -113,7 +119,7 @@ export default function TestHeader({ testTakerId = 'Test taker ID', timeRemainin
               {t('test.exitQuestion')}<br /><br />
               {exitMode === 'practice'
                 ? t('practice.exitMessage')
-                : controlledTimer ? t('test.examExitMessage') : 'Your progress will not be saved if you leave now.'}<br />
+                : controlledTimer ? t('test.examExitMessage') : ui("Your progress will not be saved if you leave now.")}<br />
               {t('test.stillExit')}
             </p>
             <div className={styles.modalActions}>

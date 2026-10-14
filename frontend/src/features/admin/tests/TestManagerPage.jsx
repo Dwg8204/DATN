@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useState } from 'react';
 import { Edit3, Eye, House, Search, Send, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +40,7 @@ function useMobileManager() {
 }
 
 export default function TestManagerPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const isMobile = useMobileManager();
   const querySchema = useMemo(() => ({
@@ -105,11 +107,11 @@ export default function TestManagerPage() {
     if (!confirmTest) return;
     if (confirmTest.component === 'Reading') {
       try { await readingTestsApi.archive(confirmTest.id); reading.reload(); }
-      catch (error) { setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') }); setConfirmTest(null); return; }
+      catch (error) { setToast({ type: 'error', message: getApiError(error, ui("Unable to archive this test.")) }); setConfirmTest(null); return; }
     }
     else if (confirmTest.component === 'Speaking') {
       try { await speakingTestsApi.archive(confirmTest.id); speaking.reload(); }
-      catch (error) { setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') }); setConfirmTest(null); return; }
+      catch (error) { setToast({ type: 'error', message: getApiError(error, ui("Unable to archive this test.")) }); setConfirmTest(null); return; }
     }
     else if (confirmTest.component === 'Grammar & Vocab') {
       try {
@@ -119,7 +121,7 @@ export default function TestManagerPage() {
         if (visibleTests.length === 1 && page > 1) setPage(current => current - 1); else grammar.reload();
         return;
       } catch (error) {
-        setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') });
+        setToast({ type: 'error', message: getApiError(error, ui("Unable to archive this test.")) });
         setConfirmTest(null);
         return;
       }
@@ -132,7 +134,7 @@ export default function TestManagerPage() {
         if (visibleTests.length === 1 && page > 1) setPage(current => current - 1); else writing.reload();
         return;
       } catch (error) {
-        setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') });
+        setToast({ type: 'error', message: getApiError(error, ui("Unable to archive this test.")) });
         setConfirmTest(null);
         return;
       }
@@ -145,7 +147,7 @@ export default function TestManagerPage() {
         if (visibleTests.length === 1 && page > 1) setPage(current => current - 1); else listening.reload();
         return;
       } catch (error) {
-        setToast({ type: 'error', message: getApiError(error, 'Unable to archive this test.') });
+        setToast({ type: 'error', message: getApiError(error, ui("Unable to archive this test.")) });
         setConfirmTest(null);
         return;
       }
@@ -177,45 +179,45 @@ export default function TestManagerPage() {
       }
       setToast({ type: 'success', message: `“${publishTest.name}” was published successfully.` });
     } catch (error) {
-      setToast({ type: 'error', message: getApiError(error, 'Unable to publish this draft. Complete all required parts and try again.') });
+      setToast({ type: 'error', message: getApiError(error, ui("Unable to publish this draft. Complete all required parts and try again.")) });
     } finally {
       setPublishTest(null);
     }
   };
   const testBase = (test) => `/admin/tests/${test.component === 'Reading' ? 'reading' : test.component === 'Listening' ? 'listening' : test.component === 'Speaking' ? 'speaking' : test.component === 'Grammar & Vocab' ? 'grammar' : 'writing'}/${test.id}`;
   const actions = (test) => (test.details || test.canEdit || test.canDelete) ? <div className="mobileTestActions">
-    {test.details && <button title="Preview" aria-label={`Preview ${test.name}`} onClick={() => navigate(`${testBase(test)}/preview`)}><Eye /></button>}
-    {test.canEdit !== false && <button title="Edit" aria-label={`Edit ${test.name}`} onClick={() => navigate(`${testBase(test)}/edit`)}><Edit3 /></button>}
-    {test.status?.toUpperCase() === 'DRAFT' && ['Grammar & Vocab', 'Writing', 'Reading', 'Speaking', 'Listening'].includes(test.component) && test.canEdit !== false && <button title="Publish" aria-label={`Publish ${test.name}`} onClick={() => setPublishTest(test)}><Send /></button>}
-    {test.canDelete !== false && <button title="Archive" className="deleteAction" aria-label={`Archive ${test.name}`} onClick={() => setConfirmTest(test)}><Trash2 /></button>}
+    {test.details && <button title={ui("Preview")} aria-label={ui("Preview {{value0}}", {value0:(test.name)})} onClick={() => navigate(`${testBase(test)}/preview`)}><Eye /></button>}
+    {test.canEdit !== false && <button title={ui("Edit")} aria-label={ui("Edit {{value0}}", {value0:(test.name)})} onClick={() => navigate(`${testBase(test)}/edit`)}><Edit3 /></button>}
+    {test.status?.toUpperCase() === 'DRAFT' && ['Grammar & Vocab', 'Writing', 'Reading', 'Speaking', 'Listening'].includes(test.component) && test.canEdit !== false && <button title={ui("Publish")} aria-label={ui("Publish {{value0}}", {value0:(test.name)})} onClick={() => setPublishTest(test)}><Send /></button>}
+    {test.canDelete !== false && <button title={ui("Archive")} className="deleteAction" aria-label={ui("Archive {{value0}}", {value0:(test.name)})} onClick={() => setConfirmTest(test)}><Trash2 /></button>}
   </div> : null;
   const currentPage = grammarActive ? grammar.pagination.page : writingActive ? writing.pagination.page : listeningActive ? listening.pagination.page : readingActive ? reading.pagination.page : speakingActive ? speaking.pagination.page : pagination.page;
   const from = totalItems ? (currentPage - 1) * pageSize + 1 : 0;
   const to = Math.min(currentPage * pageSize, totalItems);
 
   const archiveSelected = ['Grammar & Vocab', 'Writing', 'Listening', 'Reading', 'Speaking'].includes(confirmTest?.component);
-  return <div className={styles.page}><AdminToast message={toast?.message} type={toast?.type} onClose={() => setToast(null)}/><AdminConfirmDialog open={Boolean(confirmTest)} title={`${archiveSelected ? 'Archive' : 'Delete'} ${confirmTest?.component || ''} test?`} message={confirmTest ? archiveSelected ? `“${confirmTest.name}” will be hidden from learners while its existing attempt history is retained.` : `“${confirmTest.name}” will be permanently removed from this browser. This action cannot be undone.` : ''} onCancel={() => setConfirmTest(null)} onConfirm={remove}/><AdminConfirmDialog open={Boolean(publishTest)} title="Publish this test?" message={publishTest ? `“${publishTest.name}” will become available to learners. All required parts must be complete.` : ''} confirmLabel="Publish test" onCancel={() => setPublishTest(null)} onConfirm={publishDraft}/>
+  return <div className={styles.page}><AdminToast message={toast?.message} type={toast?.type} onClose={() => setToast(null)}/><AdminConfirmDialog open={Boolean(confirmTest)} title={ui("{{value0}} {{value1}} test?", {value0:(archiveSelected ? 'Archive' : 'Delete'),value1:(confirmTest?.component || '')})} message={confirmTest ? archiveSelected ? `“${confirmTest.name}” will be hidden from learners while its existing attempt history is retained.` : `“${confirmTest.name}” will be permanently removed from this browser. This action cannot be undone.` : ''} onCancel={() => setConfirmTest(null)} onConfirm={remove}/><AdminConfirmDialog open={Boolean(publishTest)} title={ui("Publish this test?")} message={publishTest ? `“${publishTest.name}” will become available to learners. All required parts must be complete.` : ''} confirmLabel={ui("Publish test")} onCancel={() => setPublishTest(null)} onConfirm={publishDraft}/>
     <AdminBreadcrumb />
     <nav className={styles.components}>{components.map((component) => <button className={filters.component === component ? styles.activeComponent : ''} onClick={() => setFilter('component', component)} key={component}>{component}</button>)}</nav>
     <section className={styles.card}>
       <header>
         <nav className={styles.parts}>{sections.map((section) => <button className={filters.section === section ? styles.activePart : ''} onClick={() => setFilter('section', section)} key={section}>{section}</button>)}</nav>
-        <div className={styles.tools}><span>{from}-{to} of {totalItems}</span><label><Search /><input placeholder="Search" value={filters.query} onChange={(event) => setFilter('query', event.target.value)} /></label><button className={styles.add} onClick={addTest}><House /><span>Add new</span></button></div>
+        <div className={styles.tools}><span>{from}-{to}{' '}{ ui("of") + ' ' }{totalItems}</span><label><Search /><input placeholder={ui("Search")} value={filters.query} onChange={(event) => setFilter('query', event.target.value)} /></label><button className={styles.add} onClick={addTest}><House /><span>{ui("Add new")}</span></button></div>
       </header>
-      <div className={styles.scroll}><table><thead><tr><th><input type="checkbox" /></th><th>Name</th><th>Status</th><th>Date Added</th><th>Attempt</th><th>Questions Type</th><th /></tr></thead><tbody>{visibleTests.map((test) => <tr key={test.id}><td><input type="checkbox" /></td><td>{test.name}</td><td><StatusBadge status={test.status} /></td><td>{formatAdminDate(test.dateAdded)}</td><td>{test.attempts}</td><td><span className={styles.type}>{test.questionType}</span></td><td>{actions(test)}</td></tr>)}</tbody></table></div>
-      <div className="mobileTestList">{visibleTests.map((test) => <article className="mobileTestCard" key={test.id}><header><div><small>{test.section}</small><h3>{test.name}</h3></div><StatusBadge status={test.status} /></header><dl><div><dt>Date added</dt><dd>{formatAdminDate(test.dateAdded)}</dd></div><div><dt>Attempts</dt><dd>{test.attempts}</dd></div><div><dt>Type</dt><dd>{test.questionType}</dd></div></dl>{actions(test)}</article>)}</div>
-      {grammarActive && grammar.loading && <p className="mobileEmptyTests">Loading tests…</p>}
-      {grammarActive && grammar.error && <p className="mobileEmptyTests">{grammar.error}</p>}
-      {writingActive && writing.loading && <p className="mobileEmptyTests">Loading tests…</p>}
-      {writingActive && writing.error && <p className="mobileEmptyTests">{writing.error}</p>}
-      {listeningActive && listening.loading && <p className="mobileEmptyTests">Loading tests…</p>}
-      {listeningActive && listening.error && <p className="mobileEmptyTests">{listening.error}</p>}
-      {readingActive && reading.loading && <p className="mobileEmptyTests">Loading tests…</p>}
-      {readingActive && reading.error && <p className="mobileEmptyTests">{reading.error}</p>}
-      {speakingActive && speaking.loading && <p className="mobileEmptyTests">Loading tests…</p>}
-      {speakingActive && speaking.error && <p className="mobileEmptyTests">{speaking.error}</p>}
+      <div className={styles.scroll}><table><thead><tr><th><input type="checkbox" /></th><th>{ui("Name")}</th><th>{ui("Status")}</th><th>{ui("Date Added")}</th><th>{ui("Attempt")}</th><th>{ui("Questions Type")}</th><th /></tr></thead><tbody>{visibleTests.map((test) => <tr key={test.id}><td><input type="checkbox" /></td><td>{test.name}</td><td><StatusBadge status={test.status} /></td><td>{formatAdminDate(test.dateAdded)}</td><td>{test.attempts}</td><td><span className={styles.type}>{test.questionType}</span></td><td>{actions(test)}</td></tr>)}</tbody></table></div>
+      <div className="mobileTestList">{visibleTests.map((test) => <article className="mobileTestCard" key={test.id}><header><div><small>{test.section}</small><h3>{test.name}</h3></div><StatusBadge status={test.status} /></header><dl><div><dt>{ui("Date Added")}</dt><dd>{formatAdminDate(test.dateAdded)}</dd></div><div><dt>{ui("Attempts")}</dt><dd>{test.attempts}</dd></div><div><dt>{ui("Type")}</dt><dd>{test.questionType}</dd></div></dl>{actions(test)}</article>)}</div>
+      {grammarActive && grammar.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {grammarActive && grammar.error && <p className="mobileEmptyTests">{ui.error(grammar.error)}</p>}
+      {writingActive && writing.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {writingActive && writing.error && <p className="mobileEmptyTests">{ui.error(writing.error)}</p>}
+      {listeningActive && listening.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {listeningActive && listening.error && <p className="mobileEmptyTests">{ui.error(listening.error)}</p>}
+      {readingActive && reading.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {readingActive && reading.error && <p className="mobileEmptyTests">{ui.error(reading.error)}</p>}
+      {speakingActive && speaking.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {speakingActive && speaking.error && <p className="mobileEmptyTests">{ui.error(speaking.error)}</p>}
       {!grammar.loading && !writing.loading && !listening.loading && !reading.loading && !speaking.loading
-        && !visibleTests.length && <p className="mobileEmptyTests">No tests found.</p>}
+        && !visibleTests.length && <p className="mobileEmptyTests">{ui("No tests found.")}</p>}
       <Pagination page={page} totalItems={totalItems} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
     </section>
   </div>;

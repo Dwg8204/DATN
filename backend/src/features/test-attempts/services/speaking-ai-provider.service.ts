@@ -47,7 +47,7 @@ export class SpeakingAiProvider {
 
   async assess(job: SpeakingJob, paper: AssessmentPaper, recordings: Array<{ key: string; mediaKey: string }>): Promise<AiAssessment> {
     const keys = recordings.map(recording => recording.key);
-    if (job.responses.__assessment) return validateSpeakingAssessment(JSON.parse(job.responses.__assessment), keys);
+    if (job.responses.__assessment && job.responses.__assessmentPromptVersion === SPEAKING_PROMPT_VERSION) return validateSpeakingAssessment(JSON.parse(job.responses.__assessment), keys);
     // Check inference access before downloading media or using Groq quota.
     if (Date.now() >= this.modelVerifiedUntil) {
       await this.gemini('countTokens', { contents: [{ role: 'user', parts: [{ text: 'Speaking model availability check' }] }] });
@@ -121,6 +121,7 @@ export class SpeakingAiProvider {
     catch { throw new Error('AI_INVALID_RESPONSE'); }
     const result = validateSpeakingAssessment(decoded, keys);
     await this.jobs.cache(job, '__assessment', JSON.stringify(result));
+    await this.jobs.cache(job, '__assessmentPromptVersion', SPEAKING_PROMPT_VERSION);
     return result;
   }
 }

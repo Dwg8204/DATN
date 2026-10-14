@@ -1,7 +1,9 @@
+import { useUiTranslation } from "../../../../i18n/useUiTranslation.jsx";
 import React from 'react';
 import { ArrowRight, BookOpen } from 'lucide-react';
 
 const ReadingBlogSection = () => {
+  const ui = useUiTranslation();
   const blogs = [
     {
       id: 1,
@@ -27,14 +29,14 @@ const ReadingBlogSection = () => {
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
       <div className="flex items-center mb-6">
         <BookOpen className="text-red-600 w-6 h-6 mr-3" />
-        <h2 className="text-xl font-bold text-gray-900 uppercase tracking-wide">Reading Basics</h2>
+        <h2 className="text-xl font-bold text-gray-900 uppercase tracking-wide">{ui("Reading Basics")}</h2>
       </div>
-      
+
       <div className="space-y-4">
         {blogs.map(blog => (
           <div key={blog.id} className="group cursor-pointer">
             <h4 className="text-base font-semibold text-gray-800 group-hover:text-red-600 transition-colors mb-1 line-clamp-2">
-              {blog.title}
+              {ui(blog.title)}
             </h4>
             <div className="flex items-center text-sm text-gray-500">
               <span>{blog.date}</span>
@@ -45,10 +47,8 @@ const ReadingBlogSection = () => {
           </div>
         ))}
       </div>
-      
-      <button className="mt-6 w-full flex items-center justify-center py-2 px-4 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors">
-        View All Articles
-        <ArrowRight className="ml-2 w-4 h-4" />
+
+      <button className="mt-6 w-full flex items-center justify-center py-2 px-4 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors">{ui("View All Articles")}<ArrowRight className="ml-2 w-4 h-4" />
       </button>
     </div>
   );

@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import styles from './HeroBanner.module.css';
 
 export default function HeroBanner({
@@ -6,11 +7,12 @@ export default function HeroBanner({
   buttonText = 'aptis Test',
   onButtonClick,
 }) {
+  const ui = useUiTranslation();
   return (
     <div className={styles.heroBanner}>
       <div className={styles.inner}>
-        <span className={styles.title}>{title}</span>
-        <span className={styles.description}>{description}</span>
+        <span className={styles.title}>{ui(title)}</span>
+        <span className={styles.description}>{ui(description)}</span>
         {buttonText && (
           <button className={styles.ctaBtn} onClick={onButtonClick}>
             <span className={styles.ctaBtnText}>{buttonText}</span>

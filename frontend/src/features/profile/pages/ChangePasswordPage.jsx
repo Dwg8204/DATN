@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState } from 'react';
 import ProfileSidebar from '../components/ProfileSidebar';
 import styles from './ChangePasswordPage.module.css';
@@ -11,6 +12,7 @@ import { authApi, getApiError } from '../../auth/services/authApi';
 import { validatePassword } from '../../auth/utils/passwordValidation';
 
 export default function ChangePasswordPage() {
+  const ui = useUiTranslation();
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { showError, showSuccess, dismissToast } = useToast();
@@ -26,7 +28,7 @@ export default function ChangePasswordPage() {
     dismissToast();
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      showError('Please fill in all fields.');
+      showError(ui("Please fill in all fields."));
       return;
     }
 
@@ -45,7 +47,7 @@ export default function ChangePasswordPage() {
     try {
       await authApi.changePassword({ currentPassword, newPassword, confirmPassword });
       setShowConfirm(false);
-      showSuccess('Password changed successfully. Please sign in again.');
+      showSuccess(ui("Password changed successfully. Please sign in again."));
       try {
         addPersonalNotification('Password changed successfully.');
       } catch {
@@ -57,7 +59,7 @@ export default function ChangePasswordPage() {
       await logout({ remote: false });
       navigate('/login', { replace: true });
     } catch (requestError) {
-      showError(getApiError(requestError, 'Unable to update your password. Please try again.'));
+      showError(getApiError(requestError, ui("Unable to update your password. Please try again.")));
       setShowConfirm(false);
     } finally {
       setBusy(false);
@@ -70,11 +72,11 @@ export default function ChangePasswordPage() {
         <ProfileSidebar activeTab="password" />
 
         <div className={styles.content}>
-          <h1 className={styles.title}>Change password</h1>
+          <h1 className={styles.title}>{ui("Change password")}</h1>
 
           <form className={styles.form} onSubmit={handleFormSubmit} noValidate>
             <div className={styles.inputCol}>
-              <label className={styles.label}>Current password</label>
+              <label className={styles.label}>{ui("Current password")}</label>
               <PasswordInput
                 className={styles.input}
                 value={currentPassword}
@@ -83,7 +85,7 @@ export default function ChangePasswordPage() {
             </div>
 
             <div className={styles.inputCol}>
-              <label className={styles.label}>New password</label>
+              <label className={styles.label}>{ui("New Password")}</label>
               <PasswordInput
                 className={styles.input}
                 value={newPassword}
@@ -92,7 +94,7 @@ export default function ChangePasswordPage() {
             </div>
 
             <div className={styles.inputCol}>
-              <label className={styles.label}>Confirm new password</label>
+              <label className={styles.label}>{ui("Confirm New Password")}</label>
               <PasswordInput
                 className={styles.input}
                 value={confirmPassword}
@@ -101,15 +103,13 @@ export default function ChangePasswordPage() {
             </div>
 
             <div className={styles.actions}>
-              <button type="submit" disabled={busy} className={styles.saveBtn}>
-                Save changes
-              </button>
+              <button type="submit" disabled={busy} className={styles.saveBtn}>{ui("Save changes")}</button>
             </div>
           </form>
 
           {showConfirm && (
             <ConfirmModal
-              title="Change Password"
+              title={ui("Change password")}
               message="Are you sure you want to change your password?"
               onConfirm={executeSave}
               onCancel={() => setShowConfirm(false)}

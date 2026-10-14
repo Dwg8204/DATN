@@ -1,9 +1,11 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import { useEffect, useRef, useState } from 'react';
 import { FileText } from 'lucide-react';
 import { renderAsync } from 'docx-preview';
 import styles from './WordDocumentPreview.module.css';
 
 export default function WordDocumentPreview({ source, fileName }) {
+  const ui = useUiTranslation();
   const containerRef = useRef(null);
   const [status, setStatus] = useState('loading');
 
@@ -38,8 +40,8 @@ export default function WordDocumentPreview({ source, fileName }) {
   }, [source]);
 
   return <div className={styles.preview}>
-    {status === 'loading' && <div className={styles.message}><FileText /><strong>Loading Word preview…</strong></div>}
-    {status === 'error' && <div className={styles.message}><FileText /><strong>Word preview could not be loaded.</strong><span>Please download {fileName} to open it.</span></div>}
+    {status === 'loading' && <div className={styles.message}><FileText /><strong>{ui("Loading Word preview…")}</strong></div>}
+    {status === 'error' && <div className={styles.message}><FileText /><strong>{ui("Word preview could not be loaded.")}</strong><span>{ ui("Please download") + ' ' }{fileName}{ ' ' + ui("to open it.") }</span></div>}
     <div ref={containerRef} className={`${styles.document} ${status !== 'ready' ? styles.hidden : ''}`} />
   </div>;
 }

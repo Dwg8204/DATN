@@ -54,6 +54,7 @@ describe('Speaking provider integration contract (mock HTTP only)', () => {
   it('cached assessment makes retries idempotent without provider requests', async () => {
     const { provider, job, audio } = fixture();
     job.responses.__assessment = JSON.stringify(result);
+    job.responses.__assessmentPromptVersion = 'speaking-rubric-v2';
     const request = jest.fn(); global.fetch = request;
     await expect(provider.assess(job, paper, [{ key: 'p1:q1', mediaKey: 'url' }])).resolves.toEqual(result);
     expect(request).not.toHaveBeenCalled();

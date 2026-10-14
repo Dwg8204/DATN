@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { AudioLines, BookOpen, ChevronDown, Headphones, Home, Languages, Mic, PenLine, User, LogOut, Bell, LayoutDashboard, History } from 'lucide-react';
@@ -106,6 +107,7 @@ function dropdownLabel(item, subItem, t) {
 }
 
 export default function Header() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
@@ -132,7 +134,7 @@ export default function Header() {
         <Link to="/">
           <img
             src={theme === 'dark' ? LOGO_DARK : LOGO_LIGHT}
-            alt="AptiMate Logo"
+            alt={ui("AptiMate Logo")}
             className={styles.logo}
           />
         </Link>
@@ -179,7 +181,7 @@ export default function Header() {
                 }
               }}
             >
-              <img src={user?.avatar?.url || user?.avatar || 'https://placehold.co/32x32'} alt="User" className={styles.userAvatar} />
+              <img src={user?.avatar?.url || user?.avatar || 'https://placehold.co/32x32'} alt={ui("User")} className={styles.userAvatar} />
               <span className={styles.userName}>{user?.fullName || user?.name || [user?.firstName, user?.lastName].filter(Boolean).join(' ')}</span>
               <ChevronDown className={styles.navIcon} aria-hidden="true" />
             </div>

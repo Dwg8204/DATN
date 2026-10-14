@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../../../services/api.js';
@@ -5,6 +6,7 @@ import { normalizeApiError } from '../../../services/apiError.js';
 import styles from './SpeakingAiConsentGate.module.css';
 
 export default function SpeakingAiConsentGate({ children, requireWhenDisabled = false }) {
+  const ui = useUiTranslation();
   const [params] = useSearchParams();
   const attemptId = params.get('attemptId');
   const [state, setState] = useState({ id: null, data: null, error: '' });
@@ -17,17 +19,17 @@ export default function SpeakingAiConsentGate({ children, requireWhenDisabled = 
     api.get(`/speaking-grading/${attemptId}/consent`, { signal: controller.signal, notifyOnError: false })
       .then(response => setState({ id: attemptId, data: response.data, error: '' }))
       .catch(error => { if (!controller.signal.aborted) setState({ id: attemptId, data: null,
-        error: normalizeApiError(error, 'Không kiểm tra được xác nhận chấm AI.').message }); });
+        error: normalizeApiError(error, ui("Unable to verify AI assessment consent.")).message }); });
     return () => controller.abort();
   }, [attemptId]);
   if (!attemptId) return children;
-  if (state.id !== attemptId) return <section className={styles.panel}>Đang kiểm tra cấu hình chấm Speaking…</section>;
-  if (state.error) return <section className={styles.panel} role="alert">{state.error}<button onClick={() => window.location.reload()}>Thử lại</button></section>;
+  if (state.id !== attemptId) return <section className={styles.panel}>{ui("Checking Speaking assessment settings…")}</section>;
+  if (state.error) return <section className={styles.panel} role="alert">{ui.error(state.error)}<button onClick={() => window.location.reload()}>{ui("Retry")}</button></section>;
   if (state.data?.consent || !state.data?.enabled && !requireWhenDisabled) return <>
-    {!state.data?.enabled && <p className={styles.disabled}>Chấm Speaking bằng AI chưa được bật. Bài nộp chỉ lưu bản ghi âm, không tạo điểm giả.</p>}
+    {!state.data?.enabled && <p className={styles.disabled}>{ui("Speaking AI assessment is not enabled. Submitted recordings are saved without simulated scores.")}</p>}
     {children}
   </>;
-  if (!state.data?.enabled) return <p className={styles.panel}>Chấm Speaking bằng AI hiện chưa được bật.</p>;
+  if (!state.data?.enabled) return <p className={styles.panel}>{ui("Speaking AI assessment is currently disabled.")}</p>;
   async function confirm() {
     setSaving(true);
     try {
@@ -35,23 +37,17 @@ export default function SpeakingAiConsentGate({ children, requireWhenDisabled = 
         confirmedAdult: adult, accepted, policyVersion: state.data.policyVersion,
       }, { notifyOnError: false });
       setState({ id: attemptId, data: response.data, error: '' });
-    } catch (error) { setState(previous => ({ ...previous, error: normalizeApiError(error, 'Không lưu được xác nhận.').message })); }
+    } catch (error) { setState(previous => ({ ...previous, error: normalizeApiError(error, ui("Unable to save consent.")).message })); }
     finally { setSaving(false); }
   }
-  return <section className={styles.panel} aria-label="Xác nhận chấm Speaking bằng AI">
-    <h2>Chấm Speaking bằng AI — chỉ dành cho người từ 18 tuổi</h2>
-    <p>Audio, câu hỏi và ảnh của đề sẽ được gửi tới Groq để tạo transcript và Google Gemini để chấm bài.
-      Transcript và feedback được lưu cùng kết quả. CEFR là ước lượng của AI, không phải kết quả chứng chỉ;
-      điểm /50 chỉ dùng luyện tập nội bộ. Không ghi thông tin cá nhân nhạy cảm trong câu trả lời.</p>
-    <p>Bạn có thể không đồng ý và quay lại danh sách bài. Nếu đây là bài thi có thời gian, đồng hồ đã bắt đầu khi mở bài.</p>
-    {state.data.billingTier === 'FREE' && <p>Google Gemini đang dùng Free tier: Google có thể dùng audio, nội dung gửi và kết quả để cải thiện sản phẩm;
-      người đánh giá có thể xem xét dữ liệu. Dù nội dung câu trả lời là giả, giọng nói thật vẫn có thể nhận diện bạn.
-      Không gửi thông tin cá nhân, nhạy cảm hoặc bí mật. Tính năng chỉ dành cho người từ 18 tuổi, không phục vụ người dùng tại EEA, Thụy Sĩ hoặc Anh trên Free tier.
-      Hết quota sẽ chờ hoặc báo lỗi, không tự chuyển sang dịch vụ trả phí.
-      {' '}<a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noreferrer">Điều khoản Gemini API</a></p>}
-    <label><input type="checkbox" checked={adult} onChange={event => setAdult(event.target.checked)} /> Tôi xác nhận đã đủ 18 tuổi.</label>
-    <label><input type="checkbox" checked={accepted} onChange={event => setAccepted(event.target.checked)} /> Tôi đồng ý gửi audio đến Groq và Google Gemini để chấm bài.</label>
-    <button type="button" disabled={!adult || !accepted || saving} onClick={confirm}>{saving ? 'Đang lưu…' : 'Đồng ý và tiếp tục'}</button>
-    <a href={params.get('practice') === 'true' ? '/speaking/practice' : '/speaking/tests'}>Không đồng ý — quay lại</a>
+  return <section className={styles.panel} aria-label={ui("Consent to Speaking AI assessment")}>
+    <h2>{ui("Speaking AI assessment — ages 18 and over only")}</h2>
+    <p>{ui("Audio, questions and task images will be sent to Groq for transcription and Google Gemini for assessment. Transcripts and feedback are saved with the result. CEFR is an AI estimate, not a certification result; scores out of 50 are for internal practice only. Do not include sensitive personal information in your answers.")}</p>
+    <p>{ui("You can decline and return to the test list. For a timed exam, the timer starts when you open the test.")}</p>
+    {state.data.billingTier === 'FREE' && <p>{ ui("Google Gemini uses the Free tier: Google may use audio, submitted content and results to improve its products; reviewers may inspect the data. Even fictional answers can identify you through your real voice. Do not send personal, sensitive or confidential information. This feature is for adults aged 18 and over and is unavailable on the Free tier in the EEA, Switzerland or the UK. When quota runs out, requests wait or fail; they do not automatically switch to paid services.") + ' ' }<a href="https://ai.google.dev/gemini-api/terms" target="_blank" rel="noreferrer">{ui("Gemini API terms")}</a></p>}
+    <label><input type="checkbox" checked={adult} onChange={event => setAdult(event.target.checked)} />{ ' ' + ui("I confirm that I am at least 18 years old.") }</label>
+    <label><input type="checkbox" checked={accepted} onChange={event => setAccepted(event.target.checked)} />{ ' ' + ui("I consent to sending audio to Groq and Google Gemini for assessment.") }</label>
+    <button type="button" disabled={!adult || !accepted || saving} onClick={confirm}>{saving ? ui("Saving…") : ui("Agree and continue")}</button>
+    <a href={params.get('practice') === 'true' ? '/speaking/practice' : '/speaking/tests'}>{ui("Decline — go back")}</a>
   </section>;
 }

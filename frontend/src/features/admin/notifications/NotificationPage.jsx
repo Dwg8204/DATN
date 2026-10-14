@@ -1,3 +1,5 @@
+import { uiLocale } from '../../../i18n/translateUi.js';
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Download, Eye, Paperclip, Search, Send, X } from 'lucide-react';
 import { useToast } from '../../../context/ToastContext';
@@ -19,7 +21,7 @@ const NOTIFICATION_QUERY_SCHEMA = {
   search: { ...queryParam.string(''), param: 'q' },
 };
 
-const formatDate = (value) => new Intl.DateTimeFormat('en-US', {
+const formatDate = (value) => new Intl.DateTimeFormat(uiLocale(), {
   month: 'short', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
 }).format(new Date(value));
 
@@ -61,20 +63,22 @@ const mapAdminNotification = (row) => {
 };
 
 function AttachmentLink({ notification, onPreview }) {
+  const ui = useUiTranslation();
   if (!notification.fileName) return null;
   return <div className={styles.previewFile}>
     <Paperclip />
     <div><strong>{notification.fileName}</strong>{notification.fileSize > 0 && <small>{formatFileSize(notification.fileSize)}</small>}</div>
     {notification.fileData
       ? <div className={styles.fileActions}>
-          <button type="button" onClick={() => onPreview(notification)} title={`Preview ${notification.fileName}`}><Eye />Preview</button>
-          <a href={notification.fileData} download={notification.fileName} title={`Download ${notification.fileName}`}><Download />Download</a>
+          <button type="button" onClick={() => onPreview(notification)} title={ui("Preview {{value0}}", {value0:(notification.fileName)})}><Eye />{ui("Preview")}</button>
+          <a href={notification.fileData} download={notification.fileName} title={ui("Download {{value0}}", {value0:(notification.fileName)})}><Download />{ui("Download")}</a>
         </div>
-      : <span className={styles.unavailableFile}>File data unavailable</span>}
+      : <span className={styles.unavailableFile}>{ui("File data unavailable")}</span>}
   </div>;
 }
 
 export default function NotificationPage() {
+  const ui = useUiTranslation();
   const { showError, showSuccess, dismissToast } = useToast();
   const [form, setForm] = useState(emptyForm);
   const [notifications, setNotifications] = useState([]);
@@ -208,7 +212,7 @@ export default function NotificationPage() {
       return;
     }
     if (file.size > MAX_ATTACHMENT_SIZE) {
-      showError('Attachment must be 2 MB or smaller.');
+      showError(ui("Attachment must be 2 MB or smaller."));
       if (fileRef.current) fileRef.current.value = '';
       return;
     }
@@ -219,7 +223,7 @@ export default function NotificationPage() {
       setForm((current) => ({ ...current, fileName: uploaded.name, fileType: uploaded.mimeType,
         fileSize: uploaded.size, fileData: uploaded.url, filePublicId: uploaded.publicId }));
     } catch (error) {
-      showError(error.response?.data?.error?.message || 'The selected file could not be uploaded. Please choose another file.');
+      showError(error.response?.data?.error?.message || ui("The selected file could not be uploaded. Please choose another file."));
       setForm((current) => ({ ...current, fileName: '', fileType: '', fileSize: 0, fileData: '', filePublicId: '' }));
     } finally {
       setReadingFile(false);
@@ -251,7 +255,7 @@ export default function NotificationPage() {
       });
       setHistoryVersion(current => current + 1);
     } catch (error) {
-      showError(error.response?.data?.error?.message || 'The notification could not be sent. Please try again.');
+      showError(error.response?.data?.error?.message || ui("The notification could not be sent. Please try again."));
       setSending(false);
       return;
     }
@@ -260,7 +264,7 @@ export default function NotificationPage() {
     setEmailSearch('');
     setPage(1);
     setPreview(false);
-    showSuccess(form.deliveryMode === 'now' ? 'Notification sent successfully.' : 'Notification scheduled successfully.');
+    showSuccess(form.deliveryMode === 'now' ? ui("Notification sent successfully.") : ui("Notification scheduled successfully."));
     setSending(false);
     if (fileRef.current) fileRef.current.value = '';
   };
@@ -279,19 +283,18 @@ export default function NotificationPage() {
     <div className={styles.page}>
       <section className={styles.workspace}>
         <form className={styles.composer} noValidate onSubmit={(event) => { event.preventDefault(); sendNotification(); }}>
-          <header><h3>Create a new notification</h3><p>Choose an audience and delivery method.</p></header>
+          <header><h3>{ui("Create a new notification")}</h3><p>{ui("Choose an audience and delivery method.")}</p></header>
 
-          <label className={styles.field}>Target
-            <AnswerSelect
+          <label className={styles.field}>{ui("Target")}<AnswerSelect
               value={form.target}
               onChange={(event) => { update('target', event.target.value); setEmailSearch(''); setSelectedUserIds([]); dismissToast(); }}
               options={targetOptions}
-              ariaLabel="Target audience"
+              ariaLabel={ui("Target audience")}
             />
           </label>
 
           <fieldset className={styles.types}>
-            <legend>Notification type</legend>
+            <legend>{ui("Notification type")}</legend>
             {['Push notification', 'Email'].map((type) => (
               <label key={type}>
                 <input
@@ -311,21 +314,21 @@ export default function NotificationPage() {
 
           <div className={styles.userEmailSection}>
               <div className={styles.userEmailHeader}>
-                <label>{form.type} recipients</label>
-                <span className={styles.userEmailBadgeCount}>{selectedRecipients.length}/{audienceUsers.length} selected</span>
+                <label>{form.type}{ ' ' + ui("recipients") }</label>
+                <span className={styles.userEmailBadgeCount}>{selectedRecipients.length}/{audienceUsers.length}{ ' ' + ui("selected") }</span>
               </div>
 
               <label className={styles.selectAllRecipients}>
                 <input type="checkbox" checked={audienceUsers.length > 0 && selectedRecipients.length === audienceUsers.length}
                   onChange={(event) => setSelectedUserIds(event.target.checked ? audienceUsers.map(user => user.id) : [])} />
-                <span>Select all {form.target.toLowerCase()} recipients</span>
+                <span>{ ui("Select all") + ' ' }{form.target.toLowerCase()}{ ' ' + ui("recipients") }</span>
               </label>
 
               <div className={styles.emailSearchBox}>
                 <Search className={styles.emailSearchIcon} />
                 <input
                   type="text"
-                  placeholder="Search recipient by name or email..."
+                  placeholder={ui("Search recipient by name or email...")}
                   value={emailSearch}
                   onChange={(e) => setEmailSearch(e.target.value)}
                 />
@@ -333,9 +336,7 @@ export default function NotificationPage() {
 
               <div className={styles.userEmailList}>
                 {loadingUsers ? (
-                  <div style={{ padding: '12px', textAlign: 'center', color: '#888', fontSize: '12px' }}>
-                    Loading recipients…
-                  </div>
+                  <div style={{ padding: '12px', textAlign: 'center', color: '#888', fontSize: '12px' }}>{ui("Loading recipients…")}</div>
                 ) : filteredUsers.length > 0 ? (
                   filteredUsers.map((user) => {
                     const isSelected = selectedUserIds.includes(user.id);
@@ -349,7 +350,7 @@ export default function NotificationPage() {
                           ? [...new Set([...current, user.id])]
                           : current.filter(id => id !== user.id))} />
                         <div className={styles.userEmailInfo}>
-                          <span className={styles.userEmailName}>{user.fullName || 'User'}</span>
+                          <span className={styles.userEmailName}>{user.fullName || ui("User")}</span>
                           <span className={styles.userEmailAddr}>{user.email}</span>
                         </div>
                         <span className={`${styles.userEmailRoleTag} ${roleClass}`}>{user.role}</span>
@@ -357,56 +358,50 @@ export default function NotificationPage() {
                     );
                   })
                 ) : (
-                  <div style={{ padding: '12px', textAlign: 'center', color: '#888', fontSize: '12px' }}>
-                    No matching recipients found
-                  </div>
+                  <div style={{ padding: '12px', textAlign: 'center', color: '#888', fontSize: '12px' }}>{ui("No matching recipients found")}</div>
                 )}
               </div>
 
               <div style={{ marginTop: '10px', fontSize: '12px', color: '#157347', fontWeight: 600 }}>
-                {selectedRecipients.length} recipient{selectedRecipients.length === 1 ? '' : 's'} selected from the {form.target} audience.
-              </div>
+                {selectedRecipients.length}{ ' ' + ui("recipient") }{selectedRecipients.length === 1 ? '' : 's'}{' '}{ ui("selected from the") + ' ' }{form.target}{ ' ' + ui("audience.") }</div>
           </div>
 
           <fieldset className={styles.deliveryOptions}>
-            <legend>Delivery time</legend>
+            <legend>{ui("Delivery time")}</legend>
             <div>
               <label className={form.deliveryMode === 'now' ? styles.selectedDelivery : ''}>
                 <input type="radio" name="deliveryMode" checked={form.deliveryMode === 'now'} onChange={() => { update('deliveryMode', 'now'); dismissToast(); }} />
-                <span><strong>Send immediately</strong><small>Deliver as soon as you confirm.</small></span>
+                <span><strong>{ui("Send immediately")}</strong><small>{ui("Deliver as soon as you confirm.")}</small></span>
               </label>
               <label className={form.deliveryMode === 'scheduled' ? styles.selectedDelivery : ''}>
                 <input type="radio" name="deliveryMode" checked={form.deliveryMode === 'scheduled'} onChange={() => { setForm((current) => ({ ...current, deliveryMode: 'scheduled', date: new Date(current.date).getTime() > Date.now() ? current.date : nextAvailableMinute() })); dismissToast(); }} />
-                <span><strong>Schedule for later</strong><small>Choose a future delivery time.</small></span>
+                <span><strong>{ui("Schedule for later")}</strong><small>{ui("Choose a future delivery time.")}</small></span>
               </label>
             </div>
           </fieldset>
 
-          {form.deliveryMode === 'scheduled' && <label className={styles.field}>Scheduled date &amp; time
-            <input type="datetime-local" min={nextAvailableMinute()} step="60" value={form.date} onChange={(event) => { update('date', event.target.value); dismissToast(); }} />
+          {form.deliveryMode === 'scheduled' && <label className={styles.field}>{ui("Scheduled date & time")}<input type="datetime-local" min={nextAvailableMinute()} step="60" value={form.date} onChange={(event) => { update('date', event.target.value); dismissToast(); }} />
           </label>}
 
-          {form.type === 'Email' && <label className={styles.field}>Email subject
-            <input type="text" maxLength="255" value={form.subject} onChange={(event) => { update('subject', event.target.value); dismissToast(); }} placeholder="Enter the email subject" />
-            <small>{form.subject.length}/255 characters</small>
+          {form.type === 'Email' && <label className={styles.field}>{ui("Email subject")}<input type="text" maxLength="255" value={form.subject} onChange={(event) => { update('subject', event.target.value); dismissToast(); }} placeholder={ui("Enter the email subject")} />
+            <small>{form.subject.length}{ui("/255 characters")}</small>
           </label>}
 
-          <label className={styles.field}>Content
-            <textarea rows="7" maxLength="500" value={form.content} onChange={(event) => { update('content', event.target.value); dismissToast(); }} placeholder="Write the message here" />
-            <small>{form.content.length}/500 characters</small>
+          <label className={styles.field}>{ui("Content")}<textarea rows="7" maxLength="500" value={form.content} onChange={(event) => { update('content', event.target.value); dismissToast(); }} placeholder={ui("Write the message here")} />
+            <small>{form.content.length}{ui("/500 characters")}</small>
           </label>
 
           <div className={styles.composerFooter}>
-            <label className={styles.attachment}><Paperclip /><span>{readingFile ? 'Loading file…' : form.fileName || 'Attach files (max 2 MB)'}</span><input ref={fileRef} type="file" onChange={(event) => selectFile(event.target.files?.[0])} /></label>
-            <div><button type="button" className={styles.previewButton} onClick={showPreview} disabled={sending}><Eye />Preview</button><button type="submit" className={styles.sendButton} disabled={sending}><Send />{sending ? (form.deliveryMode === 'now' ? 'Sending…' : 'Scheduling…') : (form.deliveryMode === 'now' ? 'Send' : 'Schedule')}</button></div>
+            <label className={styles.attachment}><Paperclip /><span>{readingFile ? ui("Loading file…") : form.fileName || ui("Attach files (max 2 MB)")}</span><input ref={fileRef} type="file" onChange={(event) => selectFile(event.target.files?.[0])} /></label>
+            <div><button type="button" className={styles.previewButton} onClick={showPreview} disabled={sending}><Eye />{ui("Preview")}</button><button type="submit" className={styles.sendButton} disabled={sending}><Send />{sending ? (form.deliveryMode === 'now' ? ui("Sending…") : ui("Scheduling…")) : (form.deliveryMode === 'now' ? ui("Send") : ui("Schedule"))}</button></div>
           </div>
         </form>
 
         <section className={styles.history}>
-          <header><div><h3>Notification history</h3><p aria-live="polite">{totalItems} {search.trim() ? 'matching messages' : 'messages'}</p></div></header>
-          {historyError && <div className={styles.historyError} role="alert">{historyError}<button type="button" onClick={() => setHistoryVersion(current => current + 1)}>Retry</button></div>}
+          <header><div><h3>{ui("Notification history")}</h3><p aria-live="polite">{totalItems} {search.trim() ? ui("matching messages") : ui("messages")}</p></div></header>
+          {historyError && <div className={styles.historyError} role="alert">{historyError}<button type="button" onClick={() => setHistoryVersion(current => current + 1)}>{ui("Retry")}</button></div>}
           <div className={styles.tableScroll}>
-            <table aria-label="Notification history">
+            <table aria-label={ui("Notification history")}>
               <colgroup>
                 <col className={styles.dateColumn} />
                 <col />
@@ -415,9 +410,9 @@ export default function NotificationPage() {
                 <col className={styles.statusColumn} />
                 <col className={styles.actionsColumn} />
               </colgroup>
-              <thead><tr><th scope="col">Date &amp; time</th><th scope="col">Content</th><th scope="col">Recipients</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col"><span className={styles.visuallyHidden}>Actions</span></th></tr></thead>
-              <tbody>{loadingHistory ? <tr><td colSpan={6} className={styles.historyEmpty}>Loading notifications…</td></tr>
-                : !historyError && notifications.length === 0 ? <tr><td colSpan={6} className={styles.historyEmpty}>{search.trim() ? 'No notifications match your search.' : 'No notifications yet.'}</td></tr>
+              <thead><tr><th scope="col">{ui("Date & time")}</th><th scope="col">{ui("Content")}</th><th scope="col">{ui("recipients")}</th><th scope="col">{ui("Type")}</th><th scope="col">{ui("Status")}</th><th scope="col"><span className={styles.visuallyHidden}>{ui("Actions")}</span></th></tr></thead>
+              <tbody>{loadingHistory ? <tr><td colSpan={6} className={styles.historyEmpty}>{ui("Loading notifications…")}</td></tr>
+                : !historyError && notifications.length === 0 ? <tr><td colSpan={6} className={styles.historyEmpty}>{search.trim() ? ui("No notifications match your search.") : ui("No notifications yet.")}</td></tr>
                 : notifications.map((item) => <tr key={item.id}>
                 <td>{formatDate(item.date)}</td>
                 <td><span className={styles.contentPreview} title={item.content}>{item.content}</span></td>
@@ -427,7 +422,7 @@ export default function NotificationPage() {
                 </div></td>
                 <td>{item.type}</td>
                 <td><span className={styles.notificationStatus} data-status={item.status}>{item.status}</span></td>
-                <td><button type="button" className={styles.viewButton} onClick={() => setSelectedNotification(item)} aria-label={`View notification sent on ${formatDate(item.date)}`} title="View details"><Eye /></button></td>
+                <td><button type="button" className={styles.viewButton} onClick={() => setSelectedNotification(item)} aria-label={ui("View notification sent on {{value0}}", {value0:(formatDate(item.date))})} title={ui("View details")}><Eye /></button></td>
               </tr>)}</tbody>
             </table>
           </div>
@@ -438,31 +433,31 @@ export default function NotificationPage() {
       </section>
 
       {preview && <div className={styles.backdrop} onMouseDown={() => setPreview(false)}><section className={styles.previewModal} role="dialog" aria-modal="true" onMouseDown={(event) => event.stopPropagation()}>
-        <header><div><span>Notification preview</span><h3>{form.type}</h3></div><button onClick={() => setPreview(false)} aria-label="Close preview"><X /></button></header>
-        <div className={styles.previewAudience}>To: <strong>{selectedRecipientLabel}</strong> · {form.deliveryMode === 'now' ? 'Send immediately' : formatDate(form.date)}</div>
-        {form.type === 'Email' && <div className={styles.detailContent}><strong>Subject</strong><p>{form.subject}</p></div>}
+        <header><div><span>{ui("Notification preview")}</span><h3>{form.type}</h3></div><button onClick={() => setPreview(false)} aria-label={ui("Close preview")}><X /></button></header>
+        <div className={styles.previewAudience}>{ ui("To:") + ' ' }<strong>{selectedRecipientLabel}</strong> · {form.deliveryMode === 'now' ? ui("Send immediately") : formatDate(form.date)}</div>
+        {form.type === 'Email' && <div className={styles.detailContent}><strong>{ui("Subject")}</strong><p>{form.subject}</p></div>}
         <p>{form.content}</p>
         <AttachmentLink notification={form} onPreview={setPreviewAttachment} />
-        <footer><button onClick={() => setPreview(false)} disabled={sending}>Back to edit</button><button onClick={sendNotification} disabled={sending}><Send />{sending ? (form.deliveryMode === 'now' ? 'Sending…' : 'Scheduling…') : (form.deliveryMode === 'now' ? 'Confirm & send' : 'Confirm schedule')}</button></footer>
+        <footer><button onClick={() => setPreview(false)} disabled={sending}>{ui("Back to edit")}</button><button onClick={sendNotification} disabled={sending}><Send />{sending ? (form.deliveryMode === 'now' ? ui("Sending…") : ui("Scheduling…")) : (form.deliveryMode === 'now' ? ui("Confirm & send") : ui("Confirm schedule"))}</button></footer>
       </section></div>}
 
       {selectedNotification && <div className={styles.backdrop} onMouseDown={() => setSelectedNotification(null)}><section className={styles.previewModal} role="dialog" aria-modal="true" aria-labelledby="notification-detail-title" onMouseDown={(event) => event.stopPropagation()}>
-        <header><div><span>Notification details</span><h3 id="notification-detail-title">{selectedNotification.type}</h3></div><button type="button" onClick={() => setSelectedNotification(null)} aria-label="Close notification details"><X /></button></header>
+        <header><div><span>{ui("Notification details")}</span><h3 id="notification-detail-title">{selectedNotification.type}</h3></div><button type="button" onClick={() => setSelectedNotification(null)} aria-label={ui("Close notification details")}><X /></button></header>
         <dl className={styles.detailMeta}>
-          <div><dt>Target</dt><dd><span className={`${styles.target} ${getTargetClass(selectedNotification.target)}`}>{selectedNotification.target}</span></dd></div>
-          <div><dt>Date &amp; time</dt><dd>{formatDate(selectedNotification.date)}</dd></div>
-          <div><dt>Status</dt><dd>{selectedNotification.status}</dd></div>
+          <div><dt>{ui("Target")}</dt><dd><span className={`${styles.target} ${getTargetClass(selectedNotification.target)}`}>{selectedNotification.target}</span></dd></div>
+          <div><dt>{ui("Date & time")}</dt><dd>{formatDate(selectedNotification.date)}</dd></div>
+          <div><dt>{ui("Status")}</dt><dd>{selectedNotification.status}</dd></div>
         </dl>
-        <div className={styles.detailContent}><strong>Content</strong><p>{selectedNotification.content}</p></div>
+        <div className={styles.detailContent}><strong>{ui("Content")}</strong><p>{selectedNotification.content}</p></div>
         <AttachmentLink notification={selectedNotification} onPreview={setPreviewAttachment} />
-        <footer><button type="button" onClick={() => setSelectedNotification(null)}>Close</button></footer>
+        <footer><button type="button" onClick={() => setSelectedNotification(null)}>{ui("Close")}</button></footer>
       </section></div>}
 
       {previewAttachment && <div className={styles.fileBackdrop} onMouseDown={() => setPreviewAttachment(null)}>
         <section className={styles.filePreviewModal} role="dialog" aria-modal="true" aria-labelledby="file-preview-title" onMouseDown={(event) => event.stopPropagation()}>
           <header>
-            <div><span>Attachment preview</span><h3 id="file-preview-title">{previewAttachment.fileName}</h3></div>
-            <button type="button" onClick={() => setPreviewAttachment(null)} aria-label="Close file preview"><X /></button>
+            <div><span>{ui("Attachment preview")}</span><h3 id="file-preview-title">{previewAttachment.fileName}</h3></div>
+            <button type="button" onClick={() => setPreviewAttachment(null)} aria-label={ui("Close file preview")}><X /></button>
           </header>
           <div className={styles.fileViewer}>
             {isPreviewableWordDocument(previewAttachment.fileType, previewAttachment.fileName) && <WordDocumentPreview key={previewAttachment.fileData} source={previewAttachment.fileData} fileName={previewAttachment.fileName} />}
@@ -473,11 +468,11 @@ export default function NotificationPage() {
             {previewAttachment.fileType?.startsWith('text/') && <iframe src={previewAttachment.fileData} title={previewAttachment.fileName} />}
             {previewAttachment.fileType?.startsWith('audio/') && <audio src={previewAttachment.fileData} controls />}
             {previewAttachment.fileType?.startsWith('video/') && <video src={previewAttachment.fileData} controls />}
-            {!isPreviewableWordDocument(previewAttachment.fileType, previewAttachment.fileName) && !isPreviewableSpreadsheet(previewAttachment.fileType, previewAttachment.fileName) && !isPreviewablePowerPoint(previewAttachment.fileType, previewAttachment.fileName) && !previewAttachment.fileType?.startsWith('image/') && previewAttachment.fileType !== 'application/pdf' && !previewAttachment.fileType?.startsWith('text/') && !previewAttachment.fileType?.startsWith('audio/') && !previewAttachment.fileType?.startsWith('video/') && <div className={styles.unsupportedPreview}><Paperclip /><strong>Preview is not available for this file type.</strong><span>You can download the file and open it with a compatible application.</span></div>}
+            {!isPreviewableWordDocument(previewAttachment.fileType, previewAttachment.fileName) && !isPreviewableSpreadsheet(previewAttachment.fileType, previewAttachment.fileName) && !isPreviewablePowerPoint(previewAttachment.fileType, previewAttachment.fileName) && !previewAttachment.fileType?.startsWith('image/') && previewAttachment.fileType !== 'application/pdf' && !previewAttachment.fileType?.startsWith('text/') && !previewAttachment.fileType?.startsWith('audio/') && !previewAttachment.fileType?.startsWith('video/') && <div className={styles.unsupportedPreview}><Paperclip /><strong>{ui("Preview is not available for this file type.")}</strong><span>{ui("You can download the file and open it with a compatible application.")}</span></div>}
           </div>
           <footer>
-            <button type="button" onClick={() => setPreviewAttachment(null)}>Close</button>
-            <a href={previewAttachment.fileData} download={previewAttachment.fileName}><Download />Download file</a>
+            <button type="button" onClick={() => setPreviewAttachment(null)}>{ui("Close")}</button>
+            <a href={previewAttachment.fileData} download={previewAttachment.fileName}><Download />{ui("Download file")}</a>
           </footer>
         </section>
       </div>}

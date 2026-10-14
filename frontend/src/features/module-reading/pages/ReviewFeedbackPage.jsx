@@ -1,3 +1,5 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import AnswerExplanation from '../../../components/common/AnswerExplanation';
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -22,6 +24,7 @@ const getGapQuestionText = (passage, position) => {
 };
 
 const ReviewFeedbackPage = () => {
+  const ui = useUiTranslation();
   const { showError } = useToast();
   const { sessionId } = useParams();
   const navigate = useNavigate();
@@ -97,7 +100,7 @@ const ReviewFeedbackPage = () => {
     );
   }
 
-  if (loadError || !results || !testData) return <DataLoadError title="Test review is unavailable" message={loadError || 'Please return to the Reading test list and open your review again.'} />;
+  if (loadError || !results || !testData) return <DataLoadError title={ui("Test review is unavailable")} message={loadError || 'Please return to the Reading test list and open your review again.'} />;
 
   const activeDetails = results[`part${currentPart}`]?.details || [];
   const reviewQuestions = activeDetails.map((detail, index) => ({
@@ -129,7 +132,7 @@ const ReviewFeedbackPage = () => {
             {number}
           </span>
           {title && (
-            <p className="m-0 break-words text-sm sm:text-base leading-6 sm:leading-7 text-black">{title}</p>
+            <p className="m-0 break-words text-sm sm:text-base leading-6 sm:leading-7 text-black">{ui(title)}</p>
           )}
           <span className={`col-start-2 w-fit rounded-full px-3 py-1 text-[13px] font-bold md:col-start-auto ${statusClass}`}>
             {statusLabel}
@@ -141,7 +144,7 @@ const ReviewFeedbackPage = () => {
             {options.map((option) => (
               <div
                 key={option.key || option.label || option.text}
-                aria-label={`${option.text}${option.isCorrect ? ', correct' : option.isUser ? ', selected, incorrect' : ''}`}
+                aria-label={ui("{{value0}}{{value1}}", {value0:(option.text),value1:(option.isCorrect ? ', correct' : option.isUser ? ', selected, incorrect' : '')})}
                 className={`grid min-h-10 ${option.hideLabel ? 'grid-cols-1' : 'grid-cols-[28px_minmax(0,1fr)]'} items-center gap-2 sm:gap-3 rounded-md border px-3 py-1.5 ${
                   option.isCorrect
                     ? 'border-[#43B75D] bg-[#EDF9F0]'
@@ -150,7 +153,7 @@ const ReviewFeedbackPage = () => {
                       : 'border-transparent'
                 }`}
               >
-                {!option.hideLabel && <span className="font-bold">{option.label}</span>}
+                {!option.hideLabel && <span className="font-bold">{ui(option.label)}</span>}
                 <span>{option.text}</span>
 
 
@@ -161,7 +164,7 @@ const ReviewFeedbackPage = () => {
 
         {options.length === 0 && <div className="grid grid-cols-1 gap-3 pl-0 text-sm md:ml-11 md:grid-cols-2 break-words">
           <div className={`rounded-md border px-3 py-2 ${status === 'correct' ? 'border-[#43B75D] bg-[#EDF9F0]' : status === 'wrong' ? 'border-[#DA1E21] bg-[#FFF0F1]' : 'border-[#868686] text-[#686868]'}`}>
-            {hasAnswer ? detail.userAnswer : 'No answer'}
+            {hasAnswer ? detail.userAnswer : ui("No answer")}
           </div>
           <div className="rounded-md border border-[#43B75D] bg-[#EDF9F0] px-3 py-2">
             {detail?.correctAnswer || '—'}
@@ -264,6 +267,7 @@ const ReviewFeedbackPage = () => {
     <div className="min-h-screen bg-white flex flex-col font-sans">
 
       <main className="flex-1 w-full px-4 md:px-12 lg:px-[72px] py-5 sm:py-8 space-y-6 sm:space-y-8">
+        <ResultBackButton to={`/reading/result/${encodeURIComponent(sessionId)}`} />
         {mode === 'full' && (
           <div className="flex flex-wrap gap-3">
             {[1, 2, 3, 4].map((partNum) => (
@@ -275,24 +279,22 @@ const ReviewFeedbackPage = () => {
                     ? 'border-[#DA1E21] bg-[#DA1E21] text-white hover:bg-[#B5161A]'
                     : 'border-[#DA1E21] bg-white text-[#DA1E21] hover:bg-[#FFF0F1]'
                 }`}
-              >
-                Part {partNum}
+              >{ ui("Part") + ' ' }{partNum}
               </button>
             ))}
           </div>
         )}
 
         <div className="flex flex-col gap-1 text-base leading-7">
-          <strong className="text-lg leading-8">Reading · Part {currentPart}</strong>
-          <span>Review your answer, compare it with the correct answer, and open an explanation when needed.</span>
+          <strong className="text-lg leading-8">{ ui("Reading · Part") + ' ' }{currentPart}</strong>
+          <span>{ui("Review your answer, compare it with the correct answer, and open an explanation when needed.")}</span>
         </div>
 
         {/* Grey Header card for Active Part */}
         <div className="bg-white flex flex-col">
 
           <div className="hidden bg-[#FAF8F5] px-6 py-4 border-b border-[#E5E2D9] items-center">
-            <h2 className="text-sm font-black text-gray-800 uppercase tracking-widest">
-              READING PART {currentPart}
+            <h2 className="text-sm font-black text-gray-800 uppercase tracking-widest">{ ui("READING PART") + ' ' }{currentPart}
             </h2>
           </div>
 
@@ -307,7 +309,7 @@ const ReviewFeedbackPage = () => {
           {/* Part switch tabs */}
           {mode === 'full' ? (
             <div className="flex items-center gap-4">
-              <span className="font-black text-xs text-gray-800 uppercase tracking-wider">Part {currentPart}</span>
+              <span className="font-black text-xs text-gray-800 uppercase tracking-wider">{ ui("Part") + ' ' }{currentPart}</span>
               <div className="flex items-center gap-1.5">
                 {[1, 2, 3, 4].map(partNum => (
                   <button
@@ -326,7 +328,7 @@ const ReviewFeedbackPage = () => {
             </div>
           ) : (
             <div className="flex items-center gap-4">
-              <span className="font-black text-xs text-gray-800 uppercase tracking-wider">Part {currentPart} (Single Part Test)</span>
+              <span className="font-black text-xs text-gray-800 uppercase tracking-wider">{ ui("Part") + ' ' }{currentPart}{ ' ' + ui("(Single Part Test)") }</span>
             </div>
           )}
 
@@ -357,9 +359,7 @@ const ReviewFeedbackPage = () => {
             <button
               onClick={() => navigate('/reading/tests')}
               className="bg-white border-2 border-[#C82323] text-[#C82323] hover:bg-red-50 text-xs font-black tracking-wide py-2.5 px-6 rounded-lg transition-colors cursor-pointer"
-            >
-              Take another test
-            </button>
+            >{ui("Take another test")}</button>
           </div>
 
         </div>
@@ -367,7 +367,7 @@ const ReviewFeedbackPage = () => {
       </main>
 
       <TestFooter
-        partLabel={`Part ${currentPart}`}
+        partLabel={ui("Part {{value0}}", {value0:(currentPart)})}
         questions={reviewQuestions}
         answeredIds={answeredIds}
         currentPageQuestionIds={reviewQuestions.map(({ id }) => id)}
@@ -386,7 +386,7 @@ const ReviewFeedbackPage = () => {
         onPrevClick={() => mode === 'full' && handlePartChange(Math.max(1, currentPart - 1))}
         onNextClick={() => mode === 'full' && handlePartChange(Math.min(4, currentPart + 1))}
         onSubmitClick={() => navigate('/reading/tests')}
-        submitLabel="Take another test"
+        submitLabel={ui("Take another test")}
       />
 
       {/* AptiMate Footer */}
@@ -399,30 +399,26 @@ const ReviewFeedbackPage = () => {
               <span className="text-gray-800 -ml-0.5 text-lg font-bold font-sans">ptiMate</span>
             </span>
             <div className="flex flex-col space-y-1.5 text-xs font-bold text-gray-500">
-              <a href="#" className="hover:text-gray-900 transition-colors">About us</a>
-              <a href="#" className="hover:text-gray-900 transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-gray-900 transition-colors">Terms of use</a>
-              <a href="#" className="hover:text-gray-900 transition-colors">Disclaimer</a>
+              <a href="#" className="hover:text-gray-900 transition-colors">{ui("About us")}</a>
+              <a href="#" className="hover:text-gray-900 transition-colors">{ui("Privacy policy")}</a>
+              <a href="#" className="hover:text-gray-900 transition-colors">{ui("Terms of use")}</a>
+              <a href="#" className="hover:text-gray-900 transition-colors">{ui("Disclaimer")}</a>
             </div>
           </div>
 
           <div className="flex flex-col space-y-3">
-            <h4 className="text-xs font-black text-gray-800 uppercase tracking-wider">CONTACT</h4>
+            <h4 className="text-xs font-black text-gray-800 uppercase tracking-wider">{ui("Contact")}</h4>
             <div className="flex flex-col space-y-1.5 text-xs font-bold text-gray-500">
-              <span className="hover:text-gray-900 transition-colors cursor-pointer">Hotline</span>
-              <span className="hover:text-gray-900 transition-colors cursor-pointer">Email</span>
+              <span className="hover:text-gray-900 transition-colors cursor-pointer">{ui("Hotline")}</span>
+              <span className="hover:text-gray-900 transition-colors cursor-pointer">{ui("Email")}</span>
               <span className="hover:text-gray-900 transition-colors cursor-pointer">Facebook</span>
-              <span className="hover:text-gray-900 transition-colors cursor-pointer">Location</span>
+              <span className="hover:text-gray-900 transition-colors cursor-pointer">{ui("Location")}</span>
             </div>
           </div>
 
           <div className="flex flex-col items-start md:items-end justify-between space-y-6 md:space-y-0">
-            <button className="bg-[#C82323] hover:bg-[#A81E1E] text-white text-xs font-black tracking-wider py-2.5 px-6 rounded-full transition-all shadow-sm cursor-pointer">
-              Leave us feedback
-            </button>
-            <div className="text-[10px] font-bold text-gray-400 text-left md:text-right mt-auto">
-              Copyright ©2026 APTIS test, Inc. All rights reserved.
-            </div>
+            <button className="bg-[#C82323] hover:bg-[#A81E1E] text-white text-xs font-black tracking-wider py-2.5 px-6 rounded-full transition-all shadow-sm cursor-pointer">{ui("Leave us feedback")}</button>
+            <div className="text-[10px] font-bold text-gray-400 text-left md:text-right mt-auto">{ui("Copyright ©2026 APTIS test, Inc. All rights reserved.")}</div>
           </div>
 
         </div>

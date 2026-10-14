@@ -1,3 +1,4 @@
+import { translateUi } from '../i18n/translateUi.js';
 const messagesByCode = {
   INVALID_CREDENTIALS: 'Incorrect email or password. Please try again.',
   EMAIL_ALREADY_EXISTS: 'This email is already registered. Sign in or use a different email.',
@@ -54,7 +55,7 @@ function safeMessage(value) {
 }
 
 /** Support our API contract, older Nest responses, and network/proxy failures. */
-export function normalizeApiError(error, fallback = 'Unable to complete the request. Please try again.') {
+function normalizeApiErrorRaw(error, fallback = 'Unable to complete the request. Please try again.') {
   const status = error?.response?.status;
   const body = error?.response?.data;
   const detail = body && typeof body === 'object' ? body.error : undefined;
@@ -74,6 +75,11 @@ export function normalizeApiError(error, fallback = 'Unable to complete the requ
   const message = detail?.message ?? body?.message;
   const candidate = Array.isArray(message) ? message[0] : message;
   return { ...base, message: safeMessage(candidate) || messagesByStatus[status] || safeMessage(fallback) || 'Unable to complete the request. Please try again.' };
+}
+
+export function normalizeApiError(error, fallback) {
+  const normalized = normalizeApiErrorRaw(error, fallback);
+  return { ...normalized, message: translateUi.error(normalized.message) };
 }
 
 export const getApiError = (error, fallback) => normalizeApiError(error, fallback).message;

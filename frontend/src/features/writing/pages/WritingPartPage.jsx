@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +16,7 @@ import PracticeAnswerReveal from '../../practice/components/PracticeAnswerReveal
 import styles from './WritingPartPage.module.css';
 
 export default function WritingPartPage() {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const { part = 'part1' } = useParams();
   const [searchParams] = useSearchParams();
@@ -46,7 +48,7 @@ export default function WritingPartPage() {
   }, [attempt, part, setCurrentQuestion, task]);
 
   if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} backHref="/writing/tests" />;
-  if (!task) return <AttemptPageState error="The requested Part is not included in this test." backHref="/writing/tests" />;
+  if (!task) return <AttemptPageState error={ui("The requested Part is not included in this test.")} backHref="/writing/tests" />;
 
   const navigateToPart = async nextPart => {
     await flush();
@@ -82,10 +84,10 @@ export default function WritingPartPage() {
   return <div className={styles.page}>
     <div className={styles.content}>
       <div className={styles.heading}>
-        <div><strong>{task.title}</strong><span>{paper.title}</span></div>
+        <div><strong>{ui(task.title)}</strong><span>{ui(paper.title)}</span></div>
         <SaveIndicator status={saveStatus} />
       </div>
-      <InstructionBlock title={`Part ${partNumber}`}><RichTextContent value={task.instruction} /></InstructionBlock>
+      <InstructionBlock title={ui("Part {{value0}}", {value0:(partNumber)})}><RichTextContent value={task.instruction} /></InstructionBlock>
       <div className={styles.taskList}>
         {task.questions.map((question, index) => {
           const answer = answers[question.key];
@@ -106,7 +108,7 @@ export default function WritingPartPage() {
               if (inserted && wouldExceedAnswerLimit(value, input.selectionStart, input.selectionEnd,
                 inserted, characterLimit)) {
                 event.preventDefault();
-                showError(`This answer cannot exceed ${characterLimit} characters. Shorten it before continuing.`);
+                showError(ui("This answer cannot exceed {{value0}} characters. Shorten it before continuing.", {value0:(characterLimit)}));
               }
             },
             onPaste: event => {
@@ -114,7 +116,7 @@ export default function WritingPartPage() {
               if (wouldExceedAnswerLimit(value, input.selectionStart, input.selectionEnd,
                 event.clipboardData.getData('text'), characterLimit)) {
                 event.preventDefault();
-                showError(`This answer cannot exceed ${characterLimit} characters. Shorten the text before pasting.`);
+                showError(ui("This answer cannot exceed {{value0}} characters. Shorten the text before pasting.", {value0:(characterLimit)}));
               }
             },
             onBlur: () => void flush().catch(() => undefined),
@@ -124,21 +126,21 @@ export default function WritingPartPage() {
           return <article className={styles.taskCard} key={question.key}>
             <label htmlFor={inputProps.id}><span className={styles.number}>{index + 1}</span><RichTextContent value={question.text} /></label>
             {task.type === 'short' ? <input {...inputProps} /> : <textarea {...inputProps} rows={task.type === 'email' && index === 1 ? 10 : 6} />}
-            <div className={styles.wordCount}><span>{writingWordGuide(task, index) ? `${writingWordGuide(task, index)} ${t('writingAi.wordUnit')} · ${t(`writingAi.${task.wordLimits[index].policy}`)}` : ''}</span><strong>{countWords(value)} words · {value.length}/{characterLimit} characters</strong></div>
+            <div className={styles.wordCount}><span>{writingWordGuide(task, index) ? ui("{{value0}} {{value1}} · {{value2}}", {value0:(writingWordGuide(task, index)),value1:(t('writingAi.wordUnit')),value2:(t(`writingAi.${task.wordLimits[index].policy}`))}) : ''}</span><strong>{countWords(value)}{' '}{ ui("words ·") + ' ' }{value.length}/{characterLimit}{ ' ' + ui("characters") }</strong></div>
             <PracticeAnswerReveal questionKey={question.key} />
           </article>;
         })}
       </div>
     </div>
     <TestFooter
-      partLabel={`Part ${partNumber}`}
+      partLabel={ui("Part {{value0}}", {value0:(partNumber)})}
       questions={footerQuestions}
       answeredIds={Object.entries(answers).filter(([, answer]) => answer?.kind === 'TEXT' && answer.text.trim()).map(([key]) => key)}
       currentPageQuestionIds={currentPageQuestionIds}
       onQuestionClick={scrollToQuestion}
       onPrevClick={isFull && partIndex > 0 ? () => void navigateToPart(availableParts[partIndex - 1]).catch(() => undefined) : undefined}
       onSubmitClick={handlePrimaryAction}
-      submitLabel={isFull && partIndex < availableParts.length - 1 ? 'Next Part' : submitting ? 'Submitting…' : 'Submit'}
+      submitLabel={isFull && partIndex < availableParts.length - 1 ? ui("Next Part") : submitting ? ui("Submitting…") : ui("Submit")}
       submitDisabled={submitting || timeExpired || saveStatus === 'conflict' || saveStatus === 'error'}
       hasPrev={isFull && partIndex > 0}
       hasNext={false}

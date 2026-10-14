@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import InstructionBlock from '../../../components/common/InstructionBlock.jsx';
@@ -25,6 +26,7 @@ const TITLES = {
 const QUESTION_QUERY_SCHEMA = { question: queryParam.positiveInt(1) };
 
 export default function SpeakingPartPage({ partNumber }) {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const { showError } = useToast();
   const [searchParams] = useSearchParams();
@@ -73,7 +75,7 @@ export default function SpeakingPartPage({ partNumber }) {
   }, [answers, current?.key, partNumber]);
 
   if (loading || loadError) return <AttemptPageState loading={loading} error={loadError} />;
-  if (!part || !current) return <AttemptPageState error={`Part ${partNumber} is not included in this test.`} />;
+  if (!part || !current) return <AttemptPageState error={ui("Part {{value0}} is not included in this test.", {value0:(partNumber)})} />;
 
   const finishRecording = () => {
     window.clearInterval(timerRef.current);
@@ -106,7 +108,7 @@ export default function SpeakingPartPage({ partNumber }) {
           setFinished(true);
         } catch (error) {
           setFinished(false);
-          showError(getApiError(error, 'The recording could not be uploaded. Please record it again.'));
+          showError(getApiError(error, ui("The recording could not be uploaded. Please record it again.")));
         } finally {
           setUploading(false);
           chunksRef.current = [];
@@ -131,8 +133,8 @@ export default function SpeakingPartPage({ partNumber }) {
       setPreparingRecording(false);
       streamRef.current?.getTracks().forEach(track => track.stop());
       showError(error?.name === 'NotAllowedError'
-        ? 'Microphone access was denied. Allow it in your browser settings and try again.'
-        : getApiError(error, 'Unable to start audio recording.'));
+        ? ui("Microphone access was denied. Allow it in your browser settings and try again.")
+        : getApiError(error, ui("Unable to start audio recording.")));
     }
   };
 
@@ -144,7 +146,7 @@ export default function SpeakingPartPage({ partNumber }) {
     navigate(`/speaking/test/part${partNumber + 1}?${params.toString()}`);
   };
   const primaryAction = () => {
-    if (uploading || recording) { showError('Wait for the current recording to finish uploading.'); return; }
+    if (uploading || recording) { showError(ui("Wait for the current recording to finish uploading.")); return; }
     if (isFull && partNumber < 4) void goNextPart();
     else setShowSubmit(true);
   };
@@ -163,14 +165,13 @@ export default function SpeakingPartPage({ partNumber }) {
   return <div className={styles.page}>
     <main className={styles.content}>
       <header className={styles.heading}>
-        <div><strong>Speaking · Part {partNumber}</strong><span>{paper.title}</span></div>
+        <div><strong>{ ui("Speaking · Part") + ' ' }{partNumber}</strong><span>{ui(paper.title)}</span></div>
         <SaveIndicator status={saveStatus} />
       </header>
-      <InstructionBlock title={`Question ${currentIndex + 1} of ${questions.length}`}>
-        {TITLES[partNumber]}. Record your response when you are ready.
-      </InstructionBlock>
-      {narration.speaking && <p role="status">Reading the instructions and question…</p>}
-      {narration.needsGesture && <button type="button" onClick={narration.retry}>Read question aloud</button>}
+      <InstructionBlock title={ui("Question {{value0}} of {{value1}}", {value0:(currentIndex + 1),value1:(questions.length)})}>
+        {TITLES[partNumber]}{ui(". Record your response when you are ready.")}</InstructionBlock>
+      {narration.speaking && <p role="status">{ui("Reading the instructions and question…")}</p>}
+      {narration.needsGesture && <button type="button" onClick={narration.retry}>{ui("Read question aloud")}</button>}
       <section className={styles.workspace}>
         <div className={styles.promptColumn}>
           <article className={styles.prompt}>
@@ -179,24 +180,24 @@ export default function SpeakingPartPage({ partNumber }) {
               {current.prompts?.map((prompt, index) => <RichTextContent key={index} value={`${index + 1}. ${prompt.text}`} />)}
             </div>
           </article>
-          {part.imageUrl && <img className={styles.singleImage} src={part.imageUrl} alt="Speaking prompt" />}
+          {part.imageUrl && <img className={styles.singleImage} src={part.imageUrl} alt={ui("Speaking prompt")} />}
           {part.imageUrls?.length > 0 && <div className={styles.imageGrid}>{part.imageUrls.map((url, index) =>
-            <img key={url} src={url} alt={`Speaking prompt ${index + 1}`} />)}</div>}
+            <img key={url} src={url} alt={ui("Speaking prompt {{value0}}", {value0:(index + 1)})} />)}</div>}
           <PracticeAnswerReveal questionKey={current.key} />
         </div>
         <div className={styles.recorder}>
           <MockAudioRecorder isRecording={recording} isFinished={finished} timeLeft={secondsLeft}
             maxTime={RECORD_SECONDS[partNumber]} onStartRecord={() => void startRecording()} onStopRecord={finishRecording} disabled={uploading || narration.speaking} />
-          {uploading && <p className={styles.uploading} role="status">Uploading recording…</p>}
+          {uploading && <p className={styles.uploading} role="status">{ui("Uploading recording…")}</p>}
         </div>
       </section>
     </main>
-    <TestFooter partLabel={`Part ${partNumber}`} questions={questions.map((question, index) => ({ id: question.key, displayLabel: index + 1 }))}
+    <TestFooter partLabel={ui("Part {{value0}}", {value0:(partNumber)})} questions={questions.map((question, index) => ({ id: question.key, displayLabel: index + 1 }))}
       answeredIds={answeredIds} currentPageQuestionIds={[current.key]}
       onQuestionClick={key => setCurrentIndex(Math.max(0, questions.findIndex(question => question.key === key)))}
       onPrevClick={() => setCurrentIndex(index => Math.max(0, index - 1))}
       onNextClick={() => setCurrentIndex(index => Math.min(questions.length - 1, index + 1))}
-      onSubmitClick={primaryAction} submitLabel={isFull && partNumber < 4 ? 'Next Part' : 'Submit'}
+      onSubmitClick={primaryAction} submitLabel={isFull && partNumber < 4 ? ui("Next Part") : ui("Submit")}
       hasPrev={currentIndex > 0} hasNext={currentIndex < questions.length - 1} />
     <SubmitModal isOpen={showSubmit} onBack={() => setShowSubmit(false)} onNext={confirmSubmit} />
   </div>;

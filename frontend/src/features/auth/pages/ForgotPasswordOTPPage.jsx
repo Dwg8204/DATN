@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +7,7 @@ import { authApi, getApiError } from '../services/authApi';
 import { useToast } from '../../../context/ToastContext';
 
 export default function ForgotPasswordOTPPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const { showError, dismissToast } = useToast();
   const [otp, setOtp] = useState('');
@@ -17,12 +19,12 @@ export default function ForgotPasswordOTPPage() {
     dismissToast();
     const email = sessionStorage.getItem('aptimate.password-reset.email');
     if (!email) {
-      showError('Please request a new OTP to continue resetting your password.');
+      showError(ui("Please request a new OTP to continue resetting your password."));
       navigate('/forgot-password', { replace: true });
       return;
     }
     if (!/^\d{6}$/.test(otp)) {
-      showError('Please enter the 6-digit OTP from your email.');
+      showError(ui("Please enter the 6-digit OTP from your email."));
       return;
     }
     setBusy(true);
@@ -30,7 +32,7 @@ export default function ForgotPasswordOTPPage() {
       await authApi.verifyPasswordOtp(email, otp);
       navigate('/forgot-password/reset');
     } catch (requestError) {
-      showError(getApiError(requestError, 'The OTP is invalid or expired.'));
+      showError(getApiError(requestError, ui("The OTP is invalid or expired.")));
     } finally {
       setBusy(false);
     }
@@ -39,19 +41,17 @@ export default function ForgotPasswordOTPPage() {
   return (
     <div className={styles.wrapper}>
       <div className={styles.container}>
-        <span className={styles.title}>VERIFY OTP</span>
+        <span className={styles.title}>{ui("VERIFY OTP")}</span>
         <form className={styles.form} onSubmit={handleVerifyOTP} noValidate>
           <div className={styles.formGroup}>
             <div className={styles.signupFormGroup}>
-              <span className={styles.label} style={{ textAlign: 'center', marginBottom: '10px' }}>
-                Enter the OTP code sent to your email address
-              </span>
+              <span className={styles.label} style={{ textAlign: 'center', marginBottom: '10px' }}>{ui("Enter the OTP code sent to your email address")}</span>
               <div className={styles.inputCol}>
-                <span className={styles.label} style={{ alignSelf: 'flex-start' }}>OTP Code</span>
+                <span className={styles.label} style={{ alignSelf: 'flex-start' }}>{ui("OTP Code")}</span>
                 <input
                   type="text"
                   className={`${styles.input} ${styles.inputFull}`}
-                  placeholder="Enter OTP (e.g. 123456)"
+                  placeholder={ui("Enter OTP (e.g. 123456)")}
                   inputMode="numeric"
                   maxLength={6}
                   value={otp}
@@ -64,7 +64,7 @@ export default function ForgotPasswordOTPPage() {
             <button type="submit" disabled={busy || otp.length !== 6} aria-busy={busy} className={styles.submitBtn}>
               <span className={styles.submitBtnText}>
                 {busy && <LoaderCircle className={styles.loadingIcon} aria-hidden="true" />}
-                {busy ? 'VERIFYING...' : 'VERIFY'}
+                {busy ? ui("VERIFYING...") : ui("VERIFY")}
               </span>
             </button>
           </div>

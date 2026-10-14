@@ -1,3 +1,4 @@
+import { uiLocale } from '../../../../i18n/translateUi.js';
 export const DASHBOARD_PERIODS = [
   { value: 'this-year', label: 'This year' },
   { value: '12-months', label: '12 months' },
@@ -24,11 +25,11 @@ export const SKILL_COLORS = {
   SPEAKING: '#f2a84a',
 };
 
-export const formatCount = value => new Intl.NumberFormat('en-US').format(value ?? 0);
+export const formatCount = value => new Intl.NumberFormat(uiLocale()).format(value ?? 0);
 
 export function formatGeneratedAt(value) {
   if (!value) return '';
-  return new Intl.DateTimeFormat('en-GB', {
+  return new Intl.DateTimeFormat(uiLocale(), {
     hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short', timeZone: 'Asia/Bangkok',
   }).format(new Date(value));
 }

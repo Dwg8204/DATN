@@ -1,3 +1,6 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
+import AssessmentProgress from '../../test-attempts/components/AssessmentProgress.jsx';
 import { useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AttemptPageState } from '../../test-attempts/components/AttemptPageState';
@@ -36,6 +39,7 @@ function ScoreRing({ percentage, size = 'large', children }) {
 }
 
 export default function ListeningResultPage() {
+  const ui = useUiTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const attemptId = searchParams.get('attemptId');
@@ -55,7 +59,7 @@ export default function ListeningResultPage() {
       total: Number(part.maxScore ?? 0),
       percentage: part.maxScore ? Math.round((part.score / part.maxScore) * 100) : 0,
     }));
-    
+
     // Add global index for items
     let currentGlobalIdx = 1;
     const items = (data.result.items ?? []).map(item => ({
@@ -70,8 +74,8 @@ export default function ListeningResultPage() {
       duration: data.startedAt && data.submittedAt ? formatDuration(data.startedAt, data.submittedAt) : '--:--:--' };
   }, [data]);
 
-  if (loading || error) return <AttemptPageState loading={loading} error={error} />;
-  if (!view) return <AttemptPageState error="This result is not available yet." />;
+  if (loading || error) return <AttemptPageState loading={loading} error={error}  backHref={isPractice ? '/listening/practice' : '/listening/tests'} />;
+  if (!view) return <AttemptPageState error={ui("This result is not available yet.")}  backHref={isPractice ? '/listening/practice' : '/listening/tests'} />;
   const columns = [];
   if (view.parts.length > 0) {
     const p1 = view.items.filter(i => i.partNumber === 1);
@@ -93,19 +97,18 @@ export default function ListeningResultPage() {
     <div className={styles.page}>
       <div className={styles.contentWrap}>
         {(timedOut || data.submittedAfterExpiry) && (
-          <div style={{ backgroundColor: '#ffebe9', border: '1px solid #ff8182', color: '#d1242f', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontWeight: '500' }}>
-            Time's up! Your answers have been automatically submitted.
-          </div>
+          <div style={{ backgroundColor: '#ffebe9', border: '1px solid #ff8182', color: '#d1242f', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontWeight: '500' }}>{ui("Time's up! Your answers have been automatically submitted.")}</div>
         )}
+      <AssessmentProgress attemptId={attemptId} data={data} />
         <div className={styles.topSection}>
           <div className={styles.cefrBox}>
-            <div className={styles.cefrLabel}>{isPractice ? 'Practice score' : 'CEFR Level'}</div>
-            <div className={styles.cefrValue}>{isPractice ? `${view.score}/${view.maximum}` : view.cefrLevel ?? 'Not converted'}</div>
-            {!isPractice && <div className={styles.scoreText}>Score: {view.score}/{view.maximum}</div>}
+            <div className={styles.cefrLabel}>{isPractice ? ui("Practice score") : ui("CEFR Level")}</div>
+            <div className={styles.cefrValue}>{isPractice ? ui("{{value0}}/{{value1}}", {value0:(view.score),value1:(view.maximum)}) : view.cefrLevel ?? ui("Not converted")}</div>
+            {!isPractice && <div className={styles.scoreText}>{ ui("Score:") + ' ' }{view.score}/{view.maximum}</div>}
           </div>
 
           <div className={styles.resultBox}>
-            <div className={styles.resultLabel}>Result</div>
+            <div className={styles.resultLabel}>{ui("Result")}</div>
             <div className={styles.resultContent}>
               <div className={styles.percentageCircle}>
                 <svg viewBox="0 0 100 100" width="100" height="100">
@@ -116,20 +119,20 @@ export default function ListeningResultPage() {
               </div>
               <div className={styles.statsGrid}>
                 <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Testing time</span>
+                  <span className={styles.statLabel}>{ui("Testing time")}</span>
                   <span className={styles.statValueBold}>{view.duration}</span>
                 </div>
                 <div className={styles.statRow}>
-                  <span className={styles.statLabelCorrect}>Correct</span>
-                  <span className={styles.statValue}>{view.counts.correct} sections</span>
+                  <span className={styles.statLabelCorrect}>{ui("Correct")}</span>
+                  <span className={styles.statValue}>{view.counts.correct}{ ' ' + ui("sections") }</span>
                 </div>
                 <div className={styles.statRow}>
-                  <span className={styles.statLabelWrong}>Wrong</span>
-                  <span className={styles.statValue}>{view.counts.incorrect} section</span>
+                  <span className={styles.statLabelWrong}>{ui("Wrong")}</span>
+                  <span className={styles.statValue}>{view.counts.incorrect}{ ' ' + ui("section") }</span>
                 </div>
                 <div className={styles.statRow}>
-                  <span className={styles.statLabelSkip}>Skip</span>
-                  <span className={styles.statValue}>{view.counts.skipped} section</span>
+                  <span className={styles.statLabelSkip}>{ui("Skip")}</span>
+                  <span className={styles.statValue}>{view.counts.skipped}{ ' ' + ui("section") }</span>
                 </div>
               </div>
             </div>
@@ -138,12 +141,12 @@ export default function ListeningResultPage() {
 
         {columns.length > 0 && (
           <div className={styles.detailBox}>
-            <div className={styles.resultLabel} style={{ color: '#A11D33', fontSize: '20px', fontWeight: 'bold', marginBottom: '24px' }}>Answer overview</div>
+            <div className={styles.resultLabel} style={{ color: '#A11D33', fontSize: '20px', fontWeight: 'bold', marginBottom: '24px' }}>{ui("Answer overview")}</div>
             <div className={styles.columnsWrapper} style={{ gap: '32px', overflowX: 'auto' }}>
               {columns.map((col, idx) => (
                 <div className={styles.mainColumn} key={idx} style={{ flex: '0 0 auto', minWidth: '120px' }}>
                   <div className={styles.partColumn}>
-                    <div className={styles.partTitle} style={{ fontSize: '20px', marginBottom: '12px' }}>{col.title}</div>
+                    <div className={styles.partTitle} style={{ fontSize: '20px', marginBottom: '12px' }}>{ui(col.title)}</div>
                     {col.items.map(item => (
                       <div className={styles.answerRow} key={item.key}>
                         <div className={styles.qId}>{item.number}</div>
@@ -159,15 +162,15 @@ export default function ListeningResultPage() {
         )}
 
         <div className={styles.feedbackBox}>
-          <div className={styles.feedbackLabel}>Feedback</div>
+          <div className={styles.feedbackLabel}>{ui("Feedback")}</div>
           <div className={styles.feedbackText}>
-            <strong style={{ color: getStatColor(view.percentage) }}>{getFeedback(view.percentage).title}</strong> {getFeedback(view.percentage).text}
+            <strong style={{ color: getStatColor(view.percentage) }}>{ui(getFeedback(view.percentage).title)}</strong> {ui(getFeedback(view.percentage).text)}
           </div>
         </div>
 
         {view.parts.length > 0 && (
           <div className={styles.statsBox}>
-            <div className={styles.statsLabel}>Statistics</div>
+            <div className={styles.statsLabel}>{ui("Statistics")}</div>
             <div className={styles.circlesWrapper}>
               {view.parts.map((p, idx) => {
                 const color = getStatColor(p.percentage);
@@ -188,7 +191,7 @@ export default function ListeningResultPage() {
                       </svg>
                       <div className={styles.statPercentageText}>{p.percentage}%</div>
                     </div>
-                    <div className={styles.statName}>{p.label}</div>
+                    <div className={styles.statName}>{ui(p.label)}</div>
                   </div>
                 );
               })}
@@ -201,10 +204,8 @@ export default function ListeningResultPage() {
             className={`${styles.tryAgainBtn} ${styles.detailBtn || ''}`}
             style={{ backgroundColor: '#da1e21', borderColor: '#da1e21' }}
             onClick={() => navigate(`/listening/detail-result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}
-          >
-            View detail result
-          </button>
-          <button className={styles.backBtn} onClick={() => navigate(isPractice ? '/listening/practice' : '/listening/tests')}>Back to tests</button>
+          >{ui("View detail result")}</button>
+          <ResultBackButton to={isPractice ? '/listening/practice' : '/listening/tests'} />
         </div>
       </div>
     </div>

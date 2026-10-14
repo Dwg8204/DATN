@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../../i18n/useUiTranslation.jsx";
 import { useRef } from 'react';
 import AudioField from '../../shared-test-builder/AudioField';
 import { MultipleChoiceQuestionEditor, QuestionGroup } from '../../shared-test-builder/ObjectiveQuestionEditors';
@@ -5,13 +6,14 @@ import { Field } from '../../shared-test-builder/BuilderFields';
 import { CollapsibleToolbar } from '../../shared-test-builder/CollapsibleGroup';
 
 export default function Part4Editor({ value, onChange }) {
+  const ui = useUiTranslation();
   const scopeRef = useRef(null);
   const update = (index, next) => onChange({ ...value, recordings: value.recordings.map((item, current) => current === index ? next : item) });
   return <div ref={scopeRef}>
     <CollapsibleToolbar scopeRef={scopeRef}/>
-    {value.recordings.map((recording, index) => <QuestionGroup key={recording.id} title={`Recording ${index + 1}`} summary="One extended recording · two multiple-choice questions" defaultOpen={index === 0}>
-      <AudioField maxSizeMb={20} label={`Recording ${index + 1} audio`} value={recording.audioUrl} onChange={audioUrl => update(index, { ...recording, audioUrl })}/>
-      <Field multiline maxWords={100} label="Context" value={recording.context} onChange={context => update(index, { ...recording, context })}/>
+    {value.recordings.map((recording, index) => <QuestionGroup key={recording.id} title={ui("Recording {{value0}}", {value0:(index + 1)})} summary="One extended recording · two multiple-choice questions" defaultOpen={index === 0}>
+      <AudioField maxSizeMb={20} label={ui("Recording {{value0}} audio", {value0:(index + 1)})} value={recording.audioUrl} onChange={audioUrl => update(index, { ...recording, audioUrl })}/>
+      <Field multiline maxWords={100} label={ui("Context")} value={recording.context} onChange={context => update(index, { ...recording, context })}/>
       {recording.subQuestions.map((question, questionIndex) => <MultipleChoiceQuestionEditor key={question.id} question={question} index={questionIndex} onChange={next => update(index, { ...recording, subQuestions: recording.subQuestions.map((item, current) => current === questionIndex ? next : item) })}/>) }
     </QuestionGroup>)}
   </div>;

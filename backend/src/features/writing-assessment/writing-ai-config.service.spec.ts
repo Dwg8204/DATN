@@ -15,6 +15,8 @@ describe('Writing AI configuration isolation', () => {
     const config = new WritingAiConfig(new ConfigService(free));
     expect(config.snapshot('vi').model).toBe('gemini-3.1-flash-lite');
     expect(config.enabled).toBe(true);
+    expect(config.snapshot('en').feedbackLocale).toBe('vi');
+    expect(config.snapshot('en').promptVersion).toBe('writing-prompt-v3');
   });
   it.each([
     { ...free, GEMINI_BILLING_TIER: 'PAID' },

@@ -1,9 +1,11 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Square, Camera, CameraOff } from 'lucide-react';
 import styles from './MockAudioRecorder.module.css';
 import { useToast } from '../../../context/ToastContext';
 
 export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, maxTime, onStartRecord, onStopRecord, countdownBeforeStart = 0, disabled = false }) {
+  const ui = useUiTranslation();
   const { showError } = useToast();
   const [cameraOn, setCameraOn] = useState(false);
   const [cameraPermission, setCameraPermission] = useState('pending'); // 'pending', 'granted', 'denied'
@@ -32,8 +34,8 @@ export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, m
       setCameraOn(false);
       if (notify) {
         showError(err.name === 'NotAllowedError'
-          ? 'Camera access was denied. Allow camera access in your browser settings and try again.'
-          : 'Unable to access the camera. Check that it is connected and not in use by another app.');
+          ? ui("Camera access was denied. Allow camera access in your browser settings and try again.")
+          : ui("Unable to access the camera. Check that it is connected and not in use by another app."));
       }
     }
   };
@@ -67,23 +69,23 @@ export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, m
       {/* Camera simulation / Real Camera */}
       <div className={styles.cameraWrapper}>
         {cameraOn ? (
-          <video 
-            ref={videoRef} 
-            autoPlay 
-            muted 
-            playsInline 
-            className={styles.cameraVideo} 
+          <video
+            ref={videoRef}
+            autoPlay
+            muted
+            playsInline
+            className={styles.cameraVideo}
           />
         ) : (
           <div className={styles.cameraOff}>
-            {cameraPermission === 'denied' ? 'Camera unavailable. Check your browser permissions.' : 'Camera is off'}
+            {cameraPermission === 'denied' ? ui("Camera unavailable. Check your browser permissions.") : ui("Camera is off")}
           </div>
         )}
-        
-        <button 
+
+        <button
           className={`${styles.cameraToggleBtn} ${!cameraOn ? styles.cameraToggleBtnOff : ''}`}
           onClick={toggleCamera}
-          title={cameraOn ? 'Turn camera off' : 'Turn camera on'}
+          title={cameraOn ? ui("Turn camera off") : ui("Turn camera on")}
         >
           {cameraOn ? <Camera size={16} /> : <CameraOff size={16} />}
         </button>
@@ -105,20 +107,20 @@ export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, m
               <div key={i} className={styles.bar} style={{ animationDelay: `${i * 0.1}s` }}></div>
             ))}
           </div>
-          <span className={styles.recordingText}>Recording...</span>
+          <span className={styles.recordingText}>{ui("Recording...")}</span>
         </div>
       )}
 
       {!isRecording && !isFinished && (
         <div className={styles.idleRow}>
           <MicOff size={20} className={styles.micInactive} />
-          <span className={styles.idleText}>Press the button to start recording</span>
+          <span className={styles.idleText}>{ui("Press the button to start recording")}</span>
         </div>
       )}
 
       {isFinished && (
         <div className={styles.finishedRow}>
-          <span className={styles.finishedText}>✓ Recording complete</span>
+          <span className={styles.finishedText}>{ui("✓ Recording complete")}</span>
         </div>
       )}
 
@@ -138,18 +140,18 @@ export default function MockAudioRecorder({ isRecording, isFinished, timeLeft, m
               <span className={styles.countdownNumber}>{countdownBeforeStart}</span>
             </div>
           ) : (
-            <button className={styles.recordBtn} onClick={onStartRecord} title="Start record" disabled={disabled}>
+            <button className={styles.recordBtn} onClick={onStartRecord} title={ui("Start record")} disabled={disabled}>
               <span className={styles.recordBtnInner}></span>
             </button>
           )
         )}
         {isRecording && (
-          <button className={styles.stopBtn} onClick={onStopRecord} title="Stop record">
+          <button className={styles.stopBtn} onClick={onStopRecord} title={ui("Stop record")}>
             <Square size={20} fill="white" color="white" />
           </button>
         )}
         <span className={styles.btnLabel}>
-          {isRecording ? 'Stop record' : isFinished ? '' : 'Start record'}
+          {isRecording ? ui("Stop record") : isFinished ? '' : ui("Start record")}
         </span>
       </div>
     </div>
