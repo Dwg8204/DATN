@@ -88,7 +88,7 @@ export class SpeakingAiProvider {
     }
     const payload = {
       systemInstruction: { parts: [{ text: SPEAKING_RUBRIC }] }, contents: [{ role: 'user', parts }],
-      generationConfig: { temperature: 0, candidateCount: 1, maxOutputTokens: 8192,
+      generationConfig: { temperature: 0, candidateCount: 1, maxOutputTokens: 16384,
         thinkingConfig: { thinkingLevel: 'minimal' }, responseMimeType: 'application/json', responseSchema: SPEAKING_RESPONSE_SCHEMA },
     };
     await this.jobs.renew(job);
@@ -97,11 +97,11 @@ export class SpeakingAiProvider {
     });
     if (!Number.isSafeInteger(count.totalTokens) || count.totalTokens! <= 0 || count.totalTokens! > 100_000) throw new Error('AI_TOKEN_COUNT_INVALID');
     // Unified input rate is conservatively >= audio rate; reserve output ceiling and a 10% input margin.
-    const ceiling = Math.ceil((count.totalTokens! * 1.1 * this.config.inputRate + 8192 * this.config.outputRate) / 1_000_000 * 1e8) / 1e8;
+    const ceiling = Math.ceil((count.totalTokens! * 1.1 * this.config.inputRate + 16384 * this.config.outputRate) / 1_000_000 * 1e8) / 1e8;
     const ledgerId = await this.jobs.reserve(job, ceiling, this.config.model, {
       promptVersion: SPEAKING_PROMPT_VERSION, billingTier: this.config.tier ?? 'PAID', policyVersion: this.config.policyVersion,
       inputRate: this.config.inputRate, outputRate: this.config.outputRate,
-      countTokens: count.totalTokens, outputLimit: 8192, groqModel: 'whisper-large-v3', groqTier: 'FREE',
+      countTokens: count.totalTokens, outputLimit: 16384, groqModel: 'whisper-large-v3', groqTier: 'FREE',
     }, this.config.cap);
     const budget = await this.jobs.budget();
     if (budget.used + budget.reserved >= .5) this.logger.warn(`Speaking AI budget: ${budget.used + budget.reserved >= .8 ? '80%' : '50%'} threshold reached. See admin speaking-grading/budget.`);
@@ -119,7 +119,7 @@ export class SpeakingAiProvider {
     let decoded: unknown;
     try { decoded = JSON.parse(candidate.content?.parts?.map(part => part.text ?? '').join('') ?? ''); }
     catch { throw new Error('AI_INVALID_RESPONSE'); }
-    const result = validateSpeakingAssessment(decoded, keys);
+    const result = validateSpeakingAssessment(decoded, keys, true);
     await this.jobs.cache(job, '__assessment', JSON.stringify(result));
     await this.jobs.cache(job, '__assessmentPromptVersion', SPEAKING_PROMPT_VERSION);
     return result;

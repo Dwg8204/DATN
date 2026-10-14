@@ -1,4 +1,10 @@
 {
+  "speakingDetailedFeedback": {
+    "weaknesses": "Weaknesses",
+    "overallStrengths": "Overall strengths",
+    "nextSteps": "Next steps",
+    "aiReference": "AI suggested answer · Reference only"
+  },
   "writingAi": {
     "wordUnit": "words",
     "guidance": "recommended length",

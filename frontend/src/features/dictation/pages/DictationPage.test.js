@@ -68,6 +68,19 @@ test('word/phrase deletion opens the shared popup, cancel never calls the API', 
   assert.equal(h.calls.length, 0);
 });
 
+test('Quiz and Match expose the answered and selected visual states', () => {
+  const quiz = harness('words', 'quiz');
+  quiz.render();
+  const option = quiz.render().find(node => node.type === 'button' && node.props['aria-pressed'] === false);
+  option.props.onClick();
+  assert.ok(quiz.render().some(node => node.props?.className === 'correctQuizOption' && node.props.disabled));
+  const match = harness('words', 'matching');
+  match.render();
+  const word = match.render().find(node => node.type === 'button' && node.props['aria-pressed'] === false);
+  word.props.onClick();
+  assert.ok(match.render().some(node => node.props?.className === 'selectedMatch' && node.props['aria-pressed']));
+});
+
 test('confirm removes only the captured notebook id and closes the popup on success', async () => {
   const h = harness();
   await h.open().onConfirm();
