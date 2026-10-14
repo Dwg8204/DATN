@@ -87,13 +87,15 @@ function harness(kind, { practice = false, part = 2, page = 1, question = '', ou
 }
 
 for (const practice of [false, true]) for (const [outcome, label, symbol] of [['CORRECT', 'Correct', '✓'], ['INCORRECT', 'Incorrect', '✕'], ['SKIPPED', 'Skipped', '—']]) {
-  test(`Full Reading ${practice ? 'Practice' : 'Test'} renders five compact columns and accessible ${label} markers`, () => {
+  test(`Full Reading ${practice ? 'Practice' : 'Test'} renders four equal part columns and accessible ${label} markers`, () => {
     const h = harness('summary', { practice, standard: true, outcome });
     const nodes = walk(h.render());
     assert.ok(nodes.some(node => node.props?.className?.includes('fullPracticeOverview')));
     const columns = nodes.filter(node => node.type === 'div' && node.props.className?.startsWith('partColumn'));
-    assert.deepEqual(columns.map(column => walk(column).filter(node => node.type === 'button').length), [5, 5, 5, 7, 7]);
-    assert.deepEqual(columns.map(column => textContent(walk(column).find(node => node.type === 'h3'))), ['Part  1', 'Part  2', 'Part  2', 'Part  3', 'Part  4']);
+    assert.ok(nodes.some(node => node.props?.className?.includes('equalPartOverview')));
+    assert.deepEqual(columns.map(column => walk(column).filter(node => node.type === 'button').length), [5, 10, 7, 7]);
+    assert.deepEqual(columns.map(column => textContent(walk(column).find(node => node.type === 'h3'))), ['Part  1', 'Part  2', 'Part  3', 'Part  4']);
+    assert.ok(columns.every(column => !column.props.className.includes('headingColumn')));
     const rows = nodes.filter(node => node.type === 'button' && node.props['aria-label']?.startsWith('Question '));
     assert.equal(rows.length, 29);
     assert.ok(rows.every(row => row.props['aria-label'].endsWith(label)));
@@ -103,8 +105,7 @@ for (const practice of [false, true]) for (const [outcome, label, symbol] of [['
     assert.equal(answer(0), outcome === 'SKIPPED' ? '—' : 'wrong word');
     assert.equal(answer(1), outcome === 'SKIPPED' ? '—' : 'B');
     assert.equal(answer(2), outcome === 'SKIPPED' ? '—' : 'B');
-    assert.equal(answer(3), outcome === 'SKIPPED' ? '—' : 'B');
-    assert.equal(answer(4), outcome === 'SKIPPED' ? '—' : 'Wrong heading');
+    assert.equal(answer(3), outcome === 'SKIPPED' ? '—' : 'Wrong heading');
     rows[10].props.onClick();
     assert.match(h.navigated[0], /part=2&question=t2%3Aq1/);
     assert.equal(h.navigated[0].includes('practice=true'), practice);
@@ -117,6 +118,7 @@ test('single-part results retain full selected answer text and status labels', (
   for (const options of [{ practice: false, full: false }, { practice: true, full: false }]) {
     const nodes = walk(harness('summary', options).render());
     assert.ok(!nodes.some(node => node.props?.className?.includes('fullPracticeOverview')));
+    assert.ok(!nodes.some(node => node.props?.className?.includes('equalPartOverview')));
     assert.ok(nodes.some(node => node.props?.className?.startsWith('statusLabel')));
     const columns = nodes.filter(node => node.type === 'div' && node.props.className?.startsWith('partColumn'));
     assert.equal(columns.length, 1);

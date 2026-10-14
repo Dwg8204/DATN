@@ -133,7 +133,7 @@ export default function ReadingAttemptPage() {
       setAnswerBatch(latest => part2AttemptChanges(current, latest, sentenceId, position));
     } };
 
-  return <div className={`${styles.page} ${number === 1 && !isPractice ? styles.partOneExamPage : ''}`}><main className={`${styles.content} ${number === 1 && !isPractice ? styles.partOneExam : ''}`}>
+  return <div className={`${styles.page} ${number === 1 ? styles.partOnePage : ''}`}><main className={`${styles.content} ${number === 1 ? (isPractice ? styles.partOnePractice : styles.partOneExam) : ''}`}>
     <header className={styles.heading}><div><strong>{ ui("Reading · Part") + ' ' }{number}</strong><span>{ui(paper.title)}</span></div><SaveIndicator status={saveStatus} /></header>
     <InstructionBlock title={number === 1 && !isPractice ? ui("Instructions") : ui("Part {{value0}}", {value0:(number)})}
       className={number === 1 && !isPractice ? styles.partOneInstructions : ''}>{instructions[number]}</InstructionBlock>

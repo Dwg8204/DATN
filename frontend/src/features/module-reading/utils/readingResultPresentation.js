@@ -39,11 +39,11 @@ export function readingResultView(data) {
   };
 }
 
-export function readingOverviewColumns(view, { compact = false } = {}) {
+export function readingOverviewColumns(view, { compact = false, splitPartTwo = true } = {}) {
   return view.parts.flatMap(part => {
     const items = view.items.filter(item => item.partNumber === part.partNumber);
     // A standard Part 2 contains two texts with five positions each.
-    const groups = compact && part.partNumber === 2
+    const groups = compact && splitPartTwo && part.partNumber === 2
       ? Array.from({ length: Math.ceil(items.length / 5) }, (_, index) => items.slice(index * 5, index * 5 + 5))
       : [items];
     return groups.map((group, index) => ({
