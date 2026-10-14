@@ -3,7 +3,8 @@
 .heading { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
 .heading > div { display: grid; gap: 3px; }.heading strong { font-size: 22px; }.heading span { color: #686868; }
 .task { min-width: 0; }
-.partOneExamPage { flex: 1; min-height: 0; }
+.partOnePage { flex: 1; min-height: 0; }
+.partOnePractice { align-content: start; padding-bottom: 32px; }
 .partOneExam {
   width: min(1200px, 100%);
   box-sizing: border-box;
@@ -17,6 +18,7 @@
 .reveals h2 { margin: 0; font-size: 18px; }.reveals > div { border-top: 1px solid #e6e6e6; padding-top: 10px; }
 @media (max-width: 700px) { .content { padding: 22px 14px 115px; }.heading { align-items: flex-start; } }
 @media (max-width: 700px) { .partOneExam { padding: 22px 14px 24px; gap: 20px; }.partOneInstructions { padding: 12px 14px; } }
+@media (max-width: 700px) { .partOnePractice { padding-bottom: 24px; } }
 
 /* Dark Mode Overrides */
 :global([data-theme="dark"]) .page { background: var(--bg-page); color: var(--text-primary); }

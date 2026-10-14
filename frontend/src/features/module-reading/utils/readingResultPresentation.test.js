@@ -6,7 +6,7 @@ const text = id => ({ id, openingSentence: `Opening ${id}`, options: ['A', 'B', 
   positions: [2, 3, 4, 5, 6].map((position, index) => ({ key: `${id}:q${index + 1}`, position })) });
 const texts = [text('t1'), text('t2')];
 
-test('compact Full Practice overview groups all 29 answers into five columns without changing grades or targets', () => {
+test('split compact overview groups all 29 answers into five columns without changing grades or targets', () => {
   const items = [1, 2, 3, 4].flatMap(partNumber => Array.from({ length: { 1: 5, 2: 10, 3: 7, 4: 7 }[partNumber] }, (_, index) => ({
     key: `p${partNumber}:q${index + 1}`, partNumber, outcome: index === 0 ? 'SKIPPED' : index % 2 ? 'CORRECT' : 'INCORRECT',
     selectedAnswer: index === 0 ? null : { kind: partNumber === 1 ? 'CHOICE' : 'MATCH', optionId: 'internal-id' },
@@ -29,6 +29,13 @@ test('compact Full Practice overview groups all 29 answers into five columns wit
   const normal = readingOverviewColumns(view);
   assert.equal(normal.length, 4);
   assert.equal(normal[1].items[1].answer, '(E) A selected sentence.');
+  const equalParts = readingOverviewColumns(view, { compact: true, splitPartTwo: false });
+  assert.deepEqual(equalParts.map(column => column.partNumber), [1, 2, 3, 4]);
+  assert.deepEqual(equalParts.map(column => column.items.length), [5, 10, 7, 7]);
+  assert.deepEqual(equalParts[1].items.map(item => item.number), [6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
+  assert.equal(equalParts[1].items[5].key, 'p2:q6');
+  assert.equal(equalParts[1].items[5].answer, 'E');
+  assert.deepEqual(equalParts.flatMap(column => column.items.map(item => item.status)), view.items.map(item => item.status));
 });
 
 test('compact Part 2 only abbreviates explicit answer labels, not internal IDs or unlabelled sentences', () => {
