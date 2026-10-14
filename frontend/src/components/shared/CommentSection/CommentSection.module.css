@@ -254,7 +254,7 @@
 }
 
 .avatarFallback { display: grid; place-items: center; width: 100%; height: 100%; background: #e0efff; color: #175c98; font-weight: 700; }
-.submitButton { border: 0; border-radius: 8px; background: #da1e21; color: white; padding: 10px 14px; cursor: pointer; }
+.submitButton { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border: 0; border-radius: 50%; background: #da1e21; color: white; cursor: pointer; }
 .container button:disabled { opacity: .55; cursor: not-allowed; }
 .container button:focus-visible, .replyInput:focus-visible { outline: 2px solid #0088e8; outline-offset: 3px; }
 .error { color: #da1e21; }

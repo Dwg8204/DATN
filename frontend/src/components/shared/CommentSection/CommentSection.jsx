@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Send } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { commentsApi } from './commentsApi';
 import CommentItem from './CommentItem';
@@ -93,8 +94,9 @@ function SkillComments({ skill, user, isAuthReady }) {
         onChange={event => replying ? setReplyText(event.target.value) : setContent(event.target.value)}
         onKeyDown={event => { if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) submit(event, replying); }} />
     </div>
-    <button className={styles.submitButton} type="submit" disabled={busy || loading || !(replying ? replyText : content).trim()}>
-      {t(busy ? 'comments.sending' : 'comments.send')}
+    <button className={styles.submitButton} type="submit" disabled={busy || loading || !(replying ? replyText : content).trim()}
+      aria-label={t(busy ? 'comments.sending' : 'comments.send')} title={t(busy ? 'comments.sending' : 'comments.send')} aria-busy={busy}>
+      <Send size={20} aria-hidden="true" />
     </button>
   </form>;
 
