@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../tests/helpers/mockUiTranslation.js";
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
@@ -25,7 +26,7 @@ function harness() {
   const api = { state: () => { const request = deferred(); requests.push(request); return request.promise; } };
   const module = { exports: {} };
   runInNewContext(compiled, { module, exports: module.exports, AbortController,
-    require: path => path === 'react' ? hooks : { studyApi: api } });
+    require: withUiTranslationMocks(path => path === 'react' ? hooks : { studyApi: api }) });
   return { requests, render(userId) { cursor = 0; effects = []; const view = module.exports.useStudyData(userId); effects.forEach(effect => effect()); return view; },
     unmount() { slots.forEach(slot => slot?.cleanup?.()); } };
 }

@@ -1,3 +1,4 @@
+import { withUiTranslationMocks } from "../../../../tests/helpers/mockUiTranslation.js";
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
@@ -12,7 +13,7 @@ const deferred = () => { let resolve, reject; const promise = new Promise((yes, 
 
 function harness(tab = 'words', topicMode = null) {
   let cursor = 0, effects = [], saving = false, owner = 'user-1', remove = async () => ({ deleted: true });
-  const slots = [], calls = [], errors = [], spoken = [];
+  const slots = [], calls = [], errors = [], spoken = [], writes = [];
   const hooks = {
     useState(initial) { const index = cursor++; if (!(index in slots)) slots[index] = initial; return [slots[index], value => { slots[index] = typeof value === 'function' ? value(slots[index]) : value; }]; },
     useRef(initial) { const index = cursor++; return slots[index] ??= { current: initial }; },
@@ -36,25 +37,62 @@ function harness(tab = 'words', topicMode = null) {
     '../../../context/AuthContext': { useAuth: () => ({ user: { id: owner }, isAuthReady: true }) },
     '../../../context/ToastContext': { useToast: () => ({ showError: message => errors.push(message), showSuccess() {}, showInfo() {}, dismissToast() {} }) },
     '../hooks/useStudyData': { useStudyData: () => ({ data: { topics: [{ id: 'topic-1', name: 'Daily life' }], words: [word], exercises: [sentence], progress: {}, ratings: {} }, loading: false, saving, mutate: async operation => { saving = true; try { return await operation(); } finally { saving = false; } } }) },
-    '../services/studyApi': { studyApi: { remove: id => { calls.push(id); return remove(); } } },
+    '../services/studyApi': { studyApi: { remove: id => { calls.push(id); return remove(); }, create: async dto => { writes.push(dto); return { id: 'created' }; } } },
     '../utils/legacyStudyImport': { hasLegacyStudyData: () => false },
     '../../../services/apiError': { normalizeApiError: cause => ({ message: cause.message }) },
     './DictationPage.module.css': { __esModule: true, default: new Proxy({}, { get: (_target, key) => key }) },
     '../components/VocabularyWordInput': component,
   };
   const module = { exports: {} };
-  runInNewContext(compiled, { module, require: name => { if (!(name in mocks)) throw new Error(`Unexpected import: ${name}`); return mocks[name]; }, URLSearchParams,
+  runInNewContext(compiled, { module, require: withUiTranslationMocks(name => { if (!(name in mocks)) throw new Error(`Unexpected import: ${name}`); return mocks[name]; }), URLSearchParams, crypto: { randomUUID: () => 'test-create-uuid' },
     SpeechSynthesisUtterance: class { constructor(text) { this.text = text; } },
     window: { speechSynthesis: { cancel() {}, speak: utterance => spoken.push(utterance) }, addEventListener() {}, removeEventListener() {}, localStorage: { getItem: () => null }, confirm: () => { throw new Error('Native confirmation must not be used'); } } });
   return {
-    word, sentence, calls, errors, query, spoken,
+    word, sentence, calls, errors, query, spoken, writes,
     setRemove: handler => { remove = handler; },
     setOwner: value => { owner = value; },
     render() { cursor = 0; effects = []; const tree = module.exports.default(); effects.forEach(effect => effect()); return walk(tree); },
     modal() { return this.render().find(node => node.type === ConfirmModal)?.props; },
     open() { const nodes = this.render(); nodes.find(node => node.props?.className === 'deleteSavedItem').props.onClick(); return this.modal(); },
+    openCreate() { this.render().find(node => node.props?.className === 'createButton').props.onClick(); return this.wordInput(); },
+    wordInput() { return this.render().find(node => node.props?.knownWords)?.props; },
+    wordType() { return this.render().find(node => node.props?.ariaLabel === 'dictation.wordType')?.props; },
   };
 }
+
+test('choosing a suggestion locks the actual Word type and saves it without UI-only metadata', async () => {
+  const h = harness(), input = h.openCreate(), snapshot = { ...input.item };
+  input.onChange('make', { lookup: true, fromSuggestion: true });
+  assert.equal(h.wordType().disabled, true);
+  h.wordInput().onResolved('make', { type: 'verb', meaning: 'làm', example: 'I make progress.' }, snapshot, { fromSuggestion: true });
+  assert.equal(h.wordType().value, 'verb'); assert.equal(h.wordType().disabled, true);
+  h.wordType().onChange({ target: { value: 'noun' } }); assert.equal(h.wordType().value, 'verb');
+  h.render().find(node => node.type === 'button' && node.props.children === 'dictation.word').props.onClick();
+  assert.equal(h.wordType().disabled, true); assert.equal(h.wordType().value, 'verb');
+  await h.render().find(node => node.type === 'form').props.onSubmit({ preventDefault() {} });
+  assert.equal(h.writes[0].type, 'verb'); assert.equal('typeLocked' in h.writes[0], false);
+});
+
+test('changing words and unsuccessful lookups unlock Word type; manual words remain editable', () => {
+  const h = harness(), input = h.openCreate(), snapshot = { ...input.item };
+  input.onChange('make', { lookup: true, fromSuggestion: true });
+  h.wordInput().onResolved('make', { type: 'verb' }, snapshot, { fromSuggestion: true });
+  h.wordInput().onChange('handmade'); assert.equal(h.wordType().disabled, false);
+  h.wordType().onChange({ target: { value: 'adjective' } }); assert.equal(h.wordType().value, 'adjective');
+  h.wordInput().onResolved('make', { type: 'verb' }, snapshot, { fromSuggestion: true });
+  assert.equal(h.wordType().disabled, false, 'late lookup cannot relock a different word');
+  h.wordInput().onChange('other', { lookup: true, fromSuggestion: true });
+  h.wordInput().onResolved('other', {}, snapshot, { fromSuggestion: true });
+  assert.equal(h.wordType().disabled, false);
+});
+
+test('dictionary part-of-speech outside the original five options is retained, not converted to phrase', () => {
+  const h = harness(), input = h.openCreate(), snapshot = { ...input.item };
+  input.onChange('under', { lookup: true, fromSuggestion: true });
+  h.wordInput().onResolved('under', { type: 'preposition' }, snapshot, { fromSuggestion: true });
+  assert.equal(h.wordType().value, 'preposition'); assert.equal(h.wordType().disabled, true);
+  assert.ok(h.wordType().options.includes('preposition'));
+});
 
 test('word/phrase deletion opens the shared popup, cancel never calls the API', () => {
   const h = harness(), popup = h.open();
@@ -65,6 +103,19 @@ test('word/phrase deletion opens the shared popup, cancel never calls the API', 
   popup.onCancel();
   assert.equal(h.modal(), undefined);
   assert.equal(h.calls.length, 0);
+});
+
+test('Quiz and Match expose the answered and selected visual states', () => {
+  const quiz = harness('words', 'quiz');
+  quiz.render();
+  const option = quiz.render().find(node => node.type === 'button' && node.props['aria-pressed'] === false);
+  option.props.onClick();
+  assert.ok(quiz.render().some(node => node.props?.className === 'correctQuizOption' && node.props.disabled));
+  const match = harness('words', 'matching');
+  match.render();
+  const word = match.render().find(node => node.type === 'button' && node.props['aria-pressed'] === false);
+  word.props.onClick();
+  assert.ok(match.render().some(node => node.props?.className === 'selectedMatch' && node.props['aria-pressed']));
 });
 
 test('confirm removes only the captured notebook id and closes the popup on success', async () => {

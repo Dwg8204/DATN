@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import Pagination from '../../../components/common/Pagination';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import ConfirmModal from '../../../components/common/ConfirmModal';
@@ -21,6 +22,7 @@ const positiveQueryInt = (value, fallback, maximum = 100) => {
 const latestAccuracy = (attempt) => attempt?.lastAccuracy ?? attempt?.bestAccuracy ?? 0;
 
 export default function DictationPage() {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const { showError, showSuccess, showInfo, dismissToast } = useToast();
   const { user, isAuthReady, authConnectionError, retryAuth } = useAuth();
@@ -64,7 +66,9 @@ export default function DictationPage() {
   const [quizAnswer, setQuizAnswer] = useState('');
   const [quizScore, setQuizScore] = useState(0);
   const [matchingWord, setMatchingWord] = useState('');
+  const [wrongMatch, setWrongMatch] = useState(null);
   const [matchedCards, setMatchedCards] = useState([]);
+  useEffect(() => { setWrongMatch(null); }, [requestedTopic, mode]);
   const notebookTab = searchParams.get('tab') === 'sentences' ? 'sentences' : 'words';
   const topicQuery = searchParams.get('q') || '';
   const notebookQuery = searchParams.get('q') || '';
@@ -236,10 +240,12 @@ export default function DictationPage() {
   const selectMatchingMeaning = (cardId) => {
     if (!matchingWord || matchedCards.includes(cardId)) return;
     if (matchingWord === cardId) {
+      setWrongMatch(null);
       setMatchedCards((cards) => [...cards, cardId]);
       setMatchingWord('');
       showSuccess(t('dictation.matchCorrect'));
     } else {
+      setWrongMatch({ word: matchingWord, meaning: cardId });
       showInfo(t('dictation.matchTryAgain'));
     }
   };
@@ -500,7 +506,7 @@ export default function DictationPage() {
               />
             </label>
 
-            <section className={styles.topicGrid} aria-label={`${mode} topics`}>
+            <section className={styles.topicGrid} aria-label={ui("{{value0}} topics", {value0:(mode)})}>
             {paginatedTopics.map((topic) => {
               const lessons = allExercises.filter((item) => item.folderId === topic.id);
               const cards = allFlashcards.filter((item) => item.folderId === topic.id);
@@ -543,7 +549,7 @@ export default function DictationPage() {
           {activeExercises.map((item, index) => (
             <button key={item.id} disabled={saving} className={index === exerciseIndex ? styles.activeLesson : ''} onClick={() => { setExerciseIndex(index); resetExercise(); }}>
               <span className={styles.lessonNumber}>{index + 1}</span>
-              <span><strong>{item.title}</strong><small>{item.topic}</small></span>
+              <span><strong>{ui(item.title)}</strong><small>{item.topic}</small></span>
               {progress[item.id] && <span className={styles.best}>{latestAccuracy(progress[item.id])}%</span>}
             </button>
           ))}
@@ -551,7 +557,7 @@ export default function DictationPage() {
 
         <main className={styles.practiceCard}>
           <div className={styles.cardHeader}>
-            <div><span>{t('dictation.lesson', { number: exerciseIndex + 1 })}</span><h2>{exercise.title}</h2></div>
+            <div><span>{t('dictation.lesson', { number: exerciseIndex + 1 })}</span><h2>{ui(exercise.title)}</h2></div>
           </div>
 
           <div className={styles.player}>
@@ -615,7 +621,7 @@ export default function DictationPage() {
               <button type="button" onClick={() => setCardIndex((cardIndex + 1) % activeFlashcards.length)}>{t('dictation.next')} <ChevronRight /></button>
             </div>
             <div className={styles.wordDots} aria-label={t('dictation.cardProgress')}>
-              {activeFlashcards.map((card, index) => <button type="button" key={card.id} className={index === cardIndex ? styles.activeWordDot : ''} onClick={() => setCardIndex(index)} aria-label={`${index + 1}`} />)}
+              {activeFlashcards.map((card, index) => <button type="button" key={card.id} className={index === cardIndex ? styles.activeWordDot : ''} onClick={() => setCardIndex(index)} aria-label={ui("{{value0}}", {value0:(index + 1)})} />)}
             </div>
           </main>
         </>
@@ -693,7 +699,7 @@ export default function DictationPage() {
                   const answered = Boolean(quizAnswer);
                   const isCorrect = option.id === currentQuizCard.id;
                   const isChosen = option.id === quizAnswer;
-                  return <button type="button" key={option.id} disabled={answered} className={answered && isCorrect ? styles.correctQuizOption : answered && isChosen ? styles.wrongQuizOption : ''} onClick={() => answerQuiz(option.id)}>{option.label}</button>;
+                  return <button type="button" key={option.id} disabled={answered} aria-pressed={isChosen} className={answered && isCorrect ? styles.correctQuizOption : answered && isChosen ? styles.wrongQuizOption : ''} onClick={() => answerQuiz(option.id)}><span>{ui(option.label)}</span>{answered && isCorrect ? <Check size={18} aria-label="Correct" /> : answered && isChosen ? <X size={18} aria-label="Incorrect" /> : null}</button>;
                 })}
               </div>
               {quizAnswer && <button type="button" className={styles.nextActivity} onClick={nextQuiz}>{t('dictation.next')} <ChevronRight /></button>}
@@ -710,8 +716,8 @@ export default function DictationPage() {
             <section className={styles.matchingCard}>
               <p>{t('dictation.matchInstructions')}</p>
               <div className={styles.matchingGrid}>
-                <div>{matchingCards.map((card) => <button type="button" key={card.id} disabled={matchedCards.includes(card.id)} className={matchingWord === card.id ? styles.selectedMatch : matchedCards.includes(card.id) ? styles.completedMatch : ''} onClick={() => setMatchingWord(card.id)}>{card.word}</button>)}</div>
-                <div>{matchingMeanings.map((card) => <button type="button" key={card.id} disabled={matchedCards.includes(card.id)} className={matchedCards.includes(card.id) ? styles.completedMatch : ''} onClick={() => selectMatchingMeaning(card.id)}>{card.meaning}</button>)}</div>
+                <div>{matchingCards.map((card) => <button type="button" key={card.id} disabled={matchedCards.includes(card.id)} aria-pressed={matchingWord === card.id} className={matchedCards.includes(card.id) ? styles.completedMatch : wrongMatch?.word === card.id ? styles.wrongQuizOption : matchingWord === card.id ? styles.selectedMatch : ''} onClick={() => { setWrongMatch(null); setMatchingWord(card.id); }}><span>{card.word}</span>{matchedCards.includes(card.id) ? <Check size={18} /> : wrongMatch?.word === card.id ? <X size={18} /> : null}</button>)}</div>
+                <div>{matchingMeanings.map((card) => <button type="button" key={card.id} disabled={matchedCards.includes(card.id)} className={matchedCards.includes(card.id) ? styles.completedMatch : wrongMatch?.meaning === card.id ? styles.wrongQuizOption : ''} onClick={() => selectMatchingMeaning(card.id)}><span>{card.meaning}</span>{matchedCards.includes(card.id) ? <Check size={18} /> : wrongMatch?.meaning === card.id ? <X size={18} /> : null}</button>)}</div>
               </div>
               {matchingCards.length > 0 && matchedCards.length === matchingCards.length && <div className={styles.matchComplete}><Check /> {t('dictation.matchComplete')}</div>}
             </section>
@@ -781,22 +787,24 @@ export default function DictationPage() {
             <form className={styles.createModal} onSubmit={createNotebookItem} onMouseDown={(event) => event.stopPropagation()} noValidate>
               <div className={styles.createModalHeader}><div><span>{t(editingItemId ? 'dictation.edit' : 'dictation.createNew')}</span><h3>{t(editingItemId ? (createType === 'word' ? 'dictation.editWord' : 'dictation.editSentence') : (createType === 'word' ? 'dictation.addWord' : 'dictation.addSentence'))}</h3></div><button type="button" onClick={() => setShowCreateForm(false)} aria-label={t('dictation.close')}><X /></button></div>
               {!editingItemId && <div className={styles.typeSelector}>
-                <button type="button" className={createType === 'word' ? styles.selectedType : ''} onClick={() => { setCreateType('word'); setNewItem((item) => ({ ...item, type: 'noun' })); }}>{t('dictation.word')}</button>
-                <button type="button" className={createType === 'sentence' ? styles.selectedType : ''} onClick={() => { setCreateType('sentence'); setNewItem((item) => ({ ...item, type: 'Custom sentence' })); }}>{t('dictation.sentence')}</button>
+                <button type="button" className={createType === 'word' ? styles.selectedType : ''} onClick={() => { if (createType === 'word') return; setCreateType('word'); setNewItem((item) => ({ ...item, type: 'noun', typeLocked: false })); }}>{t('dictation.word')}</button>
+                <button type="button" className={createType === 'sentence' ? styles.selectedType : ''} onClick={() => { if (createType === 'sentence') return; setCreateType('sentence'); setNewItem((item) => ({ ...item, type: 'Custom sentence', typeLocked: false })); }}>{t('dictation.sentence')}</button>
               </div>}
               {createType === 'word' ? <VocabularyWordInput item={newItem} knownWords={allFlashcards}
-                onChange={word => setNewItem(current => ({ ...current, word }))}
-                onResolved={(word, fields, snapshot) => setNewItem(current => {
+                onChange={(word, metadata) => setNewItem(current => ({ ...current, word,
+                  typeLocked: Boolean(metadata?.fromSuggestion || (metadata?.lookup && current.typeLocked && current.word.trim().toLowerCase() === word)) }))}
+                onResolved={(word, fields, snapshot, metadata) => setNewItem(current => {
                   if (current.word.trim().toLowerCase() !== word) return current;
                   const updated = { ...current };
                   for (const key of ['pronunciation', 'type', 'meaning', 'example']) {
-                    if (fields[key] && current[key] === snapshot[key]) {
-                      updated[key] = key === 'type' && !['noun', 'verb', 'adjective', 'adverb', 'phrase'].includes(fields[key]) ? 'phrase' : fields[key];
+                    if (fields[key] && (current[key] === snapshot[key] || (key === 'type' && metadata?.fromSuggestion))) {
+                      updated[key] = fields[key];
                     }
                   }
+                  updated.typeLocked = Boolean(fields.type && (metadata?.fromSuggestion || current.typeLocked));
                   return updated;
                 })} /> : <label>{t('dictation.title')}<input autoFocus required value={newItem.word} onChange={(event) => setNewItem({ ...newItem, word: event.target.value })} placeholder={t('dictation.titlePlaceholder')} /></label>}
-              {createType === 'word' && <div className={styles.formRow}><label>{t('dictation.pronunciation')}<input value={newItem.pronunciation} onChange={(event) => setNewItem({ ...newItem, pronunciation: event.target.value })} placeholder="/əˈtʃiːvmənt/" /></label><label>{t('dictation.wordType')}<AnswerSelect value={newItem.type} onChange={(event) => setNewItem({ ...newItem, type: event.target.value })} options={['noun','verb','adjective','adverb','phrase']} ariaLabel={t('dictation.wordType')}/></label></div>}
+              {createType === 'word' && <div className={styles.formRow}><label>{t('dictation.pronunciation')}<input value={newItem.pronunciation} onChange={(event) => setNewItem({ ...newItem, pronunciation: event.target.value })} placeholder="/əˈtʃiːvmənt/" /></label><label>{t('dictation.wordType')}<AnswerSelect value={newItem.type} disabled={Boolean(newItem.typeLocked)} onChange={(event) => { if (!newItem.typeLocked) setNewItem({ ...newItem, type: event.target.value }); }} options={[...new Set(['noun','verb','adjective','adverb','phrase', newItem.type].filter(Boolean))]} ariaLabel={t('dictation.wordType')}/></label></div>}
               <div className={styles.topicFormRow}>
                 <label>{t('dictation.topic')}<AnswerSelect value={newItem.topic} onChange={(event) => setNewItem({ ...newItem, topic: event.target.value })} options={availableTopics.map((topic) => topic.name)} placeholder={t(showTopicCreator ? 'dictation.addTopicBelow' : 'dictation.selectTopic')} disabled={showTopicCreator} ariaLabel={t('dictation.topic')} /></label>
                 <button type="button" className={styles.addTopicButton} onClick={toggleTopicCreator}>{showTopicCreator ? <X size={16} /> : <Plus size={16} />} {t(showTopicCreator ? 'dictation.cancel' : 'dictation.newTopic')}</button>

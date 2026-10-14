@@ -12,3 +12,11 @@
 .suggestions li span { color: #64748b; font-size: 12px; }
 .suggestions > small { display: block; padding: 6px 8px 2px; color: #64748b; font-size: 11px; }
 .status { margin: 5px 0 0; color: #64748b; font-size: 12px; line-height: 1.45; }
+.inputRow > button.lookupLoading:disabled { opacity: 1; color: #a11d33; background: #fff0f1; cursor: wait; }
+.statusLoading { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; color: #a11d33; background: #fff0f1; font-weight: 600; }
+.spinner { flex-shrink: 0; animation: wordLookupSpin .85s linear infinite; }
+@keyframes wordLookupSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+:global([data-theme="dark"]) .status { color: var(--text-muted, #cbd5e1); }
+:global([data-theme="dark"]) .statusLoading,
+:global([data-theme="dark"]) .inputRow > button.lookupLoading:disabled { color: #fda4af; background: #321b25; }
