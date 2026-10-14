@@ -321,3 +321,29 @@ AnswerSelect mặc định giữ nguyên lựa chọn đáp án tiếng Anh; b�
 ## 15. Commit theo từng task (14/10/2026)
 
 Đã tách các thay đổi từ mục 12–14 thành 7 commit tiếng Việt: đồng bộ Anh–Việt; tiến độ chấm bài và kết quả/feedback Writing; điều hướng trang kết quả; comment hai cấp theo skill; icon gửi; icon trả lời/xóa; tài liệu bàn giao. Các ghi chú chưa commit trong mục trước mô tả trạng thái tại lúc triển khai; trạng thái hiện tại đã commit, chưa push. Không đưa env, API key hoặc cache build vào Git.
+
+
+## 16. Bổ sung 6 slide Key Features, giữ nguyên style cũ (14/10/2026)
+
+- Người dùng chọn 6 luồng theo menu: Nghe, Đọc, Viết, Nói, Ngữ pháp & từ vựng, Dictation/Flashcard/Sổ tay. Sau đó yêu cầu giữ nguyên style và slider tự chuyển động; đã bỏ bản thiết kế tab/CTA mới.
+- Khôi phục nguyên CSS `FeatureShowcase.module.css` từ HEAD. Giữ carousel cuộn ngang, nút trước/sau, chấm trạng thái và tự chuyển mỗi 3 giây như cũ. Hiện có 6 slide/6 chấm, vuốt trên mobile bằng carousel gốc.
+- `HomePage` lấy 6 ảnh từ `pages/homeFeatures.js` và title/description/imageAlt Anh–Việt từ `home.features.flows`. Không thêm tab, CTA, badge, caption hoặc thay bố cục cũ.
+- Thay link ảnh hết hạn bằng 6 Unsplash photo URLs riêng; nguồn ảnh đã kiểm tra HTTP 200/image/jpeg. URL dùng crop 1200x800 để cùng tỷ lệ; thêm lazy loading, kích thước ảnh và khóa slide theo ID để không remount khi đổi ngôn ngữ.
+- Phạm vi chỉ Key Features; ảnh review/header không thuộc task này.
+- Kiểm tra: browser test desktop/mobile (6 slide/ảnh/chấm, tự chuyển sau 3 giây, cuộn thủ công, vòng lại đầu, đổi ngôn ngữ, dark mode, không tràn ngang), 3 test i18n và build frontend đạt. Browser test dùng ảnh fixture. Lệnh test `npm run test:home:features`.
+- Đã commit local; chưa push thay đổi task này.
+
+
+### Điều hướng khi click slide Key Features
+
+Theo yêu cầu tiếp theo, cả slide (ảnh và nội dung) trở thành Link có cursor pointer và focus bàn phím. Nghe/Viết/Nói/Ngữ pháp dẫn tới overview tương ứng, Đọc tới /reading, Dictation tới /dictation. Giữ nguyên bố cục và tự chuyển 3 giây; không thêm nút CTA. Browser test kiểm tra href/cursor, click cả 6 slide trên desktop/mobile và Enter để điều hướng bằng bàn phím. Đã commit local; chưa push.
+
+## 17. Responsive admin và đồng bộ develop (14/10/2026)
+
+- Dashboard dùng cột grid `minmax(0, 1fr)` để biểu đồ rộng cuộn trong panel, tránh kéo giãn toàn trang mobile. Nhãn ẩn của bảng thông báo được giữ trong vùng cuộn bằng `position: relative` trên `.tableScroll`.
+- Thanh đầu trang cho ô tìm kiếm xuống dòng ở màn hình điện thoại. Nút đóng/mở sidebar không bị co mất kích thước.
+- Test Management hiển thị đầy đủ trên một dòng ở desktop. Sidebar mobile/thu gọn mở menu nổi chứa Thi thử và Luyện tập; chọn đúng query `purpose`, đóng khi chọn, bấm bên ngoài hoặc Escape, và hỗ trợ focus bàn phím.
+- Biểu tượng Test Management nằm cùng trục với các biểu tượng sidebar khác; mũi tên đặt riêng bên phải ở sidebar thu gọn.
+- Browser test `tests/adminResponsive.browser.test.mjs` kiểm tra tràn ngang ở 15 màn hình admin, 8 kích thước, hai ngôn ngữ; kiểm tra riêng điều hướng menu con, nhãn desktop một dòng và căn thẳng biểu tượng. Lệnh `npm run test:admin:responsive`.
+- Đã fetch/pull `origin/develop` vào nhánh `feature/backend-writing-crud` bằng fast-forward tới `201afa6`, khôi phục toàn bộ thay đổi local không có xung đột. Sau đồng bộ: 92 test unit, browser test trang chủ và điều hướng sidebar đều đạt; build frontend đạt.
+- Các task trang chủ, responsive admin và tài liệu kế hoạch chatbot được commit local theo nhóm; chưa push.

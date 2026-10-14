@@ -1,5 +1,6 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import PaginationDots from '../../common/PaginationDots';
 import styles from './FeatureShowcase.module.css';
@@ -7,7 +8,7 @@ import styles from './FeatureShowcase.module.css';
 export default function FeatureShowcase({
   sectionTitle = 'Key Features',
   featureTitle = 'Realistic Aptis Exam Experience',
-  featureImage = 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/jie2waj6_expires_30_days.png',
+  featureImage = 'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?auto=format&fit=crop&w=1200&h=800&q=85',
   featureDescription = 'AptiMate recreates the Aptis test format, question types, and timing so you can practise Listening, Reading, Writing, Speaking, Grammar, and Vocabulary with confidence. Study on desktop or mobile, receive instant results, review every answer, and focus your practice on the skills that need the most improvement.',
   totalDots = 3,
   activeDot = 0,
@@ -64,17 +65,20 @@ export default function FeatureShowcase({
             <ChevronLeft aria-hidden="true" />
           </button>
           <div ref={carouselRef} className={styles.carouselViewport} onScroll={handleScroll}>
-            {slides.map((slide) => (
-              <div key={slide.title} className={styles.showcase}>
+            {slides.map((slide) => {
+              const Slide = slide.to ? Link : 'div';
+              return (
+              <Slide key={slide.id ?? slide.title} to={slide.to} className={styles.showcase} draggable={false}>
                 <div className={styles.textWrap}>
                   <span className={styles.featureTitle}>{ui(slide.title)}</span>
                   <span className={styles.featureDescription}>{slide.description}</span>
                 </div>
                 <div className={styles.imageWrap}>
-                  <img src={slide.image} alt={slide.title} className={styles.featureImage} />
+                  <img src={slide.image} alt={slide.imageAlt ?? slide.title} className={styles.featureImage} loading="lazy" width={1200} height={800} />
                 </div>
-              </div>
-            ))}
+              </Slide>
+              );
+            })}
           </div>
           <button type="button" className={`${styles.arrowButton} ${styles.arrowNext}`} aria-label={ui("Next feature")} onClick={() => goToSlide(currentSlide + 1)}>
             <ChevronRight aria-hidden="true" />

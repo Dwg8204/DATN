@@ -74,6 +74,8 @@
 }
 
 .showcase {
+  cursor: pointer;
+  text-decoration: none;
   flex: 0 0 100%;
   min-width: 0;
   display: flex;
@@ -88,6 +90,9 @@
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
+
+.showcase:hover { text-decoration: none; }
+.showcase:focus-visible { outline: 2px solid var(--brand-hover); outline-offset: -3px; }
 
 .textWrap {
   display: flex;

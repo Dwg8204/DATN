@@ -81,6 +81,8 @@
 }
 
 .tableScroll {
+  /* Contain the absolutely positioned screen-reader label inside the scroller. */
+  position: relative;
   overscroll-behavior-x: contain;
 }
 

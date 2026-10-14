@@ -1,6 +1,6 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { ChevronDown, MoreVertical } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ADMIN_LOGOUT_ITEM, ADMIN_NAVIGATION } from '../config/adminNavigation';
 import styles from './AdminLayout.module.css';
@@ -30,25 +30,47 @@ function NavigationAction({ item, disabled, onClick }) {
 function NavigationGroup({ item, collapsed }) {
   const ui = useUiTranslation();
   const location = useLocation();
-  const navigate = useNavigate();
   const sectionActive = location.pathname.startsWith('/admin/tests');
-  const [open, setOpen] = useState(sectionActive);
+  const [open, setOpen] = useState(() => sectionActive && !collapsed && window.matchMedia('(min-width: 901px)').matches);
+  const groupRef = useRef(null);
+  const toggleRef = useRef(null);
+  const submenuId = useId();
   const purpose = new URLSearchParams(location.search).get('purpose') || 'EXAM';
   const Icon = item.icon;
 
-  if (collapsed) return <NavigationItem item={item} />;
+  useEffect(() => {
+    if (!open) return;
+    const closeOnOutsideClick = event => {
+      if (!groupRef.current?.contains(event.target)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', closeOnOutsideClick);
+    return () => document.removeEventListener('pointerdown', closeOnOutsideClick);
+  }, [open]);
 
-  return <div className={styles.navGroup}>
-    <button type="button" className={`${styles.navItem} ${styles.navGroupButton} ${sectionActive ? styles.navItemActive : ''}`}
+  return <div ref={groupRef} className={`${styles.navGroup} ${collapsed ? styles.navGroupCollapsed : ''}`}
+    onBlur={event => {
+      if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+    }} onKeyDown={event => {
+      if (event.key === 'Escape' && open) {
+        event.preventDefault();
+        setOpen(false);
+        toggleRef.current?.focus();
+      }
+    }}>
+    <button ref={toggleRef} type="button" className={`${styles.navItem} ${styles.navGroupButton} ${sectionActive ? styles.navItemActive : ''}`}
+      aria-label={ui(item.label)} title={ui(item.label)} aria-controls={submenuId}
       aria-expanded={open} onClick={() => setOpen(value => !value)}>
       <Icon aria-hidden="true" /><span>{ui(item.label)}</span><ChevronDown className={open ? styles.chevronOpen : ''} aria-hidden="true" />
     </button>
-    {open && <div className={styles.navSubmenu}>
+    {open && <div id={submenuId} className={styles.navSubmenu}>
+      <strong className={styles.navSubmenuTitle}>{ui(item.label)}</strong>
       {item.children.map(child => {
         const childPurpose = new URL(child.to, window.location.origin).searchParams.get('purpose');
         const active = sectionActive && purpose === childPurpose;
-        return <button type="button" key={child.to} className={active ? styles.navSubmenuActive : ''}
-          onClick={() => navigate(child.to)}>{ui(child.label)}</button>;
+        return <Link key={child.to} to={child.to} className={active ? styles.navSubmenuActive : ''}
+          aria-current={active ? 'page' : undefined} onClick={() => {
+            if (collapsed || window.matchMedia('(max-width: 900px)').matches) setOpen(false);
+          }}>{ui(child.label)}</Link>;
       })}
     </div>}
   </div>;

@@ -422,7 +422,41 @@
     "review5": "Kết quả tức thì và phần giải thích giúp tôi nhận ra điểm yếu, đồng thời tiết kiệm nhiều thời gian ôn tập.",
     "review6": "Các bài luyện Nghe và Đọc được sắp xếp hợp lý; phần giải thích ngắn gọn nhưng hữu ích.",
     "review7": "Thời gian làm bài sát thực tế và trang kết quả rõ ràng giúp tôi tập trung, theo dõi tiến bộ tốt hơn.",
-    "review8": "Giao diện điện thoại phù hợp để luyện nhanh, còn đề đầy đủ trên máy tính mang lại cảm giác gần với kỳ thi thật."
+    "review8": "Giao diện điện thoại phù hợp để luyện nhanh, còn đề đầy đủ trên máy tính mang lại cảm giác gần với kỳ thi thật.",
+    "features": {
+      "flows": {
+        "listening": {
+          "title": "Nghe rõ hơn. Hiểu đúng hơn.",
+          "description": "Làm quen với các dạng bài nghe Aptis, luyện bắt ý chính và nhận diện thông tin trong từng đoạn hội thoại.",
+          "imageAlt": "Micro và thiết bị thu âm phục vụ luyện nghe"
+        },
+        "reading": {
+          "title": "Đọc có chiến lược, hiểu trọn ý.",
+          "description": "Rèn khả năng đọc hiểu từ câu ngắn đến văn bản dài, sắp xếp đoạn văn và kết nối thông tin theo cấu trúc Aptis.",
+          "imageAlt": "Không gian thư viện với các kệ sách"
+        },
+        "writing": {
+          "title": "Biến mỗi bài viết thành một bước tiến.",
+          "description": "Thực hành trả lời ngắn, trao đổi và viết email. Nhận phản hồi để cải thiện ngữ pháp, từ vựng và cách triển khai ý.",
+          "imageAlt": "Ghi chép và viết trong sổ tay"
+        },
+        "speaking": {
+          "title": "Tự tin cất tiếng, rõ ràng từng ý.",
+          "description": "Luyện nói về bản thân, mô tả ảnh và trình bày quan điểm. Ghi âm câu trả lời để xem lại cách diễn đạt của mình.",
+          "imageAlt": "Nhóm người trao đổi và thảo luận cùng nhau"
+        },
+        "grammar": {
+          "title": "Xây nền tảng vững cho mọi kỹ năng.",
+          "description": "Ôn cấu trúc ngữ pháp và cách dùng từ trong ngữ cảnh, để đọc, viết, nghe và nói với sự chính xác cao hơn.",
+          "imageAlt": "Sách và tài liệu học tập trên bàn"
+        },
+        "dictation": {
+          "title": "Từ nghe và viết đến ghi nhớ lâu hơn.",
+          "description": "Luyện nghe chính tả, ôn từ bằng thẻ ghi nhớ và xây sổ tay riêng. Biến những từ mới thành kiến thức bạn có thể dùng mỗi ngày.",
+          "imageAlt": "Người học ghi chép với tài liệu và sổ tay"
+        }
+      }
+    }
   },
   "notifications": {
     "title": "Thông báo",
