@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { Reply, Trash2 } from 'lucide-react';
 import styles from './CommentSection.module.css';
 
 export default function CommentItem({ comment, userId, busy, onReply, onDelete }) {
@@ -21,9 +22,14 @@ export default function CommentItem({ comment, userId, busy, onReply, onDelete }
         </>}
       </div>
       {!comment.deletedAt && userId && <div className={styles.commentActions}>
-        <button className={styles.replyBtn} type="button" disabled={busy} onClick={() => onReply(comment)}>{t('comments.reply')}</button>
-        {userId === comment.authorId && <button className={styles.replyBtn} type="button" disabled={busy}
-          onClick={() => onDelete(comment)}>{t('comments.delete')}</button>}
+        <button className={styles.actionIcon} type="button" disabled={busy} onClick={() => onReply(comment)}
+          aria-label={t('comments.reply')} title={t('comments.reply')}>
+          <Reply size={18} aria-hidden="true" />
+        </button>
+        {userId === comment.authorId && <button className={`${styles.actionIcon} ${styles.deleteIcon}`} type="button" disabled={busy}
+          onClick={() => onDelete(comment)} aria-label={t('comments.delete')} title={t('comments.delete')}>
+          <Trash2 size={18} aria-hidden="true" />
+        </button>}
       </div>}
     </div>
   </article>;

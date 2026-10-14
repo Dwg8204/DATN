@@ -138,9 +138,12 @@
 .commentActions {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 8px;
 }
 
+.actionIcon { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: none; border-radius: 50%; background: transparent; color: var(--text-primary, #334155); cursor: pointer; transition: background .15s ease, color .15s ease; }
+.actionIcon:hover:not(:disabled) { background: rgba(0, 136, 232, .1); color: #0088e8; }
+.deleteIcon:hover:not(:disabled) { background: rgba(218, 30, 33, .1); color: #da1e21; }
 
 .likeBtn {
   padding: 3px;
