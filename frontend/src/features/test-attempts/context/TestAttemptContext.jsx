@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useToast } from '../../../context/ToastContext.jsx';
@@ -18,6 +19,7 @@ export function TestAttemptProvider({ expectedComponent, children }) {
 }
 
 function TestAttemptSession({ attemptId, expectedComponent, children }) {
+  const ui = useUiTranslation();
   const { showError } = useToast();
   const [attempt, setAttempt] = useState(null);
   const [answers, setAnswers] = useState({});
@@ -135,7 +137,7 @@ function TestAttemptSession({ attemptId, expectedComponent, children }) {
         setLoadState({ attemptId, error: '' });
       }).catch(error => {
         if (isCurrent(generation) && error.code !== 'ERR_CANCELED') {
-          const message = normalizeApiError(error, error.message || 'Unable to load this test.').message;
+          const message = normalizeApiError(error, error.message || ui("Unable to load this test.")).message;
           setLoadState({ attemptId, error: message });
           showError(message);
         }
@@ -319,7 +321,7 @@ function TestAttemptSession({ attemptId, expectedComponent, children }) {
           if (submissionRef.current !== 'submitted') updateSubmission('verifying');
         }
       } else updateSubmission('idle');
-      if (!expired && mountedRef.current) showError(normalizeApiError(error, 'Unable to submit this test.').message);
+      if (!expired && mountedRef.current) showError(normalizeApiError(error, ui("Unable to submit this test.")).message);
       throw error;
     } finally {
       if (isCurrent(generation) && submissionRef.current === 'submitting') updateSubmission('idle');

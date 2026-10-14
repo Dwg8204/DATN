@@ -29,7 +29,7 @@ export class WritingAssessmentCoordinator {
       [attempt.id, attempt.snapshot_id],
     );
     if (!data?.sealed_at) throw new Error('WRITING_PROGRESS_NOT_SEALED');
-    const locale = attempt.feedback_locale ?? 'vi';
+    const locale = 'vi' as const;
     const result = attempt.result as AssessmentResult;
     const input = this.builder.build(
       data.snapshot,

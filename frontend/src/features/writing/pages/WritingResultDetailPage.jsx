@@ -1,5 +1,6 @@
-import { useEffect, useMemo } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import { useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import RichTextContent from '../../../components/common/RichTextContent';
@@ -59,11 +60,12 @@ function ResponseCard({ index, question, item, view, feedback }) {
           })}
         </strong>
       </footer>
-      <WritingQuestionFeedback feedback={feedback} />
+      {view === 'student' && <WritingQuestionFeedback feedback={feedback} />}
     </article>
   );
 }
 export default function WritingResultDetailPage() {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
@@ -103,16 +105,16 @@ export default function WritingResultDetailPage() {
     () => new Map((partFeedback?.questions ?? []).map((question) => [question.questionKey, question])),
     [partFeedback],
   );
-  if (summaryLoading || detailLoading || summaryError || detailError)
+  if (summaryLoading || detailLoading || (summaryError && !summary) || detailError)
     return (
       <AttemptPageState
         loading={summaryLoading || detailLoading}
         error={summaryError || detailError}
-        backHref="/writing/tests"
+        backHref={isPractice ? '/writing/practice' : '/writing/tests'}
       />
     );
   if (!summary || !detail)
-    return <AttemptPageState error={t('writingAi.unavailable')} backHref="/writing/tests" />;
+    return <AttemptPageState error={t('writingAi.unavailable')} backHref={isPractice ? '/writing/practice' : '/writing/tests'} />;
   return (
     <div className={styles.page}>
       <main>
@@ -138,8 +140,7 @@ export default function WritingResultDetailPage() {
                 key={part}
                 className={activePart === part ? styles.active : ''}
                 onClick={() => setUrlState({ activePart: part })}
-              >
-                Part {index + 1}
+              >{ ui("Part") + ' ' }{index + 1}
               </button>
             ))}
           </nav>
@@ -178,7 +179,7 @@ export default function WritingResultDetailPage() {
           </section>
           <aside>
             {partFeedback ? (
-              <WritingPartFeedback part={partFeedback} />
+              <WritingPartFeedback part={partFeedback} comment={summary.result?.writing?.summary?.partSummaries?.find(part => part.partNumber === partNumber)?.comment} />
             ) : (
               <p>{t('writingAi.pendingFeedback')}</p>
             )}

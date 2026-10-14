@@ -30,14 +30,6 @@ export default function WritingAiSummary({ writing, assisted }) {
       <h2>{t('writingAi.aiSummary')}</h2>
       <p>{writing.summary.overallComment}</p>
       <WritingFeedbackContext writing={writing} assisted={assisted} />
-      <div className={styles.grid}>
-        {writing.summary.partSummaries.map((part) => (
-          <article key={part.partNumber} className={styles.card}>
-            <h3>Part {part.partNumber}</h3>
-            <p>{part.comment}</p>
-          </article>
-        ))}
-      </div>
       {!!writing.summary.priorities.length && (
         <>
           <h3>{t('writingAi.priorities')}</h3>

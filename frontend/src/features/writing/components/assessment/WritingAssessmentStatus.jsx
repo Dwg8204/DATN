@@ -1,18 +1,15 @@
 import { useTranslation } from 'react-i18next';
+import AssessmentProgress from '../../../test-attempts/components/AssessmentProgress.jsx';
 import styles from './WritingAssessment.module.css';
 
-export default function WritingAssessmentStatus({ data, refresh, retry, retrying, retryError }) {
+export default function WritingAssessmentStatus({ data, refresh, retry, retrying, retryError, error, paused, runKey, attemptId }) {
   const { t } = useTranslation();
-  if (data.gradingStatus === 'COMPLETED' && data.result?.writing) return null;
-  const paused = data.assessment?.enabled === false && ['QUEUED', 'PROCESSING'].includes(data.gradingStatus);
+  if (data.gradingStatus === 'COMPLETED' && data.result?.writing) return <AssessmentProgress data={data} attemptId={attemptId} runKey={runKey} />;
   return (
-    <section className={styles.panel} role="status">
-      <h2>
-        {t(`writingAi.${paused ? 'paused' : data.gradingStatus}`, { defaultValue: t('writingAi.QUEUED') })}
-      </h2>
-      <p>{t(`writingAi.${data.gradingStatus === 'FAILED' ? 'failedHelp' : 'saved'}`)}</p>
+    <section className={styles.panel}>
+      <AssessmentProgress data={data} paused={paused} error={error} refresh={refresh} runKey={runKey} attemptId={attemptId} />
+      {data.gradingStatus === 'FAILED' && <p>{t('writingAi.failedHelp')}</p>}
       <div className={styles.actions}>
-        {refresh && <button onClick={refresh}>{t('writingAi.refresh')}</button>}
         {data.assessment?.retryable && (
           <button disabled={retrying} onClick={retry}>
             {t(`writingAi.${retrying ? 'retrying' : 'retry'}`)}

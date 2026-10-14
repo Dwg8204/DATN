@@ -1,3 +1,4 @@
+import { SpeakingAiConfig } from './speaking-ai-config.service';
 import { Injectable, Optional } from '@nestjs/common';
 import { WritingAssessmentCoordinator } from '../../writing-assessment/services/writing-assessment-coordinator.service';
 import { EntityManager } from 'typeorm';
@@ -25,6 +26,7 @@ export class PracticeAttemptsService {
     private readonly papers: AssessmentPaperFactory,
     private readonly grader: ObjectiveGraderService,
     @Optional() private readonly writing?: WritingAssessmentCoordinator,
+    @Optional() private readonly speaking?: SpeakingAiConfig,
   ) {}
 
   async start(dto: StartPracticeAttemptDto, actor: AuthUser) {
@@ -239,6 +241,7 @@ export class PracticeAttemptsService {
         : attempt.component === 'SPEAKING' || attempt.component === 'WRITING' && attempt.scope === 'FULL_SKILL' ? attempt.estimated_cefr : null,
       ...(attempt.component === 'READING' ? { cefrEstimate } : {}),
       ...(attempt.component === 'WRITING' && this.writing ? { assessment: await this.writing.status(attempt, manager) } : {}),
+      ...(attempt.component === 'SPEAKING' && this.speaking ? { assessment: { enabled: this.speaking.enabled } } : {}),
       result: writingSummary(attempt.result ? presentAssessmentResult(this.assessmentResult(attempt.result), answers, paper) : null, attempt.component),
       submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: null,

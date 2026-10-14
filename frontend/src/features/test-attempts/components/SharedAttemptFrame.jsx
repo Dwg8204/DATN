@@ -1,3 +1,4 @@
+import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TestLayout from '../../../components/layout/TestLayout.jsx';
@@ -6,6 +7,7 @@ import AttemptNavigationGuard from './AttemptNavigationGuard.jsx';
 import { useAttemptTimer, useTestAttempt } from '../context/testAttemptContextStore.js';
 import { formatRemainingTime } from '../utils/attemptTime.js';
 import styles from './SharedAttemptFrame.module.css';
+import AssessmentProgress from './AssessmentProgress.jsx';
 import DictionaryPopover from '../../practice/components/DictionaryPopover.jsx';
 import { useTranslation } from 'react-i18next';
 
@@ -13,6 +15,7 @@ const wait = milliseconds => new Promise(resolve => window.setTimeout(resolve, m
 const MAX_RECONCILIATION_CHECKS = 5;
 
 export default function SharedAttemptFrame({ resultPath, testPathPrefix }) {
+  const ui = useUiTranslation();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { showError } = useToast();
@@ -76,7 +79,7 @@ export default function SharedAttemptFrame({ resultPath, testPathPrefix }) {
       if (!cancelled) {
         recoveryStartedRef.current = false;
         setRecoveryPaused(true);
-        showError('Could not verify whether this test was submitted. Reconnect and try again.');
+        showError(ui("Could not verify whether this test was submitted. Reconnect and try again."));
       }
     };
     void recover();
@@ -90,6 +93,7 @@ export default function SharedAttemptFrame({ resultPath, testPathPrefix }) {
   }, [needsRecovery, retryRecovery]);
 
   return <>
+    {!recoveryPaused && ['submitting', 'verifying'].includes(submissionState) && <AssessmentProgress overlay attemptId={attemptId} submissionState={submissionState} />}
     <DictionaryPopover active={Boolean(isPractice && attempt?.status === 'IN_PROGRESS')} />
     <AttemptNavigationGuard
       active={attempt?.status === 'IN_PROGRESS'}
@@ -99,13 +103,13 @@ export default function SharedAttemptFrame({ resultPath, testPathPrefix }) {
       approveNavigation={approveNavigation}
       isNavigationApproved={isNavigationApproved}
       message={isPractice ? t('practice.exitMessage') : undefined}
-      confirmLabel={isPractice ? t('practice.leave') : 'Submit and leave'}
-      backLabel={isPractice ? t('practice.stay') : 'Stay in test'}
+      confirmLabel={isPractice ? t('practice.leave') : ui("Submit and leave")}
+      backLabel={isPractice ? t('practice.stay') : ui("Stay in test")}
     />
     {needsRecovery && <div className={styles.recovery} role="status">
-      <span>{recoveryPaused ? 'Submission not verified. Your test is locked until its status is confirmed.'
-        : 'Checking the submitted test with the server…'}</span>
-      {recoveryPaused && <button type="button" onClick={retryRecovery}>Try again</button>}
+      <span>{recoveryPaused ? ui("Submission not verified. Your test is locked until its status is confirmed.")
+        : ui("Checking the submitted test with the server…")}</span>
+      {recoveryPaused && <button type="button" onClick={retryRecovery}>{ui("Try again")}</button>}
     </div>}
     <TestLayout headerProps={{
       timeRemaining: secondsLeft == null ? undefined : formatRemainingTime(secondsLeft),

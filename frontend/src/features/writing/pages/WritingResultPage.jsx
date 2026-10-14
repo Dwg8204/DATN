@@ -15,8 +15,8 @@ export default function WritingResultPage() {
   const isPractice = params.get('practice') === 'true';
   const assessment = useWritingAssessmentPolling(attemptId);
   const { data, loading, error } = assessment;
-  if (loading || error) return <AttemptPageState loading={loading} error={error} backHref="/writing/tests" />;
-  if (!data?.result) return <AttemptPageState error={t('writingAi.unavailable')} backHref="/writing/tests" />;
+  if (loading || (error && !data)) return <AttemptPageState loading={loading} error={error} backHref={isPractice ? '/writing/practice' : '/writing/tests'} />;
+  if (!data?.result) return <AttemptPageState error={t('writingAi.unavailable')} backHref={isPractice ? '/writing/practice' : '/writing/tests'} />;
   const writing = data.result.writing;
   const items = data.result.items ?? [];
   const answered = items.filter(
@@ -32,6 +32,7 @@ export default function WritingResultPage() {
         )}
         <h1>{data.title || t('writingAi.title')}</h1>
         <WritingAssessmentStatus {...assessment} />
+        <div className={writing?.scope === 'FULL_SKILL' ? styles.overview : undefined}>
         <WritingCefr writing={writing} />
         <section className={styles.panel}>
           <h2>{t('writingAi.testSummary')}</h2>
@@ -60,6 +61,7 @@ export default function WritingResultPage() {
             </div>
           </dl>
         </section>
+        </div>
         <WritingAiSummary writing={writing} assisted={isPractice && !!data.result.assistance?.revealedKeys?.length} />
         <div className={styles.actions}>
           <button

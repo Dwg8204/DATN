@@ -6,8 +6,13 @@ export default function WritingQuestionFeedback({ feedback }) {
   const { t } = useTranslation();
   if (!feedback) return null;
   return (
-    <section className={styles.panel}>
-      <h3>{t('writingAi.questionFeedback')}</h3>
+    <details className={`${styles.panel} ${styles.questionFeedback}`}>
+      <summary className={styles.feedbackToggle}>
+        <h3>{t('writingAi.questionFeedback')}</h3>
+        <span className={styles.expandIcon} aria-hidden="true">+</span>
+        <span className={styles.collapseIcon} aria-hidden="true">−</span>
+      </summary>
+      <div className={styles.feedbackBody}>
       <p>{feedback.comment}</p>
       <div className={styles.criteria}>
         {feedback.criteria.map((criterion) => (
@@ -63,6 +68,7 @@ export default function WritingQuestionFeedback({ feedback }) {
           </ul>
         </div>
       )}
-    </section>
+      </div>
+    </details>
   );
 }
