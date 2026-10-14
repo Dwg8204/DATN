@@ -787,22 +787,24 @@ export default function DictationPage() {
             <form className={styles.createModal} onSubmit={createNotebookItem} onMouseDown={(event) => event.stopPropagation()} noValidate>
               <div className={styles.createModalHeader}><div><span>{t(editingItemId ? 'dictation.edit' : 'dictation.createNew')}</span><h3>{t(editingItemId ? (createType === 'word' ? 'dictation.editWord' : 'dictation.editSentence') : (createType === 'word' ? 'dictation.addWord' : 'dictation.addSentence'))}</h3></div><button type="button" onClick={() => setShowCreateForm(false)} aria-label={t('dictation.close')}><X /></button></div>
               {!editingItemId && <div className={styles.typeSelector}>
-                <button type="button" className={createType === 'word' ? styles.selectedType : ''} onClick={() => { setCreateType('word'); setNewItem((item) => ({ ...item, type: 'noun' })); }}>{t('dictation.word')}</button>
-                <button type="button" className={createType === 'sentence' ? styles.selectedType : ''} onClick={() => { setCreateType('sentence'); setNewItem((item) => ({ ...item, type: 'Custom sentence' })); }}>{t('dictation.sentence')}</button>
+                <button type="button" className={createType === 'word' ? styles.selectedType : ''} onClick={() => { if (createType === 'word') return; setCreateType('word'); setNewItem((item) => ({ ...item, type: 'noun', typeLocked: false })); }}>{t('dictation.word')}</button>
+                <button type="button" className={createType === 'sentence' ? styles.selectedType : ''} onClick={() => { if (createType === 'sentence') return; setCreateType('sentence'); setNewItem((item) => ({ ...item, type: 'Custom sentence', typeLocked: false })); }}>{t('dictation.sentence')}</button>
               </div>}
               {createType === 'word' ? <VocabularyWordInput item={newItem} knownWords={allFlashcards}
-                onChange={word => setNewItem(current => ({ ...current, word }))}
-                onResolved={(word, fields, snapshot) => setNewItem(current => {
+                onChange={(word, metadata) => setNewItem(current => ({ ...current, word,
+                  typeLocked: Boolean(metadata?.fromSuggestion || (metadata?.lookup && current.typeLocked && current.word.trim().toLowerCase() === word)) }))}
+                onResolved={(word, fields, snapshot, metadata) => setNewItem(current => {
                   if (current.word.trim().toLowerCase() !== word) return current;
                   const updated = { ...current };
                   for (const key of ['pronunciation', 'type', 'meaning', 'example']) {
-                    if (fields[key] && current[key] === snapshot[key]) {
-                      updated[key] = key === 'type' && !['noun', 'verb', 'adjective', 'adverb', 'phrase'].includes(fields[key]) ? 'phrase' : fields[key];
+                    if (fields[key] && (current[key] === snapshot[key] || (key === 'type' && metadata?.fromSuggestion))) {
+                      updated[key] = fields[key];
                     }
                   }
+                  updated.typeLocked = Boolean(fields.type && (metadata?.fromSuggestion || current.typeLocked));
                   return updated;
                 })} /> : <label>{t('dictation.title')}<input autoFocus required value={newItem.word} onChange={(event) => setNewItem({ ...newItem, word: event.target.value })} placeholder={t('dictation.titlePlaceholder')} /></label>}
-              {createType === 'word' && <div className={styles.formRow}><label>{t('dictation.pronunciation')}<input value={newItem.pronunciation} onChange={(event) => setNewItem({ ...newItem, pronunciation: event.target.value })} placeholder="/əˈtʃiːvmənt/" /></label><label>{t('dictation.wordType')}<AnswerSelect value={newItem.type} onChange={(event) => setNewItem({ ...newItem, type: event.target.value })} options={['noun','verb','adjective','adverb','phrase']} ariaLabel={t('dictation.wordType')}/></label></div>}
+              {createType === 'word' && <div className={styles.formRow}><label>{t('dictation.pronunciation')}<input value={newItem.pronunciation} onChange={(event) => setNewItem({ ...newItem, pronunciation: event.target.value })} placeholder="/əˈtʃiːvmənt/" /></label><label>{t('dictation.wordType')}<AnswerSelect value={newItem.type} disabled={Boolean(newItem.typeLocked)} onChange={(event) => { if (!newItem.typeLocked) setNewItem({ ...newItem, type: event.target.value }); }} options={[...new Set(['noun','verb','adjective','adverb','phrase', newItem.type].filter(Boolean))]} ariaLabel={t('dictation.wordType')}/></label></div>}
               <div className={styles.topicFormRow}>
                 <label>{t('dictation.topic')}<AnswerSelect value={newItem.topic} onChange={(event) => setNewItem({ ...newItem, topic: event.target.value })} options={availableTopics.map((topic) => topic.name)} placeholder={t(showTopicCreator ? 'dictation.addTopicBelow' : 'dictation.selectTopic')} disabled={showTopicCreator} ariaLabel={t('dictation.topic')} /></label>
                 <button type="button" className={styles.addTopicButton} onClick={toggleTopicCreator}>{showTopicCreator ? <X size={16} /> : <Plus size={16} />} {t(showTopicCreator ? 'dictation.cancel' : 'dictation.newTopic')}</button>

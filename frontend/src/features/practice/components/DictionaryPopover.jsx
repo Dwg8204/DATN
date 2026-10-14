@@ -1,13 +1,15 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, ChevronDown, ChevronUp, FolderPlus, Plus, RotateCcw, Volume2, X } from 'lucide-react';
+import { BookOpen, Check, ChevronDown, ChevronUp, FolderPlus, Plus, RotateCcw, Volume2, X } from 'lucide-react';
 import styles from './DictionaryPopover.module.css';
 import { useTranslation } from 'react-i18next';
 import api from '../../../services/api.js';
 import { normalizeApiError } from '../../../services/apiError.js';
 import { API_ENDPOINTS } from '../../../services/endpoint.js';
+import { useAuth } from '../../../context/AuthContext.jsx';
+import { useDictionaryVocabulary } from '../hooks/useDictionaryVocabulary.js';
+import { DEFAULT_VOCABULARY_FOLDER, dictionaryVietnameseTranslations, dictionaryWordItem, hasDictionaryWord } from '../utils/dictionaryVocabulary.js';
 
-const INITIAL_FOLDERS = ['hello', 'test'];
 const LOOKUP_CACHE = new Map();
 const MAX_CACHE_ENTRIES = 100;
 const cleanWord = value => value?.trim().replace(/^[^a-z'-]+|[^a-z'-]+$/gi, '').toLowerCase();
@@ -29,13 +31,16 @@ async function lookup(word, signal, forceRefresh = false) {
 export default function DictionaryPopover({ active }) {
   const ui = useUiTranslation();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [request, setRequest] = useState(null);
   const [state, setState] = useState({ loading: false, data: null, error: '' });
   const [tab, setTab] = useState('meaning');
   const [foldersOpen, setFoldersOpen] = useState(false);
-  const [folders, setFolders] = useState(INITIAL_FOLDERS);
   const [newFolder, setNewFolder] = useState('');
+  const vocabulary = useDictionaryVocabulary(user?.id, Boolean(active && request && foldersOpen));
   const panelRef = useRef(null);
+
+  useEffect(() => { setRequest(null); setNewFolder(''); }, [user?.id, active]);
 
   useEffect(() => {
     if (!active) return undefined;
@@ -60,11 +65,11 @@ export default function DictionaryPopover({ active }) {
   useEffect(() => {
     if (!request?.word) return undefined;
     const controller = new AbortController();
-    setState({ loading: true, data: null, error: '' });
+    setState({ word: request.word, loading: true, data: null, error: '' });
     lookup(request.word, controller.signal, request.nonce > 0)
-      .then(data => setState({ loading: false, data, error: '' }))
+      .then(data => { if (!controller.signal.aborted) setState({ word: request.word, loading: false, data, error: '' }); })
       .catch(error => {
-        if (error.name === 'AbortError' || error.code === 'ERR_CANCELED') return;
+        if (controller.signal.aborted || error.name === 'AbortError' || error.code === 'ERR_CANCELED') return;
         setState({
           loading: false,
           data: null,
@@ -92,7 +97,7 @@ export default function DictionaryPopover({ active }) {
 
   const entry = state.data?.entries?.[0];
   const meanings = useMemo(() => entry?.meanings ?? [], [entry]);
-  const translations = useMemo(() => state.data?.translations ?? [], [state.data?.translations]);
+  const translations = useMemo(() => dictionaryVietnameseTranslations(state.data), [state.data]);
   const audio = entry?.phonetics?.find(item => item.audio)?.audio;
   const apiExamples = meanings.flatMap(item => item.definitions ?? []).filter(item => item.example).map(item => item.example);
   const examples = [...new Set([...(state.data?.examples ?? []), ...apiExamples].filter(Boolean))];
@@ -116,12 +121,17 @@ export default function DictionaryPopover({ active }) {
     LOOKUP_CACHE.delete(request.word);
     setRequest(current => ({ ...current, nonce: (current.nonce ?? 0) + 1 }));
   };
-  const createFolder = () => {
-    const name = newFolder.trim();
-    if (!name || folders.some(folder => folder.toLowerCase() === name.toLowerCase())) return;
-    setFolders(current => [...current, name]);
-    setNewFolder('');
+  const createFolder = async () => {
+    const name = newFolder.trim().replace(/\s+/g, ' ');
+    if (!name || name.length > 40) return;
+    if (await vocabulary.addFolder(name)) setNewFolder('');
   };
+  const item = dictionaryWordItem(request.word, state.data);
+  const canSave = user?.id && state.word === request.word && !state.loading && !state.error && item.meaning
+    && vocabulary.ready && !vocabulary.loading && !vocabulary.loadError && !vocabulary.pending;
+  const defaultFolder = vocabulary.topics.find(folder => folder.name.toLowerCase() === DEFAULT_VOCABULARY_FOLDER.toLowerCase());
+  const feedback = vocabulary.feedback;
+  const feedbackVisible = feedback && (feedback.word === null || feedback.word === request.word);
   const lookupRelatedWord = word => {
     const nextWord = word?.trim().toLowerCase();
     if (!nextWord || nextWord.length > 60 || !/^[a-z]+(?:[ '-][a-z]+)*$/i.test(nextWord)) return;
@@ -166,9 +176,30 @@ export default function DictionaryPopover({ active }) {
         <BookOpen /><span>{t('dictionary.addToVocabulary')}</span>{foldersOpen ? <ChevronUp /> : <ChevronDown />}
       </button>
       {foldersOpen && <div className={styles.folders}>
-        {[...folders, t('dictionary.myVocabulary')].map(folder => <button type="button" key={folder} onClick={() => setFoldersOpen(false)}><span>{folder}</span><Plus /></button>)}
-        <div className={styles.newFolder}><FolderPlus /><input value={newFolder} onChange={event => setNewFolder(event.target.value)} placeholder={t('dictionary.folderName')} />
-          <button type="button" onClick={createFolder} disabled={!newFolder.trim()}><Plus /></button></div>
+        {!user?.id ? <p className={styles.error}>{t('dictionary.loginToSave')}</p> : <>
+          {vocabulary.loading && <p role="status">{t('dictionary.loadingFolders')}</p>}
+          {vocabulary.loadError && <div role="alert"><p className={styles.error}>{ui.error(normalizeApiError(vocabulary.loadError, t('dictionary.foldersFailed')).message)}</p>
+            <button type="button" onClick={vocabulary.retry}>{t('dictionary.retryFolders')}</button></div>}
+          {!vocabulary.loading && !vocabulary.loadError && <>
+            {[...vocabulary.topics.filter(folder => folder.id !== defaultFolder?.id),
+              { id: defaultFolder?.id ?? null, name: t('dictionary.myVocabulary') }].map(folder => {
+              const saved = hasDictionaryWord(vocabulary.words, folder.id, request.word);
+              return <button type="button" key={folder.id ?? 'default'} disabled={!canSave || saved}
+                title={saved ? t('dictionary.alreadySaved') : t('dictionary.saveToFolder', { folder: folder.name })}
+                onClick={() => void vocabulary.save(folder.id, item)}><span>{folder.name}</span>{saved ? <Check /> : <Plus />}</button>;
+            })}
+            {!state.loading && !state.error && !item.meaning && <p className={styles.error}>{t('dictionary.meaningRequired')}</p>}
+          </>}
+          {vocabulary.pending && <p role="status">{t('dictionary.savingVocabulary')}</p>}
+          {feedbackVisible && <p role={feedback.kind === 'error' ? 'alert' : 'status'} className={feedback.kind === 'error' ? styles.error : styles.success}>
+            {feedback.kind === 'error' ? ui.error(normalizeApiError(feedback.error, t('dictionary.saveFailed')).message)
+              : t(feedback.word === null ? 'dictionary.folderCreated' : 'dictionary.wordSaved')}</p>}
+          <div className={styles.newFolder}><FolderPlus /><input value={newFolder} maxLength={40} aria-label={t('dictionary.folderName')}
+            disabled={!vocabulary.ready || vocabulary.pending || vocabulary.loading || Boolean(vocabulary.loadError)}
+            onChange={event => setNewFolder(event.target.value)} onKeyDown={event => { if (event.key === 'Enter') { event.preventDefault(); void createFolder(); } }} placeholder={t('dictionary.folderName')} />
+            <button type="button" title={t('dictionary.createFolder')} onClick={() => void createFolder()}
+              disabled={!newFolder.trim() || !vocabulary.ready || vocabulary.pending || vocabulary.loading || Boolean(vocabulary.loadError)}><Plus /></button></div>
+        </>}
       </div>}
     </footer>
   </section>;

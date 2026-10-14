@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Search } from 'lucide-react';
+import { LoaderCircle, Search } from 'lucide-react';
 import api from '../../../services/api';
 import { API_ENDPOINTS } from '../../../services/endpoint';
 import styles from './VocabularyWordInput.module.css';
@@ -84,19 +84,19 @@ export default function VocabularyWordInput({ item, knownWords, onChange, onReso
     return [...unique.values()].slice(0, 8);
   }, [query, knownWords, remote, suggestionCache]);
 
-  const lookup = async (word) => {
+  const lookup = async (word, fromSuggestion = false) => {
     requestRef.current?.abort();
     const controller = new AbortController();
     requestRef.current = controller;
     const snapshot = { ...item };
     const savedEntry = knownWords.find(entry => entry.word.trim().toLowerCase() === word);
     const savedWord = savedEntry ? { ...savedEntry, meaning: vietnameseMeaning(savedEntry.meaning) } : undefined;
-    onChange(word);
+    onChange(word, { lookup: true, fromSuggestion });
     setFocused(false);
     setActiveIndex(-1);
     const finish = fields => {
       fields = { ...fields, meaning: vietnameseMeaning(fields.meaning) };
-      onResolved(word, fields, snapshot);
+      onResolved(word, fields, snapshot, { fromSuggestion });
       setLookupState({ loading: false, message: t(fields.pronunciation && fields.meaning && fields.example
         ? 'dictation.wordLookupDone' : 'dictation.wordLookupPartial') });
     };
@@ -108,7 +108,7 @@ export default function VocabularyWordInput({ item, knownWords, onChange, onReso
         finish(savedWord);
         return;
       }
-      onResolved(word, savedWord, snapshot);
+      onResolved(word, savedWord, snapshot, { fromSuggestion });
     }
     setLookupState({ loading: true, message: '' });
     try {
@@ -134,13 +134,16 @@ export default function VocabularyWordInput({ item, knownWords, onChange, onReso
     } catch {
       if (!controller.signal.aborted) {
         if (savedWord) finish(savedWord);
-        else setLookupState({ loading: false, message: t('dictation.wordLookupFailed') });
+        else {
+          onResolved(word, {}, snapshot, { fromSuggestion });
+          setLookupState({ loading: false, message: t('dictation.wordLookupFailed') });
+        }
       }
     }
   };
 
   const expanded = focused && (canLookup || suggestions.length > 0);
-  return <div className={styles.field} onBlur={event => {
+  return <div className={styles.field} aria-busy={lookupState.loading} onBlur={event => {
     if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
   }}>
     <label htmlFor={inputId}>{t('dictation.englishWord')}</label>
@@ -167,11 +170,14 @@ export default function VocabularyWordInput({ item, knownWords, onChange, onReso
           }
           if (event.key === 'Enter' && expanded) {
             event.preventDefault();
-            lookup(suggestions[activeIndex]?.word || query);
+            lookup(suggestions[activeIndex]?.word || query, Boolean(suggestions[activeIndex]));
           }
         }} placeholder={t('dictation.wordPlaceholder')} />
       <button type="button" disabled={!canLookup || lookupState.loading} onClick={() => lookup(query)}
-        aria-label={t('dictation.lookupWord')} title={t('dictation.lookupWord')}><Search size={18} /></button>
+        className={lookupState.loading ? styles.lookupLoading : undefined} aria-busy={lookupState.loading}
+        aria-label={t(lookupState.loading ? 'dictation.wordLookupLoading' : 'dictation.lookupWord')} title={t('dictation.lookupWord')}>
+        {lookupState.loading ? <LoaderCircle size={18} className={styles.spinner} aria-hidden="true" /> : <Search size={18} />}
+      </button>
     </div>
     {expanded && <div className={styles.suggestions}>
       <div className={styles.heading}>{t('dictation.similarWords')}</div>
@@ -179,7 +185,7 @@ export default function VocabularyWordInput({ item, knownWords, onChange, onReso
         {suggestions.map((suggestion, index) => <li key={suggestion.word} id={`${listId}-${index}`}
           role="option" aria-selected={index === activeIndex}>
           <button type="button" tabIndex={-1} className={index === activeIndex ? styles.active : ''}
-            onMouseDown={event => event.preventDefault()} onClick={() => lookup(suggestion.word)}>
+            onMouseDown={event => event.preventDefault()} onClick={() => lookup(suggestion.word, true)}>
             <strong>{suggestion.word}</strong>{suggestion.meaning && <span>{suggestion.meaning}</span>}
           </button>
         </li>)}
@@ -189,8 +195,9 @@ export default function VocabularyWordInput({ item, knownWords, onChange, onReso
         : remote.query === query && remote.unavailable ? t('dictation.suggestionsUnavailable')
           : suggestions.length ? t('dictation.chooseSuggestion') : t('dictation.noWordSuggestions')}</small>
     </div>}
-    <p id={`${inputId}-status`} className={styles.status} role="status">
-      {lookupState.loading ? t('dictation.wordLookupLoading') : lookupState.message || t('dictation.wordSuggestionHelp')}
+    <p id={`${inputId}-status`} className={`${styles.status} ${lookupState.loading ? styles.statusLoading : ''}`} role="status" aria-live="polite" aria-atomic="true">
+      {lookupState.loading ? <><LoaderCircle size={16} className={styles.spinner} aria-hidden="true" />{t('dictation.wordLookupLoading')}</>
+        : lookupState.message || t('dictation.wordSuggestionHelp')}
     </p>
   </div>;
 }

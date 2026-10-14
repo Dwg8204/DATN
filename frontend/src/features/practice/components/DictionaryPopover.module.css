@@ -28,6 +28,10 @@
 .folderToggle { width: 100%; min-height: 39px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px; padding: 7px 10px; border: 1px solid #f1262f !important; border-radius: 10px; text-align: left; font-size: 14px; font-weight: 800; }
 .folderToggle svg, .folders svg { width: 18px; }
 .folders { display: grid; padding: 7px 2px 0; }
+.popover footer { min-height: 0; overflow-y: auto; }
+.folders p { margin: 7px 8px; font-size: 13px; line-height: 1.4; }
+.folders .success { color: #7bd8aa; }
+.folders button:disabled { cursor: default; opacity: .55; }
 .folders > button { min-height: 37px; display: flex; justify-content: space-between; align-items: center; padding: 7px 8px; border-bottom: 1px solid #25272e; color: #eceef1; }
 .folders > button svg { color: #16a89a; }
 .newFolder { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; padding: 9px 5px; }
