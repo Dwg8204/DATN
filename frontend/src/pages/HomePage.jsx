@@ -7,6 +7,7 @@ import ReviewCard from '../components/shared/ReviewCard/ReviewCard';
 import PaginationDots from '../components/common/PaginationDots';
 import styles from './HomePage.module.css';
 import { useTranslation } from 'react-i18next';
+import { HOME_FEATURES } from './homeFeatures';
 
 const skillCards = [
   {
@@ -171,11 +172,10 @@ export default function HomePage() {
       </div>
 
       {/* Key Features */}
-      <FeatureShowcase sectionTitle={t('home.keyFeatures')} features={[
-        { title: t('home.feature1Title'), description: t('home.feature1Description'), image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/jie2waj6_expires_30_days.png' },
-        { title: t('home.feature2Title'), description: t('home.feature2Description'), image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/jie2waj6_expires_30_days.png' },
-        { title: t('home.feature3Title'), description: t('home.feature3Description'), image: 'https://storage.googleapis.com/tagjs-prod.appspot.com/v1/YiUdaz83Xp/jie2waj6_expires_30_days.png' },
-      ]} />
+      <FeatureShowcase sectionTitle={t('home.keyFeatures')} features={HOME_FEATURES.map(feature => ({
+        ...feature,
+        ...t(`home.features.flows.${feature.id}`, { returnObjects: true }),
+      }))} />
 
       {/* Review Section */}
       <div className={styles.reviewSection}>

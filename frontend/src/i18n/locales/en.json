@@ -422,7 +422,41 @@
     "review5": "Instant results and explanations make it easy to identify weaker skills and save preparation time.",
     "review6": "The Listening and Reading practice sets are well organised, and the explanations are concise and useful.",
     "review7": "Realistic timing and clear result pages help me stay focused and monitor my progress.",
-    "review8": "The mobile layout is convenient for quick practice, while full tests on desktop feel close to the real exam."
+    "review8": "The mobile layout is convenient for quick practice, while full tests on desktop feel close to the real exam.",
+    "features": {
+      "flows": {
+        "listening": {
+          "title": "Listen closely. Understand clearly.",
+          "description": "Get familiar with Aptis listening tasks, pick out key ideas and identify details in everyday conversations.",
+          "imageAlt": "Microphone and recording equipment for listening practice"
+        },
+        "reading": {
+          "title": "Read with purpose. Connect every idea.",
+          "description": "Build comprehension from short sentences to longer texts, arrange paragraphs and connect information in the Aptis format.",
+          "imageAlt": "A library filled with bookshelves"
+        },
+        "writing": {
+          "title": "Make every draft a step forward.",
+          "description": "Practise short responses, conversations and emails. Use feedback to refine your grammar, vocabulary and development of ideas.",
+          "imageAlt": "Writing and taking notes in a notebook"
+        },
+        "speaking": {
+          "title": "Find your voice. Make your ideas clear.",
+          "description": "Talk about yourself, describe photographs and express opinions. Record your answers and reflect on how you communicate.",
+          "imageAlt": "A group exchanging ideas and discussing together"
+        },
+        "grammar": {
+          "title": "Build the foundation for every skill.",
+          "description": "Practise grammar structures and vocabulary in context to bring greater accuracy to your reading, writing, listening and speaking.",
+          "imageAlt": "Books and learning materials on a desk"
+        },
+        "dictation": {
+          "title": "Listen, write and make new words stick.",
+          "description": "Practise dictation, review flashcards and build your own notebook. Turn new words into knowledge you can use every day.",
+          "imageAlt": "A learner taking notes with study materials and a notebook"
+        }
+      }
+    }
   },
   "notifications": {
     "title": "Notifications",
