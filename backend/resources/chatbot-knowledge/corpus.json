@@ -1,0 +1,64 @@
+[
+  {
+    "key": "aptis-general-overview", "title": "Aptis ESOL General — phạm vi", "variant": "APTIS_ESOL_GENERAL",
+    "source": "https://www.britishcouncil.org/exam/english/aptis/prepare-general", "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Các thành phần", "text": "Aptis ESOL General gồm Grammar and Vocabulary, Listening, Reading, Speaking và Writing. Tài liệu ở đây dành cho General; không áp dụng nguyên xi cho Advanced, Teachers hoặc Teens. Bài luyện của British Council giúp làm quen dạng đề. Điểm luyện trên AptiMate không phải chứng chỉ hay kết quả thi chính thức. Kho này chưa xác minh lệ phí, lịch thi, thời hạn trả kết quả hoặc yêu cầu công nhận của từng trường."}]
+  },
+  {
+    "key": "aptis-general-core", "title": "Aptis General — Grammar and Vocabulary", "variant": "APTIS_ESOL_GENERAL", "component": "GRAMMAR_VOCAB",
+    "source": "https://www.britishcouncil.org/exam/aptis/practice-materials/grammar-vocabulary", "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Cấu trúc và điểm Core", "text": "Grammar and Vocabulary có 50 câu trong 25 phút: 25 câu ngữ pháp và 25 câu từ vựng. Ngữ pháp yêu cầu chọn phương án hoàn thành câu. Từ vựng kiểm tra định nghĩa, từ gần nghĩa, dùng từ trong ngữ cảnh và kết hợp từ. Điểm thành phần này từ 0 đến 50, không có mức CEFR riêng. Không quy đổi một điểm Core thành trình độ CEFR tổng thể."}]
+  },
+  {
+    "key": "aptis-general-reading", "title": "Aptis General — Reading", "variant": "APTIS_ESOL_GENERAL", "component": "READING",
+    "source": "https://www.britishcouncil.org/exam/aptis/practice-material/reading-test", "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Bốn phần Reading", "text": "Reading General kéo dài tối đa 35 phút. Part 1 chọn từ hoàn thành câu trong văn bản ngắn. Part 2 sắp xếp câu để tạo hai văn bản mạch lạc; mỗi văn bản có câu đầu cố định và năm câu cần xếp. Part 3 ghép bảy nhận định với quan điểm của bốn người. Part 4 ghép tiêu đề với đoạn văn trong bài dài; có tiêu đề thừa. Thời lượng và dạng bài của Advanced khác General."}]
+  },
+  {
+    "key": "aptis-general-listening", "title": "Aptis General — Listening", "variant": "APTIS_ESOL_GENERAL", "component": "LISTENING",
+    "source": "https://www.britishcouncil.org/exam/aptis/practice-materials/listening-aptis-test", "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Cấu trúc Listening", "text": "Listening có 17 nhiệm vụ, tổng cộng 20 bản ghi âm, thời gian khoảng 40 phút. Part 1 nhận biết thông tin cụ thể. Part 2 ghép thông tin với bốn người nói. Part 3 nhận diện quan điểm trong hội thoại hai người. Part 4 suy luận ý kiến qua hai bài độc thoại dài. Mỗi bản ghi được nghe hai lần. Chú ý từ đồng nghĩa; không chọn đáp án chỉ vì nghe trùng một từ."}]
+  },
+  {
+    "key": "aptis-general-writing", "title": "Aptis General — Writing", "variant": "APTIS_ESOL_GENERAL", "component": "WRITING",
+    "source": "https://www.britishcouncil.org/exam/aptis/take-test/writing-video", "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Bốn phần và số từ", "text": "Writing General có bốn phần chung chủ đề, thời gian 50 phút. Part 1 trả lời năm tin nhắn bằng từ hoặc cụm ngắn. Part 2 viết 20–30 từ. Part 3 trả lời ba câu hỏi trong tương tác mạng xã hội, khoảng 40 từ mỗi câu. Part 4 viết email thân mật 40–50 từ và email trang trọng 120–150 từ về cùng một tình huống. Cần đổi cách xưng hô và ngôn ngữ theo người nhận. Đọc đúng giới hạn hiển thị trên đề; đừng trộn yêu cầu General với Advanced."}]
+  },
+  {
+    "key": "aptis-general-speaking", "title": "Aptis General — Speaking", "variant": "APTIS_ESOL_GENERAL", "component": "SPEAKING",
+    "source": "https://www.britishcouncil.org/exam/aptis/take-test/speaking-video", "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Thời gian từng phần", "text": "Speaking General khoảng 12 phút, gồm bốn phần, được ghi âm. Part 1 có ba câu về bản thân, mỗi câu 30 giây. Part 2 mô tả một ảnh rồi trả lời hai câu liên quan, mỗi câu 45 giây. Part 3 so sánh hai ảnh và phát triển ý kiến, mỗi câu 45 giây. Part 4 có ba câu cùng chủ đề; chuẩn bị một phút và nói hai phút. Không dùng thời lượng này cho Advanced."}]
+  },
+  {
+    "key": "english-present-simple-continuous", "title": "AptiMate biên soạn — hiện tại đơn và tiếp diễn", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Thói quen và việc đang diễn ra", "text": "Hiện tại đơn thường diễn tả thói quen hoặc sự thật: Linh walks to college every morning. Với he, she, it, động từ thường thêm -s hoặc -es. Hiện tại tiếp diễn có dạng am/is/are + V-ing: Linh is walking to the library now. Thì này diễn tả việc đang xảy ra hoặc tình huống tạm thời. Không chọn thì chỉ bằng một từ khóa; xem ý nghĩa cả câu. Các động từ trạng thái như know thường không dùng tiếp diễn trong nghĩa trạng thái."}]
+  },
+  {
+    "key": "english-present-perfect-past", "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Thời điểm đã kết thúc và liên hệ hiện tại", "text": "Quá khứ đơn kể sự việc ở thời gian quá khứ đã kết thúc: I visited Hue last June. Hiện tại hoàn thành dùng have/has + past participle để nói trải nghiệm hoặc việc liên quan hiện tại: I have visited Hue twice. Không dùng hiện tại hoàn thành với last June khi mốc này đã kết thúc. Since chỉ mốc bắt đầu; for chỉ khoảng thời gian: She has lived here since 2020 / for six years. Cần ngữ cảnh để chọn thì, không tự coi mọi câu không có mốc thời gian là hiện tại hoàn thành."}]
+  },
+  {
+    "key": "english-conditionals", "title": "AptiMate biên soạn — câu điều kiện", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Điều kiện thực và giả định", "text": "Điều kiện loại một thường dùng if + present simple, will + động từ nguyên mẫu: If the library opens early, I will study there. Loại hai thường dùng if + past simple, would + động từ nguyên mẫu: If I had more time, I would join the club. Loại hai diễn tả giả định ở hiện tại hoặc tương lai, không nhất thiết kể quá khứ. Đây là mẫu cơ bản; mệnh đề chính có thể dùng can, may hoặc câu mệnh lệnh tùy ý nghĩa. Không sửa will trong mệnh đề if một cách máy móc nếu nó mang nghĩa sẵn lòng."}]
+  },
+  {
+    "key": "english-relative-clauses", "title": "AptiMate biên soạn — mệnh đề quan hệ", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Who, which, that", "text": "Who thường chỉ người, which chỉ vật. That có thể dùng trong mệnh đề quan hệ xác định chỉ người hoặc vật: The book that I borrowed is useful. Mệnh đề không xác định bổ sung thông tin và được tách bằng dấu phẩy: My tutor, who lives nearby, speaks French. Không dùng that thay who hoặc which trong mệnh đề không xác định. Có thể lược đại từ quan hệ làm tân ngữ trong mệnh đề xác định: The book I borrowed. Không lược khi nó là chủ ngữ: The student who called me."}]
+  },
+  {
+    "key": "english-countability", "title": "AptiMate biên soạn — danh từ đếm được", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Much, many, advice, information", "text": "Many dùng với danh từ đếm được số nhiều; much dùng với danh từ không đếm được. Advice và information thường không đếm được: some advice, a piece of information. Trong nghĩa thông thường, tránh an advice hoặc informations. A lot of dùng được với cả hai nhóm: a lot of books, a lot of time. Một danh từ có thể đổi tính đếm được theo nghĩa, như chicken là thịt hoặc con gà. Hỏi cả câu để phân tích chính xác."}]
+  },
+  {
+    "key": "english-passive", "title": "AptiMate biên soạn — câu bị động", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Be và past participle", "text": "Câu bị động cơ bản có dạng be + past participle; thì nằm ở be. Chủ động: The club published the schedule. Bị động: The schedule was published by the club. Dùng bị động khi chú trọng đối tượng chịu tác động hoặc không cần nêu người thực hiện. Không phải động từ nào cũng chuyển bị động được: arrive không có tân ngữ trong cách dùng thông thường, nên The train was arrived là sai. By nêu tác nhân, không bắt buộc xuất hiện."}]
+  },
+  {
+    "key": "english-email-register", "title": "AptiMate biên soạn — giọng văn email", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Trang trọng và thân mật", "text": "Email cho bạn bè có thể mở bằng Hi Mai và dùng cách diễn đạt tự nhiên: Could we meet on Friday? Email cho người phụ trách nên nêu mục đích rõ, lịch sự và đầy đủ thông tin: I am writing to ask whether the workshop can be rescheduled. Trang trọng không có nghĩa dùng từ khó không cần thiết. Giữ cùng một giọng văn, chia đoạn theo mục đích và kiểm tra người nhận, lời chào, yêu cầu, lời kết. Các câu ở đây là ví dụ tự biên soạn, không phải đáp án thi hay bài mẫu bảo đảm một mức điểm."}]
+  },
+  {
+    "key": "english-vocabulary-context", "title": "AptiMate biên soạn — học từ trong ngữ cảnh", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
+    "sections": [{"heading": "Nghĩa, collocation và ví dụ", "text": "Một từ có thể có nhiều nghĩa: light có thể là ánh sáng hoặc nhẹ. Khi hỏi nghĩa, nên cung cấp câu chứa từ. Học cả cụm kết hợp: make a decision, do homework, interested in. Viết ví dụ gắn với trải nghiệm của bạn rồi ôn lại sau một khoảng thời gian. Không coi hai từ gần nghĩa là thay thế được trong mọi câu. Nếu cần phiên âm hoặc nghĩa từ cụ thể, dùng chức năng tra từ thay vì tự đoán từ cách viết."}]
+  }
+]

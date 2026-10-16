@@ -347,6 +347,16 @@
 }
 .composer button:disabled { opacity: 0.42; cursor: not-allowed; }
 .disclaimer { padding: 0 12px 9px; color: #94898a; font-size: 9px; text-align: center; }
+.notice { padding: 6px 13px; color: #a32323; font-size: 12px; }
+.messageTools { display: flex; gap: 8px; margin-top: 5px; }
+.messageTools button { border: 0; background: transparent; color: #877a7b; cursor: pointer; padding: 4px; }
+.messageTools button[aria-pressed="true"] { color: var(--chat-red); background: #fde8e9; border-radius: 5px; }
+.source, .action { display: block; margin-top: 6px; font-size: 12px; color: var(--chat-red); overflow-wrap: anywhere; }
+.action { padding: 6px 9px; border: 1px solid currentColor; border-radius: 8px; text-decoration: none; }
+.panel:has(.notice) { grid-template-rows: auto minmax(0,1fr) auto auto auto; }
+:global([data-theme="dark"]) .panel, :global([data-theme="dark"]) .assistantMessage, :global([data-theme="dark"]) .composer { background: #252329; color: #f2eded; border-color: #51454a; }
+:global([data-theme="dark"]) .messages, :global([data-theme="dark"]) .historyPanel { background: #1c1a20; }
+:global([data-theme="dark"]) .welcome h2, :global([data-theme="dark"]) .composer textarea { color: #f2eded; }
 
 @media (max-width: 700px) {
   .launcher {
@@ -378,4 +388,18 @@
 
 @media (prefers-reduced-motion: reduce) {
   .panel, .launcher, .typing i { animation: none; transition: none; }
+}
+
+.launcherPet, .launcherPet:hover {
+  width: 90px;
+  min-width: 90px;
+  height: 96px;
+  padding: 0;
+  border-radius: 24px;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+@media (max-width: 700px) {
+  .launcherPet, .launcherPet:hover { width: 72px; min-width: 72px; height: 78px; }
 }

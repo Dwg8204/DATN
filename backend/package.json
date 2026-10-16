@@ -30,7 +30,12 @@
     "db:seed": "ts-node src/database/seeds/run-seeds.ts",
     "db:seed:samples": "ts-node src/database/seeds/seed-sample-tests.ts",
     "test:comments:db": "ts-node test/integration/comments-database.ts",
-    "test:comments": "jest --runInBand --testPathPattern comments"
+    "test:comments": "jest --runInBand --testPathPattern comments",
+    "test:chatbot": "jest --runInBand --testPathPattern chatbot",
+    "test:chatbot:db": "ts-node test/integration/chatbot-database.ts",
+    "knowledge:validate": "ts-node scripts/chatbot-knowledge.ts --validate",
+    "knowledge:import": "ts-node scripts/chatbot-knowledge.ts --apply",
+    "ai:chatbot:smoke": "ts-node scripts/chatbot-smoke.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",

@@ -22,6 +22,6 @@ import { SpeakingGradingController } from './controllers/speaking-grading.contro
   controllers: [TestAttemptsController, PracticeAttemptsController, SpeakingGradingController],
   providers: [AssessmentPaperFactory, ObjectiveGraderService, TestAttemptsRepository, TestAttemptsService, PracticeAttemptsService, StudentDashboardService, AttemptExpiryWorker,
     SpeakingGradingRepository, SpeakingAiConfig, SpeakingAudioService, SpeakingAiProvider, SpeakingGradingWorker],
-  exports: [TestAttemptsService],
+  exports: [TestAttemptsService, PracticeAttemptsService],
 })
 export class TestAttemptsModule {}
