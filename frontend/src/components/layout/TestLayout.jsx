@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import TestHeader from './TestHeader';
 import styles from './TestLayout.module.css';
+import ChatAssistantWidget from '../../features/ai-chatbot/components/ChatAssistantWidget';
 
 export default function TestLayout({ headerProps }) {
   return (
@@ -11,6 +12,7 @@ export default function TestLayout({ headerProps }) {
           <Outlet />
         </main>
       </div>
+      {headerProps?.confirmExit === false && <ChatAssistantWidget />}
     </div>
   );
 }

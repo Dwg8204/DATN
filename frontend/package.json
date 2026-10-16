@@ -23,7 +23,8 @@
     "test:admin:responsive": "node --test tests/adminResponsive.browser.test.mjs",
     "test:catalog:e2e": "node --test tests/publicCatalog.browser.test.mjs",
     "test:comments:ui": "node --test tests/comments.browser.test.mjs",
-    "test:home:features": "node --test tests/homeFeatures.browser.test.mjs"
+    "test:home:features": "node --test tests/homeFeatures.browser.test.mjs",
+    "test:chatbot": "node --test src/features/ai-chatbot/services/chatPolicy.test.js tests/chatbot.browser.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

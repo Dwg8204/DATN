@@ -1,288 +1,135 @@
-import { uiLocale } from '../../../i18n/translateUi.js';
-import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
-import { useEffect, useRef, useState } from 'react';
-import { Check, Clipboard, History, MessageCircle, Plus, Send, Sparkles, Trash2, X } from 'lucide-react';
+import { useCallback,useEffect,useRef,useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link,useLocation } from 'react-router-dom';
+import { Check,Clipboard,History,MessageCircle,Plus,Send,Sparkles,Trash2,X,Pencil,ThumbsUp,ThumbsDown } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
-import { createSession, loadChatSessions, makeMockReply, saveChatSessions } from '../services/mockChatRepository';
+import { chatRequest } from '../services/chatApi';
+import { actionPath,chatAllowed,resultContext,safeSource } from '../services/chatPolicy';
 import styles from './ChatAssistantWidget.module.css';
 
-const MAX_MESSAGE_LENGTH = 4000;
-const SUGGESTIONS = [
-  'Explain a grammar point',
-  'Help me improve my writing',
-  'Practise vocabulary',
-];
-
-function makeTitle(value) {
-  const title = value.replace(/\s+/g, ' ').trim();
-  return title.length > 42 ? `${title.slice(0, 42)}…` : title;
-}
-
-function Message({ message }) {
-  const ui = useUiTranslation();
-  const [copied, setCopied] = useState(false);
-  const isUser = message.role === 'user';
-
-  const copyMessage = async () => {
-    try {
-      await navigator.clipboard.writeText(message.content);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1400);
-    } catch {
-      setCopied(false);
-    }
-  };
-
-  return (
-    <div className={`${styles.messageRow} ${isUser ? styles.userRow : ''}`}>
-      {!isUser && <span className={styles.avatar}><Sparkles size={14} /></span>}
-      <div className={styles.messageBody}>
-        <div className={`${styles.message} ${isUser ? styles.userMessage : styles.assistantMessage}`}>
-          {message.content}
-        </div>
-        {!isUser && (
-          <button type="button" className={styles.copyButton} onClick={copyMessage}>
-            {copied ? <Check size={13} /> : <Clipboard size={13} />}
-            {copied ? ui("Copied") : ui("Copy")}
-          </button>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export default function ChatAssistantWidget() {
-  const ui = useUiTranslation();
-  const { user } = useAuth();
-  const userKey = user?.id || user?.email || 'guest';
-  const [isOpen, setIsOpen] = useState(false);
-  const [sessions, setSessions] = useState(() => loadChatSessions(userKey));
-  const [activeId, setActiveId] = useState(null);
-  const [draft, setDraft] = useState('');
-  const [isThinking, setIsThinking] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-  const endRef = useRef(null);
-  const inputRef = useRef(null);
-  const replyTimerRef = useRef(null);
-
-  useEffect(() => {
-    const stored = loadChatSessions(userKey);
-    setSessions(stored);
-    setActiveId(stored[0]?.id || null);
-  }, [userKey]);
-
-  useEffect(() => {
-    saveChatSessions(userKey, sessions);
-  }, [sessions, userKey]);
-
-  useEffect(() => {
-    if (isOpen) {
-      endRef.current?.scrollIntoView({ block: 'end' });
-      window.setTimeout(() => inputRef.current?.focus(), 100);
-    }
-  }, [isOpen, sessions, isThinking]);
-
-  useEffect(() => {
-    const closeOnEscape = event => {
-      if (event.key === 'Escape') setIsOpen(false);
-    };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => {
-      document.removeEventListener('keydown', closeOnEscape);
-      window.clearTimeout(replyTimerRef.current);
-    };
-  }, []);
-
-  const activeSession = sessions.find(session => session.id === activeId) || null;
-  const messages = activeSession?.messages || [];
-
-  const startNewChat = () => {
-    if (isThinking) return;
-    const session = createSession();
-    setSessions(current => [session, ...current]);
-    setActiveId(session.id);
-    setDraft('');
-    setShowHistory(false);
-    inputRef.current?.focus();
+  const {user}=useAuth();const location=useLocation();
+  if(!user||!chatAllowed(location.pathname))return null;
+  return <ChatWidget key={user.id} context={resultContext(location.pathname,location.search)}/>;
+}
+function ChatWidget({context}) {
+  const {t,i18n}=useTranslation();const tr=key=>t(`chat.${key}`);
+  const [open,setOpen]=useState(false),[history,setHistory]=useState(false),[sessions,setSessions]=useState([]);
+  const [active,setActive]=useState(null),[messages,setMessages]=useState([]),[draft,setDraft]=useState('');
+  const [error,setError]=useState(''),[loading,setLoading]=useState(false),[busy,setBusy]=useState(false),[enabled,setEnabled]=useState(false);
+  const [page,setPage]=useState(1),[more,setMore]=useState(false),[messagePage,setMessagePage]=useState(1),[older,setOlder]=useState(false);
+  const [replyingTo,setReplyingTo]=useState(undefined);
+  const [rename,setRename]=useState(null),[title,setTitle]=useState('');
+  const alive=useRef(true),activeRef=useRef(null),version=useRef(0),requests=useRef(new Set()),mutating=useRef(false),pendingSend=useRef(null);
+  const scroller=useRef(null),follow=useRef(true);
+  useEffect(()=>{alive.current=true;return()=>{alive.current=false;requests.current.forEach(c=>c.abort());};},[]);
+  const request=useCallback(async(method,path,data)=>{
+    const controller=new AbortController();requests.current.add(controller);
+    try{return await chatRequest(method,path,data,controller.signal);}finally{requests.current.delete(controller);}
+  },[]);
+  const failure=e=>{if(alive.current&&e?.code!=='ERR_CANCELED')setError(e?.response?.data?.error?.code??'CHAT_NETWORK');};
+  const list=useCallback(async(next=1)=>{
+    const data=await request('GET',`/sessions?page=${next}`);if(!alive.current)return;
+    setSessions(prev=>next===1?data.items:[...prev,...data.items.filter(s=>!prev.some(p=>p.id===s.id))]);setMore(data.hasMore);setPage(next);
+  },[request]);
+  const load=useCallback(async(id,next=1)=>{
+    const v=version.current;const data=await request('GET',`/sessions/${id}/messages?page=${next}`);
+    if(!alive.current||v!==version.current||activeRef.current!==id)return;
+    setMessages(prev=>next===1?data.items:[...data.items.filter(m=>!prev.some(p=>p.id===m.id)),...prev]);setOlder(data.hasMore);setMessagePage(next);
+  },[request]);
+  useEffect(()=>{
+    if(!open)return;let cancelled=false;setLoading(true);
+    Promise.all([list(),request('GET','/status')]).then(([,s])=>{if(!cancelled)setEnabled(s.enabled);}).catch(failure).finally(()=>{if(!cancelled)setLoading(false);});
+    return()=>{cancelled=true;};
+  },[open,list,request]);
+  useEffect(()=>{if(open&&follow.current&&scroller.current)scroller.current.scrollTop=scroller.current.scrollHeight;},[open,messages,busy]);
+  const hasPending=messages.some(m=>m.status==='PENDING');
+  useEffect(()=>{if(!open||!active||!hasPending||busy)return;const timer=setTimeout(()=>load(active).catch(failure),4000);return()=>clearTimeout(timer);},[open,active,hasPending,busy,messages,load]);
+  useEffect(()=>{const close=e=>{if(e.key==='Escape')setOpen(false);};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close);},[]);
+  const choose=async session=>{
+    activeRef.current=session.id;version.current++;setActive(session.id);setMessages([]);setOlder(false);setDraft('');setHistory(false);setError('');pendingSend.current=null;follow.current=true;
+    setLoading(true);try{await load(session.id);}catch(e){failure(e);}finally{if(alive.current)setLoading(false);}
   };
-
-  const openSession = sessionId => {
-    setActiveId(sessionId);
-    setShowHistory(false);
-    window.setTimeout(() => inputRef.current?.focus(), 0);
+  const newChat=()=>{if(mutating.current)return;activeRef.current=null;version.current++;setActive(null);setMessages([]);setDraft('');setHistory(false);setOlder(false);setError('');pendingSend.current=null;};
+  const mutate=async(fn,isReply=false)=>{
+    if(mutating.current)return;mutating.current=true;setBusy(true);setError('');if(isReply)setReplyingTo(activeRef.current);
+    try{await fn();}catch(e){failure(e);}finally{mutating.current=false;if(alive.current){setBusy(false);if(isReply)setReplyingTo(undefined);}}
   };
-
-  const deleteSession = (event, sessionId) => {
-    event.stopPropagation();
-    if (isThinking && sessionId === activeId) return;
-    setSessions(current => {
-      const remaining = current.filter(session => session.id !== sessionId);
-      if (sessionId === activeId) setActiveId(remaining[0]?.id || null);
-      return remaining;
-    });
+  const send=event=>{
+    event?.preventDefault();const content=draft.trim();if(!content||!enabled||hasPending)return;
+    mutate(async()=>{
+      let id=activeRef.current;
+      if(!id){
+        const creating=pendingSend.current?.creating??crypto.randomUUID();
+        pendingSend.current={creating,clientMessageId:pendingSend.current?.clientMessageId??crypto.randomUUID(),content};
+        const session=await request('POST','/sessions',{id:creating,...(context??{})});if(!alive.current)return;
+        id=session.id;activeRef.current=id;setActive(id);setReplyingTo(id);version.current++;setSessions(prev=>[session,...prev.filter(s=>s.id!==id)]);
+      }
+      const retry=pendingSend.current;
+      const payload=retry?.content===content?{clientMessageId:retry.clientMessageId,content}:{clientMessageId:crypto.randomUUID(),content};
+      pendingSend.current=payload;await request('POST',`/sessions/${id}/messages`,payload);if(!alive.current)return;
+      pendingSend.current=null;if(activeRef.current===id){setDraft('');follow.current=true;await load(id);}await list();
+    },true);
   };
-
-  const sendMessage = event => {
-    event?.preventDefault();
-    const content = draft.trim();
-    if (!content || isThinking) return;
-
-    const userMessage = { id: crypto.randomUUID(), role: 'user', content, createdAt: new Date().toISOString() };
-    let sessionId = activeId;
-
-    if (!sessionId) {
-      const session = { ...createSession(), title: makeTitle(content), messages: [userMessage] };
-      sessionId = session.id;
-      setActiveId(sessionId);
-      setSessions(current => [session, ...current]);
-    } else {
-      setSessions(current => current.map(session => session.id === sessionId
-        ? {
-            ...session,
-            title: session.messages.length ? session.title : makeTitle(content),
-            messages: [...session.messages, userMessage],
-            updatedAt: userMessage.createdAt,
-          }
-        : session));
-    }
-
-    setDraft('');
-    setIsThinking(true);
-    replyTimerRef.current = window.setTimeout(() => {
-      const reply = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: makeMockReply(content),
-        createdAt: new Date().toISOString(),
-      };
-      setSessions(current => current.map(session => session.id === sessionId
-        ? { ...session, messages: [...session.messages, reply], updatedAt: reply.createdAt }
-        : session));
-      setIsThinking(false);
-    }, 700);
-  };
-
-  const handleKeyDown = event => {
-    if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
-      event.preventDefault();
-      sendMessage();
-    }
-  };
-
-  return (
-    <div className={styles.widget}>
-      {isOpen && (
-        <section className={styles.panel} aria-label={ui("AptiMate AI Assistant")}>
-          <header className={styles.header}>
-            <span className={styles.headerIcon}><Sparkles size={19} /></span>
-            <div>
-              <strong>{ui("AptiMate Assistant")}</strong>
-              <small><i />{ ' ' + ui("Online · AI learning support") }</small>
-            </div>
-            <button
-              type="button"
-              onClick={() => setShowHistory(current => !current)}
-              title={ui("Chat history")}
-              aria-label={ui("Open chat history")}
-              aria-pressed={showHistory}
-            >
-              <History size={19} />
-            </button>
-            <button type="button" onClick={startNewChat} disabled={isThinking} title={ui("New chat")} aria-label={ui("Start a new chat")}>
-              <Plus size={20} />
-            </button>
-            <button type="button" onClick={() => setIsOpen(false)} title={ui("Close")} aria-label={ui("Close assistant")}>
-              <X size={21} />
-            </button>
-          </header>
-
-          {showHistory ? (
-            <div className={styles.historyPanel}>
-              <div className={styles.historyHeading}>
-                <div><strong>{ui("Chat history")}</strong><small>{sessions.length}{ ' ' + ui("conversation") }{sessions.length === 1 ? '' : 's'}</small></div>
-                <button type="button" onClick={startNewChat}><Plus size={16} />{ ' ' + ui("New chat") }</button>
-              </div>
-              <div className={styles.historyList}>
-                {sessions.length ? sessions.map(session => (
-                  <div
-                    key={session.id}
-                    className={`${styles.historyItem} ${session.id === activeId ? styles.activeHistoryItem : ''}`}
-                  >
-                    <button type="button" className={styles.historyOpen} onClick={() => openSession(session.id)}>
-                      <MessageCircle size={17} />
-                      <span>
-                        <strong>{ui(session.title)}</strong>
-                        <small>{new Date(session.updatedAt).toLocaleString(uiLocale(), { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}</small>
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className={styles.deleteHistory}
-                      aria-label={ui("Delete {{value0}}", {value0:(session.title)})}
-                      onClick={event => deleteSession(event, session.id)}
-                    >
-                      <Trash2 size={15} />
-                    </button>
-                  </div>
-                )) : (
-                  <div className={styles.emptyHistory}><History size={28} /><strong>{ui("No chat history yet")}</strong><span>{ui("Start a conversation and it will appear here.")}</span></div>
-                )}
-              </div>
-            </div>
-          ) : <div className={styles.messages} aria-live="polite">
-            {!messages.length && (
-              <div className={styles.welcome}>
-                <span><Sparkles size={22} /></span>
-                <h2>{ui("How can I help you?")}</h2>
-                <p>{ui("Ask me about Aptis skills, test feedback, or your study plan.")}</p>
-                <div className={styles.suggestions}>
-                  {SUGGESTIONS.map(suggestion => (
-                    <button type="button" key={suggestion} onClick={() => { setDraft(suggestion); inputRef.current?.focus(); }}>
-                      {suggestion}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-            {messages.map(message => <Message key={message.id} message={message} />)}
-            {isThinking && (
-              <div className={styles.messageRow}>
-                <span className={styles.avatar}><Sparkles size={14} /></span>
-                <div className={styles.typing}><i /><i /><i /></div>
-              </div>
-            )}
-            <div ref={endRef} />
-          </div>}
-
-          {!showHistory && <form className={styles.composer} onSubmit={sendMessage}>
-            <textarea
-              ref={inputRef}
-              value={draft}
-              maxLength={MAX_MESSAGE_LENGTH}
-              rows="1"
-              onChange={event => setDraft(event.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={ui("Ask AptiMate Assistant...")}
-              aria-label={ui("Chat message")}
-            />
-            <button type="submit" disabled={!draft.trim() || isThinking} aria-label={ui("Send message")}>
-              <Send size={18} />
-            </button>
-          </form>}
-          {!showHistory && <small className={styles.disclaimer}>{ui("AI may make mistakes. Check important information.")}</small>}
-        </section>
-      )}
-
-      <button
-        type="button"
-        className={`${styles.launcher} ${isOpen ? styles.launcherOpen : ''}`}
-        onClick={() => setIsOpen(current => !current)}
-        aria-label={isOpen ? ui("Close AptiMate Assistant") : ui("Open AptiMate Assistant")}
-        aria-expanded={isOpen}
-      >
-        {isOpen ? <X size={25} /> : <MessageCircle size={27} />}
-        {!isOpen && <span className={styles.launcherLabel}>{ui("Ask AptiMate")}</span>}
-      </button>
+  const retryMessage=id=>mutate(async()=>{const session=activeRef.current;await request('POST',`/sessions/${session}/messages/${id}/retry`);if(alive.current&&activeRef.current===session)await load(session);},true);
+  const feedback=(message,value)=>mutate(async()=>{const id=activeRef.current;await request('PATCH',`/sessions/${id}/messages/${message.id}/feedback`,{feedback:message.feedback===value?0:value});if(alive.current&&activeRef.current===id)setMessages(prev=>prev.map(m=>m.id===message.id?{...m,feedback:m.feedback===value?null:value}:m));});
+  const remove=session=>mutate(async()=>{await request('DELETE',`/sessions/${session.id}`);if(!alive.current)return;setSessions(prev=>prev.filter(s=>s.id!==session.id));if(activeRef.current===session.id){activeRef.current=null;version.current++;setActive(null);setMessages([]);setDraft('');pendingSend.current=null;}});
+  const renameChat=event=>{event.preventDefault();mutate(async()=>{await request('PATCH',`/sessions/${rename}`,{title:title.trim()});if(!alive.current)return;setRename(null);await list();});};
+  return <div className={styles.widget}>
+    {open&&<section className={styles.panel} aria-label={tr('title')}>
+      <header className={styles.header}>
+        <span className={styles.headerIcon}><Sparkles size={19}/></span><div><strong>{tr('title')}</strong><small>{tr(enabled?'support':'disabled')}</small></div>
+        <button onClick={()=>setHistory(v=>!v)} title={tr('history')} aria-label={tr('history')}><History size={19}/></button>
+        <button onClick={newChat} disabled={busy} title={tr('new')} aria-label={tr('new')}><Plus size={20}/></button>
+        <button onClick={()=>setOpen(false)} title={tr('close')} aria-label={tr('close')}><X size={20}/></button>
+      </header>
+      {history?<div className={styles.historyPanel}>
+        <div className={styles.historyHeading}><strong>{tr('history')}</strong><button onClick={newChat} disabled={busy}><Plus size={16}/>{tr('new')}</button></div>
+        <div className={styles.historyList}>
+          {sessions.map(s=><div key={s.id} className={`${styles.historyItem} ${active===s.id?styles.activeHistoryItem:''}`}>
+            <button className={styles.historyOpen} onClick={()=>choose(s)}><MessageCircle size={17}/><span><strong>{s.title==='New conversation'?tr('new'):s.title}</strong><small>{new Date(s.updatedAt).toLocaleString(i18n.language)}</small></span></button>
+            <div><button disabled={busy} aria-label={tr('rename')} onClick={()=>{setRename(s.id);setTitle(s.title);}}><Pencil size={14}/></button><button disabled={busy} aria-label={tr('delete')} onClick={()=>remove(s)}><Trash2 size={14}/></button></div>
+          </div>)}
+          {!sessions.length&&!loading&&<p>{tr('emptyHistory')}</p>}{more&&<button onClick={()=>list(page+1).catch(failure)}>{tr('more')}</button>}
+          {rename&&<form onSubmit={renameChat}><input aria-label={tr('rename')} value={title} onChange={e=>setTitle(e.target.value)} maxLength={200}/><button disabled={busy||!title.trim()}>{tr('save')}</button><button type="button" onClick={()=>setRename(null)}>{tr('cancel')}</button></form>}
+          {error&&<p role="alert">{tr('error')}</p>}
+        </div>
+      </div>:<div className={styles.messages} ref={scroller} onScroll={()=>{const el=scroller.current;follow.current=el.scrollHeight-el.scrollTop-el.clientHeight<60;}}>
+        {older&&<button onClick={()=>{follow.current=false;load(active,messagePage+1).catch(failure);}}>{tr('older')}</button>}
+        {!messages.length&&!loading&&<div className={styles.welcome}><span><Sparkles size={22}/></span><h2>{tr('welcome')}</h2><p>{tr(context?'resultContext':'intro')}</p><div className={styles.suggestions}>{['grammar','stats','features'].map(k=><button key={k} onClick={()=>setDraft(tr(k))}>{tr(k)}</button>)}</div></div>}
+        {loading&&<p role="status">{tr('loading')}</p>}
+        {messages.map(m=><ChatMessage key={m.id} message={m} tr={tr} disabled={busy} onFeedback={v=>feedback(m,v)} onRetry={()=>retryMessage(m.id)} canRetry={m.id===messages.at(-1)?.id}/>)}
+        {replyingTo!==undefined&&replyingTo===active&&!hasPending&&<TypingBubble label={tr('thinking')}/>}
+      </div>}
+      {!history&&<>
+        {error&&<div className={styles.notice} role="alert">{tr(['CHAT_DISABLED','CHAT_CONFIG_INVALID'].includes(error)?'disabled':error==='CHAT_RATE_LIMIT'?'rateLimit':'error')}<button onClick={()=>active?load(active).then(()=>setError('')).catch(failure):list().catch(failure)}>{tr('refresh')}</button></div>}
+        <form className={styles.composer} onSubmit={send}><textarea aria-label={tr('input')} placeholder={tr('input')} value={draft} maxLength={4000} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send();}}}/><button disabled={busy||hasPending||!enabled||!draft.trim()} aria-label={tr('send')}><Send size={17}/></button></form>
+        <small className={styles.disclaimer}>{tr('privacy')}</small>
+      </>}
+    </section>}
+    <button className={`${styles.launcher} ${open?styles.launcherOpen:''}`} onClick={()=>setOpen(v=>!v)} aria-label={tr(open?'close':'title')} aria-expanded={open}>{open?<X size={22}/>:<><MessageCircle size={23}/><span className={styles.launcherLabel}>{tr('title')}</span></>}</button>
+  </div>;
+}
+function ChatMessage({message:m,tr,onFeedback,onRetry,disabled,canRetry}) {
+  const [copied,setCopied]=useState(false);
+  const copy=async()=>{try{await navigator.clipboard.writeText(m.content);setCopied(true);}catch{setCopied(false);}};
+  if(m.role==='assistant'&&m.status==='PENDING')return <TypingBubble label={tr('thinking')}/>;
+  return <article className={`${styles.messageRow} ${m.role==='user'?styles.userRow:''}`}>
+    {m.role!=='user'&&<span className={styles.avatar}><Sparkles size={14}/></span>}
+    <div className={styles.messageBody}><div className={`${styles.message} ${m.role==='user'?styles.userMessage:styles.assistantMessage}`}>{m.content||tr(m.status==='PENDING'?'thinking':'failed')}</div>
+      {m.role==='assistant'&&m.status==='FAILED'&&canRetry&&<button disabled={disabled} onClick={onRetry}>{tr('retry')}</button>}
+      {m.role==='assistant'&&m.status==='COMPLETED'&&<>
+        <div className={styles.messageTools}><button aria-label={tr('copy')} onClick={copy}>{copied?<Check size={13}/>:<Clipboard size={13}/>}</button><button disabled={disabled} aria-label={tr('helpful')} aria-pressed={m.feedback===1} onClick={()=>onFeedback(1)}><ThumbsUp size={13}/></button><button disabled={disabled} aria-label={tr('unhelpful')} aria-pressed={m.feedback===-1} onClick={()=>onFeedback(-1)}><ThumbsDown size={13}/></button></div>
+        {(m.citations??[]).map(s=>safeSource(s.url)?<a className={styles.source} key={s.id} href={safeSource(s.url)} target="_blank" rel="noopener noreferrer">{s.title}</a>:<span key={s.id}>{s.title}</span>)}
+        {(m.actions??[]).map((a,i)=>actionPath(a)?<Link className={styles.action} key={`${a.code}-${i}`} to={actionPath(a)}>{tr(`actions.${a.code}`)}</Link>:null)}
+      </>}
     </div>
-  );
+  </article>;
+}
+
+function TypingBubble({label}) {
+  return <div className={styles.messageRow} role="status" aria-label={label}>
+    <span className={styles.avatar} aria-hidden="true"><Sparkles size={14}/></span>
+    <div className={`${styles.typing} ${styles.assistantMessage}`} aria-hidden="true"><i/><i/><i/></div>
+  </div>;
 }
