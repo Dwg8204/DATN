@@ -38,7 +38,17 @@ test('chat sessions, feedback, retry, ownership boundary and exam visibility',as
       return route.abort();
     });
     await page.goto('https://chat-ui.test/');await page.addStyleTag({content:bundle.outputFiles.find(f=>f.path.endsWith('.css')).text});await page.addScriptTag({content:bundle.outputFiles.find(f=>f.path.endsWith('.js')).text});
-    await page.getByRole('button',{name:'AptiMate Assistant',exact:true}).click();
+    const launcher=page.getByRole('button',{name:'AptiMate Assistant',exact:true});
+    await launcher.waitFor();assert.equal(await launcher.locator('svg').count(),1);
+    const petBox=await launcher.boundingBox();assert.ok(petBox.width>=44&&petBox.x+petBox.width<=390);
+    assert.ok(await launcher.locator('svg').evaluate(svg=>[...svg.querySelectorAll('*')].some(el=>getComputedStyle(el).animationName!=='none')));
+    await launcher.hover();
+    if(process.env.CHATBOT_PET_PREVIEW)await page.screenshot({path:process.env.CHATBOT_PET_PREVIEW,clip:{x:70,y:640,width:320,height:200}});
+    await page.emulateMedia({reducedMotion:'reduce'});
+    assert.ok(await launcher.locator('svg').evaluate(svg=>[...svg.querySelectorAll('*')].every(el=>getComputedStyle(el).animationName==='none')));
+    await page.emulateMedia({reducedMotion:'no-preference'});
+    await launcher.focus();await page.keyboard.press('Enter');
+    assert.equal(await page.getByRole('region',{name:'AptiMate Assistant'}).count(),1);
     const ask=async text=>{await page.getByLabel('Type a question…').fill(text);await page.getByRole('button',{name:'Send',exact:true}).click();};
     await ask('First session');
     const typing=page.getByRole('status',{name:'Preparing a reply…'});await typing.waitFor();assert.equal(await typing.locator('i').count(),3);assert.equal(await typing.innerText(),'');

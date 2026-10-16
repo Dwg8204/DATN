@@ -6,6 +6,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { chatRequest } from '../services/chatApi';
 import { actionPath,chatAllowed,resultContext,safeSource } from '../services/chatPolicy';
 import styles from './ChatAssistantWidget.module.css';
+import AssistantPet from './AssistantPet';
 
 export default function ChatAssistantWidget() {
   const {user}=useAuth();const location=useLocation();
@@ -107,7 +108,7 @@ function ChatWidget({context}) {
         <small className={styles.disclaimer}>{tr('privacy')}</small>
       </>}
     </section>}
-    <button className={`${styles.launcher} ${open?styles.launcherOpen:''}`} onClick={()=>setOpen(v=>!v)} aria-label={tr(open?'close':'title')} aria-expanded={open}>{open?<X size={22}/>:<><MessageCircle size={23}/><span className={styles.launcherLabel}>{tr('title')}</span></>}</button>
+    <button className={`${styles.launcher} ${open?styles.launcherOpen:styles.launcherPet}`} onClick={()=>setOpen(v=>!v)} aria-label={tr(open?'close':'title')} aria-expanded={open}>{open?<X size={22}/>:<AssistantPet label={tr('title')}/>}</button>
   </div>;
 }
 function ChatMessage({message:m,tr,onFeedback,onRetry,disabled,canRetry}) {
