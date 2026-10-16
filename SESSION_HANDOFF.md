@@ -1,5 +1,19 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Mốc chatbot mới nhất — 16/10/2026
+
+- Theo yêu cầu mới nhất, đã pull `origin/develop` trên `feature/backend-writing-crud` (Already up to date), khôi phục thay đổi không xung đột và chia commit local theo task: schema, backend, corpus/ingestion, kiểm thử, UI, linh vật và tài liệu. Không push. Các ghi chú “chưa commit” bên dưới là trạng thái trước mốc đồng bộ này.
+
+- Theo yêu cầu tiếp theo, nút mở chatbot đã đổi sang linh vật robot SVG đỏ–kem có chớp mắt/nhún/vẫy tay; component `AssistantPet` + CSS riêng. Giữ aria-label, thao tác bàn phím, mobile và reduced motion. Đợt này chỉ đổi launcher, chưa mở giai đoạn AI tiếp theo.
+
+- Trạng thái chức năng, bằng chứng kiểm thử và các giai đoạn còn lại được tập hợp tại `docs/CHATBOT_STATUS.md`; đọc tài liệu này trước khi tiếp tục chatbot.
+- Người dùng đã test và đánh giá các chức năng hiện có tạm ổn; yêu cầu sửa riêng đường dẫn Notebook và trạng thái chờ. Đã sửa `OPEN_NOTEBOOK` thành `/dictation?mode=notebook`, hiển thị bong bóng ba chấm typing thay chữ thô; chờ nghiệm thu lại. Không coi đây là xác nhận toàn bộ cá nhân hóa/RAG.
+
+- Người dùng yêu cầu làm theo từng giai đoạn; hoàn thành phải dừng báo cáo và chờ họ test/xác nhận rồi mới tiếp tục.
+- Đã hoàn tất mốc gửi/nhận Gemini local, cấu hình `.env` bật `CHATBOT_ENABLED=true`, model chat `gemini-3.5-flash-lite`; giữ nguyên cấu hình chấm bài.
+- 20 test backend, 4 test frontend, DB integration + 5 lượt Gemini thật và backend build đạt. RAG local xác nhận 14 tài liệu/14 chunk. Chi tiết, giới hạn và hướng dẫn nghiệm thu: `docs/CHATBOT_STAGE_2_REPORT.md`.
+- Chưa commit/push; chưa khởi động backend nền thường trực. Không tự triển khai tiếp cá nhân hóa/RAG mở rộng trước khi người dùng xác nhận.
+
 Cập nhật: 12/10/2026, múi giờ Asia/Bangkok. Các snapshot repository ngày 04/10 ở dưới là lịch sử; xem các mục cuối để biết thay đổi mới nhất.
 
 ## Cách sử dụng và mức độ tin cậy

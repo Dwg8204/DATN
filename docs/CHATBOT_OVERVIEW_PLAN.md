@@ -1,5 +1,7 @@
 # Kế hoạch tổng quát chatbot AptiMate
 
+> Cập nhật triển khai 16/10/2026: xem [trạng thái chatbot](CHATBOT_STATUS.md) và [báo cáo giai đoạn gửi/nhận](CHATBOT_STAGE_2_REPORT.md). Nội dung bên dưới giữ làm kế hoạch lịch sử ngày 14/10; các câu “chưa triển khai/chưa chốt model” không mô tả trạng thái hiện tại.
+
 Ngày: 14/10/2026. Trạng thái: đề xuất để đọc và thống nhất trước khi triển khai; chưa thay code ứng dụng, schema hay cấu hình API.
 
 ## 1. Phạm vi đã thống nhất
