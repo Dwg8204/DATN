@@ -1,4 +1,43 @@
 {
+  "personalization": {
+    "title": "Learning goal",
+    "days": "Duration (3–180 days)",
+    "goalSummary": "{{targetCefr}} · {{completed}}/{{targetTests}} tests · {{startDate}} – {{endsOn}}",
+    "reload": "Reload",
+    "loadFailed": "Unable to load your goal. Please try again.",
+    "saveFailed": "Unable to save changes. Check the values and try again.",
+    "conflict": "The goal changed or cannot finish yet. Reload before continuing.",
+    "saved": "Changes saved.",
+    "legacy": "This browser has an older goal. Create it on your account starting today?",
+    "import": "Import old goal",
+    "replace": "Replace goal",
+    "cancel": "Cancel goal",
+    "finish": "Finish early",
+    "preferences": "Reminder and report preferences",
+    "reminderEnabled": "Enable daily reminders",
+    "emailReminderEnabled": "Receive reminders by email",
+    "emailReportEnabled": "Receive reports by email",
+    "reminderTime": "Reminder time (account time zone)",
+    "savePreferences": "Save preferences",
+    "history": "Goal history",
+    "noHistory": "No ended goals yet.",
+    "more": "Load more",
+    "confirmAction": "Confirm",
+    "back": "Back",
+    "confirm": {
+      "replace": "Your current goal will move to history. Progress for the new goal starts again today. Continue?",
+      "cancel": "Cancel your current goal? Cancelled goals do not generate a final report.",
+      "finish": "You have reached your test target. Finish this goal early?",
+      "import": "Your old goal will be saved to your account and start today. Continue?"
+    },
+    "lifecycle": {
+      "ACTIVE": "Active",
+      "REPLACED": "Replaced",
+      "CANCELLED": "Cancelled",
+      "COMPLETED": "Completed",
+      "EXPIRED": "Expired"
+    }
+  },
   "speakingDetailedFeedback": {
     "partAssessment": "Speaking Part assessment",
     "partCefrNotice": "A single Part cannot establish an overall Speaking CEFR level. The /50 score is for practice only.",

@@ -3,8 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { UserCircle, Bell, History, LogOut, LayoutDashboard, Menu } from 'lucide-react';
-import { calcGoalProgress } from '../../../utils/dashboardUtils';
-import { getHistoryEntries } from '../../../utils/historyStorage';
 import styles from './ProfileSidebar.module.css';
 import { useTranslation } from 'react-i18next';
 
@@ -37,11 +35,6 @@ export default function ProfileSidebar({ activeTab }) {
       // The shared API error toast explains why the session could not be closed.
     }
   };
-
-  const historyEntries = getHistoryEntries();
-  const savedConfig = localStorage.getItem('aptimate.dashboard_goal');
-  const goalConfig = savedConfig ? JSON.parse(savedConfig) : { active: false };
-  const goalProgress = goalConfig.active ? calcGoalProgress(goalConfig, historyEntries) : null;
 
   return (
     <div className={styles.sidebar}>
@@ -110,33 +103,10 @@ export default function ProfileSidebar({ activeTab }) {
         </div>
       </div>
 
-      {goalConfig.active && goalProgress ? (
-        <div className={`${styles.goalGrid} ${styles.mobileHidden}`}>
-          <div className={styles.goalTile}>
-            <div className={styles.goalTileTitle}>{t('goal.target')}</div>
-            <div className={styles.goalTileValuePrimary}>{t('dashboard.band', { band: goalConfig.targetBand })}</div>
-          </div>
-          <div className={styles.goalTile}>
-            <div className={styles.goalTileTitle}>{t('goal.current')}</div>
-            <div className={styles.goalTileValue}>{t('dashboard.band', { band: goalProgress.currentEstBand })}</div>
-          </div>
-          <div className={styles.goalTile}>
-            <div className={styles.goalTileTitle}>{t('goal.completed')}</div>
-            <div className={styles.goalTileValue}>
-              {goalProgress.completedTests} <span className={styles.goalTileUnit}>{t('goal.tests')}</span>
-            </div>
-          </div>
-          <div className={styles.goalTile}>
-            <div className={styles.goalTileTitle}>{t('goal.learningTime')}</div>
-            <div className={styles.goalTileValue}>
-              {goalProgress.totalHours} <span className={styles.goalTileUnit}>{t('goal.hours')}</span>
-            </div>
-          </div>
-        </div>
-      ) : null}
+
 
       <button className={`${styles.btnSetGoal} ${styles.mobileHidden}`} onClick={() => navigate('/profile')}>
-        {t(goalConfig.active ? 'goal.change' : 'goal.set')}
+        {t('goal.tracker')}
       </button>
 
       <div className={`${styles.divider} ${styles.mobileHidden}`}></div>

@@ -1,4 +1,43 @@
 {
+  "personalization": {
+    "title": "Mục tiêu học tập",
+    "days": "Thời gian (3–180 ngày)",
+    "goalSummary": "{{targetCefr}} · {{completed}}/{{targetTests}} bài · {{startDate}} – {{endsOn}}",
+    "reload": "Tải lại",
+    "loadFailed": "Không tải được dữ liệu mục tiêu. Vui lòng thử lại.",
+    "saveFailed": "Không lưu được thay đổi. Vui lòng kiểm tra dữ liệu và thử lại.",
+    "conflict": "Mục tiêu đã thay đổi hoặc chưa đủ điều kiện kết thúc. Hãy tải lại trước khi tiếp tục.",
+    "saved": "Đã lưu thay đổi.",
+    "legacy": "Có mục tiêu cũ trên trình duyệt này. Bạn có muốn tạo lại trên tài khoản, bắt đầu từ hôm nay?",
+    "import": "Chuyển mục tiêu cũ",
+    "replace": "Thay mục tiêu",
+    "cancel": "Hủy mục tiêu",
+    "finish": "Kết thúc sớm",
+    "preferences": "Cài đặt nhắc nhở và báo cáo",
+    "reminderEnabled": "Bật nhắc nhở hằng ngày",
+    "emailReminderEnabled": "Nhận nhắc nhở qua email",
+    "emailReportEnabled": "Nhận báo cáo qua email",
+    "reminderTime": "Giờ nhắc (theo múi giờ tài khoản)",
+    "savePreferences": "Lưu cài đặt",
+    "history": "Lịch sử mục tiêu",
+    "noHistory": "Chưa có mục tiêu đã kết thúc.",
+    "more": "Xem thêm",
+    "confirmAction": "Xác nhận",
+    "back": "Quay lại",
+    "confirm": {
+      "replace": "Mục tiêu hiện tại sẽ được lưu vào lịch sử. Tiến độ mục tiêu mới được tính lại từ hôm nay. Bạn có muốn tiếp tục?",
+      "cancel": "Bạn có muốn hủy mục tiêu hiện tại? Mục tiêu đã hủy không tạo báo cáo cuối kỳ.",
+      "finish": "Bạn đã đạt số bài mục tiêu. Bạn có muốn kết thúc mục tiêu sớm?",
+      "import": "Mục tiêu cũ sẽ được lưu trên tài khoản và bắt đầu từ hôm nay. Bạn có muốn tiếp tục?"
+    },
+    "lifecycle": {
+      "ACTIVE": "Đang thực hiện",
+      "REPLACED": "Đã thay thế",
+      "CANCELLED": "Đã hủy",
+      "COMPLETED": "Hoàn thành",
+      "EXPIRED": "Hết hạn"
+    }
+  },
   "speakingDetailedFeedback": {
     "partAssessment": "Đánh giá Speaking theo Part",
     "partCefrNotice": "Bài luyện một Part không đủ để ước lượng CEFR toàn kỹ năng Speaking. Điểm /50 chỉ dùng luyện tập nội bộ.",

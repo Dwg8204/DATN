@@ -3,6 +3,10 @@ import { LearningGoalsRepository } from './repositories/learning-goals.repositor
 import { LearnerPreferencesRepository } from './repositories/learner-preferences.repository';
 import { LearningInsightsRepository } from './repositories/learning-insights.repository';
 import { StudyPlansRepository } from './repositories/study-plans.repository';
+import { PersonalizationController } from './controllers/personalization.controller';
+import { GoalsService } from './services/goals.service';
+import { PreferencesService } from './services/preferences.service';
+import { PersonalizationClock } from './services/personalization-clock';
 
 const repositories = [
   LearningGoalsRepository,
@@ -11,5 +15,14 @@ const repositories = [
   StudyPlansRepository,
 ];
 
-@Module({ providers: repositories, exports: repositories })
+@Module({
+  controllers: [PersonalizationController],
+  providers: [
+    ...repositories,
+    GoalsService,
+    PreferencesService,
+    PersonalizationClock,
+  ],
+  exports: [...repositories, GoalsService, PersonalizationClock],
+})
 export class PersonalizationModule {}
