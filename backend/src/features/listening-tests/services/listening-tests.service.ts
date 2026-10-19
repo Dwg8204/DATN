@@ -25,10 +25,9 @@ export class ListeningTestsService {
     return paginate(result.tests, result.total, query);
   }
 
-  async get(id: string, actor: AuthUser): Promise<ListeningTestAggregate> {
+  async get(id: string): Promise<ListeningTestAggregate> {
     const aggregate = await this.repository.findAggregate(id);
     if (!aggregate || aggregate.status === 'ARCHIVED') this.notFound();
-    await this.assertOwner(id, actor);
     return aggregate;
   }
 
@@ -53,7 +52,6 @@ export class ListeningTestsService {
   async publish(id: string, actor: AuthUser, dto: PublishListeningTestDto, audit: ListeningAudit): Promise<ListeningTestAggregate> {
     const aggregate = await this.repository.findAggregate(id);
     if (!aggregate || aggregate.status === 'ARCHIVED') this.notFound();
-    await this.assertOwner(id, actor);
     if (aggregate.version !== dto.version) this.versionConflict();
     this.content.assertPublishable(aggregate);
     return this.unwrap(await this.repository.publish(id, actor, dto.version, aggregate, audit));
@@ -63,20 +61,9 @@ export class ListeningTestsService {
     this.unwrap(await this.repository.archive(id, actor, audit));
   }
 
-  private async assertOwner(id: string, actor: AuthUser): Promise<void> {
-    const owner = await this.repository.findOwner(id);
-    if (!owner || owner.status === 'ARCHIVED') this.notFound();
-    if (actor.role === 'TEACHER' && owner.createdBy !== actor.id) {
-      throw new ApplicationError('LISTENING_TEST_FORBIDDEN', 'You can only manage tests that you created.', 403);
-    }
-  }
-
   private unwrap(result: RepositoryMutation): ListeningTestAggregate {
     if (result.outcome === 'SUCCESS') return result.value;
     if (result.outcome === 'NOT_FOUND') this.notFound();
-    if (result.outcome === 'FORBIDDEN') {
-      throw new ApplicationError('LISTENING_TEST_FORBIDDEN', 'You can only manage tests that you created.', 403);
-    }
     return this.versionConflict();
   }
 

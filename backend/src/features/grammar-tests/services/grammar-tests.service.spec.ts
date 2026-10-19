@@ -4,9 +4,9 @@ import { GrammarTestsRepository } from '../repositories/grammar-tests.repository
 import { AuthUser } from '../../auth/types/auth-user.type';
 
 describe('GrammarTestsService', () => {
-  const actor: AuthUser = { id: 'actor', email: 'teacher@example.com', firstName: 'T', lastName: 'One', role: 'TEACHER', status: 'ACTIVE' };
+  const actor: AuthUser = { id: 'actor', email: 'admin@example.com', firstName: 'T', lastName: 'One', role: 'ADMIN', status: 'ACTIVE' };
   const repository = {
-    findAggregate: jest.fn(), findOwner: jest.fn(), update: jest.fn(), publish: jest.fn(), archive: jest.fn(),
+    findAggregate: jest.fn(), update: jest.fn(), publish: jest.fn(), archive: jest.fn(),
     create: jest.fn(), list: jest.fn(), listPublished: jest.fn(), findPublishedAggregate: jest.fn(),
   } as unknown as jest.Mocked<GrammarTestsRepository>;
   const content = new GrammarTestContentService();
@@ -16,7 +16,6 @@ describe('GrammarTestsService', () => {
 
   it('rejects publishing when the saved client revision is stale', async () => {
     repository.findAggregate.mockResolvedValue({ id: 'id', version: 8, purpose: 'PRACTICE', mode: 'part1', details: { title: 'Draft' }, parts: {}, status: 'DRAFT' });
-    repository.findOwner.mockResolvedValue({ createdBy: actor.id, status: 'DRAFT' });
     await expect(service.publish('id', actor, {}, 7)).rejects.toMatchObject({ code: 'GRAMMAR_TEST_VERSION_CONFLICT', statusCode: 409 });
     expect(repository.publish).not.toHaveBeenCalled();
   });
@@ -29,10 +28,9 @@ describe('GrammarTestsService', () => {
     }, {})).rejects.toMatchObject({ code: 'GRAMMAR_TEST_VERSION_CONFLICT', statusCode: 409 });
   });
 
-  it('does not let a teacher access another teacher test', async () => {
+  it('allows an administrator to load tests created by another account', async () => {
     repository.findAggregate.mockResolvedValue({ id: 'id', purpose: 'PRACTICE', mode: 'part1', details: { title: 'Test' }, parts: {}, status: 'DRAFT' });
-    repository.findOwner.mockResolvedValue({ createdBy: 'someone-else', status: 'DRAFT' });
-    await expect(service.get('id', actor)).rejects.toMatchObject({ code: 'GRAMMAR_TEST_FORBIDDEN', statusCode: 403 });
+    await expect(service.get('id')).resolves.toMatchObject({ status: 'DRAFT' });
   });
 
   it('publishes the version the client saved when it remains current', async () => {
@@ -44,7 +42,6 @@ describe('GrammarTestsService', () => {
       })) } },
     };
     repository.findAggregate.mockResolvedValue(aggregate);
-    repository.findOwner.mockResolvedValue({ createdBy: actor.id, status: 'DRAFT' });
     repository.publish.mockResolvedValue({ outcome: 'SUCCESS', value: { ...aggregate, status: 'PUBLISHED' } });
 
     await expect(service.publish('id', actor, {}, 7)).resolves.toMatchObject({ status: 'PUBLISHED' });

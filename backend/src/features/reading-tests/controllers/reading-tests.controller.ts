@@ -11,14 +11,14 @@ import { ReadingTestsService } from '../services/reading-tests.service';
 
 @Controller('reading-tests')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN', 'TEACHER')
+@Roles('ADMIN')
 export class ReadingTestsController {
   constructor(private readonly tests: ReadingTestsService) {}
-  @Get() list(@Query() query: ListReadingTestsQueryDto, @CurrentUser() user: AuthUser) { return this.tests.list(query, user); }
+  @Get() list(@Query() query: ListReadingTestsQueryDto, @CurrentUser() actor: AuthUser) { return this.tests.list(query, actor); }
   @Post() create(@Body() dto: CreateReadingTestDto, @CurrentUser() user: AuthUser, @Req() request: Request) {
     return this.tests.create(dto, user, { ipAddress: request.ip });
   }
-  @Get(':id') get(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: AuthUser) { return this.tests.getOne(id, user); }
+  @Get(':id') get(@Param('id', ParseUUIDPipe) id: string) { return this.tests.getOne(id); }
   @Patch(':id') update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateReadingTestDto,
     @CurrentUser() user: AuthUser, @Req() request: Request) { return this.tests.update(id, dto, user, { ipAddress: request.ip }); }
   @Post(':id/publish') @HttpCode(200) publish(@Param('id', ParseUUIDPipe) id: string, @Body() dto: PublishReadingTestDto,

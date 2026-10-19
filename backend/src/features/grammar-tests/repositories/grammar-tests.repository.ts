@@ -51,7 +51,7 @@ type QuestionRow = {
 
 export type RepositoryMutation =
   | { outcome: 'SUCCESS'; value: GrammarTestAggregate }
-  | { outcome: 'NOT_FOUND' | 'FORBIDDEN' | 'VERSION_CONFLICT' };
+  | { outcome: 'NOT_FOUND' | 'VERSION_CONFLICT' };
 
 @Injectable()
 export class GrammarTestsRepository {
@@ -63,10 +63,6 @@ export class GrammarTestsRepository {
     if (query.purpose) {
       values.push(query.purpose);
       where.push(`t.purpose = $${values.length}`);
-    }
-    if (actor?.role === 'TEACHER') {
-      values.push(actor.id);
-      where.push(`t.created_by = $${values.length}`);
     }
     if (query.search?.trim()) {
       values.push(`%${query.search.trim().replace(/[%_\\]/g, value => `\\${value}`)}%`);
@@ -223,7 +219,6 @@ export class GrammarTestsRepository {
     return this.dataSource.transaction(async manager => {
       const current = await this.lock(manager, id);
       if (!current) return { outcome: 'NOT_FOUND' };
-      if (actor.role === 'TEACHER' && current.created_by !== actor.id) return { outcome: 'FORBIDDEN' };
       if (current.version !== expectedVersion) return { outcome: 'VERSION_CONFLICT' };
       const mapping = this.modeColumns(test.mode);
       const storage = this.toStorage(test);
@@ -252,7 +247,6 @@ export class GrammarTestsRepository {
     return this.dataSource.transaction(async manager => {
       const current = await this.lock(manager, id);
       if (!current) return { outcome: 'NOT_FOUND' };
-      if (actor.role === 'TEACHER' && current.created_by !== actor.id) return { outcome: 'FORBIDDEN' };
       if (current.version !== expectedVersion) return { outcome: 'VERSION_CONFLICT' };
     const snapshotPayload = { ...snapshot, purpose: current.purpose, status: 'PUBLISHED' as const, version: current.version };
       const serialized = JSON.stringify(snapshotPayload);
@@ -286,7 +280,6 @@ export class GrammarTestsRepository {
     return this.dataSource.transaction(async manager => {
       const current = await this.lock(manager, id);
       if (!current || current.status === 'ARCHIVED') return { outcome: 'NOT_FOUND' };
-      if (actor.role === 'TEACHER' && current.created_by !== actor.id) return { outcome: 'FORBIDDEN' };
       const rows = await manager.query<TestRow[]>(
         `UPDATE tests SET status='ARCHIVED', archived_at=now(), updated_by=$2, updated_at=now()
          WHERE id=$1 RETURNING *`,
@@ -296,13 +289,6 @@ export class GrammarTestsRepository {
       await this.audit(manager, actor.id, 'GRAMMAR_TEST_ARCHIVED', id, { version: current.version }, audit);
       return { outcome: 'SUCCESS', value: this.hydrate(row, await this.activeQuestions(manager, id)) };
     });
-  }
-
-  async findOwner(id: string): Promise<{ createdBy: string; status: GrammarTestStatus } | null> {
-    const rows = await this.dataSource.query<Array<{ created_by: string; status: GrammarTestStatus }>>(
-      `SELECT created_by, status FROM tests WHERE id=$1 AND component='GRAMMAR_VOCAB' LIMIT 1`, [id],
-    );
-    return rows[0] ? { createdBy: rows[0].created_by, status: rows[0].status } : null;
   }
 
   private modeColumns(mode: GrammarTestMode) {

@@ -19,7 +19,7 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
 @ApiCookieAuth('aptimate_access_token')
 @Controller('admin/writing-tests')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN', 'TEACHER')
+@Roles('ADMIN')
 export class WritingTestsController {
   constructor(private readonly tests: WritingTestsService) {}
 
@@ -27,7 +27,7 @@ export class WritingTestsController {
   list(@Query() query: ListWritingTestsQueryDto, @CurrentUser() actor: AuthUser) { return this.tests.list(query, actor); }
 
   @Get(':id')
-  get(@Param('id', new ParseUUIDPipe()) id: string, @CurrentUser() actor: AuthUser) { return this.tests.get(id, actor); }
+  get(@Param('id', new ParseUUIDPipe()) id: string) { return this.tests.get(id); }
 
   @Post()
   create(@Body() dto: CreateWritingTestDto, @CurrentUser() actor: AuthUser, @Req() request: Request) {

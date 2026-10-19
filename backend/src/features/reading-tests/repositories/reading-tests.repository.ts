@@ -6,7 +6,7 @@ import { ListReadingTestsQueryDto } from '../dto/list-reading-tests-query.dto';
 import { ReadingActor, ReadingAudit, ReadingTestAggregate, ReadingTestMode } from '../types/reading-test.type';
 
 type Mutation = { outcome: 'SUCCESS'; value: ReadingTestAggregate } |
-  { outcome: 'NOT_FOUND' | 'FORBIDDEN' | 'VERSION_CONFLICT' };
+  { outcome: 'NOT_FOUND' | 'VERSION_CONFLICT' };
 
 @Injectable()
 export class ReadingTestsRepository {
@@ -16,7 +16,6 @@ export class ReadingTestsRepository {
     const values: unknown[] = ['READING'];
     const where = ['t.component=$1'];
     if (query.purpose) { values.push(query.purpose); where.push(`t.purpose=$${values.length}`); }
-    if (actor?.role === 'TEACHER') { values.push(actor.id); where.push(`t.created_by=$${values.length}`); }
     if (query.search?.trim()) {
       values.push(`%${query.search.trim().replace(/[%_\\]/g, value => `\\${value}`)}%`);
       where.push(`t.title ILIKE $${values.length} ESCAPE '\\'`);
@@ -64,11 +63,6 @@ export class ReadingTestsRepository {
     return row?.snapshot ?? null;
   }
 
-  async findOwner(id: string) {
-    const [row] = await this.dataSource.query<any[]>("SELECT created_by,status FROM tests WHERE id=$1 AND component='READING'", [id]);
-    return row ? { createdBy: row.created_by, status: row.status } : null;
-  }
-
   async create(actor: ReadingActor, aggregate: ReadingTestAggregate, audit: ReadingAudit, creationRequestId?: string) {
     const id = testCreationId(actor.id, 'READING', creationRequestId);
     let replayed = false;
@@ -93,7 +87,6 @@ export class ReadingTestsRepository {
     await this.dataSource.transaction(async manager => {
       const [locked] = await manager.query<any[]>("SELECT version,created_by FROM tests WHERE id=$1 AND component='READING' FOR UPDATE", [id]);
       if (!locked) { outcome = 'NOT_FOUND'; return; }
-      if (actor.role === 'TEACHER' && locked.created_by !== actor.id) { outcome = 'FORBIDDEN'; return; }
       if (locked.version !== version) { outcome = 'VERSION_CONFLICT'; return; }
       await manager.query(
         `UPDATE tests SET title=$2,purpose=$3,scope=$4,part_number=$5,cover=$6,part_contents=$7,
@@ -111,7 +104,6 @@ export class ReadingTestsRepository {
     await this.dataSource.transaction(async manager => {
       const [locked] = await manager.query<any[]>("SELECT version,created_by FROM tests WHERE id=$1 AND component='READING' FOR UPDATE", [id]);
       if (!locked) { outcome = 'NOT_FOUND'; return; }
-      if (actor.role === 'TEACHER' && locked.created_by !== actor.id) { outcome = 'FORBIDDEN'; return; }
       if (locked.version !== version) { outcome = 'VERSION_CONFLICT'; return; }
       const newVersion = version + 1;
       const snapshotId = randomUUID();
@@ -130,7 +122,6 @@ export class ReadingTestsRepository {
     await this.dataSource.transaction(async manager => {
       const [locked] = await manager.query<any[]>("SELECT created_by FROM tests WHERE id=$1 AND component='READING' FOR UPDATE", [id]);
       if (!locked) { outcome = 'NOT_FOUND'; return; }
-      if (actor.role === 'TEACHER' && locked.created_by !== actor.id) { outcome = 'FORBIDDEN'; return; }
       await manager.query("UPDATE tests SET status='ARCHIVED',archived_at=now(),updated_by=$2,updated_at=now() WHERE id=$1", [id, actor.id]);
       await this.audit(manager, actor.id, 'ARCHIVE_READING_TEST', id, {}, audit);
     });

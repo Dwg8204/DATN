@@ -22,10 +22,9 @@ export class WritingTestsService {
     return paginate(result.tests, result.total, query);
   }
 
-  async get(id: string, actor: AuthUser): Promise<WritingTestAggregate> {
+  async get(id: string): Promise<WritingTestAggregate> {
     const test = await this.repository.findAggregate(id);
     if (!test || test.status === 'ARCHIVED') this.notFound();
-    await this.assertOwner(id, actor);
     return test;
   }
 
@@ -50,7 +49,6 @@ export class WritingTestsService {
   async publish(id: string, actor: AuthUser, audit: WritingAudit, expectedVersion: number): Promise<WritingTestAggregate> {
     const test = await this.repository.findAggregate(id);
     if (!test || test.status === 'ARCHIVED') this.notFound();
-    await this.assertOwner(id, actor);
     if (expectedVersion !== test.version) this.conflict();
     this.content.assertPublishable(test);
     return this.unwrap(await this.repository.publish(id, actor, test.version!, test, audit));
@@ -60,20 +58,9 @@ export class WritingTestsService {
     this.unwrap(await this.repository.archive(id, actor, audit));
   }
 
-  private async assertOwner(id: string, actor: AuthUser): Promise<void> {
-    const owner = await this.repository.findOwner(id);
-    if (!owner || owner.status === 'ARCHIVED') this.notFound();
-    if (actor.role === 'TEACHER' && owner.createdBy !== actor.id) {
-      throw new ApplicationError('WRITING_TEST_FORBIDDEN', 'You can only manage tests that you created.', 403);
-    }
-  }
-
   private unwrap(result: WritingRepositoryMutation): WritingTestAggregate {
     if (result.outcome === 'SUCCESS') return result.value;
     if (result.outcome === 'NOT_FOUND') this.notFound();
-    if (result.outcome === 'FORBIDDEN') {
-      throw new ApplicationError('WRITING_TEST_FORBIDDEN', 'You can only manage tests that you created.', 403);
-    }
     return this.conflict();
   }
 
