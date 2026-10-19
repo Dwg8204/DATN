@@ -24,6 +24,7 @@ import {
 import { GoalsService } from '../services/goals.service';
 import { PreferencesService } from '../services/preferences.service';
 import { SnapshotService } from '../services/snapshot.service';
+import { PlanService } from '../services/plan.service';
 
 @Controller('me')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -33,21 +34,26 @@ export class PersonalizationController {
     private readonly goals: GoalsService,
     private readonly preferences: PreferencesService,
     private readonly snapshots: SnapshotService,
+    private readonly plans: PlanService,
   ) {}
   @Get('learning-goal') current(@CurrentUser() actor: AuthUser) {
     return this.snapshots.current(actor);
   }
-  @Post('learning-goal') create(
+  @Post('learning-goal') async create(
     @CurrentUser() actor: AuthUser,
     @Body() dto: CreateLearningGoalDto,
   ) {
-    return this.goals.create(actor.id, dto);
+    const created = await this.goals.create(actor.id, dto);
+    await this.plans.afterGoalCreated(actor);
+    return created;
   }
-  @Post('learning-goal/replace') @HttpCode(200) replace(
+  @Post('learning-goal/replace') @HttpCode(200) async replace(
     @CurrentUser() actor: AuthUser,
     @Body() dto: ReplaceLearningGoalDto,
   ) {
-    return this.goals.replace(actor.id, dto);
+    const replaced = await this.goals.replace(actor.id, dto);
+    await this.plans.afterGoalCreated(actor);
+    return replaced;
   }
   @Delete('learning-goal') cancel(
     @CurrentUser() actor: AuthUser,

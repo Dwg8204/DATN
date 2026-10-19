@@ -11,4 +11,7 @@ export const personalizationApi = {
   history: page => api.get('/me/learning-goals', { ...options, params: { page } }).then(data),
   preferences: () => api.get('/me/learning-preferences', options).then(data),
   savePreferences: payload => api.put('/me/learning-preferences', payload, options).then(data),
+  plan: () => api.get('/me/study-plan/current', options).then(data),
+  mistakes: itemId => api.get('/me/mistakes', { ...options, params: { itemId } }).then(data),
+  markReviewed: itemId => api.post(`/me/study-plan/items/${encodeURIComponent(itemId)}/done`, {}, options).then(data),
 };

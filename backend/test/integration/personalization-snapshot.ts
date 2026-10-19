@@ -6,11 +6,18 @@ import { GoalsService } from '../../src/features/personalization/services/goals.
 import { SnapshotService } from '../../src/features/personalization/services/snapshot.service';
 import { MistakeSourceService } from '../../src/features/personalization/services/mistake-source.service';
 import { AuthUser } from '../../src/features/auth/types/auth-user.type';
+import { PlanProgressRepository } from '../../src/features/personalization/repositories/plan-progress.repository';
+import { StudyPlansRepository } from '../../src/features/personalization/repositories/study-plans.repository';
 
 withPersonalizationDatabase(async (db, alice, bob) => {
   const repository = new LearningGoalsRepository(db);
   const clock = { now: () => new Date('2026-10-30T05:00:00Z') };
-  const goals = new GoalsService(db, repository, clock);
+  const goals = new GoalsService(
+    db,
+    repository,
+    clock,
+    new PlanProgressRepository(new StudyPlansRepository(db)),
+  );
   const service = new SnapshotService(
     db,
     goals,

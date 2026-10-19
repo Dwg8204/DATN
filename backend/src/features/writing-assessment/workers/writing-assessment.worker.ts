@@ -1,4 +1,5 @@
-import { Injectable, Logger, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { PersonalizationProgressService } from '../../personalization/services/personalization-progress.service';
+import { Injectable, Logger, Optional, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { AiError } from '../../../common/ai/ai-error';
 import { AssessmentResult } from '../../test-attempts/types/attempt.type';
 import { WritingAiConfig } from '../writing-ai-config.service';
@@ -20,6 +21,7 @@ export class WritingAssessmentWorker implements OnModuleInit, OnModuleDestroy {
     private readonly jobs: WritingGradingJobsRepository,
     private readonly builder: WritingInputBuilder,
     private readonly assessor: WritingAssessmentService,
+    @Optional() private readonly personalization?: PersonalizationProgressService,
   ) {}
   onModuleInit(): void {
     if (!this.config.enabled) return;
@@ -94,10 +96,11 @@ export class WritingAssessmentWorker implements OnModuleInit, OnModuleDestroy {
       };
       stage = 'persist';
       await this.jobs.finish(job, result);
+      await this.personalization?.afterLearning(data.student_id);
       this.logger.log(`Writing assessment completed: job=${job.id} elapsedMs=${Date.now() - started}`);
     } catch (error) {
       const failure = error instanceof AiError ? error : new AiError('WRITING_AI_UNAVAILABLE', true);
-      const rule = failure.validationRule?.replace(/[^a-zA-Z0-9_.:\[\]-]/g, '').slice(0, 240);
+      const rule = failure.validationRule?.replace(/[^a-zA-Z0-9_.:[\]-]/g, '').slice(0, 240);
       this.logger.warn(`Writing assessment failed: job=${job?.id ?? 'none'} attempt=${job?.attempt_id ?? 'none'} stage=${stage} code=${failure.code} rule=${rule ?? 'none'} retryable=${failure.retryable} elapsedMs=${Date.now() - started}`);
       if (job) {
         const invalidOutput = [

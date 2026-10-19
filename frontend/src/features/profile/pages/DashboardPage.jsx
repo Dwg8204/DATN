@@ -6,6 +6,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { TotalTestsIcon, AvgScoreIcon, AvgBandIcon, StreakIcon, BestSkillIcon, WeakSkillIcon } from '../components/DashboardIcons';
 import styles from './DashboardPage.module.css';
 import GoalProgressCard from '../../personalization/components/GoalProgressCard';
+import StudyPlanCard from '../../personalization/components/StudyPlanCard';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 import { useTranslation } from 'react-i18next';
 
@@ -73,6 +74,7 @@ export default function DashboardPage() {
           </div>
 
           <GoalProgressCard />
+          <StudyPlanCard />
           <div className={styles.kpiGrid}>
             <div className={styles.kpiCard} style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #e0f2fe', boxShadow: '0 4px 12px rgba(2, 132, 199, 0.15)' }}>
               <div className={styles.kpiIcon} style={{ background: 'rgba(2, 132, 199, 0.15)' }}>

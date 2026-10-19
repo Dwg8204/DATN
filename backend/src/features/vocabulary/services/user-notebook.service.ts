@@ -1,11 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { PersonalizationProgressService } from '../../personalization/services/personalization-progress.service';
+import { Injectable, NotFoundException, Optional } from '@nestjs/common';
 import { UserNotebookRepository, UserNotebookItemRow } from '../repositories/user-notebook.repository';
 import { SaveNotebookItemDto } from '../dto/save-notebook-item.dto';
 import { FlashcardReviewDto } from '../dto/flashcard-review.dto';
 
 @Injectable()
 export class UserNotebookService {
-  constructor(private readonly notebookRepo: UserNotebookRepository) {}
+  constructor(private readonly notebookRepo: UserNotebookRepository, @Optional() private readonly personalization?: PersonalizationProgressService) {}
 
   async getUserNotebook(userId: string, folderId?: string): Promise<UserNotebookItemRow[]> {
     return this.notebookRepo.findUserNotebook(userId, folderId);
@@ -23,6 +24,7 @@ export class UserNotebookService {
   async recordFlashcardReview(userId: string, dto: FlashcardReviewDto): Promise<{ success: boolean }> {
     const success = await this.notebookRepo.recordReviewEvent(userId, dto);
     if (!success) throw new NotFoundException('Notebook item not found or unauthorized');
+    await this.personalization?.afterLearning(userId);
     return { success: true };
   }
 }

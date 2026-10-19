@@ -1,6 +1,12 @@
-# Personalization — GĐ1 data foundation
+# Personalization — GĐ1–GĐ4
 
-This module exports four injectable repositories. It has no controller, scheduler, AI calls or notification delivery. Import `PersonalizationModule` to use the repositories; `AppModule` already imports it. GĐ2 introduces the goal/preferences API and frontend integration.
+`PersonalizationModule` exposes STUDENT goal/preferences, snapshot, RULE plan and mistake-review APIs. `AppModule` imports it. `PersonalizationDataModule` contains repositories and transactional goal policies; `PersonalizationProgressModule` adds post-commit reconciliation without depending on attempt services. This avoids circular dependencies when exam/practice, grading and vocabulary services update progress.
+
+Enable `PERSONALIZATION_WORKER_ENABLED=true` for 60-second reconciliation (at most 50 learners per batch, `FOR UPDATE SKIP LOCKED`). Creating a goal or opening the current plan also creates the missing RULE plan synchronously. The worker defaults to disabled when the environment variable is absent; `.env.example` enables it explicitly. Achievement notifications are enqueued transactionally with a dedupe key and delivered by the existing notification scheduler. No AI request or email is sent by this phase.
+
+Progress counts every submitted EXAM/PRACTICE, FULL_SKILL/PART attempt in the goal's frozen timezone. Target reached stays ACTIVE; early finish requires the count target; deadline completes or expires the goal. Reconciliation updates plan items before ending the goal. Each attempt is allocated once per week, vocabulary uses the scheduled local day, and only MISTAKE_REVIEW can be completed manually. Final report scheduling belongs to GĐ8; daily reminders belong to GĐ5.
+
+The pure snapshot builder reuses `learningStats`; the hash excludes `asOf`. Score samples are bounded independently of goal counts. The Dashboard and chatbot statistics tool share these policies. See the phase handoffs in `docs/PERSONALIZATION_GD2_REPORT.md`, `docs/PERSONALIZATION_GD3_REPORT.md` and `docs/PERSONALIZATION_GD4_REPORT.md`.
 
 ## Data models and repositories
 
@@ -11,9 +17,9 @@ This module exports four injectable repositories. It has no controller, schedule
 - `LearningInsightsRepository`: enqueue an insight and read an owned insight. Duplicate user/day or goal/period inserts return `null` without overwriting the existing snapshot. WEEKLY and MIDTERM share the same goal/period uniqueness rule.
 - `StudyPlansRepository`: create a plan and its items atomically, find an owned week and list owned items. A supplied `EntityManager` must belong to an active transaction. The repository checks scheduled dates against the plan and requires mistake-review source attempts to be submitted by the same user.
 
-All user-facing reads require `userId`. Composite foreign keys enforce matching owners for goals, insights and plans, and matching goals for a plan's insight. Foreign keys are not a replacement for the authentication/role checks that future controllers must apply.
+All user-facing reads require `userId`. Composite foreign keys enforce matching owners for goals, insights and plans, and matching goals for a plan's insight. Controllers also enforce JWT authentication and the STUDENT role.
 
-Goal replacement belongs to GĐ2: inside one transaction, end the old active goal, insert the replacement, then assign `replaced_by_goal_id`. This order satisfies the active-goal unique index and the immediate replacement FK. State transitions, timezone validation, candidate eligibility, matching question keys, scheduling, pagination and AI output validation remain in their planned service phases.
+Goal replacement ends the old active goal, inserts the replacement, then assigns `replaced_by_goal_id` in one transaction. This order satisfies the active-goal unique index and the immediate replacement FK. State transitions, candidate eligibility, owned question keys, RULE scheduling and pagination are implemented. AI output validation and report scheduling remain in later phases.
 
 ## Migrations
 

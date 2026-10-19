@@ -11,11 +11,12 @@ import AssistantPet from './AssistantPet';
 export default function ChatAssistantWidget() {
   const {user}=useAuth();const location=useLocation();
   if(!user||!chatAllowed(location.pathname))return null;
-  return <ChatWidget key={user.id} context={resultContext(location.pathname,location.search)}/>;
+  const autoOpen = location.pathname === '/profile/mistakes' && new URLSearchParams(location.search).get('chat') === '1';
+  return <ChatWidget key={user.id + (autoOpen ? location.search : '')} autoOpen={autoOpen} context={resultContext(location.pathname,location.search)}/>;
 }
-function ChatWidget({context}) {
+function ChatWidget({context,autoOpen = false}) {
   const {t,i18n}=useTranslation();const tr=key=>t(`chat.${key}`);
-  const [open,setOpen]=useState(false),[history,setHistory]=useState(false),[sessions,setSessions]=useState([]);
+  const [open,setOpen]=useState(autoOpen),[history,setHistory]=useState(false),[sessions,setSessions]=useState([]);
   const [active,setActive]=useState(null),[messages,setMessages]=useState([]),[draft,setDraft]=useState('');
   const [error,setError]=useState(''),[loading,setLoading]=useState(false),[busy,setBusy]=useState(false),[enabled,setEnabled]=useState(false);
   const [page,setPage]=useState(1),[more,setMore]=useState(false),[messagePage,setMessagePage]=useState(1),[older,setOlder]=useState(false);

@@ -1,3 +1,4 @@
+import { PersonalizationProgressService } from '../../personalization/services/personalization-progress.service';
 import { isSpeakingPart, presentSpeakingResult } from '../assessments/speaking-result-policy';
 import { SpeakingAiConfig } from './speaking-ai-config.service';
 import { Injectable, Logger, Optional } from '@nestjs/common';
@@ -31,6 +32,7 @@ export class TestAttemptsService {
     private readonly grader: ObjectiveGraderService,
     @Optional() private readonly writing?: WritingAssessmentCoordinator,
     @Optional() private readonly speaking?: SpeakingAiConfig,
+    @Optional() private readonly personalization?: PersonalizationProgressService,
   ) {}
 
   async start(testId: string, attemptId: string, actor: AuthUser, expectedMode?: string, expectedComponent?: SkillComponent, feedbackLocale: 'vi' | 'en' = 'vi') {
@@ -111,7 +113,7 @@ export class TestAttemptsService {
     if (metadata.purpose !== 'EXAM') this.conflict('Practice attempts must be completed through the practice flow.');
     const paper = await this.paperFactory.getOrBuild(metadata.snapshot_id, metadata.component,
       () => this.repository.snapshot(metadata.snapshot_id));
-    return this.repository.dataSource.transaction(async manager => {
+    const response = await this.repository.dataSource.transaction(async manager => {
       // All writers lock progress first and then the attempt row.
       const progress = await this.repository.progress(attemptId, manager, true);
       const attempt = await this.repository.lockAttempt(attemptId, actor.id, manager);
@@ -140,6 +142,8 @@ export class TestAttemptsService {
       if (this.writing && metadata.component === 'WRITING') completed = await this.writing.enqueue(manager, completed);
       return this.resultSummary(completed, answers, paper, manager);
     });
+    await this.personalization?.afterLearning(actor.id);
+    return response;
   }
 
   async result(attemptId: string, actor: AuthUser) {
@@ -208,6 +212,7 @@ export class TestAttemptsService {
     let processed = 0;
     for (let index = 0; index < limit; index += 1) {
       let attemptId: string | undefined;
+      let studentId: string | undefined;
       try {
         const found = await this.repository.dataSource.transaction(async manager => {
           const now = Date.now();
@@ -215,6 +220,7 @@ export class TestAttemptsService {
           const [progress] = await this.repository.dueProgress(manager, excluded);
           if (!progress) return false;
           attemptId = progress.attempt_id;
+          studentId = progress.student_id;
           const attempt = await this.repository.lockAttempt(progress.attempt_id, progress.student_id, manager);
           if (!attempt || attempt.status !== 'IN_PROGRESS') return true;
           const paper = await this.paperFactory.getOrBuild(attempt.snapshot_id, attempt.component,
@@ -229,6 +235,7 @@ export class TestAttemptsService {
           return true;
         });
         if (!found) break;
+        if (studentId) await this.personalization?.afterLearning(studentId);
         processed += 1;
       } catch (error) {
         if (!attemptId) throw error;

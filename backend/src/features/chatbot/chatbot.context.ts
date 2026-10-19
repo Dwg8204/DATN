@@ -27,7 +27,7 @@ export class ChatbotContext {
     const service = a.purpose === 'PRACTICE' ? this.practice : this.exams;
     const summary: any = await service.result(attemptId, actor);
     const part = questionKey
-      ? Number(/^p([1-4]):q\d{1,3}$/.exec(questionKey)?.[1])
+      ? Number(/^p([1-4]):[qs]\d{1,3}$/.exec(questionKey)?.[1])
       : a.part_number;
     if (questionKey && !part) throw chatError('CHAT_CONTEXT_INVALID', 400);
     const detail: any = part

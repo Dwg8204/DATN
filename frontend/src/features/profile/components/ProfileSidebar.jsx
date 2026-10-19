@@ -43,7 +43,7 @@ export default function ProfileSidebar({ activeTab }) {
           {activeTab === 'info' || activeTab === 'password' ? t('profile.myProfile') :
             activeTab === 'notifications' ? t('profile.notifications') :
               activeTab === 'dashboard' ? t('profile.dashboard') :
-                activeTab === 'history' ? t('profile.history') : ''}
+                activeTab === 'history' ? t('profile.history') : activeTab === 'mistakes' ? t('personalization.mistakesTitle') : ''}
         </div>
 
         <div className={styles.mobileMenuContainer} ref={mobileMenuRef}>
@@ -87,6 +87,7 @@ export default function ProfileSidebar({ activeTab }) {
               {t('profile.history')}
             </button>
 
+            <button className={styles.dropdownItem} onClick={() => { navigate('/profile/mistakes'); setIsMobileMenuOpen(false); }}><History size={16} style={{ marginRight: '8px' }} />{t('personalization.mistakesTitle')}</button>
             <button className={styles.dropdownItem} onClick={handleLogout}>
               <LogOut size={16} style={{ marginRight: '8px' }} />
               {t('profile.logout')}
@@ -112,6 +113,7 @@ export default function ProfileSidebar({ activeTab }) {
       <div className={`${styles.divider} ${styles.mobileHidden}`}></div>
 
       <div className={styles.navMenu}>
+        <button className={`${styles.navItem} ${activeTab === 'mistakes' ? styles.active : ''}`} onClick={() => navigate('/profile/mistakes')}><History size={20} className={styles.navIcon} /><span className={styles.navText}>{t('personalization.mistakesTitle')}</span></button>
         <button
           className={`${styles.navItem} ${activeTab === 'info' || activeTab === 'password' ? styles.active : ''}`}
           onClick={() => navigate('/profile')}

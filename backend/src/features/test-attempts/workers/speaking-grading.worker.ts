@@ -1,4 +1,5 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { PersonalizationProgressService } from '../../personalization/services/personalization-progress.service';
+import { Injectable, Logger, Optional, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { SpeakingGradingRepository, SpeakingJob } from '../repositories/speaking-grading.repository';
 import { SpeakingAiConfig } from '../services/speaking-ai-config.service';
 import { SpeakingAiProvider } from '../services/speaking-ai-provider.service';
@@ -15,7 +16,7 @@ export class SpeakingGradingWorker implements OnModuleInit, OnModuleDestroy {
   private running?: Promise<void>;
   constructor(private readonly config: SpeakingAiConfig, private readonly jobs: SpeakingGradingRepository,
     private readonly attempts: TestAttemptsRepository, private readonly papers: AssessmentPaperFactory,
-    private readonly provider: SpeakingAiProvider) {}
+    private readonly provider: SpeakingAiProvider, @Optional() private readonly personalization?: PersonalizationProgressService) {}
   onModuleInit(): void {
     if (!this.config.enabled) return;
     this.timer = setInterval(() => {
@@ -42,6 +43,7 @@ export class SpeakingGradingWorker implements OnModuleInit, OnModuleDestroy {
         : { responses: [], estimatedCefr: null, cefrReason: 'Không có bản ghi âm; không đủ dữ liệu để ước lượng CEFR.' };
       const result = finalizeSpeaking(paper, job.responses, assessed, this.config.model, attempt.result as AssessmentResult);
       await this.jobs.finish(job, result, result.speaking?.estimatedCefr ?? null);
+      await this.personalization?.afterLearning(attempt.student_id);
     } catch (error) {
       const message = error instanceof ApplicationError ? error.code : error instanceof Error ? error.message : '';
       const code = /^[A-Z][A-Z0-9_]{1,99}$/.test(message) ? message : 'SPEAKING_AI_UNAVAILABLE';

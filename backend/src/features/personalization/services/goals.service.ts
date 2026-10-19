@@ -10,6 +10,8 @@ import { LearningGoalsRepository } from '../repositories/learning-goals.reposito
 import { LearningGoalRow } from '../types/personalization.type';
 import { addDays, localDay } from '../policies/calendar';
 import { PersonalizationClock } from './personalization-clock';
+import { PlanProgressRepository } from '../repositories/plan-progress.repository';
+import { recordGoalAchievement } from './goal-achievement';
 
 export function presentGoal(goal: LearningGoalRow, completed: number) {
   return {
@@ -35,6 +37,7 @@ export class GoalsService {
     private readonly db: DataSource,
     private readonly goals: LearningGoalsRepository,
     private readonly clock: PersonalizationClock,
+    private readonly progress: PlanProgressRepository,
   ) {}
 
   async lockUser(manager: EntityManager, userId: string): Promise<string> {
@@ -74,6 +77,7 @@ export class GoalsService {
   async reconcile(manager: EntityManager, userId: string, asOf: Date) {
     const goal = await this.goals.findActive(userId, manager);
     if (!goal) return null;
+    await this.progress.syncGoal(manager, goal, asOf);
     const counts = await this.count(manager, goal, asOf);
     if (!goal.target_reached_at && counts.reached_at) {
       await manager.query(
@@ -82,6 +86,7 @@ export class GoalsService {
       );
       goal.target_reached_at = counts.reached_at;
     }
+    if (goal.target_reached_at) await recordGoalAchievement(manager, goal);
     if (
       localDay(asOf, goal.timezone) >=
       addDays(goal.start_date, goal.duration_days)
@@ -121,17 +126,13 @@ export class GoalsService {
           'An active goal already exists.',
           409,
         );
-      const goal = await this.goals.create(
+      await this.goals.create(
         userId,
         { ...dto, startDate: localDay(now, timezone), timezone },
         manager,
       );
-      return {
-        goal: presentGoal(
-          goal,
-          (await this.count(manager, goal, now)).completed,
-        ),
-      };
+      const refreshed = await this.reconcile(manager, userId, now);
+      return { goal: presentGoal(refreshed!.goal, refreshed!.completed) };
     });
   }
 
@@ -154,12 +155,8 @@ export class GoalsService {
         'UPDATE learning_goals SET replaced_by_goal_id=$2 WHERE id=$1',
         [dto.goalId, goal.id],
       );
-      return {
-        goal: presentGoal(
-          goal,
-          (await this.count(manager, goal, now)).completed,
-        ),
-      };
+      const refreshed = await this.reconcile(manager, userId, now);
+      return { goal: presentGoal(refreshed!.goal, refreshed!.completed) };
     });
   }
 
