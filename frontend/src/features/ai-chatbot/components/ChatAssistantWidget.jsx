@@ -48,10 +48,10 @@ function ChatWidget({context}) {
   useEffect(()=>{if(!open||!active||!hasPending||busy)return;const timer=setTimeout(()=>load(active).catch(failure),4000);return()=>clearTimeout(timer);},[open,active,hasPending,busy,messages,load]);
   useEffect(()=>{const close=e=>{if(e.key==='Escape')setOpen(false);};document.addEventListener('keydown',close);return()=>document.removeEventListener('keydown',close);},[]);
   const choose=async session=>{
-    activeRef.current=session.id;version.current++;setActive(session.id);setMessages([]);setOlder(false);setDraft('');setHistory(false);setError('');pendingSend.current=null;follow.current=true;
+    activeRef.current=session.id;version.current++;setActive(session.id);setMessages([]);setOlder(false);setDraft('');setHistory(false);setRename(null);setError('');pendingSend.current=null;follow.current=true;
     setLoading(true);try{await load(session.id);}catch(e){failure(e);}finally{if(alive.current)setLoading(false);}
   };
-  const newChat=()=>{if(mutating.current)return;activeRef.current=null;version.current++;setActive(null);setMessages([]);setDraft('');setHistory(false);setOlder(false);setError('');pendingSend.current=null;};
+  const newChat=()=>{if(mutating.current)return;activeRef.current=null;version.current++;setActive(null);setMessages([]);setDraft('');setHistory(false);setRename(null);setOlder(false);setError('');pendingSend.current=null;};
   const mutate=async(fn,isReply=false)=>{
     if(mutating.current)return;mutating.current=true;setBusy(true);setError('');if(isReply)setReplyingTo(activeRef.current);
     try{await fn();}catch(e){failure(e);}finally{mutating.current=false;if(alive.current){setBusy(false);if(isReply)setReplyingTo(undefined);}}
@@ -75,7 +75,8 @@ function ChatWidget({context}) {
   const retryMessage=id=>mutate(async()=>{const session=activeRef.current;await request('POST',`/sessions/${session}/messages/${id}/retry`);if(alive.current&&activeRef.current===session)await load(session);},true);
   const feedback=(message,value)=>mutate(async()=>{const id=activeRef.current;await request('PATCH',`/sessions/${id}/messages/${message.id}/feedback`,{feedback:message.feedback===value?0:value});if(alive.current&&activeRef.current===id)setMessages(prev=>prev.map(m=>m.id===message.id?{...m,feedback:m.feedback===value?null:value}:m));});
   const remove=session=>mutate(async()=>{await request('DELETE',`/sessions/${session.id}`);if(!alive.current)return;setSessions(prev=>prev.filter(s=>s.id!==session.id));if(activeRef.current===session.id){activeRef.current=null;version.current++;setActive(null);setMessages([]);setDraft('');pendingSend.current=null;}});
-  const renameChat=event=>{event.preventDefault();mutate(async()=>{await request('PATCH',`/sessions/${rename}`,{title:title.trim()});if(!alive.current)return;setRename(null);await list();});};
+  const cancelRename=()=>{if(mutating.current)return;setRename(null);setError('');};
+  const renameChat=event=>{event.preventDefault();const id=rename,nextTitle=title.trim();if(!id||!nextTitle)return;mutate(async()=>{await request('PATCH',`/sessions/${id}`,{title:nextTitle});if(!alive.current)return;setSessions(prev=>prev.map(s=>s.id===id?{...s,title:nextTitle}:s));setRename(null);});};
   return <div className={styles.widget}>
     {open&&<section className={styles.panel} aria-label={tr('title')}>
       <header className={styles.header}>
@@ -88,12 +89,18 @@ function ChatWidget({context}) {
         <div className={styles.historyHeading}><strong>{tr('history')}</strong><button onClick={newChat} disabled={busy}><Plus size={16}/>{tr('new')}</button></div>
         <div className={styles.historyList}>
           {sessions.map(s=><div key={s.id} className={`${styles.historyItem} ${active===s.id?styles.activeHistoryItem:''}`}>
+            {rename===s.id?<form className={styles.renameForm} onSubmit={renameChat} onKeyDown={e=>{if(e.key==='Escape'){e.stopPropagation();cancelRename();}}}>
+              <label className={styles.renameLabel}><Pencil size={14}/>{tr('rename')}</label>
+              <input autoFocus aria-label={tr('rename')} value={title} onFocus={e=>e.target.select()} onChange={e=>setTitle(e.target.value)} maxLength={200} disabled={busy}/>
+              <div className={styles.renameActions}><button type="button" className={styles.cancelRename} disabled={busy} onClick={cancelRename}>{tr('cancel')}</button><button type="submit" className={styles.saveRename} disabled={busy||!title.trim()}><Check size={15}/>{tr('save')}</button></div>
+              {error&&<p className={styles.renameError} role="alert">{tr('error')}</p>}
+            </form>:<>
             <button className={styles.historyOpen} onClick={()=>choose(s)}><MessageCircle size={17}/><span><strong>{s.title==='New conversation'?tr('new'):s.title}</strong><small>{new Date(s.updatedAt).toLocaleString(i18n.language)}</small></span></button>
-            <div><button disabled={busy} aria-label={tr('rename')} onClick={()=>{setRename(s.id);setTitle(s.title);}}><Pencil size={14}/></button><button disabled={busy} aria-label={tr('delete')} onClick={()=>remove(s)}><Trash2 size={14}/></button></div>
+            <div className={styles.historyActions}><button type="button" disabled={busy} title={tr('rename')} aria-label={tr('rename')} onClick={()=>{setRename(s.id);setTitle(s.title);setError('');}}><Pencil size={16}/></button><button type="button" className={styles.deleteAction} disabled={busy} title={tr('delete')} aria-label={tr('delete')} onClick={()=>remove(s)}><Trash2 size={16}/></button></div>
+            </>}
           </div>)}
           {!sessions.length&&!loading&&<p>{tr('emptyHistory')}</p>}{more&&<button onClick={()=>list(page+1).catch(failure)}>{tr('more')}</button>}
-          {rename&&<form onSubmit={renameChat}><input aria-label={tr('rename')} value={title} onChange={e=>setTitle(e.target.value)} maxLength={200}/><button disabled={busy||!title.trim()}>{tr('save')}</button><button type="button" onClick={()=>setRename(null)}>{tr('cancel')}</button></form>}
-          {error&&<p role="alert">{tr('error')}</p>}
+          {error&&!rename&&<p role="alert">{tr('error')}</p>}
         </div>
       </div>:<div className={styles.messages} ref={scroller} onScroll={()=>{const el=scroller.current;follow.current=el.scrollHeight-el.scrollTop-el.clientHeight<60;}}>
         {older&&<button onClick={()=>{follow.current=false;load(active,messagePage+1).catch(failure);}}>{tr('older')}</button>}
