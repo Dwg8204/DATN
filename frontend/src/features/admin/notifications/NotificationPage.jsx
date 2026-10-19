@@ -272,12 +272,11 @@ export default function NotificationPage() {
   const getTargetClass = (targetStr) => {
     const lower = (targetStr || '').toLowerCase();
     if (lower === 'student') return styles.student;
-    if (lower === 'teacher') return styles.teacher;
     if (lower === 'everyone') return styles.everyone;
     return styles.specificEmail;
   };
 
-  const targetOptions = ['Everyone', 'Student', 'Teacher'];
+  const targetOptions = ['Everyone', 'Student'];
 
   return (
     <div className={styles.page}>
@@ -340,7 +339,7 @@ export default function NotificationPage() {
                 ) : filteredUsers.length > 0 ? (
                   filteredUsers.map((user) => {
                     const isSelected = selectedUserIds.includes(user.id);
-                    const roleClass = user.role === 'ADMIN' ? styles.roleAdmin : user.role === 'TEACHER' ? styles.roleTeacher : styles.roleStudent;
+                    const roleClass = user.role === 'ADMIN' ? styles.roleAdmin : styles.roleStudent;
                     return (
                       <label
                         key={user.id || user.email}

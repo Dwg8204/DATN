@@ -11,7 +11,7 @@ const compiled = transformSync(source, { loader: 'jsx', format: 'cjs', jsx: 'aut
 for (const [query, roles] of [
   ['', ['STUDENT']],
   ['practice=false', ['STUDENT']],
-  ['practice=true', ['STUDENT', 'TEACHER', 'ADMIN']],
+  ['practice=true', ['STUDENT', 'ADMIN']],
 ]) {
   test(`attempt role policy for ${query || 'exam'}`, () => {
     const module = { exports: {} };

@@ -6,6 +6,6 @@ import RoleGuard from '../../auth/components/RoleGuard.jsx';
 export default function AttemptRoleGuard({ children }) {
   const [params] = useSearchParams();
   const allowedRoles = params.get('practice') === 'true'
-    ? ['STUDENT', 'TEACHER', 'ADMIN'] : ['STUDENT'];
+    ? ['STUDENT', 'ADMIN'] : ['STUDENT'];
   return <RoleGuard allowedRoles={allowedRoles}>{children}</RoleGuard>;
 }

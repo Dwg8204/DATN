@@ -42,7 +42,7 @@ function AdminHomeRedirect() {
 export const adminRoutes = [
   {
     path: '/admin',
-    element: <RoleGuard allowedRoles={['ADMIN', 'TEACHER']}><AdminLayout /></RoleGuard>,
+    element: <RoleGuard allowedRoles={['ADMIN']}><AdminLayout /></RoleGuard>,
     children: [
       { index: true, element: <AdminHomeRedirect /> },
       { path: 'dashboard', element: adminOnly(load(<AdminDashboardPage />)) },

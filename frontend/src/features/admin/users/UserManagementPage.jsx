@@ -1,24 +1,20 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useState } from 'react';
-import { Edit3, Eye, LoaderCircle, LockKeyhole, Plus, Search, Trash2 } from 'lucide-react';
+import { Eye, LoaderCircle, Search, Trash2 } from 'lucide-react';
 import Modal from '../../../components/common/Modal';
 import Pagination from '../../../components/common/Pagination';
 import { getApiError } from '../../../services/apiError';
 import { AdminConfirmDialog, AdminToast } from '../components/AdminFeedback';
 import { formatAdminDate } from '../utils/testManagerHelpers';
-import UserEditorDialog from './components/UserEditorDialog';
 import useManagedUsers from './hooks/useManagedUsers';
 import { adminUsersApi } from './services/adminUsersApi';
-import { toTeacherPayload, validateTeacherForm } from './validation/userFormValidation';
 import styles from './UserManagementPage.module.css';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 
 const ROLE_TABS = [
   { id: 'ADMIN', label: 'Admin' },
   { id: 'STUDENT', label: 'User' },
-  { id: 'TEACHER', label: 'Teacher' },
 ];
-const EMPTY_TEACHER = { firstName: '', lastName: '', email: '', password: '', confirmPassword: '' };
 const USER_QUERY_SCHEMA = {
   role: queryParam.enum(ROLE_TABS.map(item => item.id), 'ADMIN'),
   query: { ...queryParam.string(''), param: 'q' },
@@ -49,12 +45,9 @@ export default function UserManagementPage() {
   const { role, query, page, pageSize } = urlState;
   const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
   const setPageSize = next => setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
-  const [editor, setEditor] = useState(null);
   const [detail, setDetail] = useState(null);
   const [detailLoadingId, setDetailLoadingId] = useState('');
   const [busy, setBusy] = useState(false);
-  const [confirmRole, setConfirmRole] = useState(false);
-  const [editorError, setEditorError] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [notice, setNotice] = useState(null);
   const { users, pagination, loading, error: loadError, reload } = useManagedUsers({ role, search: query, page, pageSize });
@@ -65,50 +58,6 @@ export default function UserManagementPage() {
 
   const changeRole = nextRole => {
     setUrlState({ role: nextRole, query: '', page: 1 });
-  };
-
-  const updateEditor = (field, value) => {
-    setEditor(current => ({ ...current, [field]: value }));
-    setEditorError('');
-  };
-
-  const save = async (confirmed = false) => {
-    if (busy || !editor) return;
-    const isPromotion = Boolean(editor.id);
-    if (isPromotion) {
-      if (editor.role !== 'TEACHER') {
-        setEditorError('Select Teacher before saving.');
-        return;
-      }
-      if (!confirmed) {
-        setConfirmRole(true);
-        return;
-      }
-    } else {
-      const validationError = validateTeacherForm(editor);
-      if (validationError) {
-        setEditorError(validationError);
-        return;
-      }
-    }
-
-    setBusy(true);
-    setEditorError('');
-    try {
-      if (isPromotion) await adminUsersApi.promoteToTeacher(editor.id);
-      else await adminUsersApi.createTeacher(toTeacherPayload(editor));
-      setEditor(null);
-      setConfirmRole(false);
-      setNotice({ type: 'success', message: isPromotion ? 'User promoted to Teacher successfully.' : 'Teacher account created successfully.' });
-      if (!isPromotion && page !== 1) setPage(1);
-      else if (isPromotion && users.length === 1 && page > 1) setPage(current => current - 1);
-      else reload();
-    } catch (error) {
-      setConfirmRole(false);
-      setEditorError(getApiError(error, isPromotion ? ui("Unable to promote this user.") : ui("Unable to create the teacher account.")));
-    } finally {
-      setBusy(false);
-    }
   };
 
   const remove = async () => {
@@ -142,14 +91,10 @@ export default function UserManagementPage() {
   };
 
   const actions = user => {
-    const editLocked = user.role !== 'STUDENT';
     const deleteLocked = user.role === 'ADMIN';
     return <div className={styles.actions}>
       <button disabled={detailLoadingId === user.id} title={ui("View details")} aria-label={ui("View {{value0}}", {value0:(user.fullName)})} onClick={() => viewDetails(user)}>
         {detailLoadingId === user.id ? <LoaderCircle className={styles.spin} /> : <Eye />}
-      </button>
-      <button disabled={editLocked} title={editLocked ? ui("{{value0}} accounts cannot be promoted", {value0:(roleLabel(user.role))}) : ui("Promote to Teacher")} aria-label={editLocked ? ui("Cannot edit {{value0}}", {value0:(user.fullName)}) : ui("Promote {{value0}} to Teacher", {value0:(user.fullName)})} onClick={() => { setEditor({ ...user }); setEditorError(''); }}>
-        {editLocked ? <LockKeyhole /> : <Edit3 />}
       </button>
       <button disabled={deleteLocked} title={deleteLocked ? ui("Admin accounts cannot be deleted") : ui("Delete")} aria-label={deleteLocked ? ui("Cannot delete {{value0}}", {value0:(user.fullName)}) : ui("Delete {{value0}}", {value0:(user.fullName)})} onClick={() => setDeleteTarget(user)}><Trash2 /></button>
     </div>;
@@ -170,13 +115,11 @@ export default function UserManagementPage() {
   return <div className={styles.page}>
     <AdminToast message={notice?.message} type={notice?.type} onClose={() => setNotice(null)} />
     {detail && <Modal title={ui("Account details")} onClose={() => setDetail(null)}><dl>{detailRows.map(([label, value]) => <div key={label}><dt>{ui(label)}</dt><dd>{value}</dd></div>)}</dl></Modal>}
-    <AdminConfirmDialog open={confirmRole} title={ui("Promote this user?")} message={editor ? `${editor.fullName} will receive Teacher permissions. This role cannot be promoted to Admin.` : ''} confirmLabel={busy ? ui("Promoting…") : ui("Promote")} onCancel={() => { if (!busy) setConfirmRole(false); }} onConfirm={() => save(true)} />
     <AdminConfirmDialog open={Boolean(deleteTarget)} title={ui("Delete this account?")} message={deleteTarget ? `“${deleteTarget.fullName}” will lose access to AptiMate. Their related test data will be retained.` : ''} confirmLabel={busy ? ui("Deleting…") : ui("Delete")} onCancel={() => { if (!busy) setDeleteTarget(null); }} onConfirm={remove} />
-    <UserEditorDialog user={confirmRole ? null : editor} error={editorError} onClearError={() => setEditorError('')} busy={busy} originalRole={editor?.id ? 'STUDENT' : undefined} onChange={updateEditor} onCancel={() => { if (!busy) { setEditor(null); setEditorError(''); } }} onSave={save} />
 
     <header className={styles.toolbar}>
       <nav className={styles.components} aria-label={ui("Account type")}>{ROLE_TABS.map(item => <button className={role === item.id ? styles.activeComponent : ''} onClick={() => changeRole(item.id)} key={item.id}>{ui(item.label)}</button>)}</nav>
-      <div className={styles.tools}><label><Search /><input value={query} onChange={event => setUrlState({ query: event.target.value, page: 1 })} placeholder={ui("Search people")} /></label>{role === 'TEACHER' && <button className={styles.add} onClick={() => { setEditor({ ...EMPTY_TEACHER }); setEditorError(''); }}><Plus />{ui("Add teacher")}</button>}</div>
+      <div className={styles.tools}><label><Search /><input value={query} onChange={event => setUrlState({ query: event.target.value, page: 1 })} placeholder={ui("Search people")} /></label></div>
     </header>
 
     <section className={styles.panel} aria-busy={loading}>
