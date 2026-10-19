@@ -45,7 +45,7 @@ async function main() {
     await db.query(
       `CREATE TYPE grading_status AS ENUM ('NOT_STARTED','QUEUED','PROCESSING','PARTIAL_FAILED','FAILED','COMPLETED')`,
     );
-    await db.query(`CREATE TYPE result_source AS ENUM ('AUTOMATIC','TEACHER')`);
+    await db.query(`CREATE TYPE result_source AS ENUM ('AUTOMATIC','MANUAL')`);
     await db.query(`CREATE TABLE users(id uuid PRIMARY KEY)`);
     await db.query(
       `CREATE TABLE test_snapshots(id uuid PRIMARY KEY,test_id uuid NOT NULL,version integer DEFAULT 1,schema_version integer DEFAULT 1,snapshot jsonb NOT NULL)`,

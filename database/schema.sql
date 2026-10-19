@@ -16,7 +16,7 @@ $$;
 
 CREATE TABLE roles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  code varchar(30) NOT NULL UNIQUE CHECK (code = upper(code)),
+  code varchar(30) NOT NULL UNIQUE CHECK (code IN ('ADMIN', 'STUDENT')),
   name varchar(80) NOT NULL,
   description text,
   created_at timestamptz NOT NULL DEFAULT now()
@@ -24,7 +24,6 @@ CREATE TABLE roles (
 
 INSERT INTO roles (code, name) VALUES
   ('ADMIN', 'Administrator'),
-  ('TEACHER', 'Teacher'),
   ('STUDENT', 'Student')
 ON CONFLICT (code) DO NOTHING;
 
@@ -180,7 +179,7 @@ CREATE TABLE attempt_sections (
   score numeric(8,2),
   max_score numeric(8,2),
   ai_feedback jsonb NOT NULL DEFAULT '{}'::jsonb,
-  teacher_feedback jsonb NOT NULL DEFAULT '{}'::jsonb,
+  manual_feedback jsonb NOT NULL DEFAULT '{}'::jsonb,
   reviewed_by uuid REFERENCES users(id) ON DELETE SET NULL,
   reviewed_at timestamptz,
   UNIQUE (attempt_id, section_id)
@@ -194,7 +193,7 @@ CREATE TABLE attempt_answers (
   is_correct boolean,
   score numeric(8,2),
   ai_feedback jsonb NOT NULL DEFAULT '{}'::jsonb,
-  teacher_feedback jsonb NOT NULL DEFAULT '{}'::jsonb,
+  manual_feedback jsonb NOT NULL DEFAULT '{}'::jsonb,
   answered_at timestamptz NOT NULL DEFAULT now(),
   UNIQUE (attempt_section_id, question_id)
 );
