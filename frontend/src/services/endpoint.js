@@ -17,7 +17,6 @@ export const API_ENDPOINTS = {
   adminUsers: {
     list: '/admin/users',
     detail: (id) => `/admin/users/${id}`,
-    role: (id) => `/admin/users/${id}/role`,
   },
   adminDashboard: '/admin/dashboard',
   adminNotifications: {

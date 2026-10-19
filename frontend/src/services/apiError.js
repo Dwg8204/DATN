@@ -25,7 +25,7 @@ const messagesByCode = {
   ATTEMPT_REVISION_CONFLICT: 'This test changed in another tab. Reload the page before continuing.',
   ATTEMPT_MODE_MISMATCH: 'The test type has changed. Refresh the test list and try again.',
   ATTEMPT_COMPONENT_MISMATCH: 'This test belongs to another skill.',
-  ATTEMPT_INVALID_SNAPSHOT: 'This published test is incomplete. Please contact a teacher or administrator.',
+  ATTEMPT_INVALID_SNAPSHOT: 'This published test is incomplete. Please contact an administrator.',
 };
 
 const messagesByStatus = {

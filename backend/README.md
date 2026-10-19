@@ -130,7 +130,7 @@ npm run db:seed
 
 Lệnh seed yêu cầu `ADMIN_SEED_EMAIL` và `ADMIN_SEED_PASSWORD` trong `.env`; hệ thống không cung cấp thông tin đăng nhập mặc định. Mật khẩu chỉ được dùng khi tạo Admin lần đầu, được băm bằng bcrypt và không được ghi ra log. `ADMIN_SEED_FIRST_NAME` và `ADMIN_SEED_LAST_NAME` có giá trị mặc định lần lượt là `System` và `Administrator`.
 
-Seed có thể chạy lại an toàn với cùng email Admin và sẽ không tạo bản ghi trùng hoặc đặt lại mật khẩu. Nếu database đã có Admin dùng email khác, có nhiều hơn một Admin, hoặc email cấu hình đang thuộc về Student/Teacher, seed sẽ dừng mà không tự nâng/hạ quyền hay sửa dữ liệu tài khoản. Việc tạo Admin là thao tác bootstrap trực tiếp vào database; API quản lý người dùng không được dùng để tạo Admin.
+Seed có thể chạy lại an toàn với cùng email Admin và sẽ không tạo bản ghi trùng hoặc đặt lại mật khẩu. Nếu database đã có Admin dùng email khác, có nhiều hơn một Admin, hoặc email cấu hình đang thuộc về User (STUDENT), seed sẽ dừng mà không tự nâng/hạ quyền hay sửa dữ liệu tài khoản. Việc tạo Admin là thao tác bootstrap trực tiếp vào database; API quản lý người dùng không được dùng để tạo Admin.
 
 Quy trình khi thêm thay đổi database:
 
@@ -189,19 +189,20 @@ Role lấy từ access token chỉ dùng để định danh nhanh; `JwtStrategy`
 
 Ma trận quyền hiện tại:
 
-| Khu vực | STUDENT | TEACHER | ADMIN |
-| --- | --- | --- | --- |
-| Trang luyện thi và hồ sơ | Có | Có | Có |
-| Test Management | Không | Có | Có |
-| Admin Dashboard | Không | Không | Có |
-| User Management | Không | Không | Có |
-| Notification Management | Không | Không | Có |
+| Khu vực | User (STUDENT) | ADMIN |
+| --- | --- | --- |
+| Practice và hồ sơ | Có | Có |
+| Exam và lịch sử thi của học viên | Có | Không |
+| Test Management (cả 5 kỹ năng) | Không | Có |
+| Admin Dashboard | Không | Có |
+| User Management | Không | Có |
+| Notification Management | Không | Có |
 
 Mọi controller nghiệp vụ mới phải bảo vệ ở backend, không chỉ ẩn giao diện. Ví dụ:
 
 ```ts
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN', 'TEACHER')
+@Roles('ADMIN')
 @Post('tests')
 createTest() {}
 ```
@@ -216,11 +217,9 @@ Các endpoint sau chỉ dành cho tài khoản `ADMIN`:
 | --- | --- | --- |
 | `GET` | `/api/v1/admin/users` | Tìm kiếm, lọc theo role/status và phân trang trên server |
 | `GET` | `/api/v1/admin/users/:id` | Xem chi tiết tài khoản |
-| `POST` | `/api/v1/admin/users` | Tạo duy nhất tài khoản Teacher |
-| `PATCH` | `/api/v1/admin/users/:id/role` | Chỉ nâng `STUDENT` thành `TEACHER` |
-| `DELETE` | `/api/v1/admin/users/:id` | Xóa mềm Student/Teacher và thu hồi phiên |
+| `DELETE` | `/api/v1/admin/users/:id` | Xóa mềm User (STUDENT) và thu hồi phiên |
 
-API không có luồng tạo Admin hoặc nâng Teacher thành Admin. Tài khoản Admin khởi tạo chỉ được tạo trực tiếp bằng seed; tài khoản Admin không thể bị sửa role hoặc xóa qua API. Khi tạo Teacher, backend tự gán role `TEACHER` và trạng thái `ACTIVE`, đồng thời từ chối các trường `role`/`status` do client chèn thêm.
+Hệ thống chỉ có hai role: `STUDENT` (user bình thường) và `ADMIN`. User tạo tài khoản qua đăng ký; Admin khởi tạo bằng seed. Trang quản lý người dùng chỉ còn xem, tìm kiếm/lọc và xóa mềm user; Admin được bảo vệ khỏi xóa. Các endpoint tạo tài khoản quản trị và đổi role đã được gỡ; request tới các endpoint cũ trả 404.
 
 SMTP dùng connection pool để tái sử dụng kết nối và có timeout cấu hình qua `SMTP_CONNECTION_TIMEOUT_MS`, `SMTP_GREETING_TIMEOUT_MS`, `SMTP_SOCKET_TIMEOUT_MS`. API chỉ xác nhận gửi OTP sau khi SMTP chấp nhận email; frontend hiển thị trạng thái loading trong thời gian này.
 
@@ -266,7 +265,7 @@ Sau khi cập nhật code Dashboard, chạy `npm run db:migrate` để thêm cá
 
 ### CRUD Grammar & Vocabulary
 
-Admin và Teacher sử dụng `/api/v1/admin/grammar-tests`; Teacher chỉ quản lý đề do mình tạo. Đề được lưu theo một aggregate gồm thông tin đề và toàn bộ câu hỏi của Part 1, Part 2 hoặc Full test. Lưu nháp cho phép nội dung chưa hoàn chỉnh; thao tác publish mới kiểm tra đủ 25 câu Grammar và 5 nhóm × 5 câu Vocabulary rồi tạo snapshot bất biến.
+Chỉ Admin sử dụng `/api/v1/admin/grammar-tests` và quản lý mọi đề, bao gồm đề do tài khoản cũ tạo. Đề được lưu theo một aggregate gồm thông tin đề và toàn bộ câu hỏi của Part 1, Part 2 hoặc Full test. Lưu nháp cho phép nội dung chưa hoàn chỉnh; thao tác publish mới kiểm tra đủ 25 câu Grammar và 5 nhóm × 5 câu Vocabulary rồi tạo snapshot bất biến.
 
 Các API `/api/v1/grammar-tests` chỉ trả đề đã xuất bản. API chi tiết dành cho học viên loại bỏ hoàn toàn đáp án đúng và phần giải thích; các dữ liệu này chỉ được trả sau khi có luồng nộp/chấm bài được phân quyền riêng.
 
@@ -320,3 +319,10 @@ List endpoints use `page` and `pageSize` (`1..100`) and return:
 ```
 
 Every response includes `x-request-id`; request logs contain the same ID, method, route, status and duration. Secrets, access tokens, passwords and full student submissions must not be logged.
+
+
+### Cập nhật hai role (19/10/2026)
+
+Migration `1760000015000-RestrictAccountRoles.ts` chuyển tài khoản role cũ thành STUDENT, thu hồi phiên và thêm constraint chỉ cho ADMIN/STUDENT; giữ ID và dữ liệu liên quan. Nguồn chấm/từ vựng thủ công dùng MANUAL. Seed không tạo lại role đã bỏ. Database local đã áp dụng: 1 ADMIN, 4 STUDENT. Môi trường khác chạy `npm run db:migrate` rồi khởi động backend mới; tài khoản đổi role đăng nhập lại.
+
+Kiểm thử: `npm test`, `npm run typecheck`, `npm run build`; `npm run test:roles:db` dùng TEST_DATABASE_URL riêng có tên kết thúc `_test`, tạo schema tạm trong transaction và rollback toàn bộ fixture. Rollback migration không tự khôi phục quyền cũ của tài khoản.

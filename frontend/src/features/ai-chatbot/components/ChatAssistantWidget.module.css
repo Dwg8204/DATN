@@ -166,13 +166,14 @@
 
 .historyList { min-height: 0; overflow-y: auto; padding: 10px; }
 .historyItem {
+  box-sizing: border-box;
   width: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
   margin-bottom: 7px;
-  padding: 4px;
+  padding: 7px;
   border: 1px solid transparent;
   border-radius: 11px;
   color: #574d4e;
@@ -208,6 +209,31 @@
   color: #8c7f80;
 }
 .deleteHistory:hover { color: var(--chat-red); background: #fde8e9; }
+.historyActions { display: flex; align-items: center; gap: 6px; }
+.historyActions button { display: grid; place-items: center; width: 34px; height: 34px; padding: 0; border: 1px solid #eee4e5; border-radius: 9px; background: #faf7f7; color: #79676b; cursor: pointer; transition: background .15s, color .15s; }
+.historyActions button:hover { color: #a71928; background: #fcebed; border-color: #efc9ce; }
+.historyActions .deleteAction:hover { color: #c7192d; background: #ffe1e6; }
+.historyActions button:focus-visible, .renameForm button:focus-visible { outline: 2px solid var(--chat-red); outline-offset: 2px; }
+.historyActions button:disabled, .renameForm button:disabled { opacity: .45; cursor: not-allowed; }
+.renameForm { grid-column: 1 / -1; display: grid; gap: 10px; min-width: 0; padding: 5px; }
+.renameLabel { display: flex; align-items: center; gap: 6px; color: #79676b; font-size: 11px; font-weight: 600; }
+.renameForm input { box-sizing: border-box; width: 100%; min-width: 0; padding: 10px 11px; border: 1px solid #d9aeb6; border-radius: 8px; background: #fff; color: #332a2b; font: inherit; font-size: 13px; outline: none; }
+.renameForm input:focus { border-color: var(--chat-red); box-shadow: 0 0 0 3px #da1e2114; }
+.renameActions { display: flex; justify-content: flex-end; gap: 8px; }
+.renameActions button { display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 34px; padding: 7px 12px; border-radius: 8px; border: 1px solid transparent; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.renameActions .cancelRename { background: #faf7f7; border-color: #eee4e5; color: #79676b; }
+.renameActions .saveRename { background: var(--chat-red); color: #fff; }
+.renameActions .saveRename:hover:not(:disabled) { background: #b9181b; }
+.renameActions .cancelRename:hover:not(:disabled) { background: #f1e9ea; }
+.renameError { margin: 0; color: #b9181b; font-size: 12px; line-height: 1.5; }
+:global([data-theme="dark"]) .historyItem { background: #252329; border-color: #40383f; }
+:global([data-theme="dark"]) .activeHistoryItem { background: #35262d; border-color: #9b4553; }
+:global([data-theme="dark"]) .historyItem strong, :global([data-theme="dark"]) .historyHeading strong { color: #f2eded; }
+:global([data-theme="dark"]) .historyActions button, :global([data-theme="dark"]) .renameActions .cancelRename { background: #342e36; color: #dbccd2; border-color: #51454a; }
+:global([data-theme="dark"]) .historyActions button:hover, :global([data-theme="dark"]) .renameActions .cancelRename:hover:not(:disabled) { background: #4b303a; color: #ffbbc7; }
+:global([data-theme="dark"]) .renameForm input { background: #1c1a20; color: #f2eded; border-color: #9b4553; }
+:global([data-theme="dark"]) .renameLabel, :global([data-theme="dark"]) .historyItem small { color: #bdaeb5; }
+:global([data-theme="dark"]) .renameError { color: #ffabb9; }
 .emptyHistory {
   height: 100%;
   display: flex;

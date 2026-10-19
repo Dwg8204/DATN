@@ -21,14 +21,14 @@ export class SpeakingTestsController {
   constructor(private readonly testsService: SpeakingTestsService) {}
 
   @Get()
-  @Roles('ADMIN', 'TEACHER')
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Lấy danh sách đề thi Speaking' })
-  async list(@Query() query: ListSpeakingTestsQueryDto, @CurrentUser() user: AuthUser) {
-    return this.testsService.list(query, { id: user.id, role: user.role });
+  async list(@Query() query: ListSpeakingTestsQueryDto, @CurrentUser() actor: AuthUser) {
+    return this.testsService.list(query, actor);
   }
 
   @Post()
-  @Roles('ADMIN', 'TEACHER')
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Tạo mới một đề thi Speaking' })
   async create(@Body() dto: CreateSpeakingTestDto, @CurrentUser() user: AuthUser, @Req() req: Request) {
     const audit: SpeakingAudit = { ipAddress: req.ip };
@@ -36,14 +36,14 @@ export class SpeakingTestsController {
   }
 
   @Get(':id')
-  @Roles('ADMIN', 'TEACHER')
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Lấy chi tiết một đề thi Speaking (draft hoặc published)' })
-  async getOne(@Param('id') id: string, @CurrentUser() user: AuthUser) {
-    return this.testsService.getOne(id, { id: user.id, role: user.role });
+  async getOne(@Param('id') id: string) {
+    return this.testsService.getOne(id);
   }
 
   @Patch(':id')
-  @Roles('ADMIN', 'TEACHER')
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Cập nhật đề thi Speaking (reset status về DRAFT)' })
   async update(@Param('id') id: string, @Body() dto: UpdateSpeakingTestDto, @CurrentUser() user: AuthUser, @Req() req: Request) {
     const audit: SpeakingAudit = { ipAddress: req.ip };
@@ -52,7 +52,7 @@ export class SpeakingTestsController {
 
   @Post(':id/publish')
   @HttpCode(200)
-  @Roles('ADMIN', 'TEACHER')
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Xuất bản (publish) đề thi Speaking' })
   async publish(@Param('id') id: string, @Body() dto: PublishSpeakingTestDto, @CurrentUser() user: AuthUser, @Req() req: Request) {
     const audit: SpeakingAudit = { ipAddress: req.ip };
@@ -61,7 +61,7 @@ export class SpeakingTestsController {
 
   @Delete(':id')
   @HttpCode(204)
-  @Roles('ADMIN', 'TEACHER')
+  @Roles('ADMIN')
   @ApiOperation({ summary: 'Lưu trữ (archive) đề thi Speaking' })
   async archive(@Param('id') id: string, @CurrentUser() user: AuthUser, @Req() req: Request) {
     const audit: SpeakingAudit = { ipAddress: req.ip };

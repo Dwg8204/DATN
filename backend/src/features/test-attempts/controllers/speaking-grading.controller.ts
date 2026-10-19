@@ -11,7 +11,7 @@ import { ApplicationError } from '../../../common/errors/application.error';
 
 @Controller('speaking-grading')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('STUDENT','TEACHER','ADMIN')
+@Roles('STUDENT','ADMIN')
 export class SpeakingGradingController {
   constructor(private readonly jobs: SpeakingGradingRepository, private readonly config: SpeakingAiConfig) {}
   @Get('budget')

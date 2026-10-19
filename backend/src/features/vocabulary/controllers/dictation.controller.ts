@@ -27,7 +27,7 @@ export class DictationController {
 
   @Post('exercises')
   @UseGuards(RolesGuard)
-  @Roles('ADMIN', 'TEACHER')
+  @Roles('ADMIN')
   async createExercise(@CurrentUser() user: AuthUser, @Body() dto: CreateDictationExerciseDto) {
     const data = await this.dictationService.createExercise(user.id, dto);
     return { data };

@@ -47,7 +47,7 @@ type QuestionRow = {
 
 export type RepositoryMutation =
   | { outcome: 'SUCCESS'; value: SpeakingTestAggregate }
-  | { outcome: 'NOT_FOUND' | 'FORBIDDEN' | 'VERSION_CONFLICT' };
+  | { outcome: 'NOT_FOUND' | 'VERSION_CONFLICT' };
 
 @Injectable()
 export class SpeakingTestsRepository {
@@ -59,10 +59,6 @@ export class SpeakingTestsRepository {
     if (query.purpose) {
       values.push(query.purpose);
       where.push(`t.purpose = $${values.length}`);
-    }
-    if (actor?.role === 'TEACHER') {
-      values.push(actor.id);
-      where.push(`t.created_by = $${values.length}`);
     }
     if (query.search?.trim()) {
       values.push(`%${query.search.trim().replace(/[%_\\]/g, value => `\\${value}`)}%`);
@@ -165,12 +161,6 @@ export class SpeakingTestsRepository {
     return snapshots[0].snapshot as SpeakingTestAggregate;
   }
 
-  async findOwner(id: string): Promise<{ createdBy: string; status: SpeakingTestStatus } | null> {
-    const rows = await this.dataSource.query(`SELECT created_by, status FROM tests WHERE id = $1 AND component = 'SPEAKING'`, [id]);
-    if (rows.length === 0) return null;
-    return { createdBy: rows[0].created_by, status: rows[0].status };
-  }
-
   async create(actor: SpeakingActor, aggregate: SpeakingTestAggregate, audit: SpeakingAudit, creationRequestId?: string): Promise<SpeakingTestAggregate> {
     const id = testCreationId(actor.id, 'SPEAKING', creationRequestId);
     let replayed = false;
@@ -205,7 +195,6 @@ export class SpeakingTestsRepository {
     await this.dataSource.transaction(async manager => {
       const lock = await manager.query(`SELECT version, created_by FROM tests WHERE id = $1 AND component = 'SPEAKING' FOR UPDATE`, [id]);
       if (lock.length === 0) { outcome = 'NOT_FOUND'; return; }
-      if (actor.role === 'TEACHER' && lock[0].created_by !== actor.id) { outcome = 'FORBIDDEN'; return; }
       if (lock[0].version !== version) { outcome = 'VERSION_CONFLICT'; return; }
 
       await manager.query(
@@ -231,7 +220,6 @@ export class SpeakingTestsRepository {
     await this.dataSource.transaction(async manager => {
       const lock = await manager.query(`SELECT version, created_by FROM tests WHERE id = $1 AND component = 'SPEAKING' FOR UPDATE`, [id]);
       if (lock.length === 0) { outcome = 'NOT_FOUND'; return; }
-      if (actor.role === 'TEACHER' && lock[0].created_by !== actor.id) { outcome = 'FORBIDDEN'; return; }
       if (lock[0].version !== version) { outcome = 'VERSION_CONFLICT'; return; }
 
       const snapshotId = randomUUID();
@@ -268,7 +256,6 @@ export class SpeakingTestsRepository {
     await this.dataSource.transaction(async manager => {
       const lock = await manager.query(`SELECT status, created_by FROM tests WHERE id = $1 AND component = 'SPEAKING' FOR UPDATE`, [id]);
       if (lock.length === 0) { outcome = 'NOT_FOUND'; return; }
-      if (actor.role === 'TEACHER' && lock[0].created_by !== actor.id) { outcome = 'FORBIDDEN'; return; }
       if (lock[0].status === 'ARCHIVED') return;
 
       await manager.query(

@@ -19,7 +19,7 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
 @ApiCookieAuth('aptimate_access_token')
 @Controller('admin/grammar-tests')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN', 'TEACHER')
+@Roles('ADMIN')
 export class GrammarTestsController {
   constructor(private readonly tests: GrammarTestsService) {}
 
@@ -29,8 +29,8 @@ export class GrammarTestsController {
   }
 
   @Get(':id')
-  get(@Param('id', new ParseUUIDPipe()) id: string, @CurrentUser() actor: AuthUser) {
-    return this.tests.get(id, actor);
+  get(@Param('id', new ParseUUIDPipe()) id: string) {
+    return this.tests.get(id);
   }
 
   @Post()

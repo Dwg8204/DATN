@@ -2,7 +2,7 @@ import { Bell, ClipboardList, LayoutDashboard, LogOut, MessageSquareText, Users 
 
 export const ADMIN_NAVIGATION = [
   { label: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard, roles: ['ADMIN'] },
-  { label: 'Test Management', to: '/admin/tests?purpose=EXAM', icon: ClipboardList, roles: ['ADMIN', 'TEACHER'], children: [
+  { label: 'Test Management', to: '/admin/tests?purpose=EXAM', icon: ClipboardList, roles: ['ADMIN'], children: [
     { label: 'Mock tests', to: '/admin/tests?purpose=EXAM' },
     { label: 'Practice', to: '/admin/tests?purpose=PRACTICE' },
   ] },

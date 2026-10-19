@@ -3,7 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { RolesGuard } from './roles.guard';
 
-function contextFor(role?: 'ADMIN' | 'TEACHER' | 'STUDENT'): ExecutionContext {
+function contextFor(role?: string): ExecutionContext {
   return {
     getHandler: () => function handler() {},
     getClass: () => class TestController {},
@@ -18,14 +18,14 @@ describe('RolesGuard', () => {
   });
 
   it('allows an authenticated user with an assigned role', () => {
-    const reflector = { getAllAndOverride: jest.fn().mockReturnValue(['ADMIN', 'TEACHER']) } as unknown as Reflector;
-    expect(new RolesGuard(reflector).canActivate(contextFor('TEACHER'))).toBe(true);
+    const reflector = { getAllAndOverride: jest.fn().mockReturnValue(['ADMIN']) } as unknown as Reflector;
+    expect(new RolesGuard(reflector).canActivate(contextFor('ADMIN'))).toBe(true);
   });
 
   it('rejects missing and insufficient roles with a safe 403 error', () => {
     const reflector = { getAllAndOverride: jest.fn().mockReturnValue(['ADMIN']) } as unknown as Reflector;
     const guard = new RolesGuard(reflector);
-    for (const context of [contextFor(), contextFor('STUDENT')]) {
+    for (const context of [contextFor(), contextFor('STUDENT'), contextFor('TEACHER'), contextFor('UNKNOWN')]) {
       try {
         guard.canActivate(context);
         throw new Error('Expected guard to reject access');

@@ -29,4 +29,4 @@ export interface AuditMetadata {
 
 export type MutationResult<T> =
   | { outcome: 'SUCCESS'; value: T }
-  | { outcome: 'NOT_FOUND' | 'ADMIN_PROTECTED' | 'INVALID_ROLE_TRANSITION' };
+  | { outcome: 'NOT_FOUND' | 'ADMIN_PROTECTED' };

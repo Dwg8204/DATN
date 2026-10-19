@@ -98,13 +98,15 @@ FAQ chính thức của ứng dụng (không phải kỳ thi):\n`+readFileSync(r
         contents.push(reply);
         const responses:any[]=[];
         for(const part of calls) {
+          const call=part.functionCall;
+          if(!call)continue;
           let result:any;
           try {
-            result=await this.tool(actor,part.functionCall.name,part.functionCall.args??{},signal);
+            result=await this.tool(actor,call.name,call.args??{},signal);
             if(result?.sources)sources.push(...result.sources);
             if(result?.attemptId)reviews.set(result.attemptId,result);
           } catch(e:any){result={error:e.code??'CHAT_TOOL_UNAVAILABLE'};}
-          responses.push({functionResponse:{name:part.functionCall.name,...(part.functionCall.id?{id:part.functionCall.id}:{}),response:{result:bounded(result)}}});
+          responses.push({functionResponse:{name:call.name,...(call.id?{id:call.id}:{}),response:{result:bounded(result)}}});
         }
         contents.push({role:'user',parts:responses});
       }
@@ -120,7 +122,7 @@ FAQ chính thức của ứng dụng (không phải kỳ thi):\n`+readFileSync(r
       return this.context.review(actor,args.attemptId,args.questionKey);
     }
     if(name==='lookupWord') {
-      if(typeof args.word!=='string'||!(/^[A-Za-z][A-Za-z '\-]{0,79}$/).test(args.word))throw chatError('CHAT_TOOL_ARGUMENTS',400);
+      if(typeof args.word!=='string'||!(/^[A-Za-z][A-Za-z '-]{0,79}$/).test(args.word))throw chatError('CHAT_TOOL_ARGUMENTS',400);
       return this.dictionary.lookup(args.word);
     }
     if(name==='searchKnowledge') {

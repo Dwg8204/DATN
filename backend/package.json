@@ -29,6 +29,7 @@
     "db:migrate:generate": "typeorm-ts-node-commonjs migration:generate -d src/database/data-source.ts",
     "db:seed": "ts-node src/database/seeds/run-seeds.ts",
     "db:seed:samples": "ts-node src/database/seeds/seed-sample-tests.ts",
+    "test:roles:db": "ts-node test/integration/account-roles.ts",
     "test:comments:db": "ts-node test/integration/comments-database.ts",
     "test:comments": "jest --runInBand --testPathPattern comments",
     "test:chatbot": "jest --runInBand --testPathPattern chatbot",

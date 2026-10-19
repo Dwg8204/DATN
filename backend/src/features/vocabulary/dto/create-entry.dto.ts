@@ -9,7 +9,7 @@ export enum VocabularySourceType {
   SYSTEM = 'SYSTEM',
   DICTIONARY = 'DICTIONARY',
   AI = 'AI',
-  TEACHER = 'TEACHER',
+  MANUAL = 'MANUAL',
 }
 
 export class CreateEntryDto {

@@ -6,7 +6,7 @@ import { AccountStatus } from '../types/managed-user.type';
 
 export class ListUsersQueryDto extends PaginationQueryDto {
   @IsOptional()
-  @IsIn(['ADMIN', 'TEACHER', 'STUDENT'])
+  @IsIn(['ADMIN', 'STUDENT'])
   role?: RoleCode;
 
   @IsOptional()

@@ -13,7 +13,7 @@ import { join } from 'node:path';
 @ApiCookieAuth('aptimate_access_token')
 @Controller('admin/media')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN', 'TEACHER')
+@Roles('ADMIN')
 export class MediaController {
   constructor(private readonly media: CloudinaryMediaService) {}
 
@@ -49,7 +49,7 @@ export class MediaController {
   }
 
   @Get('notification-attachments/files/:fileName')
-  @Roles('ADMIN', 'TEACHER', 'STUDENT')
+  @Roles('ADMIN', 'STUDENT')
   downloadNotificationAttachment(@Param('fileName') fileName: string, @Res() response: Response) {
     if (!/^[0-9a-f-]{36}(?:\.[a-z0-9]{1,9})?$/.test(fileName)) return response.sendStatus(404);
     response.removeHeader('X-Frame-Options');

@@ -3,10 +3,12 @@ import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { ChatbotProvider } from '../src/features/chatbot/chatbot.provider';
+import { createGeminiServices } from '../src/features/ai-shared/create-gemini-services';
 
 async function main() {
   const config=new ConfigService({...process.env,CHATBOT_ENABLED:'true'});
-  const provider=new ChatbotProvider(config,{} as DataSource);
+  const {client,generation}=createGeminiServices(config,{} as DataSource);
+  const provider=new ChatbotProvider(config,client,generation);
   provider.assertReady();
   const model=process.env.CHATBOT_MODEL??'gemini-3.5-flash-lite';
   const reply=await provider.request(model,'generateContent',{
@@ -15,7 +17,7 @@ async function main() {
   },AbortSignal.timeout(30000));
   const parsed=JSON.parse(reply.candidates?.[0]?.content?.parts?.filter((p:any)=>!p.thought).map((p:any)=>p.text??'').join('')??'');
   if(!parsed.text)throw new Error('INVALID_RESPONSE');
-  console.log(JSON.stringify({chat:'OK',model,finishReason:reply.candidates[0].finishReason}));
+    console.log(JSON.stringify({chat:'OK',model,finishReason:reply.candidates?.[0]?.finishReason}));
   if(process.argv.includes('--embedding')) {
     const vector=await provider.embed('Aptis Writing formal and informal email',true,AbortSignal.timeout(30000));
     console.log(JSON.stringify({embedding:'OK',dimensions:vector.length,norm:Math.sqrt(vector.reduce((n,v)=>n+v*v,0))}));

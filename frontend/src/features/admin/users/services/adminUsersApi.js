@@ -21,11 +21,5 @@ export const adminUsersApi = {
     signal,
   }).then(({ data }) => data),
 
-  createTeacher: payload => api.post(API_ENDPOINTS.adminUsers.list, payload, silentRequest)
-    .then(({ data }) => data),
-
-  promoteToTeacher: id => api.patch(API_ENDPOINTS.adminUsers.role(id), { role: 'TEACHER' }, silentRequest)
-    .then(({ data }) => data),
-
   remove: id => api.delete(API_ENDPOINTS.adminUsers.detail(id), silentRequest),
 };

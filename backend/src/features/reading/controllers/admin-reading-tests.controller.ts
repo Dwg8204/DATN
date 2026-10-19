@@ -12,7 +12,7 @@ import { CreateQuestionDto } from '../dto/create-question.dto';
 
 @Controller('admin/reading/tests')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('ADMIN', 'TEACHER')
+@Roles('ADMIN')
 export class AdminReadingTestsController {
   constructor(private readonly testsService: ReadingTestsService) {}
 

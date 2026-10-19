@@ -21,16 +21,10 @@ export class SpeakingTestsService {
     return this.repository.listPublished(query);
   }
 
-  async getOne(id: string, actor: SpeakingActor) {
+  async getOne(id: string) {
     const test = await this.repository.findAggregate(id);
     if (!test) throw new ApplicationError('SPEAKING_TEST_NOT_FOUND', 'Speaking test not found', 404);
 
-    if (actor.role === 'TEACHER') {
-      const owner = await this.repository.findOwner(id);
-      if (owner?.createdBy !== actor.id) {
-        throw new ApplicationError('FORBIDDEN', 'Cannot access tests created by other teachers', 403);
-      }
-    }
     return test;
   }
 
@@ -52,7 +46,6 @@ export class SpeakingTestsService {
 
     const result = await this.repository.update(id, actor, dto.version, aggregate, audit);
     if (result.outcome === 'NOT_FOUND') throw new ApplicationError('SPEAKING_TEST_NOT_FOUND', 'Speaking test not found', 404);
-    if (result.outcome === 'FORBIDDEN') throw new ApplicationError('FORBIDDEN', 'Cannot modify tests created by other teachers', 403);
     if (result.outcome === 'VERSION_CONFLICT') throw new ApplicationError('VERSION_CONFLICT', 'Test was modified by someone else', 409);
     if (result.outcome !== 'SUCCESS') throw new ApplicationError('INTERNAL_SERVER_ERROR', 'Unknown repository error', 500);
     
@@ -67,7 +60,6 @@ export class SpeakingTestsService {
 
     const result = await this.repository.publish(id, actor, dto.version, test, audit);
     if (result.outcome === 'NOT_FOUND') throw new ApplicationError('SPEAKING_TEST_NOT_FOUND', 'Speaking test not found', 404);
-    if (result.outcome === 'FORBIDDEN') throw new ApplicationError('FORBIDDEN', 'Cannot modify tests created by other teachers', 403);
     if (result.outcome === 'VERSION_CONFLICT') throw new ApplicationError('VERSION_CONFLICT', 'Test was modified by someone else', 409);
     if (result.outcome !== 'SUCCESS') throw new ApplicationError('INTERNAL_SERVER_ERROR', 'Unknown repository error', 500);
     
@@ -77,6 +69,5 @@ export class SpeakingTestsService {
   async archive(id: string, actor: SpeakingActor, audit: SpeakingAudit) {
     const result = await this.repository.archive(id, actor, audit);
     if (result.outcome === 'NOT_FOUND') throw new ApplicationError('SPEAKING_TEST_NOT_FOUND', 'Speaking test not found', 404);
-    if (result.outcome === 'FORBIDDEN') throw new ApplicationError('FORBIDDEN', 'Cannot modify tests created by other teachers', 403);
   }
 }

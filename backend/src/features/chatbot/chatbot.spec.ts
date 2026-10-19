@@ -1,7 +1,7 @@
 import { normalizeVector } from './chatbot.provider';
 import { reciprocalRankFusion } from './chatbot.knowledge';
 import { parseChatReply } from './chatbot.service';
-import { learningStats } from './chatbot.context';
+import { learningStats } from '../ai-shared/learning-statistics';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
 import { SendChatDto } from './chatbot.dto';
@@ -10,6 +10,13 @@ import { ChatbotContext } from './chatbot.context';
 import { ChatbotService } from './chatbot.service';
 
 describe('Chatbot boundaries',()=>{
+  test('statistics query keeps the authenticated owner, latest 20 submitted attempts and chatbot limitation',async()=>{
+    const query=jest.fn().mockResolvedValue([]);
+    const context=new ChatbotContext({query} as any,{} as any,{} as any);
+    const result=await context.stats({id:'me'} as any);
+    expect(query).toHaveBeenCalledWith(expect.stringMatching(/student_id=\$1 AND status='SUBMITTED'.*ORDER BY submitted_at DESC,id DESC LIMIT 20/s),['me']);
+    expect(result.limitation).toBe('Chỉ mô tả tối đa 20 bài đã nộp gần nhất; không gộp điểm khác kỹ năng/chế độ/phạm vi hoặc suy CEFR tổng thể.');
+  });
   test('normalizes embedding and rejects zero/invalid dimensions',()=>{
     const v=normalizeVector(Array(768).fill(2));expect(Math.sqrt(v.reduce((n,x)=>n+x*x,0))).toBeCloseTo(1,8);
     expect(()=>normalizeVector([1,2])).toThrow();expect(()=>normalizeVector(Array(768).fill(0))).toThrow();expect(()=>normalizeVector(Array(768).fill(NaN))).toThrow();

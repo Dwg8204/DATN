@@ -7,6 +7,7 @@ import {ConfigService} from '@nestjs/config';
 import {DataSource} from 'typeorm';
 import {createDataSourceOptions} from '../src/database/data-source-options';
 import {ChatbotProvider,normalizeVector} from '../src/features/chatbot/chatbot.provider';
+import {createGeminiServices} from '../src/features/ai-shared/create-gemini-services';
 import {chunkSections,KnowledgeSection} from '../src/features/chatbot/knowledge-chunker';
 
 type Document={key:string;title:string;variant:string;component?:string;source:string|null;verifiedAt:string;sections:KnowledgeSection[]};
@@ -24,7 +25,9 @@ async function main(){
   console.log(JSON.stringify({documents:docs.length,sections:docs.reduce((n,d)=>n+d.sections.length,0),structure:'valid'}));
   if(!process.argv.includes('--apply')){console.log('Offline validation only. Exact token counts and embeddings are checked on import.');return;}
   const db=new DataSource({...createDataSourceOptions(),logging:false});await db.initialize();
-  const provider=new ChatbotProvider(new ConfigService({...process.env,CHATBOT_ENABLED:'true'}),db);provider.assertReady();
+  const config=new ConfigService({...process.env,CHATBOT_ENABLED:'true'});
+  const {client,generation}=createGeminiServices(config,db);
+  const provider=new ChatbotProvider(config,client,generation);provider.assertReady();
   const lock=db.createQueryRunner();await lock.connect();
   try{
     const [locked]=await lock.query("SELECT pg_try_advisory_lock(hashtextextended('aptimate-knowledge-import',0)) AS ok");
@@ -36,7 +39,9 @@ async function main(){
       const [latest]=await db.query('SELECT id,version_no,content_hash,status FROM knowledge_documents WHERE document_key=$1 ORDER BY version_no DESC LIMIT 1',[d.key]);
       if(latest?.content_hash===digest&&latest.status==='READY'){console.log(`${d.key}: unchanged`);continue;}
       const chunks=await chunkSections(d.title,d.sections,async text=>{
-        const r=await provider.request('gemini-embedding-001','countTokens',{contents:[{role:'user',parts:[{text}]}]},AbortSignal.timeout(30000));return r.totalTokens;
+        const r=await provider.request('gemini-embedding-001','countTokens',{contents:[{role:'user',parts:[{text}]}]},AbortSignal.timeout(30000));
+        if(typeof r.totalTokens!=='number')throw Error('INVALID_TOKEN_COUNT');
+        return r.totalTokens;
       });
       const vectors:number[][]=[];
       for(let i=0;i<chunks.length;i+=20){

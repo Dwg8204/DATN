@@ -1,28 +1,25 @@
 export const APP_ROLES = Object.freeze({
   ADMIN: 'ADMIN',
-  TEACHER: 'TEACHER',
   STUDENT: 'STUDENT',
 });
 
 export function normalizeRole(role) {
   const normalized = typeof role === 'string' ? role.trim().toUpperCase() : '';
-  return normalized === 'USER' ? APP_ROLES.STUDENT : normalized;
+  if (normalized === 'USER') return APP_ROLES.STUDENT;
+  return Object.values(APP_ROLES).includes(normalized) ? normalized : '';
 }
 
 export function hasAnyRole(role, allowedRoles = []) {
   const normalizedRole = normalizeRole(role);
-  return allowedRoles.map(normalizeRole).includes(normalizedRole);
+  return Boolean(normalizedRole) && allowedRoles.map(normalizeRole).includes(normalizedRole);
 }
 
 export function getAdminLandingPath(role) {
-  return normalizeRole(role) === APP_ROLES.TEACHER ? '/admin/tests' : '/admin/dashboard';
+  return normalizeRole(role) === APP_ROLES.ADMIN ? '/admin/dashboard' : '/';
 }
 
-export function canAccessAdminPath(role, pathname = '') {
-  const normalizedRole = normalizeRole(role);
-  if (normalizedRole === APP_ROLES.ADMIN) return true;
-  return normalizedRole === APP_ROLES.TEACHER
-    && (pathname === '/admin/tests' || pathname.startsWith('/admin/tests/'));
+export function canAccessAdminPath(role) {
+  return normalizeRole(role) === APP_ROLES.ADMIN;
 }
 
 export function safeReturnPath(value, role) {

@@ -4,7 +4,6 @@ import { SeedAdminConfig } from './seed-admin.config';
 
 const roles = [
   ['ADMIN', 'Administrator', 'Manages users, tests and system operations.'],
-  ['TEACHER', 'Teacher', 'Creates tests and reviews learner performance.'],
   ['STUDENT', 'Student', 'Practises Aptis tests and reviews results.'],
 ] as const;
 

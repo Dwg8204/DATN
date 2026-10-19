@@ -32,7 +32,7 @@ Các trường hợp ngoại lệ có chủ đích:
 - Exam submit dùng `PENDING_AI`, repository lưu `grading_status = QUEUED`. Chưa có worker chấm Writing.
 - `PracticeAttemptsService.complete()` hiện giữ `PENDING_AI` cho SPEAKING, chuyển các kỹ năng còn lại thành `UNASSESSED`. Thêm ngoại lệ WRITING khi Writing AI bật, tuyệt đối giữ nguyên ngoại lệ SPEAKING.
 - Đã có `test_snapshots`, `test_attempts`, `attempt_progress`, `assessment_revision`, `grading_status`, `result JSONB`, `estimated_cefr` và `result_source`.
-- `result_source` hiện chỉ có `AUTOMATIC` và `TEACHER`: dùng `AUTOMATIC`, phân biệt chấm AI bằng `result.method = AI` và metadata; không cần thêm enum AI.
+- `result_source` hiện có `AUTOMATIC` và `MANUAL` (đổi nhãn nguồn thủ công từ migration 19/10/2026): dùng `AUTOMATIC`, phân biệt chấm AI bằng `result.method = AI` và metadata; không cần thêm enum AI.
 - `AssessmentResult` **đã có `method = AI`**, `gradingNotice`, `speaking` và `items[].assessment` của Speaking. Chỉ bổ sung `writing`, không tái định nghĩa AI thành Writing hoặc thay cấu trúc assessment của audio.
 - `WritingResultPage` và `WritingResultDetailPage` đã có khung kết quả, câu đã nộp và bài mẫu. Feedback/AI Answer hiện chưa có dữ liệu thật.
 - `useAttemptResult` **đã polling riêng SPEAKING** mỗi 5 giây, tối đa khoảng 60 lần, giữ dữ liệu cũ khi lỗi mạng tạm thời. `useAttemptPartResult` đã có tham số thứ tư `refreshKey`; Speaking dùng revision để tải lại chi tiết. Writing chưa có polling; bổ sung riêng, không viết lại hành vi Speaking.

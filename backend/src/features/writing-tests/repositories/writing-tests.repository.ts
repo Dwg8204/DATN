@@ -25,7 +25,7 @@ type StoredQuestion = {
 
 export type WritingRepositoryMutation =
   | { outcome: 'SUCCESS'; value: WritingTestAggregate }
-  | { outcome: 'NOT_FOUND' | 'FORBIDDEN' | 'VERSION_CONFLICT' };
+  | { outcome: 'NOT_FOUND' | 'VERSION_CONFLICT' };
 
 @Injectable()
 export class WritingTestsRepository {
@@ -37,10 +37,6 @@ export class WritingTestsRepository {
     if (query.purpose) {
       values.push(query.purpose);
       where.push(`t.purpose = $${values.length}`);
-    }
-    if (actor?.role === 'TEACHER') {
-      values.push(actor.id);
-      where.push(`t.created_by = $${values.length}`);
     }
     if (query.search?.trim()) {
       values.push(`%${this.escapeLike(query.search.trim())}%`);
@@ -176,7 +172,6 @@ export class WritingTestsRepository {
     return this.dataSource.transaction(async manager => {
       const current = await this.lock(manager, id);
       if (!current || current.status === 'ARCHIVED') return { outcome: 'NOT_FOUND' };
-      if (actor.role === 'TEACHER' && current.created_by !== actor.id) return { outcome: 'FORBIDDEN' };
       if (current.version !== expectedVersion) return { outcome: 'VERSION_CONFLICT' };
       const mapping = this.modeColumns(test.mode);
       const rows = await manager.query<TestRow[]>(
@@ -200,7 +195,6 @@ export class WritingTestsRepository {
     return this.dataSource.transaction(async manager => {
       const current = await this.lock(manager, id);
       if (!current || current.status === 'ARCHIVED') return { outcome: 'NOT_FOUND' };
-      if (actor.role === 'TEACHER' && current.created_by !== actor.id) return { outcome: 'FORBIDDEN' };
       if (current.version !== expectedVersion) return { outcome: 'VERSION_CONFLICT' };
       const snapshot = { id, component: 'WRITING', mode: test.mode, purpose: current.purpose, details: test.details, parts: test.parts, status: 'PUBLISHED' as const, version: current.version };
       const serialized = JSON.stringify(snapshot);
@@ -229,7 +223,6 @@ export class WritingTestsRepository {
     return this.dataSource.transaction(async manager => {
       const current = await this.lock(manager, id);
       if (!current || current.status === 'ARCHIVED') return { outcome: 'NOT_FOUND' };
-      if (actor.role === 'TEACHER' && current.created_by !== actor.id) return { outcome: 'FORBIDDEN' };
       const rows = await manager.query<TestRow[]>(
         `UPDATE tests SET status='ARCHIVED',archived_at=now(),updated_by=$2,updated_at=now() WHERE id=$1 RETURNING *`, [id, actor.id],
       );
@@ -237,13 +230,6 @@ export class WritingTestsRepository {
       await this.writeAudit(manager, actor.id, 'WRITING_TEST_ARCHIVED', id, { version: current.version }, audit);
       return { outcome: 'SUCCESS', value: this.hydrate(row, await this.loadQuestions(manager, id)) };
     });
-  }
-
-  async findOwner(id: string): Promise<{ createdBy: string; status: WritingTestStatus } | null> {
-    const rows = await this.dataSource.query<Array<{ created_by: string; status: WritingTestStatus }>>(
-      `SELECT created_by,status FROM tests WHERE id=$1 AND component='WRITING' LIMIT 1`, [id],
-    );
-    return rows[0] ? { createdBy: rows[0].created_by, status: rows[0].status } : null;
   }
 
   private async loadQuestions(manager: EntityManager, id: string): Promise<QuestionRow[]> {

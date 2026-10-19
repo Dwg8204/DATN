@@ -1,7 +1,7 @@
 import api from '../../../../services/api';
 
 export const speakingTestsApi = {
-  // --- Admin/Teacher endpoints ---
+  // --- Admin endpoints ---
   list: async ({ signal, ...params }) => {
     const res = await api.get('/speaking-tests', { params, signal });
     return res.data;

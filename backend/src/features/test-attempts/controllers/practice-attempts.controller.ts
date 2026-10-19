@@ -13,7 +13,7 @@ import { PracticeAttemptsService } from '../services/practice-attempts.service';
 @ApiCookieAuth('aptimate_access_token')
 @Controller('practice-attempts')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('STUDENT', 'TEACHER', 'ADMIN')
+@Roles('STUDENT', 'ADMIN')
 export class PracticeAttemptsController {
   constructor(private readonly attempts: PracticeAttemptsService) {}
 

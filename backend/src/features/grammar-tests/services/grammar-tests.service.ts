@@ -25,10 +25,9 @@ export class GrammarTestsService {
     return paginate(result.tests, result.total, query);
   }
 
-  async get(id: string, actor: AuthUser): Promise<GrammarTestAggregate> {
+  async get(id: string): Promise<GrammarTestAggregate> {
     const aggregate = await this.repository.findAggregate(id);
     if (!aggregate || aggregate.status === 'ARCHIVED') this.notFound();
-    await this.assertOwner(id, actor);
     return aggregate;
   }
 
@@ -53,7 +52,6 @@ export class GrammarTestsService {
   async publish(id: string, actor: AuthUser, audit: GrammarAudit, expectedVersion: number): Promise<GrammarTestAggregate> {
     const aggregate = await this.repository.findAggregate(id);
     if (!aggregate || aggregate.status === 'ARCHIVED') this.notFound();
-    await this.assertOwner(id, actor);
     if (expectedVersion !== aggregate.version) this.versionConflict();
     this.content.assertPublishable(aggregate);
     return this.unwrap(await this.repository.publish(id, actor, aggregate.version!, aggregate, audit));
@@ -63,20 +61,9 @@ export class GrammarTestsService {
     this.unwrap(await this.repository.archive(id, actor, audit));
   }
 
-  private async assertOwner(id: string, actor: AuthUser): Promise<void> {
-    const owner = await this.repository.findOwner(id);
-    if (!owner || owner.status === 'ARCHIVED') this.notFound();
-    if (actor.role === 'TEACHER' && owner.createdBy !== actor.id) {
-      throw new ApplicationError('GRAMMAR_TEST_FORBIDDEN', 'You can only manage tests that you created.', 403);
-    }
-  }
-
   private unwrap(result: RepositoryMutation): GrammarTestAggregate {
     if (result.outcome === 'SUCCESS') return result.value;
     if (result.outcome === 'NOT_FOUND') this.notFound();
-    if (result.outcome === 'FORBIDDEN') {
-      throw new ApplicationError('GRAMMAR_TEST_FORBIDDEN', 'You can only manage tests that you created.', 403);
-    }
     return this.versionConflict();
   }
 

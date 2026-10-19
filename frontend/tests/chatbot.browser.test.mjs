@@ -16,7 +16,7 @@ test('chat sessions, feedback, retry, ownership boundary and exam visibility',as
   const browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{})});
   try{
     const page=await browser.newPage({viewport:{width:390,height:850}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
-    const sessions=[],messages=new Map();let failNext=false;let releaseReply;let holdReply=new Promise(resolve=>{releaseReply=resolve;});
+    const sessions=Array.from({length:30},(_,i)=>({id:'older-'+i,title:'Older conversation '+i,updatedAt:'2026-10-16T00:00:00Z'})),messages=new Map(sessions.map(s=>[s.id,[]]));let failNext=false,failRename=false;let releaseReply;let holdReply=new Promise(resolve=>{releaseReply=resolve;});
     await page.route('**/*',async route=>{
       const r=route.request(),url=new URL(r.url()),method=r.method(),path=url.pathname.replace('/api/v1/chatbot','');
       const ok=data=>route.fulfill({json:{data}});
@@ -33,7 +33,7 @@ test('chat sessions, feedback, retry, ownership boundary and exam visibility',as
       }
       if(action==='feedback'){const m=list.find(m=>m.id===messageId);m.feedback=r.postDataJSON().feedback;return ok(m);}
       if(action==='retry'){const m=list.find(m=>m.id===messageId);m.status='COMPLETED';m.content='Recovered reply';return ok(m);}
-      if(method==='PATCH'){sessions.find(s=>s.id===id).title=r.postDataJSON().title;return ok({id});}
+      if(method==='PATCH'){if(failRename){failRename=false;return route.fulfill({status:500,json:{error:{code:'TEST_ERROR'}}});}sessions.find(s=>s.id===id).title=r.postDataJSON().title;return ok({id});}
       if(method==='DELETE'){sessions.splice(sessions.findIndex(s=>s.id===id),1);return ok({id});}
       return route.abort();
     });
@@ -61,7 +61,29 @@ test('chat sessions, feedback, retry, ownership boundary and exam visibility',as
     await page.getByRole('button',{name:'New conversation',exact:true}).click();await ask('Second session');await page.getByText('Answer: Second session',{exact:true}).waitFor();
     assert.equal(await page.getByText('Answer: First session',{exact:true}).count(),0);
     await page.getByRole('button',{name:'Chat history',exact:true}).click();await page.getByRole('button',{name:/First session/}).click();await page.getByText('Answer: First session',{exact:true}).waitFor();
-    await page.getByRole('button',{name:'Chat history',exact:true}).click();await page.getByRole('button',{name:'Rename',exact:true}).first().click();await page.getByRole('textbox',{name:'Rename',exact:true}).fill('Renamed chat');await page.getByRole('button',{name:'Save',exact:true}).click();await page.getByRole('button',{name:/Renamed chat/}).click();
+    await page.getByRole('button',{name:'Chat history',exact:true}).click();
+    const renameButtons=page.getByRole('button',{name:'Rename',exact:true});
+    assert.equal(await renameButtons.count(),32);
+    const editBox=await renameButtons.first().boundingBox(),deleteBox=await page.getByRole('button',{name:'Delete conversation',exact:true}).first().boundingBox();
+    assert.ok(editBox.width>=32&&deleteBox.x-(editBox.x+editBox.width)>=5);
+    await renameButtons.first().click();
+    const renameInput=page.getByRole('textbox',{name:'Rename',exact:true});
+    await renameInput.waitFor();assert.ok(await renameInput.evaluate(el=>document.activeElement===el));
+    const editForm=renameInput.locator('xpath=ancestor::form');
+    assert.match(await editForm.evaluate(el=>el.parentElement.className),/historyItem/);
+    await renameInput.fill('Discard this');await renameInput.press('Escape');
+    assert.equal(await renameInput.count(),0);assert.equal(await page.getByRole('region',{name:'AptiMate Assistant'}).count(),1);
+    await renameButtons.first().click();await renameInput.fill('');assert.ok(await page.getByRole('button',{name:'Save',exact:true}).isDisabled());
+    await renameInput.fill('A long conversation title '.repeat(6));
+    await page.setViewportSize({width:320,height:850});await page.evaluate(()=>document.documentElement.dataset.theme='dark');
+    assert.ok(await editForm.evaluate(el=>el.scrollWidth<=el.clientWidth));
+    if(process.env.CHATBOT_HISTORY_PREVIEW)await page.getByRole('region',{name:'AptiMate Assistant'}).screenshot({path:process.env.CHATBOT_HISTORY_PREVIEW});
+    await page.setViewportSize({width:390,height:850});
+    await renameInput.fill('Renamed chat');failRename=true;await renameInput.press('Enter');
+    await editForm.getByRole('alert').waitFor();assert.equal(await renameInput.inputValue(),'Renamed chat');
+    await page.getByRole('button',{name:'Save',exact:true}).click();await page.getByRole('button',{name:/Renamed chat/}).waitFor();
+    assert.equal(await renameButtons.count(),32);
+    await page.getByRole('button',{name:/Renamed chat/}).click();
     failNext=true;await ask('Try failure');await page.getByRole('button',{name:'Retry reply'}).click();await page.getByText('Recovered reply',{exact:true}).waitFor();
     await page.evaluate(()=>document.documentElement.dataset.theme='dark');
     const panel=await page.getByRole('region',{name:'AptiMate Assistant'}).boundingBox();assert.ok(panel.x>=0&&panel.x+panel.width<=391);

@@ -87,7 +87,7 @@ export class SpeakingAiProvider {
       const transcript = await this.transcribe(job, recording.key, bytes);
       parts.push({ text: JSON.stringify({ responseKey: recording.key, partNumber: item.partNumber,
         question: item.partNumber === 4 ? { topic: part.topic, questions: part.questions } : part.questions?.find(question => question.key === item.key)?.text,
-        teacherSample: item.sampleAnswer ?? null, teacherGuidance: item.explanation ?? null, whisperTranscript: transcript }) },
+        referenceSample: item.sampleAnswer ?? null, referenceGuidance: item.explanation ?? null, whisperTranscript: transcript }) },
         { inlineData: { mimeType: 'audio/mpeg', data: bytes.toString('base64') } });
     }
     const payload = {

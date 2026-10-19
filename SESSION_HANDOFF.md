@@ -1,6 +1,36 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Đồng bộ và commit toàn bộ thay đổi — 19/10/2026
+
+- Theo yêu cầu người dùng, đã fetch `origin/develop` và fast-forward nhánh `feature/backend-writing-crud` tới `0a33041` trước khi chia commit. Không đổi nhánh, không push.
+- Chia thay đổi thành các task: migration/schema hai vai trò; API phân quyền; UI quản trị/phân quyền; sửa lịch sử chatbot; thống kê học tập dùng chung; Gemini/ghi token/quota; tài liệu bàn giao. Các ghi chú “chưa commit” bên dưới mô tả thời điểm trước đợt này.
+- Kiểm thử trước commit: backend 66 suite/411 test đạt; frontend chính 95/95 test và 5/5 test phân quyền/API đạt. Không chạy lại Gemini thật, email hoặc migration trên database ứng dụng.
+- Không đưa `.env`, thông tin đăng nhập hay file tạm vào commit; `.env.example` chỉ bổ sung cấu hình giới hạn RPM. Commit không đồng nghĩa người dùng đã nghiệm thu GĐ0; vẫn dừng trước các giai đoạn cá nhân hóa tiếp theo.
+
+## Cá nhân hóa GĐ0 — 19/10/2026
+
+- Theo yêu cầu triển khai GĐ0 bản 2, đã tách thống kê thuần và hạ tầng Gemini/ghi `ai_requests` sang `features/ai-shared`. Chatbot vẫn đọc 20 bài gần nhất của chính người đăng nhập, giữ schema/action/thought signature và mã lỗi. Chi tiết, lệnh test và giới hạn: `docs/PERSONALIZATION_GD0_REPORT.md`.
+- Cấu hình mới `GEMINI_MAX_RPM` mặc định 5/model/process; HTTP 429 có cooldown theo Retry-After, không tự retry. Chưa có quota phân tán hoặc ngân sách trả phí. Không sửa `.env`, model hoặc pipeline chấm Writing/Speaking.
+- Baseline 20 test chatbot đạt; kết quả cuối 7 suite/57 test đạt, typecheck/build backend và ESLint các file đã sửa đạt. Hồi quy bổ sung thống kê, quota, request recording và DI; PostgreSQL integration trên `aptimate_chatbot_test` đạt với HTTP mock, không gọi Gemini thật. Xem báo cáo GĐ0 để biết cách nghiệm thu.
+- Đã fetch develop tới `0a33041`, tree trùng HEAD `2039b94`. Thao tác tạo nhánh mới bị người dùng từ chối: giữ nhánh hiện tại, không commit/push; giữ nguyên thay đổi phân quyền/UI/Speaking có sẵn.
+- Chưa làm P0 hoặc GĐ1. P0 Speaking Part chưa được xác nhận hoàn tất; migration số `1760000015000` đã được task phân quyền dùng, cần chọn lại số khi triển khai nền dữ liệu. Dừng ở GĐ0 chờ người dùng kiểm thử.
+
+## Cập nhật phân quyền — 19/10/2026
+
+- Hệ thống chỉ còn **User (mã STUDENT)** và **Admin (ADMIN)**. Giữ mã STUDENT để tương thích đăng ký, Exam/Practice và dữ liệu hiện có; không thêm role USER riêng.
+- Đã gỡ tab/form tạo Teacher, thao tác nâng quyền, API POST /admin/users và PATCH /admin/users/:id/role, DTO/service/repository tương ứng, nhãn Anh–Việt và tùy chọn người nhận thông báo. API cũ trả 404; lọc role không hợp lệ trả 400.
+- Chỉ Admin quản lý đề ở cả 5 kỹ năng, Reading legacy, upload media quản trị và tạo bài dictation. Bỏ giới hạn tác giả dành cho role cũ; Admin quản lý được đề của mọi tác giả. User vẫn dùng các luồng học/làm bài hiện có; Practice cho cả User/Admin, Exam giữ chính sách STUDENT.
+- Migration RestrictAccountRoles1760000015000 chuyển mọi tài khoản TEACHER (kể cả đã xóa mềm) về STUDENT, tăng auth_version, thu hồi refresh token và ghi audit. Giữ ID, tác giả đề, bài làm, lịch sử và dữ liệu học tập. Constraint database chặn mọi role ngoài ADMIN/STUDENT; seed chỉ tạo hai role.
+- Thông báo nhắm role cũ chuyển sang SELECTED_USERS: giữ recipient đã chốt của lịch gửi/lịch sử, lấy người nhận hiện tại cho draft; không chuyển thành gửi toàn bộ User. Nguồn dữ liệu thủ công result_source/vocabulary_source_type đổi nhãn sang MANUAL, giữ dữ liệu nguồn cũ.
+- Đã áp dụng migration vào database local: **1 ADMIN, 4 STUDENT**, không còn migration chờ. Hai tài khoản được chuyển role cần đăng nhập lại. Máy khác chạy npm run db:migrate trong backend rồi khởi động backend với code mới.
+- Rollback chỉ phục hồi khả năng đọc schema cũ, không tự cấp lại quyền đã thu hồi hoặc mở rộng người nhận. Tên TEACHER còn trong migration lịch sử/chuyển đổi và test phủ định là có chủ đích. Từ “teacher” trong bài tiếng Anh, ví dụ từ điển và tên Aptis for Teachers không phải role hệ thống.
+- Kiểm chứng: PostgreSQL integration trên database _test với schema riêng và rollback; kiểm tra chuyển role, phiên, tài khoản xóa mềm, tác giả, thông báo, enum, constraint và down/up. Backend 61 suite/372 test + 8 test HTTP phân quyền đạt. Frontend 5 test authorization/API và 4 browser test (en/vi, desktop/mobile, từ chối User/role cũ) đạt. Sau dọn code phân quyền cũ, chạy lại 4 suite/23 test backend liên quan đạt; typecheck/build backend đạt. Frontend chính 95/95 test, kiểm tra i18n và build đạt; lint frontend không có lỗi, còn cảnh báo có sẵn; ESLint các file backend thay đổi đạt. Build frontend còn cảnh báo bundle lớn hơn 500 kB. Kiểm thử browser dùng API mock; không gọi lại AI hoặc gửi email thật.
+- Không commit/push. Giữ nguyên thay đổi chatbot có sẵn trước task này.
+
+
 ## Mốc chatbot mới nhất — 16/10/2026
+
+- Sau đợt commit, người dùng yêu cầu sửa UI lịch sử: đã tách nút sửa/xóa và đưa form đổi tên vào đúng thẻ hội thoại, giữ danh sách khi lưu; hỗ trợ Enter/Escape, trạng thái lỗi và dark mode. Browser test mở rộng với 32 phiên và màn hình 320px; đợt sửa này chờ người dùng test lại, chưa thuộc các commit trước.
 
 - Theo yêu cầu mới nhất, đã pull `origin/develop` trên `feature/backend-writing-crud` (Already up to date), khôi phục thay đổi không xung đột và chia commit local theo task: schema, backend, corpus/ingestion, kiểm thử, UI, linh vật và tài liệu. Không push. Các ghi chú “chưa commit” bên dưới là trạng thái trước mốc đồng bộ này.
 
