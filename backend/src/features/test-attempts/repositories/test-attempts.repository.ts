@@ -148,7 +148,8 @@ export class TestAttemptsRepository {
       `SELECT a.id AS "attemptId",s.test_id AS "testId",s.version,
               s.snapshot #>> '{details,title}' AS title,a.component,a.purpose,a.scope,a.part_number AS "partNumber",
                a.status,a.grading_status AS "gradingStatus",a.score::float8 AS score,a.max_score::float8 AS "maxScore",
-              a.estimated_cefr AS "estimatedCefr",a.result->>'method' AS "assessmentMethod",a.started_at AS "startedAt",
+              CASE WHEN a.component='SPEAKING' AND a.scope='PART' THEN NULL
+                ELSE a.estimated_cefr END AS "estimatedCefr",a.result->>'method' AS "assessmentMethod",a.started_at AS "startedAt",
               a.submitted_at AS "submittedAt",a.completed_at AS "completedAt"
        FROM test_attempts a JOIN test_snapshots s ON s.id=a.snapshot_id
        WHERE a.student_id=$1 ${filter} ORDER BY a.started_at ${direction},a.id ${direction}

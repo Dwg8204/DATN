@@ -1,3 +1,4 @@
+import { presentSpeakingResult } from '../assessments/speaking-result-policy';
 import { SpeakingAiConfig } from './speaking-ai-config.service';
 import { Injectable, Optional } from '@nestjs/common';
 import { WritingAssessmentCoordinator } from '../../writing-assessment/services/writing-assessment-coordinator.service';
@@ -230,6 +231,9 @@ export class PracticeAttemptsService {
 
   private async summary(attempt: LockedAttemptRow, answers?: Answers, paper?: AssessmentPaper, manager?: EntityManager) {
     const cefrEstimate = readingCefrEstimate(attempt);
+    const presented = presentSpeakingResult(
+      attempt.result ? presentAssessmentResult(this.assessmentResult(attempt.result), answers, paper) : null, attempt,
+    );
     return {
       attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null,
       purpose: 'PRACTICE', component: attempt.component, scope: attempt.scope, partNumber: attempt.part_number,
@@ -238,11 +242,11 @@ export class PracticeAttemptsService {
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
       estimatedCefr: attempt.component === 'READING' ? cefrEstimate?.level ?? null
-        : attempt.component === 'SPEAKING' || attempt.component === 'WRITING' && attempt.scope === 'FULL_SKILL' ? attempt.estimated_cefr : null,
+        : (attempt.component === 'SPEAKING' || attempt.component === 'WRITING') && attempt.scope === 'FULL_SKILL' ? attempt.estimated_cefr : null,
       ...(attempt.component === 'READING' ? { cefrEstimate } : {}),
       ...(attempt.component === 'WRITING' && this.writing ? { assessment: await this.writing.status(attempt, manager) } : {}),
       ...(attempt.component === 'SPEAKING' && this.speaking ? { assessment: { enabled: this.speaking.enabled } } : {}),
-      result: writingSummary(attempt.result ? presentAssessmentResult(this.assessmentResult(attempt.result), answers, paper) : null, attempt.component),
+      result: writingSummary(presented, attempt.component),
       submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: null,
     };

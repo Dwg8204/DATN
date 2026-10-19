@@ -1,3 +1,4 @@
+import { isSpeakingPart, presentSpeakingResult } from '../assessments/speaking-result-policy';
 import { SpeakingAiConfig } from './speaking-ai-config.service';
 import { Injectable, Logger, Optional } from '@nestjs/common';
 import { WritingAssessmentCoordinator } from '../../writing-assessment/services/writing-assessment-coordinator.service';
@@ -279,17 +280,18 @@ export class TestAttemptsService {
     const cefrEstimate = readingCefrEstimate(attempt);
     const result = attempt.component === 'LISTENING' && isLegacyListeningResult(attempt.result)
       ? normalizeLegacyListeningResult(attempt.result) : attempt.result;
+    const presented = presentSpeakingResult(presentAssessmentResult(result as AssessmentResult | null, answers, paper), attempt);
     return { attemptId: attempt.id, testId: attempt.test_id ?? null, title: attempt.test_title ?? null, component: attempt.component,
       purpose: attempt.purpose,
       scope: attempt.scope, partNumber: attempt.part_number, assessmentRevision: attempt.assessment_revision,
       status: attempt.status, gradingStatus: attempt.grading_status,
       score: attempt.score == null ? null : Number(attempt.score),
       maxScore: attempt.max_score == null ? null : Number(attempt.max_score),
-      estimatedCefr: attempt.component === 'READING' ? cefrEstimate?.level ?? null : attempt.estimated_cefr,
+      estimatedCefr: attempt.component === 'READING' ? cefrEstimate?.level ?? null : isSpeakingPart(attempt) ? null : attempt.estimated_cefr,
       ...(attempt.component === 'READING' ? { cefrEstimate } : {}),
       ...(attempt.component === 'WRITING' && this.writing ? { assessment: await this.writing.status(attempt, manager) } : {}),
       ...(attempt.component === 'SPEAKING' && this.speaking ? { assessment: { enabled: this.speaking.enabled } } : {}),
-      result: writingSummary(presentAssessmentResult(result as AssessmentResult | null, answers, paper), attempt.component), submittedAt: attempt.submitted_at,
+      result: writingSummary(presented, attempt.component), submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: attempt.expires_at,
       submittedAfterExpiry: !!attempt.expires_at && !!attempt.submitted_at &&
         new Date(attempt.submitted_at).getTime() >= new Date(attempt.expires_at).getTime() };

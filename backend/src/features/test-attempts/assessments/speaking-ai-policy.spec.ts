@@ -85,3 +85,19 @@ describe('Speaking AI policy', () => {
     expect(finalizeSpeaking(paper, {}, validateSpeakingAssessment(raw(), ['p1:q1']), 'test', previous).assistance).toEqual(previous.assistance);
   });
 });
+
+describe('Speaking Part CEFR policy', () => {
+  it.each([1, 2, 3, 4])('discards a provider band for Part %s while retaining practice scores', partNumber => {
+    const partPaper = { ...paper, mode: 'part' + partNumber, items: paper.items.filter(item => item.partNumber === partNumber) };
+    const input = raw();
+    input.responses[0].key = partPaper.items[0].key;
+    const checked = validateSpeakingAssessment(input, [partPaper.items[0].key]);
+    const result = finalizeSpeaking(partPaper, {}, checked, 'test', assessSpeaking(partPaper.items, {}));
+    expect(result.score).toBe(37.5);
+    expect(result.speaking?.estimatedCefr).toBeNull();
+    expect(result.speaking?.cefrReason).toContain('một Part');
+    expect(result.gradingNotice).toBe(result.speaking?.cefrReason);
+    expect(result.speaking?.criteria).toEqual(input.responses[0].criteria);
+    expect(checked.estimatedCefr).toBe('B2');
+  });
+});
