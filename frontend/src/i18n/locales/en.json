@@ -1,5 +1,14 @@
 {
   "personalization": {
+    "progressTitle": "Goal progress",
+    "loading": "Loading…",
+    "noGoal": "Set a goal to track your learning progress.",
+    "expected": "Expected: {{expected}} tests · Required pace: {{pace}} tests/day · {{days}} days left",
+    "reached": "You have reached your test target! Keep practicing until the deadline or finish early in your profile.",
+    "bandEstimate": "Estimated CEFR",
+    "insufficient": "Insufficient data",
+    "habit": "Streak: {{streak}} days · {{activeDaysThisWeek}} active days this week",
+    "pace": {"AHEAD":"Ahead","ON_TRACK":"On track","BEHIND":"Behind"},
     "title": "Learning goal",
     "days": "Duration (3–180 days)",
     "goalSummary": "{{targetCefr}} · {{completed}}/{{targetTests}} tests · {{startDate}} – {{endsOn}}",

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { PersonalizationModule } from '../personalization/personalization.module';
 import { AiSharedModule } from '../ai-shared/ai-shared.module';
 import { AuthModule } from '../auth/auth.module';
 import { TestAttemptsModule } from '../test-attempts/test-attempts.module';
@@ -10,7 +11,7 @@ import { ChatbotProvider } from './chatbot.provider';
 import { ChatbotContext } from './chatbot.context';
 import { ChatbotKnowledge } from './chatbot.knowledge';
 @Module({
-  imports: [AiSharedModule, AuthModule, TestAttemptsModule, DictionaryModule],
+  imports: [AiSharedModule, AuthModule, TestAttemptsModule, DictionaryModule, PersonalizationModule],
   controllers: [ChatbotController],
   providers: [
     ChatbotService,

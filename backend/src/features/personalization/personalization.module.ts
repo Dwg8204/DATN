@@ -1,28 +1,14 @@
 import { Module } from '@nestjs/common';
-import { LearningGoalsRepository } from './repositories/learning-goals.repository';
-import { LearnerPreferencesRepository } from './repositories/learner-preferences.repository';
-import { LearningInsightsRepository } from './repositories/learning-insights.repository';
-import { StudyPlansRepository } from './repositories/study-plans.repository';
+import { TestAttemptsModule } from '../test-attempts/test-attempts.module';
+import { PersonalizationDataModule } from './personalization-data.module';
 import { PersonalizationController } from './controllers/personalization.controller';
-import { GoalsService } from './services/goals.service';
-import { PreferencesService } from './services/preferences.service';
-import { PersonalizationClock } from './services/personalization-clock';
-
-const repositories = [
-  LearningGoalsRepository,
-  LearnerPreferencesRepository,
-  LearningInsightsRepository,
-  StudyPlansRepository,
-];
+import { SnapshotService } from './services/snapshot.service';
+import { MistakeSourceService } from './services/mistake-source.service';
 
 @Module({
+  imports: [PersonalizationDataModule, TestAttemptsModule],
   controllers: [PersonalizationController],
-  providers: [
-    ...repositories,
-    GoalsService,
-    PreferencesService,
-    PersonalizationClock,
-  ],
-  exports: [...repositories, GoalsService, PersonalizationClock],
+  providers: [SnapshotService, MistakeSourceService],
+  exports: [PersonalizationDataModule, SnapshotService],
 })
 export class PersonalizationModule {}

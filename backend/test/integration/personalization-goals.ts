@@ -9,6 +9,18 @@ import { PersonalizationClock } from '../../src/features/personalization/service
 import { JwtAuthGuard } from '../../src/features/auth/guards/jwt-auth.guard';
 import { createValidationPipe } from '../../src/common/validation/create-validation.pipe';
 import { HttpExceptionFilter } from '../../src/common/filters/http-exception.filter';
+import { TestAttemptsModule } from '../../src/features/test-attempts/test-attempts.module';
+import { TestAttemptsService } from '../../src/features/test-attempts/services/test-attempts.service';
+import { PracticeAttemptsService } from '../../src/features/test-attempts/services/practice-attempts.service';
+
+@Module({
+  providers: [
+    { provide: TestAttemptsService, useValue: {} },
+    { provide: PracticeAttemptsService, useValue: {} },
+  ],
+  exports: [TestAttemptsService, PracticeAttemptsService],
+})
+class AttemptsFixtureModule {}
 
 withPersonalizationDatabase(async (db, alice, bob) => {
   @Global()
@@ -21,6 +33,8 @@ withPersonalizationDatabase(async (db, alice, bob) => {
   const module = await Test.createTestingModule({
     imports: [FixtureModule, PersonalizationModule],
   })
+    .overrideModule(TestAttemptsModule)
+    .useModule(AttemptsFixtureModule)
     .overrideProvider(PersonalizationClock)
     .useValue({ now: () => now })
     .overrideGuard(JwtAuthGuard)

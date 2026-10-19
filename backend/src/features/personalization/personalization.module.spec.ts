@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
-import { PersonalizationModule } from './personalization.module';
+import { PersonalizationDataModule } from './personalization-data.module';
 import { LearningGoalsRepository } from './repositories/learning-goals.repository';
 import { LearnerPreferencesRepository } from './repositories/learner-preferences.repository';
 import { LearningInsightsRepository } from './repositories/learning-insights.repository';
@@ -16,10 +16,10 @@ const query = jest.fn();
 })
 class DatabaseFixtureModule {}
 
-describe('PersonalizationModule foundation', () => {
+describe('PersonalizationDataModule foundation', () => {
   it('exports injectable repositories without starting database or AI work on boot', async () => {
     const module = await Test.createTestingModule({
-      imports: [DatabaseFixtureModule, PersonalizationModule],
+      imports: [DatabaseFixtureModule, PersonalizationDataModule],
     }).compile();
     try {
       await module.init();

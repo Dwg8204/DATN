@@ -1,5 +1,14 @@
 {
   "personalization": {
+    "progressTitle": "Tiến độ mục tiêu",
+    "loading": "Đang tải…",
+    "noGoal": "Đặt mục tiêu để theo dõi tiến độ học của bạn.",
+    "expected": "Kỳ vọng: {{expected}} bài · Nhịp cần thiết: {{pace}} bài/ngày · Còn {{days}} ngày",
+    "reached": "Bạn đã đạt số bài mục tiêu! Tiếp tục luyện tập đến hạn hoặc kết thúc sớm trong trang cá nhân.",
+    "bandEstimate": "CEFR ước lượng",
+    "insufficient": "Chưa đủ dữ liệu",
+    "habit": "Chuỗi học: {{streak}} ngày · {{activeDaysThisWeek}} ngày học trong tuần",
+    "pace": {"AHEAD":"Vượt tiến độ","ON_TRACK":"Đúng tiến độ","BEHIND":"Chậm tiến độ"},
     "title": "Mục tiêu học tập",
     "days": "Thời gian (3–180 ngày)",
     "goalSummary": "{{targetCefr}} · {{completed}}/{{targetTests}} bài · {{startDate}} – {{endsOn}}",

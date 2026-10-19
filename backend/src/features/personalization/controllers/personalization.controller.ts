@@ -23,6 +23,7 @@ import {
 } from '../dto/learning-goal.dto';
 import { GoalsService } from '../services/goals.service';
 import { PreferencesService } from '../services/preferences.service';
+import { SnapshotService } from '../services/snapshot.service';
 
 @Controller('me')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -31,9 +32,10 @@ export class PersonalizationController {
   constructor(
     private readonly goals: GoalsService,
     private readonly preferences: PreferencesService,
+    private readonly snapshots: SnapshotService,
   ) {}
   @Get('learning-goal') current(@CurrentUser() actor: AuthUser) {
-    return this.goals.current(actor.id);
+    return this.snapshots.current(actor);
   }
   @Post('learning-goal') create(
     @CurrentUser() actor: AuthUser,
