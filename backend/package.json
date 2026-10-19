@@ -20,6 +20,7 @@
     "test:writing:db": "ts-node test/integration/writing-assessment.ts",
     "test:writing:localdb": "ts-node scripts/writing-local-db-test.ts",
     "test:vocabulary:db": "ts-node test/integration/vocabulary-database.ts",
+    "test:speaking:cefr:db": "ts-node test/integration/speaking-part-cefr.ts",
     "test:notifications:db": "ts-node test/integration/notification-scheduling.ts",
     "test:e2e": "jest --config test/jest-e2e.json --runInBand",
     "test:attempt-load": "ts-node test/performance/shared-attempts-load.ts",
