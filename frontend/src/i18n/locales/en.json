@@ -1,5 +1,7 @@
 {
   "speakingDetailedFeedback": {
+    "partAssessment": "Speaking Part assessment",
+    "partCefrNotice": "A single Part cannot establish an overall Speaking CEFR level. The /50 score is for practice only.",
     "cefr": "Estimated Speaking CEFR",
     "noCefr": "A Speaking CEFR estimate is not available for this result.",
     "noPartFeedback": "No overall feedback for this Part was saved with this result. You can review the available feedback for each response.",
