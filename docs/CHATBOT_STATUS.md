@@ -1,5 +1,9 @@
 # Trạng thái chatbot AptiMate
 
+## Cập nhật hạ tầng dùng chung — 19/10/2026
+
+GĐ0 cá nhân hóa đã chuyển thống kê và Gemini/ghi token sang `features/ai-shared`, giữ hành vi tool 20 bài gần nhất và schema chat. Shared client thêm `GEMINI_MAX_RPM` (mặc định 5/model/process), cooldown sau HTTP 429 và không retry tự động. Không thay UI, model hay pipeline chấm bài. Báo cáo và nghiệm thu: [PERSONALIZATION_GD0_REPORT.md](./PERSONALIZATION_GD0_REPORT.md). Phần cá nhân hóa bên dưới vẫn chưa được nghiệm thu chỉ nhờ refactor này.
+
 Cập nhật 16/10/2026. Đây là tài liệu trạng thái triển khai; bản `CHATBOT_OVERVIEW_PLAN.md` là kế hoạch lịch sử, không phải trạng thái hiện tại.
 
 ## Đã triển khai
@@ -14,6 +18,7 @@ Cập nhật 16/10/2026. Đây là tài liệu trạng thái triển khai; bản
 - Feedback hữu ích/không hữu ích, sao chép, retry và nút điều hướng theo danh sách cho phép. Notebook phải mở `/dictation?mode=notebook` (cùng đường dẫn menu hiện tại), không dùng `/vocab`.
 - Chatbot ẩn ở màn làm bài. Chờ phản hồi hiển thị bong bóng avatar + ba chấm typing; có nhãn cho screen reader, tắt chuyển động khi người dùng chọn reduced motion. Trạng thái typing gắn với phiên đang gửi/retry, không dùng chung với feedback/đổi tên/xóa.
 - Nút mở chat là robot SVG đỏ–kem (`AssistantPet`): chớp mắt, nhún nhẹ, vẫy tay định kỳ và khi hover/focus. Tooltip hiển thị tên trợ lý; click hoặc Enter mở chat, nút X đóng. Mobile thu nhỏ linh vật, giữ vùng bấm đủ lớn; reduced motion tắt animation. Không dùng dịch vụ tạo pet bên ngoài hoặc thư viện animation mới.
+- Lịch sử: nút sửa/xóa có vùng bấm và khoảng cách riêng. Form đổi tên nằm ngay trong thẻ hội thoại được chọn, tự focus/chọn tên, Enter lưu, Escape/Hủy thoát sửa; không đặt form cuối danh sách. Lưu cập nhật thẻ tại chỗ, giữ các phiên đã tải và vị trí danh sách; lỗi API giữ tên đang nhập để thử lại. Hỗ trợ dark mode.
 - Giới hạn ứng dụng: 5 lượt trong 60 giây gần nhất, 50 lượt trong 24 giờ gần nhất/tài khoản, cộng mọi phiên kể cả đã xóa; lượt bắt đầu rồi thất bại và retry cũng tính. Đây không phải quota của Google. Quota provider riêng; một lượt chat có thể gọi model nhiều lần.
 
 ## Bằng chứng và nghiệm thu
@@ -21,6 +26,7 @@ Cập nhật 16/10/2026. Đây là tài liệu trạng thái triển khai; bản
 - Mốc trước: 20 test backend, 4 test frontend, DB integration và 5 lượt Gemini thật đạt; backend build và dependency graph đạt. Xem `CHATBOT_STAGE_2_REPORT.md` để biết phạm vi và lệnh chạy.
 - Người dùng đã thử trên ứng dụng và phản hồi các chức năng đã triển khai “tạm ổn”; phát hiện riêng nút Notebook sai đường dẫn và chữ chờ phản hồi thô. Hai lỗi này được sửa trong đợt hiện tại, chờ người dùng test lại.
 - Kiểm tra đợt sửa UI: `npm run test:chatbot` frontend đạt 4 test, browser test bổ sung click Notebook và xác nhận route thực trong router, ba chấm khi API đang chờ, hết chờ thì biến mất, reduced motion tắt animation. `npm run build` frontend đạt; còn cảnh báo bundle lớn hơn 500 kB của Vite.
+- Đợt sửa lịch sử: browser test với 32 phiên, kiểm tra khoảng cách icon, form nằm trong thẻ, focus, Escape không đóng chatbot, tên trống không lưu được, lỗi API giữ tên và lưu lại không mất danh sách. Đã kiểm tra hiển thị dark mode ở chiều rộng 320px.
 - Không diễn giải phản hồi “tạm ổn” thành nghiệm thu toàn bộ quyền truy cập, chất lượng RAG hay cá nhân hóa trên mọi kỹ năng. Hình người dùng gửi cho thấy hội thoại tra nghĩa từ hoạt động, nhưng chưa thay thế một bộ kiểm thử dictionary đầy đủ.
 
 ## Còn lại và phụ thuộc

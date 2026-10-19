@@ -25,7 +25,7 @@
 ## Nội dung giữ nguyên
 
 - Câu hỏi, đoạn đọc, đáp án, transcript, bản sửa tiếng Anh và bài làm là dữ liệu học tập, không dịch bằng từ điển UI.
-- Nội dung do người dùng/giáo viên nhập, dữ liệu từ CMS/API và phản hồi trò chuyện không trở thành khóa dịch tự động. Backend cần cung cấp nội dung theo locale nếu muốn bản địa hóa loại dữ liệu này.
+- Nội dung do người dùng/quản trị viên nhập, dữ liệu từ CMS/API và phản hồi trò chuyện không trở thành khóa dịch tự động. Backend cần cung cấp nội dung theo locale nếu muốn bản địa hóa loại dữ liệu này.
 - Feedback chấm Writing/Speaking mới vẫn bằng tiếng Việt theo chính sách prompt đã triển khai ở task trước; việc đổi ngôn ngữ giao diện không tự chấm lại hoặc dịch kết quả AI đã lưu.
 - Tên thương hiệu, mã CEFR, email, ký hiệu kỹ thuật và tên ngôn ngữ trên bộ chọn ngôn ngữ có thể giữ nguyên. Tiêu đề “AI feedback” giữ theo yêu cầu trước đó của người dùng.
 
@@ -36,3 +36,8 @@
 - 3 browser test: đổi Anh ↔ Việt, giữ bài đang nhập/lựa chọn tiếng Anh; giao diện Writing/Speaking tổng quát/chi tiết, feedback accordion và tiến độ trên desktop/mobile.
 - Build frontend thành công; cảnh báo chunk lớn hiện có của Vite vẫn còn.
 - Đã commit theo từng task; chưa push. Không chạy dịch vụ dịch bên ngoài trong lượt triển khai này.
+
+
+## Cập nhật phân quyền 19/10/2026
+
+Đã bỏ khóa dịch dành cho tạo/nâng quyền Teacher và nhãn role đó; lỗi đề chưa hoàn chỉnh chỉ hướng dẫn liên hệ quản trị viên. Giữ tên bài thi Aptis for Teachers vì đây là nội dung học, không phải role của ứng dụng. Bổ sung cặp dịch Result view phát hiện qua kiểm thử toàn bộ nhãn UI. Ba kiểm thử i18n (đồng bộ khóa/interpolation, lookup, phủ chuỗi UI) đều đạt.
