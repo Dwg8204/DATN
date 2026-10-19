@@ -14,6 +14,7 @@ export function createDataSourceOptions(env: Environment = process.env): DataSou
     },
     synchronize: false,
     migrationsRun: false,
+    migrationsTransactionMode: 'each',
     logging: env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
     entities: [`${__dirname}/../modules/**/*.entity{.ts,.js}`],
     migrations: [`${__dirname}/migrations/*{.ts,.js}`],
