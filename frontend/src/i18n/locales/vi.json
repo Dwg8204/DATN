@@ -1,5 +1,7 @@
 {
   "speakingDetailedFeedback": {
+    "partAssessment": "Đánh giá Speaking theo Part",
+    "partCefrNotice": "Bài luyện một Part không đủ để ước lượng CEFR toàn kỹ năng Speaking. Điểm /50 chỉ dùng luyện tập nội bộ.",
     "cefr": "CEFR Speaking ước lượng",
     "noCefr": "Kết quả này chưa có mức CEFR Speaking ước lượng.",
     "noPartFeedback": "Kết quả này chưa lưu nhận xét tổng hợp cho Part. Bạn có thể xem phản hồi sẵn có của từng câu trả lời.",

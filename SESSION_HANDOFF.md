@@ -1,5 +1,13 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa P0 — 19/10/2026
+
+- Đã tạo nhánh `feat/learning-personalization` theo yêu cầu tên tiếng Anh, không dùng `codex`; pull fast-forward `origin/develop` tới `3e7fae0` trước khi triển khai.
+- Speaking Part không còn band ở kết quả mới, API đọc dữ liệu cũ, lịch sử và UI. Giữ điểm /50, tiêu chí và phản hồi; bài toàn kỹ năng vẫn có CEFR. Prompt tăng lên `speaking-rubric-v5`. Dashboard và context chatbot được kiểm thử không lấy band từ Part.
+- Migration `1760000016000-RemoveSpeakingPartCefr` đã kiểm thử up/down/up trên `_test`, rồi áp dụng local. Local không có bài Speaking Part; cả 5 bài toàn kỹ năng giữ nguyên dữ liệu chấm. CHECK chặn ghi band Part vào cột và JSON; không còn migration chờ. GĐ1 cần dùng số migration mới từ `1760000017000` nếu chưa bị dùng.
+- Backend 67 suite/417 test; Speaking UI + i18n 20 test; browser 3 test (16 tổ hợp Speaking); typecheck, build hai phía và lint file thay đổi đạt. Không gọi AI thật. Báo cáo và hướng dẫn test: `docs/PERSONALIZATION_P0_REPORT.md`.
+- Dừng ở P0 chờ người dùng test/xác nhận; GĐ0 đã làm trước đó, chưa triển khai GĐ1. Không quan sát được quota tài khoản theo cửa sổ 5 giờ; nếu hệ thống hoặc người dùng báo gần hết quota, lưu bàn giao và tạm dừng theo yêu cầu.
+
 ## Đồng bộ và commit toàn bộ thay đổi — 19/10/2026
 
 - Theo yêu cầu người dùng, đã fetch `origin/develop` và fast-forward nhánh `feature/backend-writing-crud` tới `0a33041` trước khi chia commit. Không đổi nhánh, không push.

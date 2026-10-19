@@ -7,13 +7,13 @@ import { queryParam } from '../../../hooks/useUrlQueryState.js';
 import { speakingResultParts } from '../utils/speakingResultParts.js';
 
 const criteria = { grammarVocabulary: 70, pronunciation: 60, fluency: 65, taskFulfillment: 80 };
-function render(page, { view = 'student', part = 1, recorded = true, sample = 'Teacher reference', suggestion = 'AI suggestion', partLoading = false, partFeedback } = {}) {
+function render(page, { provider = 'LLM', scope = 'FULL_SKILL', view = 'student', part = 1, recorded = true, sample = 'Teacher reference', suggestion = 'AI suggestion', partLoading = false, partFeedback } = {}) {
   const patches = [];
   let partCalls = 0;
   const jsx = (type, props) => ({ type, props });
   const noop = () => null;
-  const summary = { data: { title: 'Speaking test', scope: 'FULL_SKILL', estimatedCefr: 'B1', result: {
-    method: 'AI', speaking: { provider: 'LLM', estimatedCefr: 'B1', criteria, cefrReason: 'Overall feedback', partFeedback },
+  const summary = { data: { title: 'Speaking test', scope, partNumber: scope === 'PART' ? part : null, score: 37.5, estimatedCefr: 'B1', result: {
+    method: 'AI', gradingNotice: 'Legacy B1 estimate', speaking: { provider, estimatedCefr: 'B1', criteria, cefrReason: 'Overall feedback', partFeedback },
   } } };
   const detail = { data: { paper: part === 4
     ? { responseKey: 'q', topic: 'Topic', questions: [{ text: 'Follow-up' }] }
@@ -114,4 +114,32 @@ test('skipped Part 4 remains selectable and displays its combined prompt without
   assert.ok(nodes.some(node => node.props?.value === 'Topic'));
   assert.ok(nodes.some(node => node.props?.children === 'Skipped — no recording submitted'));
   assert.equal(nodes.find(node => node.props?.className === 'partTabs').props.children.length, 4);
+});
+
+for (const part of [1, 2, 3, 4]) {
+  for (const page of ['./SpeakingAttemptResultPage.jsx', './SpeakingAttemptDetailPage.jsx']) {
+    test(page + ' hides stale CEFR for Part ' + part + ' and retains practice feedback', () => {
+      const { nodes } = render(page, { scope: 'PART', part });
+      const text = nodes.flatMap(node => [node.props?.children].flat(Infinity)).filter(value => typeof value === 'string').join(' ');
+      assert.doesNotMatch(text, /B1|Overall feedback|CEFR · AI estimate/);
+      assert.match(text, /speakingDetailedFeedback.partAssessment/);
+      assert.match(text, /speakingDetailedFeedback.partCefrNotice/);
+      if (page.includes('AttemptResultPage')) {
+        assert.equal(nodes.filter(node => node.type === 'svg').length, 4);
+        assert.match(text, /Practice score/);
+      } else {
+        assert.equal(nodes.filter(node => node.type === 'audio').length, 1);
+        assert.equal(nodes.filter(node => node.props?.className === 'criterionFeedback').length, 4);
+      }
+    });
+  }
+}
+
+test('legacy simulated Part results retain their disclosure while hiding the old band', () => {
+  for (const page of ['./SpeakingAttemptResultPage.jsx', './SpeakingAttemptDetailPage.jsx']) {
+    const { nodes } = render(page, { scope: 'PART', provider: 'RANDOM' });
+    assert.ok(nodes.some(node => node.props?.children === 'Legacy simulated result; the audio has not been analyzed by AI.'));
+    assert.ok(nodes.some(node => node.props?.children === 'speakingDetailedFeedback.partCefrNotice'));
+    assert.equal(nodes.some(node => node.props?.children === 'B1'), false);
+  }
 });

@@ -14,7 +14,7 @@ import Summary from './src/features/writing/pages/WritingResultPage.jsx';
 import Detail from './src/features/writing/pages/WritingResultDetailPage.jsx';
 import Speaking from './src/features/module-speaking/pages/SpeakingAttemptResultPage.jsx';
 import SpeakingDetail from './src/features/module-speaking/pages/SpeakingAttemptDetailPage.jsx';
-i18n.changeLanguage('vi');
+i18n.changeLanguage(window.speakingOptions?.language || 'vi');
 const question={questionKey:'p2:q1',responseStatus:'ANSWERED',comment:'Bạn diễn đạt rõ hoạt động nhưng cần sửa thì động từ.',
 criteria:[{criterion:'GRAMMAR',judgment:'NEEDS_IMPROVEMENT',comment:'Dùng thì quá khứ đơn.',evidenceQuotes:['Yesterday I go to the club.']}],
 strengths:[{criterion:'TASK',comment:'Trả lời đúng chủ đề.',evidence:[]}],weaknesses:[],
@@ -42,6 +42,12 @@ if(window.writingOptions){
 window.speakingSummary={attemptId:'speaking',component:'SPEAKING',scope:'PART',partNumber:1,gradingStatus:'PROCESSING',assessmentRevision:0,
 result:{method:'PENDING_AI',items:[{key:'p1:q1',partNumber:1,selectedAnswer:null}],parts:[{partNumber:1}],speaking:null}};
 window.speakingDetail={component:'SPEAKING',partNumber:1,paper:{questions:[{key:'p1:q1',text:'What do you enjoy?'}]},items:[{key:'p1:q1',selectedAnswer:null}]};
+if (window.speakingOptions) {
+  Object.assign(window.speakingSummary, {scope: window.speakingOptions.scope, gradingStatus:'COMPLETED', score:37.5, maxScore:50, estimatedCefr:'B2'});
+  window.speakingSummary.result = {method:'AI', gradingNotice:'Legacy B2 notice', parts:[{partNumber:1}], items:[],
+    speaking:{provider:'LLM',estimatedCefr:'B2',cefrReason:'Legacy B2 rationale',
+      criteria:{grammarVocabulary:75,pronunciation:75,fluency:75,taskFulfillment:75}}};
+}
 createRoot(document.getElementById('root')).render(<MemoryRouter initialEntries={[window.writingRoute||'/writing/result?attemptId=test-writing']}>
 <Routes><Route path='/writing/result' element={<Summary/>}/><Route path='/writing/result-detail' element={<Detail/>}/><Route path='/speaking/result' element={<Speaking/>}/><Route path='/speaking/detail-result' element={<SpeakingDetail/>}/></Routes></MemoryRouter>);
 `;
@@ -214,6 +220,53 @@ test('Writing and Speaking show estimated progress while grading on summary and 
           if(width===390) await page.screenshot({path:process.env.TEMP+'/aptimate-writing-summary.png',fullPage:true});
         }
         assert.deepEqual(errors,[]);await page.close();
+      }
+    }
+  } finally { await browser.close(); }
+});
+
+
+test('Speaking Part hides legacy CEFR while full skill retains its band in both languages and viewport sizes', async () => {
+  const { script, css } = await bundle();
+  const browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
+  try {
+    for (const route of ['/speaking/result', '/speaking/detail-result']) {
+      for (const scope of ['PART', 'FULL_SKILL']) {
+        for (const language of ['vi', 'en']) {
+          for (const width of [1280, 390]) {
+            const page = await browser.newPage({ viewport: { width, height: 850 } });
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            await page.route('**/*', request => request.request().url() === 'http://writing-ui.test/'
+              ? request.fulfill({ contentType: 'text/html', body: '<html><head><style>body{margin:0;font-family:Arial}*{box-sizing:border-box}</style></head><body><div id="root"></div></body></html>' })
+              : request.abort());
+            await page.goto('http://writing-ui.test/');
+            await page.evaluate(({ route, scope, language }) => {
+              window.writingRoute = route + '?attemptId=speaking&practice=true';
+              window.speakingOptions = { scope, language };
+            }, { route, scope, language });
+            await page.addStyleTag({ content: css });
+            await page.addScriptTag({ content: script });
+            if (scope === 'PART') {
+              await page.getByText(language === 'vi' ? 'Đánh giá Speaking theo Part' : 'Speaking Part assessment', { exact: true }).waitFor();
+              assert.doesNotMatch(await page.locator('body').innerText(), /B2|Legacy B2/);
+              await page.getByText(language === 'vi'
+                ? 'Bài luyện một Part không đủ để ước lượng CEFR toàn kỹ năng Speaking. Điểm /50 chỉ dùng luyện tập nội bộ.'
+                : 'A single Part cannot establish an overall Speaking CEFR level. The /50 score is for practice only.', { exact: true }).waitFor();
+            } else {
+              await page.getByText('B2', { exact: true }).waitFor();
+              assert.equal(await page.getByText('Legacy B2 rationale', { exact: true }).count(), 1);
+            }
+            if (route === '/speaking/result') {
+              assert.match(await page.locator('body').innerText(), /37[.,]50/);
+              assert.equal(await page.locator('svg circle').count(), 8);
+            }
+            assert.equal(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), false,
+              [route, scope, language, width].join(' '));
+            assert.deepEqual(errors, []);
+            await page.close();
+          }
+        }
       }
     }
   } finally { await browser.close(); }

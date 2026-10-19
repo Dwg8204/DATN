@@ -1,5 +1,11 @@
 # Shared test attempts
 
+## Speaking CEFR scope (personalization P0)
+
+Speaking Part results return `estimatedCefr: null` at the summary and nested Speaking level. The finalizer discards provider bands for `part1`–`part4`; result presenters also protect legacy reads in Exam and Practice. History suppresses Part bands, while dashboard queries remain restricted to full-skill exams. Full-skill scoring and CEFR behavior are unchanged.
+
+Migration `1760000016000` removes legacy Speaking Part bands and adds `speaking_part_cefr_ck` for both the column and JSON. It preserves practice scores and detailed feedback. Rollback removes the constraint without restoring invalid estimates. Run `npm run test:speaking:cefr:db` only with a dedicated `TEST_DATABASE_URL` ending in `_test`.
+
 All endpoints are under `/api/v1/test-attempts`, require the access-token cookie, and belong to the authenticated student.
 
 | Method | Path | Purpose |

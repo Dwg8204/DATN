@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
 import AssessmentProgress from '../../test-attempts/components/AssessmentProgress.jsx';
@@ -23,6 +24,7 @@ function getStatColor(value) {
 
 export default function SpeakingAttemptResultPage() {
   const ui = useUiTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const attemptId = params.get('attemptId');
@@ -33,19 +35,21 @@ export default function SpeakingAttemptResultPage() {
   if (!data?.result) return <AttemptPageState error={ui("This Speaking result is not available.")}  backHref={isPractice ? '/speaking/practice' : '/speaking/tests'} />;
 
   const assessment = data.result.speaking;
+  const isFullSkill = data.scope === 'FULL_SKILL';
 
   return <div className={styles.page}><div className={styles.contentWrap}>
     {data.result.method !== 'PENDING_AI' && <AssessmentProgress attemptId={attemptId} data={data} error={error} refresh={refresh} />}
     <div className={styles.topSection}>
       <section className={styles.cefrBox}>
-        <h1 className={styles.cefrLabel}>{assessment?.provider === 'RANDOM' ? ui("CEFR · Simulated") : ui("CEFR · AI estimate")}</h1>
-        <strong className={styles.cefrValue}>{assessment ? data.estimatedCefr || '—' : '—'}</strong>
+        <h1 className={styles.cefrLabel}>{!isFullSkill ? t('speakingDetailedFeedback.partAssessment') : assessment?.provider === 'RANDOM' ? ui("CEFR · Simulated") : ui("CEFR · AI estimate")}</h1>
+        {isFullSkill && <strong className={styles.cefrValue}>{assessment ? data.estimatedCefr || '—' : '—'}</strong>}
         <span className={extra.totalScore}>{assessment && data.score != null ? ui("{{value0}} / 50 · Practice score", {value0:(Number(data.score).toFixed(2))}) : ui("Not assessed")}</span>
       </section>
       <section className={styles.reportBox}>
         <h2 className={styles.reportTitle}>{ui("Report")}</h2>
-        <p className={styles.reportSub}>{assessment?.provider === 'RANDOM' ? ui("Legacy simulated result; the audio has not been analyzed by AI.") : data.result.gradingNotice || ui("Your test is awaiting AI assessment. If the wait is long, refresh the page or contact an administrator.")}</p>
-        {assessment?.cefrReason && <p className={styles.reportSub}>{assessment.cefrReason}</p>}
+        <p className={styles.reportSub}>{!isFullSkill ? t('speakingDetailedFeedback.partCefrNotice') : assessment?.provider === 'RANDOM' ? ui("Legacy simulated result; the audio has not been analyzed by AI.") : data.result.gradingNotice || ui("Your test is awaiting AI assessment. If the wait is long, refresh the page or contact an administrator.")}</p>
+        {!isFullSkill && assessment?.provider === 'RANDOM' && <p className={styles.reportSub}>{ui("Legacy simulated result; the audio has not been analyzed by AI.")}</p>}
+        {isFullSkill && assessment?.cefrReason && <p className={styles.reportSub}>{assessment.cefrReason}</p>}
         {data.result.method === 'PENDING_AI' && <SpeakingAiConsentGate requireWhenDisabled><AssessmentProgress attemptId={attemptId} data={data} error={error} paused={paused} refresh={refresh} /></SpeakingAiConsentGate>}
         <div className={styles.divider} />
         {assessment ? <div className={styles.criteriaGrid}>{CRITERIA.map(({ key, label }) => {

@@ -24,3 +24,7 @@ Skill pages should provide only rendering and answer mapping. They must not pers
 Writing answers use `{ kind: 'TEXT', text }`. Submission seals the saved responses immediately and returns a pending-assessment result; the browser must not fabricate a score while AI assessment is unavailable.
 
 The backend snapshot remains the authoritative paper and answer key. The attempt result returned by the backend is the authoritative score and detailed review data.
+
+## Speaking CEFR scope
+
+Speaking summary/detail pages display a CEFR band only for `scope === 'FULL_SKILL'`. Selecting a Part tab inside a full-skill result does not change that scope. Standalone Part results keep practice scores and feedback, show a localized explanation, and suppress stale top-level/nested bands and CEFR rationale. Legacy simulated results retain their disclosure. Regression coverage: `npm run test:speaking:results` and `npm run test:writing:ui` (includes Speaking browser scenarios).

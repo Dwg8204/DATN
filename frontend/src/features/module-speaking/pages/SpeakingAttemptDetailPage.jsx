@@ -47,6 +47,7 @@ export default function SpeakingAttemptDetailPage() {
     : paper.questions ?? [];
   const itemByKey = new Map((detail.data?.items ?? []).map(item => [item.key, item]));
   const speaking = summary.data.result?.speaking;
+  const isFullSkill = summary.data.scope === 'FULL_SKILL';
   const partFeedback = speaking?.partFeedback?.find(part => part.partNumber === activePart);
   return <div className={styles.page}><main>
     <ResultBackButton to={`/speaking/result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}`} />
@@ -56,14 +57,15 @@ export default function SpeakingAttemptDetailPage() {
         aria-current={part === activePart ? 'page' : undefined} onClick={() => setUrl({ part })}>{ui("Part")} {part}</button>)}
     </nav>}
     {summary.data.result?.method === 'PENDING_AI' && <SpeakingAiConsentGate requireWhenDisabled><AssessmentProgress attemptId={attemptId} {...summary} /></SpeakingAiConsentGate>}
-    <section className={styles.notice}><strong>{summary.data.result?.method === 'AI' ? ui("AI assessment · CEFR estimate") : ui("Assessment pending / legacy")}</strong>
-      <p>{summary.data.result?.gradingNotice || ui("Your recordings are saved. No AI assessment is available yet.")}</p></section>
-    <section className={feedbackStyles.panel} aria-label={t('speakingDetailedFeedback.cefr')}>
+    <section className={styles.notice}><strong>{!isFullSkill ? t('speakingDetailedFeedback.partAssessment') : summary.data.result?.method === 'AI' ? ui("AI assessment · CEFR estimate") : ui("Assessment pending / legacy")}</strong>
+      <p>{!isFullSkill ? t('speakingDetailedFeedback.partCefrNotice') : summary.data.result?.gradingNotice || ui("Your recordings are saved. No AI assessment is available yet.")}</p></section>
+    {!isFullSkill && speaking?.provider === 'RANDOM' && <p>{ui("Legacy simulated result; the audio has not been analyzed by AI.")}</p>}
+    {isFullSkill && <section className={feedbackStyles.panel} aria-label={t('speakingDetailedFeedback.cefr')}>
       <h2>{t('speakingDetailedFeedback.cefr')}</h2>
       <strong className={feedbackStyles.level}>{speaking?.provider === 'LLM' ? speaking.estimatedCefr || '—' : '—'}</strong>
       {speaking?.cefrReason ? <p>{speaking.cefrReason}</p> : <p>{t('speakingDetailedFeedback.noCefr')}</p>}
       <small className={feedbackStyles.muted}>{t('writingAi.estimated')}</small>
-    </section>
+    </section>}
     <nav className={styles.viewTabs} aria-label={ui("Result view")}>
       {['student', 'ai', 'sample'].map(view => <button type="button" key={view}
         className={url.view === view ? styles.active : ''} aria-pressed={url.view === view}
