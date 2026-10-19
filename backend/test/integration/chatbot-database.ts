@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import 'dotenv/config';
-import assert = require('node:assert/strict');
+import * as assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { DataSource } from 'typeorm';
 import { resolve } from 'node:path';
@@ -10,6 +10,64 @@ import { ChatbotProvider } from '../../src/features/chatbot/chatbot.provider';
 import { ChatbotService } from '../../src/features/chatbot/chatbot.service';
 import { ChatbotKnowledge } from '../../src/features/chatbot/chatbot.knowledge';
 import { ChatbotContext } from '../../src/features/chatbot/chatbot.context';
+import { createGeminiServices } from '../../src/features/ai-shared/create-gemini-services';
+import { AiProviderError } from '../../src/features/ai-shared/ai-provider.error';
+
+async function verifySharedGeneration(db: DataSource, userId: string, messageId: string) {
+  const config = new ConfigService({
+    GEMINI_API_KEY: 'test-only', GEMINI_BILLING_TIER: 'FREE',
+    GEMINI_FREE_PROJECT_CONFIRMED: true, GEMINI_MAX_RPM: 10,
+  });
+  const { generation } = createGeminiServices(config, db);
+  const originalFetch = global.fetch;
+  let calls = 0;
+  global.fetch = async () => {
+    calls++;
+    if (calls === 3) return new Response('private provider error', { status: 429, headers: { 'Retry-After': '120' } });
+    return new Response(JSON.stringify({
+      candidates: [{ finishReason: 'STOP', content: { role: 'model', parts: [{ text: '{"summary":"test"}' }] } }],
+      usageMetadata: { promptTokenCount: 10, candidatesTokenCount: 5, cachedContentTokenCount: 2, thoughtsTokenCount: 1 },
+    }));
+  };
+  try {
+    const input = {
+      model: 'test-model', system: 'private test prompt', contents: [],
+      responseSchema: { type: 'OBJECT', properties: { summary: { type: 'STRING' } }, required: ['summary'] },
+      context: { userId, purpose: 'PERSONAL_COMMENT', promptVersion: 'test-v1' },
+    };
+    const result = await generation.generate(input, new AbortController().signal);
+    const [row] = await db.query('SELECT * FROM ai_requests WHERE id=$1', [result.requestId]);
+    assert.equal(row.status, 'COMPLETED');
+    assert.equal(row.purpose, 'PERSONAL_COMMENT');
+    assert.equal(row.chat_message_id, null);
+    assert.equal(Number(row.input_tokens), 10);
+    assert.equal(Number(row.output_tokens), 5);
+    assert.equal(Number(row.cached_input_tokens), 2);
+    assert.equal(Number(row.reasoning_tokens), 1);
+    assert.equal(Number(row.actual_cost), 0);
+    assert.match(row.request_fingerprint, /^[a-f0-9]{64}$/);
+    assert.ok(!JSON.stringify(row).includes('private test prompt'));
+
+    const chat = await generation.generate({ ...input, context: {
+      ...input.context, purpose: 'CHAT', chatMessageId: messageId, errorCodePrefix: 'CHAT',
+    } }, new AbortController().signal);
+    const [chatRow] = await db.query('SELECT chat_message_id,status FROM ai_requests WHERE id=$1', [chat.requestId]);
+    assert.equal(chatRow.chat_message_id, messageId);
+    assert.equal(chatRow.status, 'COMPLETED');
+
+    for (let i = 0; i < 2; i++) {
+      await assert.rejects(generation.generate(input, new AbortController().signal), error =>
+        error instanceof AiProviderError && error.reason === 'QUOTA' && (error.retryAfterMs ?? 0) > 0);
+    }
+    assert.equal(calls, 3, 'Cooldown must not send another HTTP request');
+    const failed = await db.query("SELECT error_code FROM ai_requests WHERE user_id=$1 AND status='FAILED'", [userId]);
+    assert.equal(failed.length, 2);
+    assert.ok(failed.every((row: { error_code: string }) => row.error_code === 'AI_QUOTA'));
+    console.log('PASS: shared generation persistence, token accounting, chat FK, safe metadata and quota cooldown (mock HTTP).');
+  } finally {
+    global.fetch = originalFetch;
+  }
+}
 
 async function main() {
   const url=new URL(process.env.TEST_DATABASE_URL??process.env.DATABASE_URL??'');
@@ -55,11 +113,14 @@ async function main() {
     for(let n=0;n<22;n++)await repo.create(bob,randomUUID());
     const p1=await repo.sessions(bob,1),p2=await repo.sessions(bob,2);assert.equal(p1.items.length,20);assert.ok(p1.hasMore);assert.equal(p2.items.length,3);
     assert.ok(!p2.items.some((x:any)=>p1.items.some((y:any)=>x.id===y.id)));
+    await verifySharedGeneration(db, alice, pending.reply.id);
     if(process.argv.includes('--live')){
       // Generation logs stay in the isolated test DB. Only public knowledge is read from local app DB.
       const knowledgeDb=new DataSource({type:'postgres',url:process.env.DATABASE_URL,logging:false});await knowledgeDb.initialize();
       try{
-        const provider=new ChatbotProvider(new ConfigService({...process.env,CHATBOT_ENABLED:'true'}),db);
+        const config=new ConfigService({...process.env,CHATBOT_ENABLED:'true'});
+        const {client,generation}=createGeminiServices(config,db);
+        const provider=new ChatbotProvider(config,client,generation);
         const knowledge=new ChatbotKnowledge(knowledgeDb,provider);
         const context=new ChatbotContext(db,{} as any,{} as any);
         const chat=new ChatbotService(repo,provider,context,knowledge,{lookup:async()=>({error:'NOT_IN_THIS_TEST'})} as any);

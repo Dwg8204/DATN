@@ -15,6 +15,17 @@ describe('environment validation', () => {
     expect(result.error).toBeUndefined();
     expect(result.value.PORT).toBe(3000);
     expect(result.value.DB_POOL_MAX).toBe(10);
+    expect(result.value.GEMINI_MAX_RPM).toBe(5);
+  });
+
+  it.each([0, -1, 1.5, 1001, 'invalid'])('rejects invalid Gemini RPM limit %s', GEMINI_MAX_RPM => {
+    expect(environmentSchema.validate({ ...validEnvironment, GEMINI_MAX_RPM }).error).toBeDefined();
+  });
+
+  it('accepts a configured Gemini RPM limit', () => {
+    const result = environmentSchema.validate({ ...validEnvironment, GEMINI_MAX_RPM: '10' });
+    expect(result.error).toBeUndefined();
+    expect(result.value.GEMINI_MAX_RPM).toBe(10);
   });
 
   it('rejects an invalid database URL', () => {

@@ -3,6 +3,7 @@ import * as Joi from 'joi';
 export const environmentSchema = Joi.object({
   CHATBOT_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
   CHATBOT_MODEL: Joi.string().pattern(/^[a-zA-Z0-9._-]+$/).default('gemini-3.5-flash-lite'),
+  GEMINI_MAX_RPM: Joi.number().integer().min(1).max(1000).default(5),
   WRITING_AI_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
   WRITING_AI_PROVIDER: Joi.string().valid('gemini').default('gemini'),
   WRITING_AI_MODEL: Joi.string().pattern(/^[a-zA-Z0-9._-]+$/).default('gemini-3.1-flash-lite'),
