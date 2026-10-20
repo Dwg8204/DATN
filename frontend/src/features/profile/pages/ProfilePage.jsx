@@ -6,11 +6,10 @@ import { useAuth } from '../../../context/AuthContext';
 import { Key, Plus } from 'lucide-react';
 import ConfirmModal from '../../../components/common/ConfirmModal';
 import ToastNotification from '../../../components/common/ToastNotification';
-import { calcGoalProgress } from '../../../utils/dashboardUtils';
-import { getHistoryEntries } from '../../../utils/historyStorage';
 import { addPersonalNotification } from '../../../utils/notificationStorage';
 import { profileApi } from '../services/profileApi';
 import styles from './ProfilePage.module.css';
+import LearningGoalSettings from '../../personalization/components/LearningGoalSettings';
 import { useTranslation } from 'react-i18next';
 
 export default function ProfilePage() {
@@ -39,20 +38,6 @@ export default function ProfilePage() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success');
-
-  // Goal config
-  const [goalConfig, setGoalConfig] = useState(() => {
-    const saved = localStorage.getItem('aptimate.dashboard_goal');
-    return saved ? JSON.parse(saved) : { active: false, startDate: new Date().toISOString(), durationDays: 30, targetTests: 47, targetBand: 'B2' };
-  });
-
-  const [tempGoalBand, setTempGoalBand] = useState(goalConfig.targetBand || 'B2');
-  const [tempGoalTests, setTempGoalTests] = useState(goalConfig.targetTests || 47);
-  const [tempGoalDays, setTempGoalDays] = useState(goalConfig.durationDays || 30);
-  const [showGoalForm, setShowGoalForm] = useState(false);
-
-  const historyEntries = getHistoryEntries();
-  const goalProgress = goalConfig.active ? calcGoalProgress(goalConfig, historyEntries) : null;
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -119,21 +104,6 @@ export default function ProfilePage() {
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleSaveGoal = () => {
-    const newConfig = {
-      active: true,
-      startDate: goalConfig.active ? goalConfig.startDate : new Date().toISOString(),
-      durationDays: Number(tempGoalDays),
-      targetTests: Number(tempGoalTests),
-      targetBand: tempGoalBand
-    };
-    setGoalConfig(newConfig);
-    localStorage.setItem('aptimate.dashboard_goal', JSON.stringify(newConfig));
-    setShowGoalForm(false);
-    setToastMessage(t('goal.saved'));
-    addPersonalNotification(t('goal.saved'));
   };
 
   return (
@@ -214,73 +184,8 @@ export default function ProfilePage() {
               </button>
             </div>
 
-            <div className={`${styles.mobileGoalSummary} ${styles.desktopHidden}`}>
-              {goalConfig.active && goalProgress && (
-                <div className={styles.mobileGoalGrid}>
-                  <div className={styles.goalTile}>
-                    <div className={styles.goalTileTitle}>{t('goal.target')}</div>
-                    <div className={styles.goalTileValuePrimary}>{t('dashboard.band', { band: goalConfig.targetBand })}</div>
-                  </div>
-                  <div className={styles.goalTile}>
-                    <div className={styles.goalTileTitle}>{t('goal.current')}</div>
-                    <div className={styles.goalTileValue}>{t('dashboard.band', { band: goalProgress.currentEstBand })}</div>
-                  </div>
-                  <div className={styles.goalTile}>
-                    <div className={styles.goalTileTitle}>{t('goal.completed')}</div>
-                    <div className={styles.goalTileValue}>
-                      {goalProgress.completedTests} <span className={styles.goalTileUnit}>{t('goal.tests')}</span>
-                    </div>
-                  </div>
-                  <div className={styles.goalTile}>
-                    <div className={styles.goalTileTitle}>{t('goal.learningTime')}</div>
-                    <div className={styles.goalTileValue}>
-                      {goalProgress.totalHours} <span className={styles.goalTileUnit}>{t('goal.hours')}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <button
-                type="button"
-                className={styles.mobileSetGoalBtn}
-                onClick={() => setShowGoalForm(!showGoalForm)}
-              >
-                {t(goalConfig.active ? 'goal.change' : 'goal.set')}
-              </button>
-            </div>
-
-            <div className={`${styles.goalTrackerContainer} ${!showGoalForm ? styles.mobileHiddenForm : ''}`}>
-              <div className={styles.sectionDivider}></div>
-              <h3 className={styles.sectionTitle}>{t('goal.tracker')}</h3>
-
-              <div className={styles.goalSettings}>
-              <div className={styles.goalInputGroup}>
-                <label className={styles.label}>{t('goal.targetBand')}</label>
-                <select className={styles.input} value={tempGoalBand} onChange={e => setTempGoalBand(e.target.value)}>
-                  <option value="A1">A1</option>
-                  <option value="A2">A2</option>
-                  <option value="B1">B1</option>
-                  <option value="B2">B2</option>
-                  <option value="C">C</option>
-                </select>
-              </div>
-              <div className={styles.goalInputGroup}>
-                <label className={styles.label}>{t('goal.totalTests')}</label>
-                <input type="number" min="1" className={styles.input} value={tempGoalTests} onChange={e => setTempGoalTests(e.target.value)} />
-              </div>
-              <div className={styles.goalInputGroup}>
-                <label className={styles.label}>{t('goal.duration')}</label>
-                <input type="number" min="1" className={styles.input} value={tempGoalDays} onChange={e => setTempGoalDays(e.target.value)} />
-              </div>
-            </div>
-
-            <div className={styles.actions} style={{ marginTop: '16px', marginBottom: '32px', justifyContent: 'flex-end' }}>
-              <button type="button" className={styles.saveBtn} onClick={handleSaveGoal}>
-                {t('goal.save')}
-              </button>
-            </div>
-            </div>
           </form>
+          {user?.role === 'STUDENT' && <LearningGoalSettings key={user.id} />}
 
           {showConfirm && (
             <ConfirmModal

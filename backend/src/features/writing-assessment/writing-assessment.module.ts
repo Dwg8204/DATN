@@ -1,3 +1,4 @@
+import { PersonalizationProgressModule } from '../personalization/personalization-progress.module';
 import { Module } from '@nestjs/common';
 import { AiModule } from '../../common/ai/ai.module';
 import { WritingAiConfig } from './writing-ai-config.service';
@@ -9,7 +10,7 @@ import { WritingAssessmentCoordinator } from './services/writing-assessment-coor
 import { WritingAssessmentWorker } from './workers/writing-assessment.worker';
 
 @Module({
-  imports: [AiModule],
+  imports: [AiModule, PersonalizationProgressModule],
   providers: [
     WritingAiConfig,
     WritingGradingJobsRepository,

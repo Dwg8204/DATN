@@ -22,6 +22,7 @@ export type NotificationRow = {
   updated_at: Date;
   recipient_count?: number;
   recipient_emails?: string[];
+  dedupe_key?: string | null;
 };
 
 export type UserNotificationInboxRow = {
@@ -213,7 +214,7 @@ export class NotificationsRepository {
        WHERE n.id = due.id
        RETURNING n.id, n.created_by, n.title, n.content, n.type, n.channel, n.audience_type,
                  n.audience_role_id, n.attachment, n.action_path, n.scheduled_at, n.status,
-                 n.sent_at, n.created_at, n.updated_at
+                 n.sent_at, n.created_at, n.updated_at, n.dedupe_key
        ) SELECT * FROM claimed`,
       [limit],
     );
@@ -225,11 +226,31 @@ export class NotificationsRepository {
        SET status = 'SENDING', scheduled_at = COALESCE(scheduled_at, now()), updated_at = now()
        WHERE id = $1 AND status = 'SCHEDULED'
        RETURNING id, created_by, title, content, type, channel, audience_type, audience_role_id,
-                 attachment, action_path, scheduled_at, status, sent_at, created_at, updated_at
+                 attachment, action_path, scheduled_at, status, sent_at, created_at, updated_at, dedupe_key
        ) SELECT * FROM claimed`,
       [id],
     );
     return rows[0] ?? null;
+  }
+
+  /** Recheck queued daily reminders after downtime or a preferences change. */
+  async isDailyReminderEligible(userId: string, dedupeKey: string, channel: string, asOf = new Date()): Promise<boolean> {
+    const [row] = await this.dataSource.query<Array<{ eligible: boolean }>>(
+      `SELECT EXISTS (
+        SELECT 1 FROM users u JOIN roles r ON r.id=u.role_id
+        JOIN learning_goals g ON g.user_id=u.id AND g.status='ACTIVE'
+        LEFT JOIN learner_preferences pref ON pref.user_id=u.id
+        WHERE u.id=$1 AND u.status='ACTIVE' AND u.deleted_at IS NULL AND r.code='STUDENT'
+          AND COALESCE(pref.reminder_enabled,true)
+          AND ($3 <> 'EMAIL' OR COALESCE(pref.email_reminder_enabled,false))
+          AND $2 = 'reminder:' || u.id::text || ':' || ($4::timestamptz AT TIME ZONE u.timezone)::date::text || ':' || $3
+          AND ($4::timestamptz AT TIME ZONE g.timezone)::date BETWEEN g.start_date AND g.start_date+g.duration_days-1
+          AND EXISTS (SELECT 1 FROM study_plans p JOIN study_plan_items i ON i.plan_id=p.id
+            WHERE p.goal_id=g.id AND i.scheduled_on=($4::timestamptz AT TIME ZONE g.timezone)::date
+              AND i.completed_at IS NULL AND i.done_count<i.target_count)
+      ) eligible`, [userId, dedupeKey, channel, asOf],
+    );
+    return row.eligible;
   }
 
   async findScheduledRecipients(notificationId: string): Promise<ScheduledNotificationRecipientRow[]> {

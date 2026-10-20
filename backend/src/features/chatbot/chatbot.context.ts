@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
+import { SnapshotService } from '../personalization/services/snapshot.service';
 import { DataSource } from 'typeorm';
 import { TestAttemptsService } from '../test-attempts/services/test-attempts.service';
 import { PracticeAttemptsService } from '../test-attempts/services/practice-attempts.service';
@@ -14,6 +15,7 @@ export class ChatbotContext {
     private readonly db: DataSource,
     private readonly exams: TestAttemptsService,
     private readonly practice: PracticeAttemptsService,
+    @Optional() private readonly snapshots?: SnapshotService,
   ) {}
   async review(actor: AuthUser, attemptId: string, questionKey?: string) {
     const [a] = await this.db.query(
@@ -25,7 +27,7 @@ export class ChatbotContext {
     const service = a.purpose === 'PRACTICE' ? this.practice : this.exams;
     const summary: any = await service.result(attemptId, actor);
     const part = questionKey
-      ? Number(/^p([1-4]):q\d{1,3}$/.exec(questionKey)?.[1])
+      ? Number(/^p([1-4]):[qs]\d{1,3}$/.exec(questionKey)?.[1])
       : a.part_number;
     if (questionKey && !part) throw chatError('CHAT_CONTEXT_INVALID', 400);
     const detail: any = part
@@ -70,6 +72,15 @@ export class ChatbotContext {
     return redactMedia(data);
   }
   async stats(actor: AuthUser) {
+    if (this.snapshots) {
+      const [comment, current] = await Promise.all([
+        this.snapshots.build(actor, null, { kind: 'COMMENT' }),
+        this.snapshots.current(actor),
+      ]);
+      return { ...comment.statistics, goal: current.snapshot?.goal ?? null,
+        band: current.snapshot?.band ?? comment.band, habit: current.snapshot?.habit ?? comment.habit,
+        limitation: comment.limitation };
+    }
     const rows = await this.db.query<LearningAttempt[]>(
       `SELECT id,component,purpose,scope,part_number,score,max_score,submitted_at,result FROM test_attempts
       WHERE student_id=$1 AND status='SUBMITTED' ORDER BY submitted_at DESC,id DESC LIMIT 20`,

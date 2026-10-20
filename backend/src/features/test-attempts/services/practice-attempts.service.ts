@@ -1,3 +1,4 @@
+import { PersonalizationProgressService } from '../../personalization/services/personalization-progress.service';
 import { presentSpeakingResult } from '../assessments/speaking-result-policy';
 import { SpeakingAiConfig } from './speaking-ai-config.service';
 import { Injectable, Optional } from '@nestjs/common';
@@ -28,6 +29,7 @@ export class PracticeAttemptsService {
     private readonly grader: ObjectiveGraderService,
     @Optional() private readonly writing?: WritingAssessmentCoordinator,
     @Optional() private readonly speaking?: SpeakingAiConfig,
+    @Optional() private readonly personalization?: PersonalizationProgressService,
   ) {}
 
   async start(dto: StartPracticeAttemptDto, actor: AuthUser) {
@@ -107,7 +109,7 @@ export class PracticeAttemptsService {
     const knownKeys = new Set(paper.items.map(item => item.key));
     const revealedKeys = [...new Set(dto.revealedKeys)].filter(key => knownKeys.has(key));
 
-    return this.repository.dataSource.transaction(async manager => {
+    const response = await this.repository.dataSource.transaction(async manager => {
       const attempt = await this.repository.lockAttempt(attemptId, actor.id, manager);
       if (!attempt) this.notFound();
       if (attempt.purpose !== 'PRACTICE') this.conflict('This attempt belongs to the exam flow.');
@@ -137,6 +139,8 @@ export class PracticeAttemptsService {
       if (this.writing && attempt.component === 'WRITING') completed = await this.writing.enqueue(manager, completed);
       return this.summary(completed, answers, paper, manager);
     });
+    await this.personalization?.afterLearning(actor.id);
+    return response;
   }
 
   async abandon(attemptId: string, actor: AuthUser) {

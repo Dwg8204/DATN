@@ -1,3 +1,4 @@
+import { PersonalizationProgressModule } from '../personalization/personalization-progress.module';
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { WritingAssessmentModule } from '../writing-assessment/writing-assessment.module';
@@ -18,7 +19,7 @@ import { SpeakingGradingWorker } from './workers/speaking-grading.worker';
 import { SpeakingGradingController } from './controllers/speaking-grading.controller';
 
 @Module({
-  imports: [AuthModule, WritingAssessmentModule],
+  imports: [AuthModule, WritingAssessmentModule, PersonalizationProgressModule],
   controllers: [TestAttemptsController, PracticeAttemptsController, SpeakingGradingController],
   providers: [AssessmentPaperFactory, ObjectiveGraderService, TestAttemptsRepository, TestAttemptsService, PracticeAttemptsService, StudentDashboardService, AttemptExpiryWorker,
     SpeakingGradingRepository, SpeakingAiConfig, SpeakingAudioService, SpeakingAiProvider, SpeakingGradingWorker],

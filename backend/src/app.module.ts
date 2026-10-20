@@ -26,6 +26,7 @@ import { ReadingTestsModule } from './features/reading-tests/reading-tests.modul
 import { DictionaryModule } from './features/dictionary/dictionary.module';
 import { CommentsModule } from './features/comments/comments.module';
 import { ChatbotModule } from './features/chatbot/chatbot.module';
+import { PersonalizationModule } from './features/personalization/personalization.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, cache: true, load: [configuration], validationSchema: environmentSchema }),
@@ -50,6 +51,7 @@ import { ChatbotModule } from './features/chatbot/chatbot.module';
     DictionaryModule,
     CommentsModule,
     ChatbotModule,
+    PersonalizationModule,
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: AccountThrottlerGuard }],

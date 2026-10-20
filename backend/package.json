@@ -21,6 +21,7 @@
     "test:writing:localdb": "ts-node scripts/writing-local-db-test.ts",
     "test:vocabulary:db": "ts-node test/integration/vocabulary-database.ts",
     "test:speaking:cefr:db": "ts-node test/integration/speaking-part-cefr.ts",
+    "test:personalization:db": "ts-node test/integration/run-personalization.ts",
     "test:notifications:db": "ts-node test/integration/notification-scheduling.ts",
     "test:e2e": "jest --config test/jest-e2e.json --runInBand",
     "test:attempt-load": "ts-node test/performance/shared-attempts-load.ts",
@@ -37,7 +38,8 @@
     "test:chatbot:db": "ts-node test/integration/chatbot-database.ts",
     "knowledge:validate": "ts-node scripts/chatbot-knowledge.ts --validate",
     "knowledge:import": "ts-node scripts/chatbot-knowledge.ts --apply",
-    "ai:chatbot:smoke": "ts-node scripts/chatbot-smoke.ts"
+    "ai:chatbot:smoke": "ts-node scripts/chatbot-smoke.ts",
+    "test:personalization": "jest --runInBand --testPathPattern personalization"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",

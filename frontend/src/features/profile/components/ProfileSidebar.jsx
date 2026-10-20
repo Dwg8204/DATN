@@ -3,8 +3,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { UserCircle, Bell, History, LogOut, LayoutDashboard, Menu } from 'lucide-react';
-import { calcGoalProgress } from '../../../utils/dashboardUtils';
-import { getHistoryEntries } from '../../../utils/historyStorage';
 import styles from './ProfileSidebar.module.css';
 import { useTranslation } from 'react-i18next';
 
@@ -38,11 +36,6 @@ export default function ProfileSidebar({ activeTab }) {
     }
   };
 
-  const historyEntries = getHistoryEntries();
-  const savedConfig = localStorage.getItem('aptimate.dashboard_goal');
-  const goalConfig = savedConfig ? JSON.parse(savedConfig) : { active: false };
-  const goalProgress = goalConfig.active ? calcGoalProgress(goalConfig, historyEntries) : null;
-
   return (
     <div className={styles.sidebar}>
       <div className={styles.mobileHeader}>
@@ -50,7 +43,7 @@ export default function ProfileSidebar({ activeTab }) {
           {activeTab === 'info' || activeTab === 'password' ? t('profile.myProfile') :
             activeTab === 'notifications' ? t('profile.notifications') :
               activeTab === 'dashboard' ? t('profile.dashboard') :
-                activeTab === 'history' ? t('profile.history') : ''}
+                activeTab === 'history' ? t('profile.history') : activeTab === 'mistakes' ? t('personalization.mistakesTitle') : ''}
         </div>
 
         <div className={styles.mobileMenuContainer} ref={mobileMenuRef}>
@@ -94,6 +87,7 @@ export default function ProfileSidebar({ activeTab }) {
               {t('profile.history')}
             </button>
 
+            <button className={styles.dropdownItem} onClick={() => { navigate('/profile/mistakes'); setIsMobileMenuOpen(false); }}><History size={16} style={{ marginRight: '8px' }} />{t('personalization.mistakesTitle')}</button>
             <button className={styles.dropdownItem} onClick={handleLogout}>
               <LogOut size={16} style={{ marginRight: '8px' }} />
               {t('profile.logout')}
@@ -110,38 +104,16 @@ export default function ProfileSidebar({ activeTab }) {
         </div>
       </div>
 
-      {goalConfig.active && goalProgress ? (
-        <div className={`${styles.goalGrid} ${styles.mobileHidden}`}>
-          <div className={styles.goalTile}>
-            <div className={styles.goalTileTitle}>{t('goal.target')}</div>
-            <div className={styles.goalTileValuePrimary}>{t('dashboard.band', { band: goalConfig.targetBand })}</div>
-          </div>
-          <div className={styles.goalTile}>
-            <div className={styles.goalTileTitle}>{t('goal.current')}</div>
-            <div className={styles.goalTileValue}>{t('dashboard.band', { band: goalProgress.currentEstBand })}</div>
-          </div>
-          <div className={styles.goalTile}>
-            <div className={styles.goalTileTitle}>{t('goal.completed')}</div>
-            <div className={styles.goalTileValue}>
-              {goalProgress.completedTests} <span className={styles.goalTileUnit}>{t('goal.tests')}</span>
-            </div>
-          </div>
-          <div className={styles.goalTile}>
-            <div className={styles.goalTileTitle}>{t('goal.learningTime')}</div>
-            <div className={styles.goalTileValue}>
-              {goalProgress.totalHours} <span className={styles.goalTileUnit}>{t('goal.hours')}</span>
-            </div>
-          </div>
-        </div>
-      ) : null}
+
 
       <button className={`${styles.btnSetGoal} ${styles.mobileHidden}`} onClick={() => navigate('/profile')}>
-        {t(goalConfig.active ? 'goal.change' : 'goal.set')}
+        {t('goal.tracker')}
       </button>
 
       <div className={`${styles.divider} ${styles.mobileHidden}`}></div>
 
       <div className={styles.navMenu}>
+        <button className={`${styles.navItem} ${activeTab === 'mistakes' ? styles.active : ''}`} onClick={() => navigate('/profile/mistakes')}><History size={20} className={styles.navIcon} /><span className={styles.navText}>{t('personalization.mistakesTitle')}</span></button>
         <button
           className={`${styles.navItem} ${activeTab === 'info' || activeTab === 'password' ? styles.active : ''}`}
           onClick={() => navigate('/profile')}

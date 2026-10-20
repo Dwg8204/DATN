@@ -97,6 +97,20 @@ describe('MailService errors', () => {
     expect(sendMail).not.toHaveBeenCalled();
   });
 
+  it('adds learning and opt-out links to daily reminders in both email formats', async () => {
+    sendMail.mockResolvedValue({});
+    const service = new MailService(new ConfigService({
+      smtp: { enabled: true, host: 'localhost', from: 'test@example.com' },
+      app: { frontendOrigin: 'https://aptimate.example' },
+    }));
+    await service.sendNotificationEmail(['one@example.com'], 'Đến giờ học', 'Ôn <20> thẻ', undefined, true);
+    const mail = sendMail.mock.calls[0][0];
+    expect(mail.text).toContain('https://aptimate.example/profile/dashboard');
+    expect(mail.html).toContain('href="https://aptimate.example/profile?disableReminderEmail=1#learning-preferences"');
+    expect(mail.html).toContain('Ôn &lt;20&gt; thẻ');
+    expect(mail.to).toBe('one@example.com');
+  });
+
   it('returns a safe notification delivery error when SMTP rejects the email', async () => {
     sendMail.mockRejectedValueOnce(new Error('private SMTP diagnostic'));
     const service = new MailService(new ConfigService({ smtp: { enabled: true, host: 'localhost', from: 'test@example.com' } }));

@@ -191,6 +191,14 @@ export class NotificationsService {
         continue;
       }
 
+      const dailyReminder = notification.dedupe_key?.startsWith('reminder:') ?? false;
+      if (dailyReminder && !(await this.notifRepo.isDailyReminderEligible(
+        recipient.user_id, notification.dedupe_key!, notification.channel,
+      ))) {
+        await this.notifRepo.markRecipientFailed(recipient.recipient_id, 'REMINDER_NO_LONGER_DUE');
+        continue;
+      }
+
       if (notification.channel === NotificationChannel.EMAIL) {
         if (!recipient.email) {
           await this.notifRepo.markRecipientFailed(recipient.recipient_id, 'RECIPIENT_EMAIL_MISSING');
@@ -202,6 +210,7 @@ export class NotificationsService {
             notification.title,
             notification.content,
             (notification.attachment as NotificationAttachmentDto | null) ?? undefined,
+            dailyReminder,
           );
           await this.notifRepo.markRecipientDelivered(recipient.recipient_id);
         } catch {

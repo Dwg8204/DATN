@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { localDay } from '../../personalization/policies/calendar';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { StudentDashboardQueryDto } from '../dto/student-dashboard-query.dto';
 import { DashboardAttemptRow, TestAttemptsRepository } from '../repositories/test-attempts.repository';
@@ -9,15 +10,6 @@ const SKILLS = {
 } as const;
 const BANDS: Record<string, number> = { A1: 1, A2: 2, B1: 3, B2: 4, C: 5, C1: 5, C2: 6 };
 const BAND_LABELS: Record<number, string> = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2', 5: 'C', 6: 'C2' };
-const vietnamDate = new Intl.DateTimeFormat('en-US', {
-  timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit',
-});
-
-function dayKey(date: Date): string {
-  const parts = Object.fromEntries(vietnamDate.formatToParts(date).map(part => [part.type, part.value]));
-  return `${parts.year}-${parts.month}-${parts.day}`;
-}
-
 function dayNumber(key: string): number {
   return Math.floor(Date.parse(`${key}T00:00:00Z`) / 86_400_000);
 }
@@ -62,18 +54,18 @@ function bandStats(rows: DashboardAttemptRow[]) {
     weakSkill: skillBand(ranked.length > 1 ? ranked[0] : undefined) };
 }
 
-function streak(rows: DashboardAttemptRow[], now: Date): number {
-  const days = [...new Set(rows.map(row => dayNumber(dayKey(new Date(row.submittedAt)))))]
+function streak(rows: DashboardAttemptRow[], now: Date, timezone: string): number {
+  const days = [...new Set(rows.map(row => dayNumber(localDay(new Date(row.submittedAt), timezone))))]
     .sort((a, b) => b - a);
   if (!days.length) return 0;
-  const today = dayNumber(dayKey(now));
+  const today = dayNumber(localDay(now, timezone));
   if (days[0] < today - 1) return 0;
   let count = 1;
   while (count < days.length && days[count] === days[count - 1] - 1) count += 1;
   return count;
 }
 
-export function buildStudentDashboard(rows: DashboardAttemptRow[], query: StudentDashboardQueryDto, now = new Date()) {
+export function buildStudentDashboard(rows: DashboardAttemptRow[], query: StudentDashboardQueryDto, now = new Date(), timezone = 'Asia/Ho_Chi_Minh') {
   const skillCounts: Record<string, number> = { all: rows.length, listening: 0, reading: 0, writing: 0, speaking: 0, grammar: 0 };
   const partCounts: Record<string, number> = { full: 0, part1: 0, part2: 0, part3: 0, part4: 0 };
   for (const row of rows) {
@@ -88,8 +80,8 @@ export function buildStudentDashboard(rows: DashboardAttemptRow[], query: Studen
 
   const realScores = rows.map(row => validPercentage(row, 'full')).filter((value): value is number => value != null);
   const { avgBand, bestSkill, weakSkill } = bandStats(rows);
-  const earliestDay = query.range === 'all' ? -Infinity : dayNumber(dayKey(now)) - Number(query.range) + 1;
-  const dated = rows.filter(row => dayNumber(dayKey(new Date(row.submittedAt))) >= earliestDay);
+  const earliestDay = query.range === 'all' ? -Infinity : dayNumber(localDay(now, timezone)) - Number(query.range) + 1;
+  const dated = rows.filter(row => dayNumber(localDay(new Date(row.submittedAt), timezone)) >= earliestDay);
   const distribution = Object.entries(SKILLS).map(([component, name]) => ({
     name, value: dated.filter(row => row.component === component).length,
   }));
@@ -98,7 +90,7 @@ export function buildStudentDashboard(rows: DashboardAttemptRow[], query: Studen
   for (const row of chartRows) {
     const percentage = validPercentage(row, query.part);
     if (percentage == null) continue;
-    const key = dayKey(new Date(row.submittedAt));
+    const key = localDay(new Date(row.submittedAt), timezone);
     const values = grouped.get(key) ?? {};
     const skill = SKILLS[row.component];
     (values[skill] ??= []).push(percentage);
@@ -110,7 +102,7 @@ export function buildStudentDashboard(rows: DashboardAttemptRow[], query: Studen
 
   return {
     totalTests: rows.length, averageScore: roundedAverage(realScores), averageBand: avgBand,
-    streak: streak(rows, now), bestSkill, weakSkill,
+    streak: streak(rows, now, timezone), bestSkill, weakSkill,
     skillCounts, partCounts, scoreOverTime, skillDistribution: distribution,
     excludedSimulatedScores: rows.filter(row => row.result?.method === 'SIMULATED').length,
   };
@@ -121,6 +113,7 @@ export class StudentDashboardService {
   constructor(private readonly repository: TestAttemptsRepository) {}
 
   async get(actor: AuthUser, query: StudentDashboardQueryDto) {
-    return buildStudentDashboard(await this.repository.dashboardAttempts(actor.id), query);
+    const [user] = await this.repository.dataSource.query<Array<{ timezone: string }>>('SELECT timezone FROM users WHERE id=$1', [actor.id]);
+    return buildStudentDashboard(await this.repository.dashboardAttempts(actor.id), query, new Date(), user?.timezone ?? 'UTC');
   }
 }

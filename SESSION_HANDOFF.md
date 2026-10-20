@@ -1,5 +1,22 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa GĐ5 — 20/10/2026
+
+- Thêm nhắc hằng ngày bằng câu mẫu: IN_APP, email nếu bật, giờ tài khoản; việc hôm nay và hạn theo múi giờ mục tiêu. Khóa người dùng, dedupe ngày/kênh, ghi marker cùng transaction; không gửi bù.
+- Scheduler kiểm tra lại điều kiện khi giao để bỏ nhắc cũ, đã tắt, hết mục tiêu hoặc đã xong việc. Email có liên kết lộ trình và trang tắt email nhắc (đăng nhập và bấm nút), giữ email báo cáo.
+- Có test PostgreSQL 5 ngày/hai worker, timezone/downtime/rollback, test email và browser cài đặt. Chi tiết và cấu hình tại `docs/PERSONALIZATION_GD5_REPORT.md`. Không gọi AI hoặc gửi SMTP thật khi test, không sửa `.env`, không cần migration mới.
+- Tiếp tục nhánh chung `feat/learning-personalization` theo các giai đoạn trước. Dừng ở GĐ5, chưa triển khai GĐ6, không push.
+
+## Cá nhân hóa GĐ1 — 19/10/2026
+
+- Người dùng đã yêu cầu tiếp tục GĐ1 sau P0/GĐ0 và commit ngay khi hoàn thành. Đã giữ nhánh chung `feat/learning-personalization`, pull fast-forward develop tới `b39c7db` trước khi triển khai.
+- Đã thêm migration enum `1760000017000` và schema `1760000018000`: bốn bảng mới, mở rộng goals/notifications/chat/topics/labels, index và ràng buộc. TypeORM dùng transaction `each`; nếu schema thất bại sau enum thì chạy lại sẽ tiếp tục đúng migration còn thiếu.
+- Module personalization mới có mô hình dữ liệu có kiểu và bốn repository SQL có tham số theo pattern hiện tại; đọc theo chủ sở hữu, tạo lộ trình nguyên tử, chống trùng insight, bảo toàn ngày nhắc khi cập nhật cài đặt. Chưa có API/frontend/worker của GĐ2 trở đi.
+- Backend 68 suite/418 test, typecheck/build, ESLint và PostgreSQL integration cá nhân hóa + chatbot đều đạt. Test DB chỉ chạy `_test`, không gọi AI thật. Migration up/down/up phủ dữ liệu cũ, concurrency, ownership, cascade và rollback. Báo cáo: `docs/PERSONALIZATION_GD1_REPORT.md`.
+- Đã áp dụng đúng hai migration lên database local sau khi kiểm thử: đủ bốn bảng mới, số dòng dữ liệu cũ giữ nguyên, không còn migration chờ. Mục tiêu local trên server đang rỗng; form Profile vẫn dùng localStorage cho đến GĐ2.
+- Rollback schema mất dữ liệu mới; enum rollback từ chối khi còn REPLACED/LEARNING_REPORT. Mục tiêu cũ không hợp lệ làm migration dừng, không tự sửa dữ liệu. Migration kế tiếp từ `1760000019000` nếu chưa được dùng.
+- Dừng sau GĐ1 chờ người dùng kiểm thử/xác nhận; bước tiếp theo GĐ2 mục tiêu lên server. Không push nếu chưa được yêu cầu.
+
 ## Cá nhân hóa P0 — 19/10/2026
 
 - Đã tạo nhánh `feat/learning-personalization` theo yêu cầu tên tiếng Anh, không dùng `codex`; pull fast-forward `origin/develop` tới `3e7fae0` trước khi triển khai.

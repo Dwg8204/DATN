@@ -1,3 +1,4 @@
+import { PersonalizationProgressModule } from '../personalization/personalization-progress.module';
 import { Module } from '@nestjs/common';
 import { VocabularyFoldersController } from './controllers/vocabulary-folders.controller';
 import { VocabularyEntriesController } from './controllers/vocabulary-entries.controller';
@@ -17,6 +18,7 @@ import { StudyController } from './controllers/study.controller';
 import { StudyRepository } from './repositories/study.repository';
 
 @Module({
+  imports: [PersonalizationProgressModule],
   controllers: [
     VocabularyFoldersController,
     VocabularyEntriesController,

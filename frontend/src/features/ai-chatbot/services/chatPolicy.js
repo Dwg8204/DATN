@@ -3,9 +3,10 @@ export function chatAllowed(path) {
     && !/^\/(?:writing|reading|listening|speaking|grammar-vocab)\/(?:test|introduction)(?:\/|$)/.test(path);
 }
 export function resultContext(path,search) {
-  if(!/\/(?:result|result-detail|detail-result)$/.test(path))return null;
+  if(!/\/(?:result|result-detail|detail-result)$/.test(path) && path !== '/profile/mistakes')return null;
   const id=new URLSearchParams(search).get('attemptId');
-  return id&&/^[\da-f-]{36}$/i.test(id)?{attemptId:id}:null;
+  const key = new URLSearchParams(search).get('questionKey');
+  return id&&/^[\da-f-]{36}$/i.test(id)?{attemptId:id,...(path === '/profile/mistakes' && /^p[1-4]:[qs]\d{1,3}$/.test(key ?? '') ? {questionKey:key} : {})}:null;
 }
 export function actionPath(action) {
   const paths={OPEN_WRITING_PRACTICE:'/writing/practice',OPEN_READING_PRACTICE:'/reading/practice',OPEN_LISTENING_PRACTICE:'/listening/practice',OPEN_SPEAKING_PRACTICE:'/speaking/practice',OPEN_GRAMMAR_PRACTICE:'/grammar-vocab/practice',OPEN_NOTEBOOK:'/dictation?mode=notebook',OPEN_DICTATION:'/dictation'};

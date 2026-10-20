@@ -67,4 +67,5 @@ export const environmentSchema = Joi.object({
   AZURE_TRANSLATOR_REGION: Joi.string().allow('').optional(),
   AZURE_TRANSLATOR_ENDPOINT: Joi.string().uri({ scheme: ['https'] }).default('https://api.cognitive.microsofttranslator.com'),
   AZURE_TRANSLATOR_TIMEOUT_MS: Joi.number().integer().min(1000).max(15000).default(2500),
+  PERSONALIZATION_WORKER_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
 }).unknown(true);
