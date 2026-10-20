@@ -48,6 +48,18 @@ test(
       importFailure = true,
       chatPayload;
     let commentStatus = 'PENDING';
+    let reportStatus = 'READY';
+    const reportId = '00000000-0000-4000-8000-000000000003';
+    const weeklyReport = () => ({
+      id: reportId, kind: 'MIDTERM', weekIndex: 2, coversFrom: '2026-10-08', coversTo: '2026-10-14',
+      status: reportStatus, source: reportStatus === 'READY' ? 'AI' : 'RULE',
+      snapshot: {
+        period: { completed: 7, activeDays: 4, vocabReviewed: 80, planDoneRatio: 0.6 },
+        goal: { completed: 12, targetTests: 40, expected: 18.7, status: 'BEHIND' },
+        band: { overallEstimate: null, target: 'B2' },
+      },
+      content: { headline: 'A steady learning habit', narrative: 'Continue practicing Reading.', wins: ['Regular practice.'], nextSteps: ['Review weak parts.'], progressSoFar: 'Keep working towards your goal.' },
+    });
     let prefs = {
       reminderEnabled: true,
       reminderTime: '19:00',
@@ -96,6 +108,8 @@ test(
             },
           });
         if (req.method() === 'OPTIONS') return respond({});
+        if (path === '/me/reports') return respond({ items: [weeklyReport()], page: 1, hasMore: false });
+        if (path === `/me/reports/${reportId}`) return reportStatus === 'ERROR' ? respond({}, 404) : respond(weeklyReport());
         if (path === '/me/insights/comment') {
           if (commentStatus === 'ERROR') return respond({}, 503);
           return respond({ status: commentStatus, comment: commentStatus === 'READY' ? {
@@ -308,6 +322,11 @@ test(
       await second.page.getByRole('button', { name: 'Save preferences', exact: true }).click();
       await second.page.getByText('Changes saved.', { exact: true }).waitFor();
       assert.equal(prefs.reminderTime, '20:30');
+      await second.page.goto(`${origin}/profile?disableReportEmail=1#learning-preferences`, { waitUntil: 'domcontentloaded' });
+      await second.page.getByRole('button', { name: 'Turn off report emails', exact: true }).click();
+      await second.page.getByText('Report emails are off.', { exact: false }).waitFor();
+      assert.equal(prefs.emailReportEnabled, false);
+      assert.equal(prefs.reminderEnabled, true);
       await second.page.goto(`${origin}/profile/dashboard`, {
         waitUntil: 'domcontentloaded',
       });
@@ -332,6 +351,20 @@ test(
           () => document.documentElement.scrollWidth <= innerWidth + 1,
         ),
       );
+      await second.page.getByRole('link', { name: 'Midterm report · Week 2' }).click();
+      await second.page.getByRole('heading', { name: 'Midterm report · Week 2', exact: true }).waitFor();
+      await second.page.getByText('Keep working towards your goal.').waitFor();
+      await second.page.getByText('12/40', { exact: true }).waitFor();
+      assert.ok(await second.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      reportStatus = 'FAILED';
+      await second.page.reload();
+      await second.page.getByText('Your statistics are ready.', { exact: false }).waitFor();
+      reportStatus = 'READY';
+      await second.page.getByText('Your statistics are ready.', { exact: false }).waitFor({ state: 'hidden', timeout: 20000 });
+      reportStatus = 'ERROR';
+      await second.page.reload();
+      await second.page.getByRole('alert').filter({ hasText: 'This report could not be opened.' }).waitFor();
+      reportStatus = 'READY';
       await second.page.goto(`${origin}/profile/mistakes?itemId=${itemId}`, {
         waitUntil: 'domcontentloaded',
       });
