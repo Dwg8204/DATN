@@ -1,4 +1,6 @@
-# Personalization — GĐ1–GĐ5
+# Personalization — GĐ1–GĐ6
+
+GĐ6 adds opt-in Gemini COMMENT generation through `GET /me/insights/comment`, a private numeric snapshot, schema/content validation, shared request/token recording, persistent per-user/day and feature/minute limits, bounded retries and a Dashboard card. `PERSONALIZATION_AI_ENABLED` defaults to false. See `docs/PERSONALIZATION_GD6_REPORT.md` for activation, synthetic smoke tests and phase boundaries.
 
 GĐ5 adds template-based daily reminders after progress reconciliation. The account timezone controls reminder time; the frozen goal timezone controls today's activities and deadline. Notifications and the daily marker commit together under the user lock; per-user/day/channel keys prevent duplicate queue entries. Delivery rechecks eligibility and discards past-day reminders. Email includes dashboard and authenticated opt-out links. See `docs/PERSONALIZATION_GD5_REPORT.md` for configuration, tests and delivery limits. No AI is used.
 

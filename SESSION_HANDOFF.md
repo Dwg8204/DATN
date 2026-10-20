@@ -1,5 +1,18 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa GĐ6 — 20/10/2026
+
+- Rà soát trước commit: backend cá nhân hóa 7 suite/65 test, backend typecheck và frontend build đạt trong phiên này; build còn cảnh báo bundle lớn. Chưa chạy lại DB integration vì chưa cấu hình TEST_DATABASE_URL, chưa gọi AI thật trong lượt rà soát.
+- Người dùng đã tự bật PERSONALIZATION_AI_ENABLED=true ở local và yêu cầu commit. Đã fast-forward nhánh hiện tại tới origin/develop tại ad4c597 (cây mã nguồn không đổi); chia commit tiếng Việt theo task, không push và không đưa .env vào Git. Việc bật cờ chưa đồng nghĩa đã nghiệm thu luồng thực tế.
+- Hai điểm còn mở sau rà soát: validator vẫn chấp nhận lời trái goal.status hoặc coi band mục tiêu là band đã đạt; khi FAILED được trả thành HIDDEN, Dashboard dừng polling nên cần mở lại trang sau khi worker retry thành công. Chưa sửa hai điểm này trong lượt commit; kiểm định ngữ nghĩa toàn diện vẫn thuộc GĐ11.
+
+- Yêu cầu bổ sung: đổi model/provider dễ dàng. Đã tách JsonGenerationService + adapter Gemini/OpenAI-compatible; cấu hình PERSONALIZATION_PROVIDER=gemini/deepseek/xai/openai-compatible, MODEL, key/base URL, timeout. Validator/quota/retry không phụ thuộc provider. DeepSeek/xAI dùng HTTP mock; chỉ Gemini đã smoke thật. Provider khác ghi chi phí chưa xác định (NULL), không gắn nhãn FREE. Chưa đổi chatbot hoặc pipeline chấm bài.
+
+- Theo yêu cầu giữ đúng kế hoạch, không thêm test đầu vào hoặc đổi luồng. Thêm COMMENT AI trên Dashboard, API /me/insights/comment, snapshot 20 bài và tiến độ mục tiêu, schema/prompt/validator, worker retry/quota và cache.
+- Tối đa một nhận xét/ngày khi có kết quả chấm mới; sáu request cá nhân hóa/người/ngày (gồm sửa JSON), feature RPM mặc định 5. 429 không tăng retry; hết retry ẩn nhận xét. AI mặc định tắt; chưa sửa .env.
+- Backend 75 suite/492 test (toàn bộ suite và chạy lại các suite bị ảnh hưởng sau sửa), DB integration GĐ2–6, browser nhận xét và build frontend đạt. Gemini FREE thật bằng snapshot giả trên _test đạt (495 token vào/163 ra); không gửi dữ liệu học viên. Chi tiết trong docs/PERSONALIZATION_GD6_REPORT.md.
+- Tiếp tục nhánh chung feat/learning-personalization, commit theo task, không push. Dừng sau GĐ6 để nghiệm thu; GĐ7–GĐ11 chưa triển khai. Liên kết insight với chatbot là GĐ9.
+
 ## Cá nhân hóa GĐ5 — 20/10/2026
 
 - Thêm nhắc hằng ngày bằng câu mẫu: IN_APP, email nếu bật, giờ tài khoản; việc hôm nay và hạn theo múi giờ mục tiêu. Khóa người dùng, dedupe ngày/kênh, ghi marker cùng transaction; không gửi bù.
