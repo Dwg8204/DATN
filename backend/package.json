@@ -39,7 +39,8 @@
     "knowledge:validate": "ts-node scripts/chatbot-knowledge.ts --validate",
     "knowledge:import": "ts-node scripts/chatbot-knowledge.ts --apply",
     "ai:chatbot:smoke": "ts-node scripts/chatbot-smoke.ts",
-    "test:personalization": "jest --runInBand --testPathPattern personalization"
+    "test:personalization": "jest --runInBand --testPathPattern personalization",
+    "ai:personalization:smoke": "ts-node scripts/personalization-smoke.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",
