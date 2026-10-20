@@ -288,6 +288,17 @@ test(
         await second.page.getByLabel('Duration (3–180 days)').inputValue(),
         '30',
       );
+      prefs.emailReminderEnabled = true;
+      await second.page.goto(`${origin}/profile?disableReminderEmail=1#learning-preferences`, { waitUntil: 'domcontentloaded' });
+      await second.page.getByRole('button', { name: 'Turn off reminder emails', exact: true }).click();
+      await second.page.getByText('Reminder emails are off.', { exact: false }).waitFor();
+      assert.equal(prefs.emailReminderEnabled, false);
+      assert.equal(prefs.reminderEnabled, true);
+      assert.equal(prefs.emailReportEnabled, true);
+      await second.page.getByLabel('Reminder time (account time zone)').fill('20:30');
+      await second.page.getByRole('button', { name: 'Save preferences', exact: true }).click();
+      await second.page.getByText('Changes saved.', { exact: true }).waitFor();
+      assert.equal(prefs.reminderTime, '20:30');
       await second.page.goto(`${origin}/profile/dashboard`, {
         waitUntil: 'domcontentloaded',
       });

@@ -1,8 +1,10 @@
-# Personalization — GĐ1–GĐ4
+# Personalization — GĐ1–GĐ5
+
+GĐ5 adds template-based daily reminders after progress reconciliation. The account timezone controls reminder time; the frozen goal timezone controls today's activities and deadline. Notifications and the daily marker commit together under the user lock; per-user/day/channel keys prevent duplicate queue entries. Delivery rechecks eligibility and discards past-day reminders. Email includes dashboard and authenticated opt-out links. See `docs/PERSONALIZATION_GD5_REPORT.md` for configuration, tests and delivery limits. No AI is used.
 
 `PersonalizationModule` exposes STUDENT goal/preferences, snapshot, RULE plan and mistake-review APIs. `AppModule` imports it. `PersonalizationDataModule` contains repositories and transactional goal policies; `PersonalizationProgressModule` adds post-commit reconciliation without depending on attempt services. This avoids circular dependencies when exam/practice, grading and vocabulary services update progress.
 
-Enable `PERSONALIZATION_WORKER_ENABLED=true` for 60-second reconciliation (at most 50 learners per batch, `FOR UPDATE SKIP LOCKED`). Creating a goal or opening the current plan also creates the missing RULE plan synchronously. The worker defaults to disabled when the environment variable is absent; `.env.example` enables it explicitly. Achievement notifications are enqueued transactionally with a dedupe key and delivered by the existing notification scheduler. No AI request or email is sent by this phase.
+Enable `PERSONALIZATION_WORKER_ENABLED=true` for 60-second reconciliation (at most 50 learners per batch, `FOR UPDATE SKIP LOCKED`). Creating a goal or opening the current plan also creates the missing RULE plan synchronously. The worker defaults to disabled when the environment variable is absent; `.env.example` enables it explicitly. Achievement and reminder notifications are enqueued transactionally with a dedupe key and delivered by the existing notification scheduler. Daily email reminders require opt-in and SMTP configuration.
 
 Progress counts every submitted EXAM/PRACTICE, FULL_SKILL/PART attempt in the goal's frozen timezone. Target reached stays ACTIVE; early finish requires the count target; deadline completes or expires the goal. Reconciliation updates plan items before ending the goal. Each attempt is allocated once per week, vocabulary uses the scheduled local day, and only MISTAKE_REVIEW can be completed manually. Final report scheduling belongs to GĐ8; daily reminders belong to GĐ5.
 

@@ -1,5 +1,12 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa GĐ5 — 20/10/2026
+
+- Thêm nhắc hằng ngày bằng câu mẫu: IN_APP, email nếu bật, giờ tài khoản; việc hôm nay và hạn theo múi giờ mục tiêu. Khóa người dùng, dedupe ngày/kênh, ghi marker cùng transaction; không gửi bù.
+- Scheduler kiểm tra lại điều kiện khi giao để bỏ nhắc cũ, đã tắt, hết mục tiêu hoặc đã xong việc. Email có liên kết lộ trình và trang tắt email nhắc (đăng nhập và bấm nút), giữ email báo cáo.
+- Có test PostgreSQL 5 ngày/hai worker, timezone/downtime/rollback, test email và browser cài đặt. Chi tiết và cấu hình tại `docs/PERSONALIZATION_GD5_REPORT.md`. Không gọi AI hoặc gửi SMTP thật khi test, không sửa `.env`, không cần migration mới.
+- Tiếp tục nhánh chung `feat/learning-personalization` theo các giai đoạn trước. Dừng ở GĐ5, chưa triển khai GĐ6, không push.
+
 ## Cá nhân hóa GĐ1 — 19/10/2026
 
 - Người dùng đã yêu cầu tiếp tục GĐ1 sau P0/GĐ0 và commit ngay khi hoàn thành. Đã giữ nhánh chung `feat/learning-personalization`, pull fast-forward develop tới `b39c7db` trước khi triển khai.
