@@ -67,6 +67,18 @@ export class StudyPlansRepository {
       ],
     );
     const plan = rows[0];
+    await this.insertItems(userId, plan, items, manager);
+    return plan;
+  }
+
+  async insertItems(
+    userId: string,
+    plan: StudyPlanRow,
+    items: readonly CreatePlanItemInput[],
+    manager: EntityManager,
+  ): Promise<void> {
+    if (!manager.queryRunner?.isTransactionActive || plan.user_id !== userId)
+      throw new Error('PLAN_TRANSACTION_OWNER_REQUIRED');
     for (const item of items) {
       if (
         item.scheduledOn < plan.starts_on ||
@@ -110,6 +122,5 @@ export class StudyPlansRepository {
         ],
       );
     }
-    return plan;
   }
 }

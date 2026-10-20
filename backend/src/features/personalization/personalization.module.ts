@@ -14,10 +14,13 @@ import { ConfigModule } from '@nestjs/config';
 import { PersonalizationAiService } from './services/personalization-ai.service';
 import { CommentsService } from './services/comments.service';
 import { CommentGenerationWorker } from './workers/comment-generation.worker';
+import { ReportJobsService } from './services/report-jobs.service';
+import { ReportsService } from './services/reports.service';
+import { ReportsController } from './controllers/reports.controller';
 
 @Module({
   imports: [PersonalizationDataModule, TestAttemptsModule, AiSharedModule, ConfigModule],
-  controllers: [PersonalizationController, StudyPlanController],
+  controllers: [PersonalizationController, StudyPlanController, ReportsController],
   providers: [
     SnapshotService,
     MistakeSourceService,
@@ -28,6 +31,8 @@ import { CommentGenerationWorker } from './workers/comment-generation.worker';
     PersonalizationAiService,
     CommentsService,
     CommentGenerationWorker,
+    ReportJobsService,
+    ReportsService,
   ],
   exports: [PersonalizationDataModule, SnapshotService],
 })

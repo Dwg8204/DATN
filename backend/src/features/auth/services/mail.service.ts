@@ -93,6 +93,35 @@ export class MailService {
     }
   }
 
+  async sendLearningReportEmail(
+    to: string,
+    reports: Array<{ headline: string; summary: string; actionPath: string }>,
+  ): Promise<void> {
+    this.assertConfigured();
+    if (!reports.length) return;
+    const origin = this.config.get<string>('app.frontendOrigin');
+    if (!origin) throw new ApplicationError('REPORT_EMAIL_ORIGIN_REQUIRED', 'Report email links are not configured.', 503);
+    const settings = new URL('/profile?disableReportEmail=1#learning-preferences', origin).href;
+    const entries = reports.map(report => {
+      if (!/^\/profile\/reports\/[0-9a-f-]{36}$/i.test(report.actionPath))
+        throw new ApplicationError('REPORT_EMAIL_LINK_INVALID', 'Report link is invalid.', 503);
+      return { ...report, url: new URL(report.actionPath, origin).href };
+    });
+    try {
+      await this.transporter!.sendMail({
+        from: this.config.getOrThrow<string>('smtp.from'), to,
+        subject: entries.length === 1 ? entries[0].headline : 'Báo cáo học tập của bạn trên AptiMate',
+        text: entries.map(r => `${r.headline}\n${r.summary}\nXem báo cáo: ${r.url}`).join('\n\n') + `\n\nTắt email báo cáo: ${settings}`,
+        html: `<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#222"><h2 style="color:#e41e2b">AptiMate</h2>${
+          entries.map(r => `<section><h3>${this.escape(r.headline)}</h3><p style="white-space:pre-line">${this.escape(r.summary)}</p><p><a href="${this.escape(r.url)}">Xem báo cáo học tập</a></p></section>`).join('')
+        }<p><a href="${this.escape(settings)}">Tắt email báo cáo</a></p></div>`,
+      });
+    } catch {
+      this.logger.error('SMTP delivery failed while sending a learning report.');
+      throw new ApplicationError('EMAIL_DELIVERY_FAILED', 'The learning report email could not be delivered.', 503);
+    }
+  }
+
   private escape(value: string): string {
     return value.replace(/[&<>'"]/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char] ?? char);
   }

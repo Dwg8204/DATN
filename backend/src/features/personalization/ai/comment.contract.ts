@@ -93,6 +93,17 @@ export function validateComment(
     if (!Array.isArray(list) || list.length > 2) issues.push('LIST_LENGTH');
     else list.forEach((text) => checkText(text, 200));
   }
+  issues.push(...groundedTextIssues(texts, snapshot));
+  if (issues.length) throw new CommentValidationError([...new Set(issues)]);
+  return {
+    summary: (record.summary as string).trim(),
+    strengths: (record.strengths as string[]).map((s) => s.trim()),
+    focus: (record.focus as string[]).map((s) => s.trim()),
+  };
+}
+
+export function groundedTextIssues(texts: string[], snapshot: Record<string, unknown>): string[] {
+  const issues: string[] = [];
   const numbers: number[] = [];
   const strings = new Set<string>();
   const visit = (entry: unknown) => {
@@ -116,10 +127,5 @@ export function validateComment(
         issues.push('UNSUPPORTED_NUMBER');
     }
   }
-  if (issues.length) throw new CommentValidationError([...new Set(issues)]);
-  return {
-    summary: (record.summary as string).trim(),
-    strengths: (record.strengths as string[]).map((s) => s.trim()),
-    focus: (record.focus as string[]).map((s) => s.trim()),
-  };
+  return [...new Set(issues)];
 }

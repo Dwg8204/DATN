@@ -124,8 +124,10 @@ export class NotificationsService {
     return { success: true, deliveredCount: count };
   }
 
-  async processDueScheduledBatch(limit = 25): Promise<number> {
-    const notifications = await this.notifRepo.claimDueNotifications(limit);
+  async processDueScheduledBatch(limit = 25, asOf = new Date()): Promise<number> {
+    const groups = await this.notifRepo.claimDueReportEmailGroups(limit, asOf);
+    for (const group of groups) await this.deliverReportEmailGroup(group);
+    const notifications = await this.notifRepo.claimDueNotifications(limit, asOf);
     for (const notification of notifications) {
       try {
         await this.deliverScheduledNotification(notification);
@@ -137,7 +139,34 @@ export class NotificationsService {
         await this.notifRepo.failScheduledNotification(notification.id, 'SCHEDULED_DELIVERY_FAILED');
       }
     }
-    return notifications.length;
+    return notifications.length + groups.length;
+  }
+
+  private async deliverReportEmailGroup(group: { userId: string; notifications: NotificationRow[] }) {
+    const eligible: Array<{ notification: NotificationRow; recipientId: string; email: string }> = [];
+    for (const notification of group.notifications) {
+      const recipients = await this.notifRepo.findScheduledRecipients(notification.id);
+      for (const recipient of recipients) {
+        if (recipient.user_id !== group.userId || !recipient.is_active || !recipient.email ||
+            !(await this.notifRepo.isReportEmailEligible(recipient.user_id, notification.dedupe_key!))) {
+          await this.notifRepo.markRecipientFailed(recipient.recipient_id, 'REPORT_EMAIL_DISABLED_OR_UNAVAILABLE');
+        } else eligible.push({ notification, recipientId: recipient.recipient_id, email: recipient.email });
+      }
+    }
+    if (eligible.length) {
+      try {
+        await this.mailService.sendLearningReportEmail(eligible[0].email, eligible.map(({ notification }) => ({
+          headline: notification.title, summary: notification.content, actionPath: notification.action_path!,
+        })));
+        for (const { notification, recipientId } of eligible) {
+          await this.notifRepo.markRecipientDelivered(recipientId);
+          await this.notifRepo.recordReportDelivered(group.userId, notification.dedupe_key!, 'EMAIL');
+        }
+      } catch {
+        for (const { recipientId } of eligible) await this.notifRepo.markRecipientFailed(recipientId, 'EMAIL_DELIVERY_FAILED');
+      }
+    }
+    for (const notification of group.notifications) await this.notifRepo.completeScheduledNotification(notification.id);
   }
 
   async deleteNotification(id: string): Promise<{ success: boolean }> {
@@ -218,6 +247,8 @@ export class NotificationsService {
         }
       } else if (notification.channel === NotificationChannel.IN_APP) {
         await this.notifRepo.markRecipientDelivered(recipient.recipient_id);
+        if (notification.dedupe_key?.startsWith('report:'))
+          await this.notifRepo.recordReportDelivered(recipient.user_id, notification.dedupe_key, 'IN_APP');
       } else {
         await this.notifRepo.markRecipientFailed(recipient.recipient_id, 'UNSUPPORTED_CHANNEL');
       }
