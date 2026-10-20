@@ -58,6 +58,7 @@ export class MailService {
     subject: string,
     content: string,
     attachment?: NotificationEmailAttachment,
+    learningReminder = false,
   ): Promise<void> {
     this.assertConfigured();
     const transporter = this.transporter;
@@ -71,12 +72,19 @@ export class MailService {
           ? join(process.cwd(), 'uploads', 'notification-attachments', basename(attachment.publicId))
           : attachment.url,
       }] : undefined;
+      const origin = this.config.get<string>('app.frontendOrigin');
+      const reminderLinks = learningReminder && origin ? {
+        study: new URL('/profile/dashboard', origin).href,
+        settings: new URL('/profile?disableReminderEmail=1#learning-preferences', origin).href,
+      } : null;
+      const footerText = reminderLinks ? `\n\nLộ trình hôm nay: ${reminderLinks.study}\nTắt email nhắc học: ${reminderLinks.settings}` : '';
+      const footerHtml = reminderLinks ? `<p><a href="${this.escape(reminderLinks.study)}">Mở lộ trình hôm nay</a></p><p><a href="${this.escape(reminderLinks.settings)}">Tắt email nhắc học</a></p>` : '';
       await Promise.all(recipients.map(to => transporter.sendMail({
           from: this.config.getOrThrow<string>('smtp.from'),
           to,
           subject,
-          text: content,
-          html: `<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#222"><h2 style="color:#e41e2b">AptiMate</h2><div style="white-space:pre-wrap;line-height:1.6">${this.escape(content)}</div></div>`,
+          text: content + footerText,
+          html: `<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#222"><h2 style="color:#e41e2b">AptiMate</h2><div style="white-space:pre-wrap;line-height:1.6">${this.escape(content)}</div>${footerHtml}</div>`,
           attachments: mailAttachments,
         })));
     } catch {

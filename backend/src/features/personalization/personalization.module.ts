@@ -8,6 +8,7 @@ import { PlanCandidatesService } from './services/plan-candidates.service';
 import { PlanService } from './services/plan.service';
 import { StudyPlanController } from './controllers/study-plan.controller';
 import { PersonalizationWorker } from './workers/personalization.worker';
+import { RemindersService } from './services/reminders.service';
 
 @Module({
   imports: [PersonalizationDataModule, TestAttemptsModule],
@@ -18,6 +19,7 @@ import { PersonalizationWorker } from './workers/personalization.worker';
     PlanCandidatesService,
     PlanService,
     PersonalizationWorker,
+    RemindersService,
   ],
   exports: [PersonalizationDataModule, SnapshotService],
 })

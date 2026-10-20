@@ -10,6 +10,7 @@ for (const name of [
   'personalization-goals',
   'personalization-snapshot',
   'personalization-plan',
+  'personalization-reminders',
 ]) {
   const result = spawnSync(
     process.execPath,

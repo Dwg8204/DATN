@@ -9,6 +9,7 @@ import { AuthUser } from '../../auth/types/auth-user.type';
 import { GoalsService } from '../services/goals.service';
 import { PlanService } from '../services/plan.service';
 import { PersonalizationClock } from '../services/personalization-clock';
+import { RemindersService } from '../services/reminders.service';
 
 @Injectable()
 export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
@@ -20,6 +21,7 @@ export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
     private readonly goals: GoalsService,
     private readonly plans: PlanService,
     private readonly clock: PersonalizationClock,
+    private readonly reminders: RemindersService,
   ) {}
   onModuleInit() {
     if (process.env.PERSONALIZATION_WORKER_ENABLED !== 'true') return;
@@ -48,7 +50,7 @@ export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
     const users = await this.db.query<
       Array<{ user_id: string; updated_at: string }>
     >(`SELECT g.user_id,g.updated_at::text updated_at FROM learning_goals g JOIN users u ON u.id=g.user_id JOIN roles r ON r.id=u.role_id
-      WHERE g.status='ACTIVE' AND u.status='ACTIVE' AND r.code='STUDENT' ORDER BY g.updated_at,g.id LIMIT 50`);
+      WHERE g.status='ACTIVE' AND u.status='ACTIVE' AND u.deleted_at IS NULL AND r.code='STUDENT' ORDER BY g.updated_at,g.id LIMIT 50`);
     for (const user of users) {
       try {
         await this.db.transaction(async (manager) => {
@@ -64,10 +66,17 @@ export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
             this.clock.now(),
           );
           if (active) {
-            await this.plans.ensureLocked(
+            const current = await this.plans.ensureLocked(
               manager,
               { id: user.user_id, role: 'STUDENT' } as AuthUser,
               active.goal,
+            );
+            await this.reminders.enqueueLocked(
+              manager,
+              active.goal,
+              active.completed,
+              current.plan.id,
+              this.clock.now(),
             );
             await manager.query(
               'UPDATE learning_goals SET updated_at=clock_timestamp() WHERE id=$1',
