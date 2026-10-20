@@ -1,5 +1,9 @@
 {
   "personalization": {
+    "commentTitle": "Nhận xét của AptiMate",
+    "commentPending": "Đang tạo nhận xét… Bạn vẫn có thể xem tiến độ và học theo lộ trình.",
+    "commentStrengths": "Điểm mạnh",
+    "commentFocus": "Nên tập trung",
     "today": "Việc học hôm nay",
     "weekPlan": "Lộ trình tuần {{week}}",
     "noTasks": "Hôm nay chưa có việc học được lên lịch.",

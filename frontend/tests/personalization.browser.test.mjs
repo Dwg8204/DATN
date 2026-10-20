@@ -39,7 +39,7 @@ after(async () => {
 
 test(
   'profile import persistence, mobile plan, mistake review and contextual chatbot',
-  { timeout: 120000 },
+  { timeout: 180000 },
   async () => {
     const attemptId = '00000000-0000-4000-8000-000000000001';
     const itemId = '00000000-0000-4000-8000-000000000002';
@@ -47,6 +47,7 @@ test(
       done = false,
       importFailure = true,
       chatPayload;
+    let commentStatus = 'PENDING';
     let prefs = {
       reminderEnabled: true,
       reminderTime: '19:00',
@@ -95,6 +96,12 @@ test(
             },
           });
         if (req.method() === 'OPTIONS') return respond({});
+        if (path === '/me/insights/comment') {
+          if (commentStatus === 'ERROR') return respond({}, 503);
+          return respond({ status: commentStatus, comment: commentStatus === 'READY' ? {
+            id: 'insight', content: { summary: 'Keep practicing consistently.', strengths: ['Regular practice.'], focus: ['Review Reading.'] },
+          } : null });
+        }
         if (path === '/profile/me' || path === '/auth/me')
           return respond({
             id: 'student',
@@ -245,6 +252,7 @@ test(
       });
       const page = await context.newPage();
       page.setDefaultTimeout(20000);
+      page.setDefaultNavigationTimeout(60000);
       page.on('pageerror', (error) => errors.push(error.message));
       return { context, page };
     };
@@ -306,6 +314,15 @@ test(
       await second.page
         .getByRole('heading', { name: 'Today’s activities' })
         .waitFor();
+      await second.page.getByText('Preparing your feedback…', { exact: false }).waitFor();
+      commentStatus = 'READY';
+      await second.page.getByText('Keep practicing consistently.').waitFor();
+      for (const status of ['HIDDEN', 'ERROR']) {
+        commentStatus = status;
+        await second.page.reload();
+        await second.page.getByRole('heading', { name: 'Today’s activities' }).waitFor();
+        assert.equal(await second.page.getByRole('heading', { name: 'AptiMate’s feedback' }).count(), 0);
+      }
       await second.page
         .getByText('Published reading', { exact: false })
         .first()

@@ -3,6 +3,7 @@ import api from '../../../services/api';
 const options = { notifyOnError: false };
 const data = response => response.data;
 export const personalizationApi = {
+  comment: () => api.get('/me/insights/comment', options).then(data),
   goal: () => api.get('/me/learning-goal', options).then(data),
   create: payload => api.post('/me/learning-goal', payload, options).then(data),
   replace: payload => api.post('/me/learning-goal/replace', payload, options).then(data),

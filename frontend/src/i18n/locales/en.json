@@ -1,5 +1,9 @@
 {
   "personalization": {
+    "commentTitle": "AptiMate’s feedback",
+    "commentPending": "Preparing your feedback… Your progress and study plan are ready below.",
+    "commentStrengths": "Strengths",
+    "commentFocus": "What to focus on",
     "today": "Today’s activities",
     "weekPlan": "Week {{week}} study plan",
     "noTasks": "No activities scheduled for today.",
