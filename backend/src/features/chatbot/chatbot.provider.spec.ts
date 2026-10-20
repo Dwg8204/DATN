@@ -60,7 +60,7 @@ describe('Chat provider contract', () => {
       'actions',
     ]);
     expect(sent.tools[0].functionDeclarations).toHaveLength(1);
-    expect(query.mock.calls.at(-1)?.[1].slice(1)).toEqual([100, 20, 50, null]);
+    expect(query.mock.calls.at(-1)?.[1].slice(1)).toEqual([100, 20, 50, null, 0]);
   });
   test.each([
     [{ promptFeedback: { blockReason: 'SAFETY' } }, 'CHAT_SAFETY'],

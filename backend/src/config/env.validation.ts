@@ -68,4 +68,13 @@ export const environmentSchema = Joi.object({
   AZURE_TRANSLATOR_ENDPOINT: Joi.string().uri({ scheme: ['https'] }).default('https://api.cognitive.microsofttranslator.com'),
   AZURE_TRANSLATOR_TIMEOUT_MS: Joi.number().integer().min(1000).max(15000).default(2500),
   PERSONALIZATION_WORKER_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+  PERSONALIZATION_AI_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+  PERSONALIZATION_PROVIDER: Joi.string().valid('gemini', 'deepseek', 'xai', 'openai-compatible').default('gemini'),
+  PERSONALIZATION_MODEL: Joi.string().max(100).pattern(/^[a-zA-Z0-9._:/-]+$/),
+  PERSONALIZATION_API_KEY: Joi.string().allow(''),
+  DEEPSEEK_API_KEY: Joi.string().allow(''),
+  XAI_API_KEY: Joi.string().allow(''),
+  PERSONALIZATION_BASE_URL: Joi.string().uri({ scheme: ['https'] }),
+  PERSONALIZATION_AI_TIMEOUT_MS: Joi.number().integer().min(1000).max(90000).default(20000),
+  PERSONALIZATION_MAX_RPM: Joi.number().integer().min(1).max(1000).default(5),
 }).unknown(true);
