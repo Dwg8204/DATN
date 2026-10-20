@@ -1,5 +1,16 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa GĐ7 — 20/10/2026
+
+- Đã triển khai theo bản kế hoạch người dùng cung cấp: [kế hoạch đầy đủ bản 2](docs/PERSONALIZATION_IMPLEMENTATION_PLAN_V2.md). File Markdown giữ nội dung gốc, có bảng/mục để tiếp tục các giai đoạn sau; các mã migration trong nguồn là lịch sử, không dùng lại máy móc.
+- `PLAN_START` sinh lộ trình AI sau RULE tức thời; `WEEKLY`/`MIDTERM` dùng một lần gọi cho báo cáo và tuần kế tiếp. Mục tiêu 30 ngày có W1, W2 giữa kỳ, W3, W4; tuần cuối chỉ ngày 29–30. Snapshot có mốc cuối tuần theo múi giờ mục tiêu, tạo bù kỳ còn thiếu sau downtime.
+- Áp dụng AI giữ nguyên ID và tiến độ của cả ngày đã có việc làm dở/xong cùng ngày đã qua; chỉ thay ngày chưa làm. Kiểm tra candidate/schema/nhịp học/giới hạn 3 việc mỗi ngày. Dùng chung quota, RPM, retry và recorder GĐ6; không đưa thông tin cá nhân hoặc bài làm thô vào prompt. AI tắt/lỗi có báo cáo số liệu dự phòng và RULE.
+- Báo cáo đến hạn 08:00 theo múi giờ tài khoản; hoàn tất sau 08:00 chuyển sáng hôm sau. Thông báo web/email có dedupe, gộp email cùng người nhận và kiểm tra lại tùy chọn nhận thư trước gửi. Thời gian giao thực tế phụ thuộc chu kỳ worker/SMTP; không cam kết SMTP exactly-once khi tiến trình chết giữa gửi và ghi DB.
+- Có API đọc/danh sách theo chủ sở hữu, danh sách gần đây trên Dashboard, trang báo cáo tuần/giữa kỳ và liên kết tắt email có đăng nhập. Màn lịch sử đầy đủ/FINAL vẫn thuộc GĐ8; chatbot insight thuộc GĐ9. Không tiếp tục giai đoạn sau trước nghiệm thu.
+- Kiểm chứng: backend 77 suite/521 test; PostgreSQL GĐ1–GĐ7 trên `aptimate_chatbot_test` với schema riêng; frontend 95 test chính và browser cá nhân hóa đều đạt. Typecheck backend, build hai phía và ESLint TypeScript thay đổi đạt. Frontend lint thành công nhưng còn cảnh báo, gồm reset state trong effect trang báo cáo; build còn cảnh báo bundle lớn.
+- Không migration mới, không sửa `.env`, không gọi AI/SMTP thật trong GĐ7. Runner DB ép tắt worker/AI môi trường con, riêng fixture AI dùng HTTP mock. Giữ nhánh `feat/learning-personalization`; GĐ7 đã commit theo yêu cầu người dùng, chưa push; người dùng đã cho phép tiếp tục GĐ8. Các ghi chú “chưa triển khai GĐ7” bên dưới là lịch sử.
+- Chi tiết, giới hạn và các bước nghiệm thu: [báo cáo GĐ7](docs/PERSONALIZATION_GD7_REPORT.md). Khi tiếp tục, đọc bản kế hoạch và báo cáo này trước.
+
 ## Cá nhân hóa GĐ6 — 20/10/2026
 
 - Rà soát trước commit: backend cá nhân hóa 7 suite/65 test, backend typecheck và frontend build đạt trong phiên này; build còn cảnh báo bundle lớn. Chưa chạy lại DB integration vì chưa cấu hình TEST_DATABASE_URL, chưa gọi AI thật trong lượt rà soát.
