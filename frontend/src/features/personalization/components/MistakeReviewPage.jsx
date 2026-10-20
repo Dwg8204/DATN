@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ProfileSidebar from '../../profile/components/ProfileSidebar';
 import RichTextContent from '../../../components/common/RichTextContent';
@@ -8,9 +8,12 @@ import { personalizationApi } from '../services/personalizationApi';
 import { mistakeSections } from '../services/mistakePresentation';
 import layout from '../../profile/pages/ProfilePage.module.css';
 import styles from './Personalization.module.css';
+import { useToast } from '../../../context/ToastContext';
 
 export default function MistakeReviewPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
   const [params, setParams] = useSearchParams();
   const itemId = params.get('itemId');
   const [data, setData] = useState(null);
@@ -36,12 +39,15 @@ export default function MistakeReviewPage() {
   }, [itemId]);
   const current = data?.itemId === itemId ? data : null;
   const finish = async () => {
+    if (busy) return;
     setBusy(true);
     try {
       await personalizationApi.markReviewed(itemId);
-      setData({ ...current, done: true });
+      showSuccess(t('personalization.reviewSaved'));
+      navigate('/profile/dashboard');
     } catch {
       setError(true);
+      showError(t('personalization.reviewFailed'));
     } finally {
       setBusy(false);
     }

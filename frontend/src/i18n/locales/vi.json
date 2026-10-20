@@ -38,6 +38,8 @@
     "saveFailed": "Không lưu được thay đổi. Vui lòng kiểm tra dữ liệu và thử lại.",
     "conflict": "Mục tiêu đã thay đổi hoặc chưa đủ điều kiện kết thúc. Hãy tải lại trước khi tiếp tục.",
     "saved": "Đã lưu thay đổi.",
+    "refreshAfterSaveFailed": "Đã lưu thay đổi nhưng chưa tải lại được dữ liệu mới. Vui lòng tải lại trang để kiểm tra.",
+    "reviewSaved": "Đã hoàn thành ôn câu sai.",
     "legacy": "Có mục tiêu cũ trên trình duyệt này. Bạn có muốn tạo lại trên tài khoản, bắt đầu từ hôm nay?",
     "import": "Chuyển mục tiêu cũ",
     "replace": "Thay mục tiêu",

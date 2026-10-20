@@ -38,6 +38,8 @@
     "saveFailed": "Unable to save changes. Check the values and try again.",
     "conflict": "The goal changed or cannot finish yet. Reload before continuing.",
     "saved": "Changes saved.",
+    "refreshAfterSaveFailed": "Your changes were saved, but the latest data could not be loaded. Reload the page to check.",
+    "reviewSaved": "Mistake review completed.",
     "legacy": "This browser has an older goal. Create it on your account starting today?",
     "import": "Import old goal",
     "replace": "Replace goal",

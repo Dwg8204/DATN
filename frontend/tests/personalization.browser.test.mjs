@@ -262,6 +262,7 @@ test(
         .click();
       await first.page
         .getByText('Unable to save changes.', { exact: false })
+        .first()
         .waitFor();
       assert.ok(
         await first.page.evaluate(() =>
@@ -326,9 +327,12 @@ test(
         .getByRole('button', { name: 'Mark as reviewed', exact: true })
         .click();
       await second.page
-        .getByRole('button', { name: 'Reviewed', exact: true })
+        .getByRole('heading', { name: 'Today’s activities' })
         .waitFor();
+      assert.equal(new URL(second.page.url()).pathname, '/profile/dashboard');
+      await second.page.getByRole('status').filter({ hasText: 'Mistake review completed.' }).waitFor();
       assert.equal(done, true);
+      await second.page.goto(`${origin}/profile/mistakes?itemId=${itemId}`, { waitUntil: 'domcontentloaded' });
       await second.page
         .getByRole('button', { name: 'Ask AptiMate about this question' })
         .click();

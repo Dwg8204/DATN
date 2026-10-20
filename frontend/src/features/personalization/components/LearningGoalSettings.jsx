@@ -5,9 +5,11 @@ import ConfirmModal from '../../../components/common/ConfirmModal';
 import { personalizationApi as api } from '../services/personalizationApi';
 import { LEGACY_GOAL_KEY, readLegacyGoal } from '../services/legacyGoal';
 import styles from './Personalization.module.css';
+import { useToast } from '../../../context/ToastContext';
 
 export default function LearningGoalSettings() {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useToast();
   const [searchParams] = useSearchParams();
   const disableEmailRequested = searchParams.get('disableReminderEmail') === '1';
   const [state, setState] = useState(null);
@@ -17,7 +19,6 @@ export default function LearningGoalSettings() {
   const [legacy, setLegacy] = useState(() => readLegacyGoal(window.localStorage));
   const [confirmation, setConfirmation] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   useEffect(() => {
     if (preferences && disableEmailRequested) document.getElementById('learning-preferences')?.scrollIntoView();
@@ -35,9 +36,19 @@ export default function LearningGoalSettings() {
 
   const run = async action => {
     if (busy) return;
-    setBusy(true); setError(''); setMessage('');
-    try { await action(); setConfirmation(null); await load(); setMessage(t('personalization.saved')); }
-    catch (err) { setError(t(err.response?.status === 409 ? 'personalization.conflict' : 'personalization.saveFailed')); }
+    setBusy(true); setError('');
+    try {
+      await action();
+      setConfirmation(null);
+      showSuccess(t('personalization.saved'));
+      try { await load(); }
+      catch { setError(t('personalization.refreshAfterSaveFailed')); }
+    }
+    catch (err) {
+      const message = t(err.response?.status === 409 ? 'personalization.conflict' : 'personalization.saveFailed');
+      setError(message);
+      showError(message);
+    }
     finally { setBusy(false); }
   };
   const goal = state?.goal;
@@ -55,7 +66,6 @@ export default function LearningGoalSettings() {
   return <section className={styles.card} aria-busy={busy}>
     <h2>{t('personalization.title')}</h2>
     {error && <p role="alert" className={styles.error}>{error}</p>}
-    {message && <p role="status">{message}</p>}
     {!state ? <button onClick={() => run(load)} disabled={busy}>{t('personalization.reload')}</button> : <>
       {goal && <p>{t('personalization.goalSummary', { ...goal })} <span className={styles.muted}>({goal.timezone})</span></p>}
       {!goal && legacy && <div><p>{t('personalization.legacy')}</p><button onClick={importGoal} disabled={busy}>{t('personalization.import')}</button></div>}
