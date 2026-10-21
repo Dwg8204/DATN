@@ -42,6 +42,7 @@ function harness(tab = 'words', topicMode = null) {
     '../../../services/apiError': { normalizeApiError: cause => ({ message: cause.message }) },
     './DictationPage.module.css': { __esModule: true, default: new Proxy({}, { get: (_target, key) => key }) },
     '../components/VocabularyWordInput': component,
+    '../components/VocabularyBulkImport': component,
   };
   const module = { exports: {} };
   runInNewContext(compiled, { module, require: withUiTranslationMocks(name => { if (!(name in mocks)) throw new Error(`Unexpected import: ${name}`); return mocks[name]; }), URLSearchParams, crypto: { randomUUID: () => 'test-create-uuid' },

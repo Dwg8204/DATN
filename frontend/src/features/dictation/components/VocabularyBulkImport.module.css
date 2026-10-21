@@ -1,0 +1,25 @@
+.backdrop { position: fixed; inset: 0; z-index: 1300; display: grid; place-items: center; padding: 20px; background: rgba(15, 23, 42, .62); }
+.modal { width: min(100%, 790px); max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; padding: 26px; border-radius: 16px; background: var(--bg-surface, #fff); color: var(--text-primary, #172033); box-shadow: 0 24px 80px #0004; }
+.header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.header span { color: #c51927; font-size: 12px; font-weight: 700; text-transform: uppercase; }
+.header h2 { margin: 4px 0 0; font-size: 22px; }
+.header button { border: 0; background: transparent; color: inherit; cursor: pointer; }
+.modal p { line-height: 1.5; }
+.templates, .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.templates button, .actions button { padding: 10px 14px; border: 1px solid var(--border, #d1d5db); border-radius: 8px; background: var(--bg-surface, #fff); color: inherit; font-weight: 600; cursor: pointer; }
+.columns { overflow-x: auto; padding: 9px 12px; border-radius: 8px; background: var(--bg-hover, #f8fafc); font-size: 12px; }
+.hint { color: var(--text-muted, #64748b); font-size: 12px; }
+.filePicker { display: flex; align-items: center; gap: 9px; padding: 18px; border: 1px dashed #ce2b38; border-radius: 10px; cursor: pointer; font-weight: 650; }
+.filePicker input { display: block; margin-top: 8px; max-width: 100%; font-weight: 400; }
+.counts { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 18px; font-weight: 700; }
+.tableScroll { max-height: 300px; overflow: auto; margin-top: 12px; border: 1px solid #e5e7eb; border-radius: 9px; }
+.tableScroll table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+.tableScroll th, .tableScroll td { padding: 9px 10px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+.tableScroll th { position: sticky; top: 0; background: var(--bg-surface, #fff); }
+.tableScroll small { display: block; margin-top: 3px; color: #be123c; }
+.busy { color: #334155; }.error { color: #be123c; }.success { color: #087344; }
+.retry { margin-top: 6px; padding: 8px 12px; border: 1px solid var(--border, #d1d5db); border-radius: 8px; background: var(--bg-surface, #fff); color: inherit; cursor: pointer; }
+.actions { justify-content: flex-end; margin-top: 20px; padding-top: 15px; border-top: 1px solid #e5e7eb; }
+.actions .confirm { border-color: #da1e21; background: #da1e21; color: white; }
+.actions button:disabled { opacity: .55; cursor: not-allowed; }
+@media (max-width: 600px) { .modal { padding: 18px; }.tableScroll { max-height: 260px; } }

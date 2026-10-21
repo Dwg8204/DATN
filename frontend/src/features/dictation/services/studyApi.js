@@ -11,4 +11,6 @@ export const studyApi = {
   review: dto => api.post(`${root}/notebook/review-event`, dto, options).then(r => r.data),
   submit: dto => api.post(`${root}/dictation/attempts`, dto, options).then(r => r.data),
   importBrowser: dto => api.post(`${root}/study/import-browser`, dto, options).then(r => r.data),
+  previewBulk: rows => api.post(`${root}/study/items/bulk/preview`, { rows }, options).then(r => r.data),
+  importBulk: dto => api.post(`${root}/study/items/bulk`, dto, options).then(r => r.data),
 };
