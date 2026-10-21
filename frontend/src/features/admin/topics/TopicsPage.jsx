@@ -67,6 +67,8 @@ const answerText = (q) =>
 export default function TopicsPage({ review = false }) {
   const { t } = useTranslation();
   const tr = (k) => t(`topics.${k}`);
+  const [detailId, setDetailId] = useState(null);
+  const [deleteTopic, setDeleteTopic] = useState(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [catalogStatus, setCatalogStatus] = useState("ALL");
   const [totalTests, setTotalTests] = useState(0);
@@ -253,6 +255,7 @@ export default function TopicsPage({ review = false }) {
       setBusy(false);
       setConfirm(null);
       setConfirmTest(null);
+      setDeleteTopic(null);
     }
   };
   const previewTestApproval = async () => {
@@ -326,7 +329,7 @@ export default function TopicsPage({ review = false }) {
       onPageSizeChange={(value) => select("size", String(value))}
     />
   );
-  const refresh = () => setRevision(v => v + 1);
+  const detail = topics.find((topic) => topic.id === detailId);
   return (
     <div className={styles.page}>
       <header className={styles.header}>
@@ -334,7 +337,6 @@ export default function TopicsPage({ review = false }) {
           <h1>{tr("managementTitle")}</h1>
           <p className={styles.muted}>{tr("managementHelp")}</p>
         </div>
-        <Button variant="secondary" onClick={refresh} disabled={loading || busy}><RefreshCw size={16}/>{tr("reload")}</Button>
       </header>
       <nav className={styles.tabs} aria-label={tr("managementTitle")}>
         <Link
@@ -406,9 +408,45 @@ export default function TopicsPage({ review = false }) {
           </label>
         )}
       </div>
-      {review && <details className={styles.overview}><summary>{tr("coverageTitle")}</summary><div className={styles.coverage}>
-        {coverage.map(c => <p className={styles.card} key={c.component}>{t(`personalization.skills.${c.component}`)}: {c.approved}/{c.total} · {c.total ? Math.round(c.approved/c.total*100) : 0}%<span className={styles.muted}>{tr(c.total && c.approved/c.total>=.8 ? "enabled" : "belowThreshold")}</span></p>)}
-      </div></details>}
+      <section className={styles.statistics} aria-label={tr("coverageTitle")}>
+        <div className={styles.sectionHeading}>
+          <h2>{tr("coverageTitle")}</h2>
+          <span className={styles.muted}>{tr("coverageScope")}</span>
+        </div>
+        <div className={styles.coverage}>
+          {skills.map((skill) => {
+            const c = coverage.find((row) => row.component === skill) || {
+              approved: 0,
+              total: 0,
+            };
+            const percent = c.total
+              ? Math.round((c.approved / c.total) * 100)
+              : 0;
+            const ready = c.total > 0 && c.approved / c.total >= 0.8;
+            return (
+              <div className={styles.statCard} key={skill}>
+                <div className={styles.statLabel}>
+                  <span>{t(`personalization.skills.${skill}`)}</span>
+                  <CheckCircle2 size={18} aria-hidden="true" />
+                </div>
+                <strong className={styles.statValue}>
+                  {percent}
+                  <small>%</small>
+                </strong>
+                <span className={styles.muted}>
+                  {t("topics.coverageCount", c)}
+                </span>
+                <div className={styles.statTrack} aria-hidden="true">
+                  <span style={{ width: percent + "%" }} />
+                </div>
+                <span className={ready ? styles.ready : styles.muted}>
+                  {tr(ready ? "enabled" : "belowThreshold")}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
       {review && !testId && (
         <section
           className={`${styles.card} ${styles.batch}`}
@@ -631,10 +669,56 @@ export default function TopicsPage({ review = false }) {
                   </p>
                   <p>{topic.description}</p>
                 </div>
+                <span className={styles.questionCount}>
+                  <BookOpen size={16} aria-hidden="true" />
+                  {t("topics.questionCount", {
+                    count: topic.question_count ?? 0,
+                  })}
+                </span>
                 <span className={topic.is_active ? styles.badge : styles.muted}>
                   {tr(topic.is_active ? "active" : "hidden")}
                 </span>
-                <Button variant="secondary" onClick={() => {setEditing(topic.id);setForm({code:topic.code,name:topic.name,description:topic.description || "",component:topic.component,topicType:topic.topic_type,isActive:topic.is_active});setEditorOpen(true);}}>{tr("edit")}</Button>
+                <div className={styles.rowActions}>
+                  <Button
+                    variant="secondary"
+                    className={styles.iconButton}
+                    aria-label={tr("viewDetail")}
+                    title={tr("viewDetail")}
+                    onClick={() => setDetailId(topic.id)}
+                  >
+                    <Eye size={18} aria-hidden="true" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    className={styles.iconButton}
+                    aria-label={tr("edit")}
+                    title={tr("edit")}
+                    onClick={() => {
+                      setEditing(topic.id);
+                      setForm({
+                        code: topic.code,
+                        name: topic.name,
+                        description: topic.description || "",
+                        component: topic.component,
+                        topicType: topic.topic_type,
+                        isActive: topic.is_active,
+                      });
+                      setEditorOpen(true);
+                    }}
+                  >
+                    <Pencil size={18} aria-hidden="true" />
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    className={styles.iconButton}
+                    aria-label={tr("delete")}
+                    title={tr("delete")}
+                    disabled={busy || !topic.is_active}
+                    onClick={() => setDeleteTopic(topic)}
+                  >
+                    <Trash2 size={18} aria-hidden="true" />
+                  </Button>
+                </div>
               </article>
             ))}
           </div>
@@ -941,6 +1025,58 @@ export default function TopicsPage({ review = false }) {
             </>
           )}
         </>
+      )}
+      {detail && (
+        <Modal title={tr("viewDetail")} onClose={() => setDetailId(null)}>
+          <div className={styles.topicDetail}>
+            <h2>{detail.name}</h2>
+            <span className={styles.badge}>
+              {tr(detail.is_active ? "active" : "hidden")}
+            </span>
+            <dl>
+              <div>
+                <dt>{tr("code")}</dt>
+                <dd>{detail.code}</dd>
+              </div>
+              <div>
+                <dt>{tr("skill")}</dt>
+                <dd>{t(`personalization.skills.${detail.component}`)}</dd>
+              </div>
+              <div>
+                <dt>{tr("type")}</dt>
+                <dd>{tr(detail.topic_type)}</dd>
+              </div>
+            </dl>
+            <p className={styles.description}>
+              {detail.description || tr("noDescription")}
+            </p>
+            <div className={styles.detailStats}>
+              {[
+                ["linkedQuestions", "question_count"],
+                ["approvedQuestions", "approved_count"],
+                ["pendingQuestions", "pending_count"],
+                ["linkedTests", "test_count"],
+              ].map(([key, field]) => (
+                <div key={key}>
+                  <strong>{detail[field] ?? 0}</strong>
+                  <span>{tr(key)}</span>
+                </div>
+              ))}
+            </div>
+            <p className={styles.muted}>{tr("countHelp")}</p>
+          </div>
+        </Modal>
+      )}
+      {deleteTopic && (
+        <ConfirmModal
+          title={tr("delete")}
+          message={t("topics.confirmDelete", { name: deleteTopic.name })}
+          busy={busy}
+          confirmText={tr("delete")}
+          cancelText={tr("cancel")}
+          onCancel={() => setDeleteTopic(null)}
+          onConfirm={() => run(() => topicsApi.remove(deleteTopic.id))}
+        />
       )}
       {confirm && (
         <ConfirmModal

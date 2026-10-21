@@ -2109,6 +2109,18 @@
     "guide": "How it works",
     "allTopics": "All topics",
     "emptyCatalog": "No topics match these filters.",
-    "emptyTests": "No tests match these filters."
+    "emptyTests": "No tests match these filters.",
+    "viewDetail": "View topic details",
+    "delete": "Delete topic",
+    "confirmDelete": "Soft-delete “{{name}}”? The topic will be hidden and excluded from suggestions/personalization. Labels and history are retained; you can reactivate it in Edit.",
+    "questionCount": "{{count}} questions",
+    "linkedQuestions": "Linked questions",
+    "approvedQuestions": "Approved questions",
+    "pendingQuestions": "Pending questions",
+    "linkedTests": "Linked tests",
+    "noDescription": "No description yet.",
+    "countHelp": "Distinct questions with current-version labels in non-archived tests, including drafts. Rejected and outdated labels are excluded. Hidden topics retain these links.",
+    "coverageScope": "Published tests · 80% threshold",
+    "coverageCount": "{{approved}} / {{total}} questions approved"
   }
 }

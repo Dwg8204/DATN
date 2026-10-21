@@ -26,6 +26,7 @@ test('topic management and human review, English/Vietnamese and mobile',async()=
       const ok=data=>route.fulfill({json:data});
       if(url.hostname==='topics-ui.test')return route.fulfill({contentType:'text/html',body:'<html><head><style>body{font-family:Arial,sans-serif;background:#f7f7f7;margin:20px}*{box-sizing:border-box}</style></head><body><div id="root"></div></body></html>'});
       if(path==='/admin/learning-topics'&&req.method()==='GET')return ok({items:topics,coverage:[{component:'GRAMMAR_VOCAB',approved:4,total:5}]});
+      if(path.startsWith('/admin/learning-topics/')&&req.method()==='DELETE'){const topic=topics.find(t=>t.id===path.split('/').at(-1));topic.is_active=false;return ok(topic);}
       if(path.startsWith('/admin/learning-topics')&&req.method()==='PATCH'){const id=path.split('/').at(-1),body=req.postDataJSON();Object.assign(topics.find(t=>t.id===id),body,{is_active:body.isActive});return ok({id});}
       if(path==='/admin/learning-topics'&&req.method()==='POST'){const body=req.postDataJSON();topics.push({...body,id:'new',topic_type:body.topicType,is_active:body.isActive});return ok({id:'new'});}
       if(path==='/admin/topic-labels/progress')return ok({questions:5,labeled:2,tests:2,completed:0,queued:2,retrying:0,failed:0,pending:2,workerEnabled:true,aiEnabled:true});
@@ -48,9 +49,20 @@ test('topic management and human review, English/Vietnamese and mobile',async()=
     const shots=join(tmpdir(),'aptimate-topics-ui');await mkdir(shots,{recursive:true});
     await page.setViewportSize({width:1280,height:900});await page.screenshot({path:join(shots,'catalog-desktop.png'),fullPage:true});
     await page.setViewportSize({width:390,height:844});
+    await page.screenshot({path:join(shots,'catalog-mobile.png'),fullPage:true});
+    assert.equal(await page.getByRole('button',{name:'Refresh',exact:true}).count(),0);
+    await page.getByText('80%',{exact:true}).waitFor();
+    await page.locator('article').first().getByRole('button',{name:'View topic details'}).click();
+    await page.getByRole('dialog').getByText('Linked questions',{exact:true}).waitFor();
+    assert.equal(await page.getByRole('dialog').getByText('Linked questions',{exact:true}).locator('..').locator('strong').textContent(),'2');
+    await page.screenshot({path:join(shots,'topic-detail-mobile.png'),fullPage:true});
+    await page.getByRole('dialog').getByRole('button',{name:'Close',exact:true}).click();
     await page.getByRole('button',{name:'Add topic',exact:true}).click();
     await page.getByLabel('Topic code').fill('articles');await page.getByLabel('Name',{exact:true}).fill('Articles');await page.getByRole('button',{name:'Save',exact:true}).click();await page.getByRole('heading',{name:'Articles',exact:true}).waitFor();
     const card=page.locator('article').filter({has:page.getByRole('heading',{name:'Articles',exact:true})});await card.getByRole('button',{name:'Edit topic'}).click();await page.getByLabel('Active',{exact:true}).uncheck();await page.getByRole('button',{name:'Save',exact:true}).click();await card.getByText('Hidden',{exact:true}).waitFor();
+    await card.getByRole('button',{name:'Edit topic'}).click();await page.getByLabel('Active',{exact:true}).check();await page.getByRole('button',{name:'Save',exact:true}).click();await card.getByText('Active',{exact:true}).waitFor();
+    await card.getByRole('button',{name:'Delete topic'}).click();await page.getByRole('dialog').getByRole('button',{name:'Cancel',exact:true}).click();assert.equal(topics.find(t=>t.id==='new').is_active,true);
+    await card.getByRole('button',{name:'Delete topic'}).click();await page.getByRole('dialog').getByRole('button',{name:'Delete topic',exact:true}).click();await card.getByText('Hidden',{exact:true}).waitFor();assert.equal(topics.find(t=>t.id==='new').is_active,false);
     await page.getByLabel('Rows per page',{exact:true}).fill('1');
     await page.getByRole('button',{name:'Apply',exact:true}).click();
     assert.equal(await page.locator('article').count(),1);

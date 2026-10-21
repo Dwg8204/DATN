@@ -2109,6 +2109,18 @@
     "guide": "Hướng dẫn xử lý",
     "allTopics": "Tất cả chủ đề",
     "emptyCatalog": "Không có chủ đề phù hợp với bộ lọc.",
-    "emptyTests": "Không có đề phù hợp với bộ lọc."
+    "emptyTests": "Không có đề phù hợp với bộ lọc.",
+    "viewDetail": "Xem chi tiết chủ đề",
+    "delete": "Xóa chủ đề",
+    "confirmDelete": "Xóa mềm chủ đề “{{name}}”? Chủ đề sẽ chuyển sang trạng thái ẩn và không được dùng để gợi ý/cá nhân hóa. Các nhãn và lịch sử được giữ lại; bạn có thể bật lại trong phần sửa.",
+    "questionCount": "{{count}} câu hỏi",
+    "linkedQuestions": "Câu hỏi liên quan",
+    "approvedQuestions": "Câu đã duyệt",
+    "pendingQuestions": "Câu chờ duyệt",
+    "linkedTests": "Đề liên quan",
+    "noDescription": "Chưa có mô tả.",
+    "countHelp": "Đếm các câu khác nhau có nhãn đúng phiên bản hiện tại trong đề chưa lưu trữ (gồm đề nháp). Không tính nhãn bị từ chối hoặc đã lỗi thời. Chủ đề ẩn vẫn giữ liên kết này.",
+    "coverageScope": "Đề đã xuất bản · Ngưỡng áp dụng 80%",
+    "coverageCount": "{{approved}} / {{total}} câu đã duyệt"
   }
 }

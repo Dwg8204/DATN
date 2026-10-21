@@ -48,6 +48,14 @@ withPersonalizationDatabase(async (db, alice, bob) => {
   try {
     const arbitraryTest = randomUUID();
     await request(app.getHttpServer())
+      .delete(`/admin/learning-topics/${arbitraryTest}`)
+      .set("x-role", "STUDENT")
+      .expect(403);
+    await request(app.getHttpServer())
+      .delete(`/admin/learning-topics/${arbitraryTest}`)
+      .set("x-role", "ADMIN")
+      .expect(404);
+    await request(app.getHttpServer())
       .get(`/admin/tests/${arbitraryTest}/topic-approval`)
       .set("x-role", "STUDENT")
       .expect(403);
@@ -201,6 +209,19 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     (a: any, b: any) => ids.indexOf(a.question_id) - ids.indexOf(b.question_id),
   );
   assert.equal(labels.length, 5);
+  const catalogCounts = (await service.topics({ page: 1 })).items;
+  for (const topicId of new Set(labels.map((l: any) => l.topic_id))) {
+    const topic = catalogCounts.find((row: any) => row.id === topicId);
+    const expected = new Set(
+      labels
+        .filter((l: any) => l.topic_id === topicId)
+        .map((l: any) => l.question_id),
+    ).size;
+    assert.equal(topic.question_count, expected);
+    assert.equal(topic.pending_count, expected);
+    assert.equal(topic.approved_count, 0);
+    assert.equal(topic.test_count, 1);
+  }
   assert.ok(labels.every((l: any) => l.status === "SUGGESTED"));
   const [attempt] = await db.query(
     `INSERT INTO test_attempts(student_id,snapshot_id,component,scope,part_number,purpose,status,submitted_at,result)
@@ -799,6 +820,56 @@ withPersonalizationDatabase(async (db, alice, bob) => {
   assert.equal(
     (await service.approveTest(bob, target, emptyPreview.revision)).reviewed,
     0,
+  );
+  const beforeDelete = (await service.topics({ page: 1 })).items.find(
+    (row: any) => row.id === weak[0].topicId,
+  );
+  const beforeLabels = await db.query(
+    "SELECT id FROM question_topics WHERE topic_id=$1 ORDER BY id",
+    [beforeDelete.id],
+  );
+  await service.remove(bob, beforeDelete.id);
+  const afterDelete = (await service.topics({ page: 1 })).items.find(
+    (row: any) => row.id === beforeDelete.id,
+  );
+  assert.equal(afterDelete.is_active, false);
+  assert.equal(afterDelete.question_count, beforeDelete.question_count);
+  assert.deepEqual(
+    await db.query(
+      "SELECT id FROM question_topics WHERE topic_id=$1 ORDER BY id",
+      [beforeDelete.id],
+    ),
+    beforeLabels,
+  );
+  assert.equal(
+    (
+      await db.query(
+        "SELECT * FROM audit_logs WHERE action='TOPIC_DELETE' AND entity_id=$1",
+        [beforeDelete.id],
+      )
+    ).length,
+    1,
+  );
+  await service.save(
+    bob,
+    {
+      code: beforeDelete.code,
+      name: beforeDelete.name,
+      description: beforeDelete.description,
+      component: beforeDelete.component,
+      topicType: beforeDelete.topic_type,
+      isActive: true,
+    },
+    beforeDelete.id,
+  );
+  assert.equal(
+    (await service.topics({ page: 1 })).items.find(
+      (row: any) => row.id === beforeDelete.id,
+    ).is_active,
+    true,
+  );
+  console.log(
+    "PASS topic statistics and soft deletion: current distinct questions, retained labels, audit and reactivation.",
   );
   console.log(
     "PASS whole-test approval: 104 labels across pages, exact preview, concurrent confirmation, skips stale/hidden, preserves approved/rejected and AI source, per-label audit.",

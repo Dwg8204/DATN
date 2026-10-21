@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -29,6 +30,12 @@ export class TopicsController {
   constructor(private readonly topics: TopicsService) {}
   @Get("learning-topics") list(@Query() q: TopicQueryDto) {
     return this.topics.topics(q);
+  }
+  @Delete("learning-topics/:id") remove(
+    @CurrentUser() actor: AuthUser,
+    @Param("id", ParseUUIDPipe) id: string,
+  ) {
+    return this.topics.remove(actor.id, id);
   }
   @Post("learning-topics") create(
     @CurrentUser() actor: AuthUser,

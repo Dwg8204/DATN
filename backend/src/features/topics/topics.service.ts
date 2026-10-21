@@ -172,11 +172,41 @@ export class TopicsService {
   async topics(query: TopicQueryDto) {
     return {
       items: await this.db.query(
-        "SELECT * FROM learning_topics WHERE ($1::text IS NULL OR component::text=$1) ORDER BY component,code",
+        `SELECT p.*, COALESCE(c.question_count,0)::int question_count,
+          COALESCE(c.approved_count,0)::int approved_count, COALESCE(c.pending_count,0)::int pending_count,
+          COALESCE(c.test_count,0)::int test_count
+        FROM learning_topics p LEFT JOIN (
+          SELECT l.topic_id, count(DISTINCT q.id) question_count,
+            count(DISTINCT q.id) FILTER (WHERE l.status='APPROVED') approved_count,
+            count(DISTINCT q.id) FILTER (WHERE l.status='SUGGESTED') pending_count,
+            count(DISTINCT q.test_id) test_count
+          FROM question_topics l JOIN topic_question_catalog q ON q.id=l.question_id
+          JOIN tests t ON t.id=q.test_id
+          JOIN learning_topics topic ON topic.id=l.topic_id AND topic.component=q.component
+          WHERE l.status IN ('APPROVED','SUGGESTED') AND l.question_hash=q.question_hash
+            AND t.archived_at IS NULL
+          GROUP BY l.topic_id
+        ) c ON c.topic_id=p.id
+        WHERE ($1::text IS NULL OR p.component::text=$1) ORDER BY p.component,p.code`,
         [query.component ?? null],
       ),
       coverage: await this.db.query(TOPIC_COVERAGE_SQL),
     };
+  }
+  async remove(actor: string, id: string) {
+    return this.db.transaction(async (m) => {
+      const [row] = await m.query(
+        "WITH updated AS (UPDATE learning_topics SET is_active=false,updated_at=now() WHERE id=$1 RETURNING *) SELECT * FROM updated",
+        [id],
+      );
+      if (!row)
+        throw new ApplicationError("TOPIC_NOT_FOUND", "Topic not found.", 404);
+      await m.query(
+        "INSERT INTO audit_logs(actor_id,action,entity_type,entity_id,changes) VALUES($1,'TOPIC_DELETE','LEARNING_TOPIC',$2,$3)",
+        [actor, id, { isActive: false, softDelete: true }],
+      );
+      return row;
+    });
   }
   async save(actor: string, dto: TopicInputDto, id?: string) {
     return this.db.transaction(async (m) => {

@@ -5,6 +5,8 @@ export const topicsApi = {
     api
       .get("/admin/learning-topics", { ...options, params })
       .then((r) => r.data),
+  remove: (id) =>
+    api.delete(`/admin/learning-topics/${id}`, options).then((r) => r.data),
   save: (id, body) =>
     (id
       ? api.patch(`/admin/learning-topics/${id}`, body, options)
