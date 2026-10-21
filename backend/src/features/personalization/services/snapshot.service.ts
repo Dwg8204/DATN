@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { readWeakTopics } from '../../topics/topic-evidence';
 import { DataSource } from 'typeorm';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { LearningGoalsRepository } from '../repositories/learning-goals.repository';
@@ -101,6 +102,8 @@ export class SnapshotService {
           : Promise.resolve([]),
         this.mistakes.recent(actor, end, timezone),
       ]);
+    const [bounds] = await this.db.query('SELECT $1::date::timestamp AT TIME ZONE $2 AS start', [period?.from ?? from, timezone]);
+    const weakTopics = await readWeakTopics(this.db.manager, actor.id, bounds.start, end);
     const snapshot = buildLearnerSnapshot(
       actor.id,
       goal,
@@ -113,6 +116,7 @@ export class SnapshotService {
         learningCount: vocab.count,
         mistakes,
         planItems,
+        weakTopics,
       },
       timezone,
     );

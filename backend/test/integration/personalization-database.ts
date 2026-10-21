@@ -49,7 +49,7 @@ async function main() {
       extra: { options: `-c search_path=${schema},public` },
       migrations: readdirSync(migrationDir)
         .filter(
-          (name) => name.endsWith('.ts') && !/^176000001[78]000-/.test(name),
+          (name) => name.endsWith('.ts') && Number(name.split('-')[0]) < 1760000017000,
         )
         .map((name) => resolve(migrationDir, name)),
     });
@@ -146,7 +146,7 @@ async function main() {
     );
     assert.deepEqual(
       (await db.runMigrations()).map((m) => m.name),
-      ['AddLearningPersonalization1760000018000'],
+      ['AddLearningPersonalization1760000018000','AddTopicWorkflow1760000019000','ExpandGrammarTopics1760000020000'],
     );
     assert.equal(await db.showMigrations(), false);
 
@@ -355,8 +355,13 @@ async function main() {
         scheduledOn: '2026-10-20',
         activityType: 'TOPIC_REVIEW',
         topicId,
+        testId,
+        component: 'READING',
       },
     ];
+    await db.query("UPDATE learning_topics SET component='READING' WHERE id=$1",[topicId]);
+    await db.query("UPDATE tests SET status='PUBLISHED',published_snapshot_id=$2 WHERE id=$1",[testId,snapshotId]);
+    await db.query('INSERT INTO topic_snapshot_questions SELECT $1,id,question_key,question_hash FROM topic_question_catalog WHERE id=$2 ON CONFLICT DO NOTHING',[snapshotId,questionId]);
     const plan = await plans.create(alice, planInput, items);
     await assert.rejects(
       plans.create(alice, { ...planInput, weekIndex: 3 }, [], db.manager),
@@ -557,6 +562,8 @@ async function main() {
     await db.query("UPDATE learning_goals SET status='REPLACED' WHERE id=$1", [
       goalB,
     ]);
+    await db.undoLastMigration(); // GĐ10 expanded catalog preserves reviewed data.
+    await db.undoLastMigration(); // GĐ10 workflow depends on the GĐ1 schema.
     await db.undoLastMigration();
     await assert.rejects(
       db.undoLastMigration(),
@@ -598,7 +605,7 @@ async function main() {
       )[0].target_test_count,
       40,
     );
-    assert.equal((await db.runMigrations()).length, 2);
+    assert.equal((await db.runMigrations()).length, 4);
     assert.equal(await db.showMigrations(), false);
     console.log(
       'PASS personalization: full migration chain, legacy preflight, up/down/up, constraints, ownership, concurrency, cascades, repositories and rollback.',

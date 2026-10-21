@@ -140,10 +140,11 @@ export class ReadingTestsRepository {
   }
 
   private async syncQuestions(manager: EntityManager, testId: string, test: ReadingTestAggregate) {
-    await manager.query('UPDATE questions SET deleted_at=now() WHERE test_id=$1 AND deleted_at IS NULL', [testId]);
+    const before = await manager.query<Array<{id:string}>>('SELECT id FROM questions WHERE test_id=$1 AND deleted_at IS NULL',[testId]);
+    const [{stamp}] = await manager.query('SELECT clock_timestamp()::text stamp');
     const insert = (part: number, position: number, type: string, content: unknown, answer: unknown, explanation?: string) =>
       manager.query(`INSERT INTO questions(test_id,part_number,position,question_type,content,correct_answer,explanation)
-        VALUES($1,$2,$3,$4,$5,$6,$7)`, [testId, part, position, type, content, answer, explanation ? { text: explanation } : null]);
+        VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET question_type=EXCLUDED.question_type,content=EXCLUDED.content,correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=clock_timestamp()`, [testId, part, position, type, content, answer, explanation ? { text: explanation } : null]);
     const p1 = test.parts['1'];
     if (p1) for (const [index, question] of p1.questions.entries()) await insert(1, index + 1, 'READING_GAP_CHOICE',
       { options: question.options }, { answer: question.answer }, question.explanation);
@@ -169,6 +170,7 @@ export class ReadingTestsRepository {
       await insert(4, index + 1, 'READING_HEADING_MATCH', { paragraphId: paragraph.id, text: paragraph.content },
         { headingId: heading?.id }, heading?.explanation);
     }
+    await manager.query('UPDATE questions SET deleted_at=now(),updated_at=now() WHERE id=ANY($1::uuid[]) AND updated_at<$2::timestamptz',[before.map(row=>row.id),stamp]);
   }
 
   private audit(manager: EntityManager, actorId: string, action: string, entityId: string, changes: unknown, audit: ReadingAudit) {

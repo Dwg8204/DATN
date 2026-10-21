@@ -43,7 +43,9 @@
     "knowledge:import": "ts-node scripts/chatbot-knowledge.ts --apply",
     "ai:chatbot:smoke": "ts-node scripts/chatbot-smoke.ts",
     "test:personalization": "jest --runInBand --testPathPattern personalization",
-    "ai:personalization:smoke": "ts-node scripts/personalization-smoke.ts"
+    "ai:personalization:smoke": "ts-node scripts/personalization-smoke.ts",
+    "topics:backfill": "ts-node scripts/topic-backfill.ts",
+    "test:topics:db": "ts-node test/integration/personalization-topics.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",

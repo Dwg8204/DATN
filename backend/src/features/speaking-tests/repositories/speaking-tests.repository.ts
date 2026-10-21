@@ -353,14 +353,15 @@ export class SpeakingTestsRepository {
   }
 
   private async syncQuestions(manager: EntityManager, testId: string, aggregate: SpeakingTestAggregate): Promise<void> {
-    await manager.query(`UPDATE questions SET deleted_at = now() WHERE test_id = $1 AND deleted_at IS NULL`, [testId]);
+    const before = await manager.query<Array<{id:string}>>('SELECT id FROM questions WHERE test_id=$1 AND deleted_at IS NULL',[testId]);
+    const [{stamp}] = await manager.query('SELECT clock_timestamp()::text stamp');
     
     if (aggregate.parts[1]) {
       let position = 1;
       for (const q of aggregate.parts[1].questions) {
         await manager.query(
           `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer)
-           VALUES ($1, 1, $2, 'OPEN_SPEAKING_P1', $3, NULL)`,
+           VALUES ($1, 1, $2, 'OPEN_SPEAKING_P1', $3, NULL) ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET question_type=EXCLUDED.question_type,content=EXCLUDED.content,correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=clock_timestamp()`,
           [testId, position++, { text: q.text }]
         );
       }
@@ -371,7 +372,7 @@ export class SpeakingTestsRepository {
       for (const q of aggregate.parts[2].questions) {
         await manager.query(
           `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer)
-           VALUES ($1, 2, $2, 'OPEN_SPEAKING_P2', $3, NULL)`,
+           VALUES ($1, 2, $2, 'OPEN_SPEAKING_P2', $3, NULL) ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET question_type=EXCLUDED.question_type,content=EXCLUDED.content,correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=clock_timestamp()`,
           [testId, position++, { text: q.text }]
         );
       }
@@ -382,7 +383,7 @@ export class SpeakingTestsRepository {
       for (const q of aggregate.parts[3].questions) {
         await manager.query(
           `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer)
-           VALUES ($1, 3, $2, 'OPEN_SPEAKING_P3', $3, NULL)`,
+           VALUES ($1, 3, $2, 'OPEN_SPEAKING_P3', $3, NULL) ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET question_type=EXCLUDED.question_type,content=EXCLUDED.content,correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=clock_timestamp()`,
           [testId, position++, { text: q.text }]
         );
       }
@@ -393,11 +394,12 @@ export class SpeakingTestsRepository {
       for (const q of aggregate.parts[4].questions) {
         await manager.query(
           `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer)
-           VALUES ($1, 4, $2, 'OPEN_SPEAKING_P4', $3, NULL)`,
+           VALUES ($1, 4, $2, 'OPEN_SPEAKING_P4', $3, NULL) ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET question_type=EXCLUDED.question_type,content=EXCLUDED.content,correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=clock_timestamp()`,
           [testId, position++, { text: q.text }]
         );
       }
     }
+    await manager.query('UPDATE questions SET deleted_at=now(),updated_at=now() WHERE id=ANY($1::uuid[]) AND updated_at<$2::timestamptz',[before.map(row=>row.id),stamp]);
   }
 
   private async audit(manager: EntityManager, actorId: string, action: string, entityId: string, changes: unknown, audit: SpeakingAudit): Promise<void> {

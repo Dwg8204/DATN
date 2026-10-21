@@ -297,7 +297,7 @@ export function buildLearnerSnapshot(
           }))
           .sort((a, b) => a.percent - b.percent);
       }),
-      topics: [],
+      topics: rows.weakTopics ?? [],
     },
     mistakes: {
       count: mistakes.length,

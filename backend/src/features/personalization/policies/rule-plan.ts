@@ -3,6 +3,7 @@ import { CreatePlanItemInput } from '../types/personalization.type';
 import { addDays, dayNumber } from './calendar';
 
 export type PlanCandidate =
+  | {candidateId:string;activityType:'TOPIC_REVIEW';topicId:string;topicName:string;testId:string;component:SkillComponent;partNumber?:number;purpose:string;title:string}
   | {
       candidateId: string;
       activityType: 'TEST';
@@ -42,6 +43,7 @@ export function buildRulePlan(
     ): item is Extract<PlanCandidate, { activityType: 'MISTAKE_REVIEW' }> =>
       item.activityType === 'MISTAKE_REVIEW',
   );
+  const topics = candidates.filter((item): item is Extract<PlanCandidate,{activityType:'TOPIC_REVIEW'}> => item.activityType==='TOPIC_REVIEW');
   const vocab = candidates.find(
     (item) => item.activityType === 'VOCAB_REVIEW' && item.targetCount === 20,
   );
@@ -90,6 +92,10 @@ export function buildRulePlan(
         component: review.component,
         reason: 'RECENT_MISTAKES',
       });
+    else if (topics.length) {
+      const topic=topics[day%topics.length];
+      items.push({activityType:'TOPIC_REVIEW',scheduledOn,sortOrder:2,targetCount:1,topicId:topic.topicId,testId:topic.testId,component:topic.component,partNumber:topic.partNumber,reason:'WEAK_TOPIC'});
+    }
   }
   return items;
 }

@@ -141,9 +141,9 @@ export class CommentGenerationWorker {
     const [counts] = await manager.query<
       Array<{ daily: number; minute_count: number }>
     >(
-      `SELECT count(*) FILTER (WHERE user_id=$1 AND (started_at AT TIME ZONE $2)::date=($3::timestamptz AT TIME ZONE $2)::date)::int daily,
+      `SELECT count(*) FILTER (WHERE purpose<>'TOPIC_TAGGING' AND user_id=$1 AND (started_at AT TIME ZONE $2)::date=($3::timestamptz AT TIME ZONE $2)::date)::int daily,
         count(*) FILTER (WHERE started_at>$3::timestamptz-interval '1 minute')::int minute_count
-       FROM ai_requests WHERE purpose IN ('PERSONAL_COMMENT','PERSONAL_PLAN','PERSONAL_WEEKLY','PERSONAL_FINAL') AND started_at >= LEAST(($3::timestamptz AT TIME ZONE $2)::date::timestamp AT TIME ZONE $2,$3::timestamptz-interval '1 minute')`,
+       FROM ai_requests WHERE purpose IN ('TOPIC_TAGGING','PERSONAL_COMMENT','PERSONAL_PLAN','PERSONAL_WEEKLY','PERSONAL_FINAL') AND started_at >= LEAST(($3::timestamptz AT TIME ZONE $2)::date::timestamp AT TIME ZONE $2,$3::timestamptz-interval '1 minute')`,
       [userId, timezone, now],
     );
     return counts.daily >= 6

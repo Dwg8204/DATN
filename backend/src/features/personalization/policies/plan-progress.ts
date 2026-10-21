@@ -6,6 +6,8 @@ export interface ProgressAttempt {
   component: string;
   part_number: number | null;
   submitted_at: Date;
+  test_id?: string;
+  topic_ids?: string[];
 }
 
 /** Allocate each attempt once, to the earliest eligible task in this plan. */
@@ -31,11 +33,12 @@ export function allocatePlanProgress(
     )
     .map((item) => {
       let dates: Date[];
-      if (item.activity_type === 'TEST') {
+      if (item.activity_type === 'TEST' || item.activity_type === 'TOPIC_REVIEW') {
         const matches = orderedAttempts
           .filter(
             (attempt) =>
               !used.has(attempt.id) &&
+              (item.activity_type !== 'TOPIC_REVIEW' || (attempt.test_id === item.test_id && !!attempt.topic_ids?.includes(item.topic_id!))) &&
               attempt.component === item.component &&
               (item.part_number === null ||
                 attempt.part_number === item.part_number) &&

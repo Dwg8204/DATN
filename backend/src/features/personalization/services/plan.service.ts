@@ -1,4 +1,5 @@
 import { Injectable, Logger, Optional } from '@nestjs/common';
+import { TOPIC_COVERAGE_SQL } from '../../topics/topics.service';
 import { DataSource, EntityManager } from 'typeorm';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -111,6 +112,14 @@ export class PlanService {
       FROM tests WHERE id=ANY($1::uuid[])`,
       [items.flatMap((item) => (item.test_id ? [item.test_id] : []))],
     );
+    const eligibleTopics = await manager.query<Array<{id:string;name:string;test_id:string}>>(`WITH coverage AS (${TOPIC_COVERAGE_SQL})
+      SELECT DISTINCT p.id,p.name,t.id test_id FROM learning_topics p JOIN coverage c ON c.component=p.component
+      JOIN question_topics l ON l.topic_id=p.id AND l.status='APPROVED'
+      JOIN topic_question_catalog q ON q.id=l.question_id AND q.question_hash=l.question_hash
+      JOIN tests t ON t.id=q.test_id AND t.status='PUBLISHED' AND t.archived_at IS NULL
+      JOIN topic_snapshot_questions sq ON sq.snapshot_id=t.published_snapshot_id AND sq.question_id=q.id AND sq.question_hash=q.question_hash
+      WHERE p.is_active AND c.total>0 AND c.approved::numeric/c.total>=0.8 AND t.id=ANY($1::uuid[])`,
+      [items.flatMap(item=>item.activity_type==='TOPIC_REVIEW'&&item.test_id?[item.test_id]:[])]);
     return {
       today,
       timezone: goal.timezone,
@@ -132,7 +141,9 @@ export class PlanService {
             testId: item.test_id,
             title: test?.title ?? null,
             purpose: test?.purpose ?? null,
-            available: item.activity_type !== 'TEST' || !!test?.available,
+            available: (!['TEST','TOPIC_REVIEW'].includes(item.activity_type) || !!test?.available) && (item.activity_type!=='TOPIC_REVIEW'||eligibleTopics.some(t=>t.id===item.topic_id&&t.test_id===item.test_id)),
+            topicId: item.topic_id,
+            topicName: eligibleTopics.find(t=>t.id===item.topic_id)?.name ?? null,
             targetCount: item.target_count,
             doneCount: item.done_count,
             completedAt: item.completed_at,
