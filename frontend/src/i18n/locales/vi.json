@@ -608,6 +608,8 @@
     "unread": "Chưa đọc",
     "markAllRead": "Đánh dấu tất cả đã đọc",
     "remove": "Xóa thông báo",
+    "removeConfirm": "Bạn có chắc muốn xóa thông báo này?",
+    "cancelRemove": "Hủy",
     "seeAll": "Xem tất cả thông báo",
     "caughtUp": "Bạn đã xem hết thông báo",
     "empty": "Hiện chưa có thông báo.",

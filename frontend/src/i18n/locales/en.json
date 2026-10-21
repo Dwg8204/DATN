@@ -608,6 +608,8 @@
     "unread": "Unread",
     "markAllRead": "Mark all as read",
     "remove": "Remove notification",
+    "removeConfirm": "Are you sure you want to remove this notification?",
+    "cancelRemove": "Cancel",
     "seeAll": "See all notifications",
     "caughtUp": "You’re all caught up",
     "empty": "No notifications to show.",

@@ -9,7 +9,10 @@ import { subscribeToRealtimeNotifications } from '../services/notificationSocket
 import WordDocumentPreview from '../../../components/common/WordDocumentPreview';
 import SpreadsheetPreview from '../../../components/common/SpreadsheetPreview';
 import PowerPointPreview from '../../../components/common/PowerPointPreview';
+import ConfirmModal from '../../../components/common/ConfirmModal';
 import { isPreviewablePowerPoint, isPreviewableSpreadsheet, isPreviewableWordDocument } from '../../../utils/attachmentPreview';
+import { normalizeApiError } from '../../../services/apiError';
+import { useToast } from '../../../context/ToastContext';
 import styles from './NotificationsPage.module.css';
 import useUrlQueryState, { queryParam } from '../../../hooks/useUrlQueryState';
 import { useTranslation } from 'react-i18next';
@@ -20,12 +23,15 @@ const notificationContent = (item, t) => t(`notifications.default${String(item.i
 export default function NotificationsPage() {
   const ui = useUiTranslation();
   const { t, i18n } = useTranslation();
+  const { showError } = useToast();
   const location = useLocation();
   const [urlState, setUrlState] = useUrlQueryState(NOTIFICATION_QUERY_SCHEMA);
   const { filter } = urlState;
   const setFilter = value => setUrlState({ filter: value });
   const [notifications, setNotifications] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
   const [previewAttachment, setPreviewAttachment] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -63,10 +69,20 @@ export default function NotificationsPage() {
     setSelected({ ...item, readAt: item.readAt || new Date().toISOString() });
     markRead(item.id).catch(() => undefined);
   };
-  const remove = async (item) => {
-    await userNotificationsApi.dismiss(item.id);
-    setNotifications(current => current.filter(notification => notification.id !== item.id));
-    if (selected?.id === item.id) setSelected(null);
+  const remove = async () => {
+    if (!deleteTarget || deleteBusy) return;
+    const item = deleteTarget;
+    setDeleteBusy(true);
+    try {
+      await userNotificationsApi.dismiss(item.id);
+      setNotifications(current => current.filter(notification => notification.id !== item.id));
+      if (selected?.id === item.id) setSelected(null);
+      setDeleteTarget(null);
+    } catch (error) {
+      showError(normalizeApiError(error).message);
+    } finally {
+      setDeleteBusy(false);
+    }
   };
   const markAllRead = async () => {
     await userNotificationsApi.markAllRead();
@@ -100,13 +116,23 @@ export default function NotificationsPage() {
                     <p>{notificationContent(item, t)}</p>
                     <time><Clock3 size={13} />{formatNotificationDate(item.date, i18n.language === 'vi' ? 'vi-VN' : 'en-GB')}</time>
                   </div>
-                  <button className={styles.delete} onClick={(event) => { event.stopPropagation(); remove(item).catch(() => undefined); }} title={t('notifications.remove')}><Trash2 size={17} /></button>
+                  <button className={styles.delete} onClick={(event) => { event.stopPropagation(); setDeleteTarget(item); }} title={t('notifications.remove')} aria-label={t('notifications.remove')}><Trash2 size={17} /></button>
                 </article>
               );
             }) : !loading && <div className={styles.empty}><BellRing /><h2>{t('notifications.caughtUp')}</h2><p>{t(filter === 'unread' ? 'notifications.emptyUnread' : 'notifications.empty')}</p></div>}
           </section>
         </main>
       </div>
+
+      {deleteTarget && <ConfirmModal
+        title={t('notifications.remove')}
+        message={t('notifications.removeConfirm')}
+        confirmText={t('notifications.remove')}
+        cancelText={t('notifications.cancelRemove')}
+        busy={deleteBusy}
+        onCancel={() => setDeleteTarget(null)}
+        onConfirm={remove}
+      />}
 
       {selected && <div className={styles.overlay} role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelected(null); }}>
         <section className={styles.detail} role="dialog" aria-modal="true" aria-labelledby="notification-detail-title">
