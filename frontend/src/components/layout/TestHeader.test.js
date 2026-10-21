@@ -40,6 +40,17 @@ test('all result headers navigate directly without an exit confirmation, includi
   }
 });
 
+test('test and result headers use white branding in dark mode and black branding in light mode', () => {
+  for (const theme of ['light', 'dark']) {
+    const h = harness('/speaking/detail-result', { showTimer: false }, theme);
+    const image = h.find(h.render(), 'logoBtn').props.children;
+    const nodes = [image].flat(Infinity);
+    const logo = nodes.find(node => node?.type === 'img');
+    assert.ok(logo);
+    assert.equal(logo.props.src.includes('logo_white_text_transparent_v2'), theme === 'dark');
+  }
+});
+
 test('active test headers still require confirmation when the logo or Exit is clicked', () => {
   for (const button of ['logoBtn', 'exitBtn']) {
     const h = harness('/writing/test/part1', { controlledTimer: true });
