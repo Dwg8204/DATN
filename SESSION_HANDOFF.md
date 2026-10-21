@@ -1,5 +1,16 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Seed mở rộng 5 đề mỗi nhóm — 21/10/2026
+
+- Đã hoàn thành yêu cầu thêm 5 Tests Full và 5 Practice Full/từng Part cho mỗi kỹ năng: **140 đề mới PUBLISHED** (Grammar & Vocabulary 20; Reading, Listening, Writing, Speaking mỗi kỹ năng 30). Database local từ **39 lên 179 đề**, thêm **1.905 câu hỏi**, đủ 1.905 ánh xạ câu/snapshot. Lần seed đầu `created=140, skipped=0`; chạy lại `created=0, skipped=140`.
+- Năm bộ chủ đề Photography, Cooking, Walking, Books, Music. Full Tests/Full Practice/Part cùng số bộ dùng chung nội dung tương ứng; không phải 140 bộ câu hỏi độc lập. Tài liệu mô tả rõ đây là bộ luyện tập, chưa chuẩn hóa đánh giá năng lực.
+- Người dùng đã chọn audio khớp đáp án. Đã tạo và upload **85 MP3 mới** lên Cloudinary dự án bằng Windows David/Zira, phân biệt giọng hội thoại. Kịch bản và giải thích nằm trong `expanded-listening.ts`; manifest lưu URL/SHA-256/thời lượng. Đã kiểm tra truy cập cả 85 URL trước khi ghi DB. Không dùng audio demo cũ. Speaking đã xem ảnh nguồn, chỉ dùng ảnh microphone/trận bóng, tránh meme/bài đăng; Writing có mẫu đạt giới hạn số từ.
+- Lệnh `npm run db:seed:expanded -- --dry-run` kiểm tra offline; thêm `--with-audio` kiểm tra manifest. `npm run db:seed:expanded -- --apply` kiểm tra media rồi thêm dữ liệu trong transaction. `npm run seed:expanded:audio -- --upload` tái tạo/upload khi cần, yêu cầu Windows David/Zira và Cloudinary. WAV/MP3 trung gian trong uploads đã gitignore; không đưa thông tin bí mật vào source/manifest.
+- Seed có namespace `aptimate-expanded-tests-v1`, dùng validation/repository/audit/snapshot hiện hành. Chạy lại cùng ADMIN không ghi đè cả đề đã sửa/lưu trữ; chọn ADMIN khác sẽ tạo bộ riêng. Tái sử dụng helper từ seed 28 đề cũ, giữ ID và hành vi của seed cũ. Không migration, không đổi role và không commit/push.
+- Trigger GĐ10 đã tạo **140 job gợi ý chủ đề**. Seed không duyệt nhãn và không gọi chấm AI; worker sẵn có có thể xử lý queue sau commit. Mẫu số độ phủ tăng theo câu mới; admin cần duyệt nhãn theo luồng hiện hành, không coi việc seed là hoàn tất nghiệm thu độ phủ.
+- Kiểm chứng: 10 unit test của seed cũ/mới đạt; typecheck và ESLint file seed đạt; PostgreSQL schema cách ly chạy migrations hiện hành, kiểm tra 140 đề/1.905 câu/đủ snapshot/140 job và giữ nguyên đề sau sửa/lưu trữ khi rerun, rồi rollback/dọn schema. Đã đối chiếu database thật: đủ 28 nhóm × 5 đề. `git diff --check` đạt.
+- Đã cập nhật `backend/README.md` và `backend/src/database/seeds/SAMPLE_TESTS.md` về số lượng, lệnh, media, nội dung dùng chung và tác động tới nhãn chủ đề. Những thay đổi cá nhân hóa/GĐ10 có sẵn trong workspace được giữ nguyên.
+
 ## Cá nhân hóa GĐ7 — 20/10/2026
 
 - Đã triển khai theo bản kế hoạch người dùng cung cấp: [kế hoạch đầy đủ bản 2](docs/PERSONALIZATION_IMPLEMENTATION_PLAN_V2.md). File Markdown giữ nội dung gốc, có bảng/mục để tiếp tục các giai đoạn sau; các mã migration trong nguồn là lịch sử, không dùng lại máy móc.

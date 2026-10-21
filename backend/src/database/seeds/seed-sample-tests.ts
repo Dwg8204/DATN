@@ -225,8 +225,8 @@ export type SampleTestDefinition = {
   persist(connection: DataSource, actor: SeedActor): Promise<void>;
 };
 
-function skillDefinitions<T extends SampleAggregate>(component: string, name: string, full: T, partCount: number,
-  content: Content<T>, Repository: new (connection: DataSource) => SampleRepository<T>): SampleTestDefinition[] {
+export function skillDefinitions<T extends SampleAggregate>(component: string, name: string, full: T, partCount: number,
+  content: Content<T>, Repository: new (connection: DataSource) => SampleRepository<T>, namespace = 'aptimate-sample-tests-v1'): SampleTestDefinition[] {
   const variants: Array<{ purpose: TestPurpose; mode: T['mode'] }> = [
     { purpose: 'EXAM', mode: 'full' }, { purpose: 'PRACTICE', mode: 'full' },
     ...Array.from({ length: partCount }, (_, i) => ({ purpose: 'PRACTICE' as const, mode: `part${i + 1}` as T['mode'] })),
@@ -239,7 +239,7 @@ function skillDefinitions<T extends SampleAggregate>(component: string, name: st
       details: details(`[Mẫu] ${name} · ${purpose === 'EXAM' ? 'Tests' : 'Practice'} · ${mode === 'full' ? 'Full Test' : `Part ${partNumber}`}`) });
     content.assertDraftShape(test);
     content.assertPublishable(test);
-    const requestId = `aptimate-sample-tests-v1:${component}:${purpose}:${mode}`;
+    const requestId = `${namespace}:${component}:${purpose}:${mode}`;
     return { component, requestId, test, async persist(connection: DataSource, actor: SeedActor) {
       const repository = new Repository(connection);
       const audit = { requestId: testCreationId(actor.id, 'SAMPLE_AUDIT', requestId) };
@@ -263,7 +263,11 @@ export function buildSampleTests(): SampleTestDefinition[] {
 
 export async function seedSampleTests(manager: EntityManager, adminId?: string) {
   const samples = buildSampleTests(); // Validate every fixture before any insertion.
-  await manager.query("SELECT pg_advisory_xact_lock(hashtext('aptimate-sample-tests-v1'))");
+  return persistSeedDefinitions(manager, samples, 'aptimate-sample-tests-v1', adminId);
+}
+
+export async function persistSeedDefinitions(manager: EntityManager, samples: SampleTestDefinition[], namespace: string, adminId?: string) {
+  await manager.query('SELECT pg_advisory_xact_lock(hashtext($1))', [namespace]);
   const admins = await manager.query<Array<{ id: string }>>(
     `SELECT u.id FROM users u JOIN roles r ON r.id=u.role_id
      WHERE r.code='ADMIN' AND u.status='ACTIVE' AND u.deleted_at IS NULL

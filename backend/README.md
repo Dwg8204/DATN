@@ -111,6 +111,8 @@ Migration sẽ tự bật ba extension. Tài khoản kết nối cần quyền `
 
 ## Migration và seed
 
+Bộ seed bổ sung 140 đề (5 Tests Full, 5 Practice Full và 5 Practice cho từng Part ở mỗi kỹ năng) dùng `npm run db:seed:expanded -- --dry-run`, sau đó `npm run db:seed:expanded -- --apply`. Listening có 85 audio TTS khớp kịch bản. Xem [hướng dẫn seed đề và media](src/database/seeds/SAMPLE_TESTS.md) về số lượng, nội dung dùng chung giữa chế độ, tính idempotent và luồng duyệt chủ đề.
+
 ```bash
 # Xem migration nào đã/chưa chạy
 npm run db:migrate:status
