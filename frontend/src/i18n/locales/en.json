@@ -135,7 +135,8 @@
       "REACHED": "Estimated band meets the target band.",
       "NOT_REACHED": "Estimated band does not yet meet the target band.",
       "INSUFFICIENT_DATA": "Not enough data to assess the target band."
-    }
+    },
+    "askReport": "Ask AptiMate about this report"
   },
   "speakingDetailedFeedback": {
     "partAssessment": "Speaking Part assessment",

@@ -392,6 +392,13 @@ test(
       await second.page.getByRole('link', { name: 'Goal summary', exact: true }).click();
       await second.page.getByText('Test count target reached.', { exact: true }).waitFor();
       await second.page.getByText('Not enough data to assess the target band.', { exact: true }).waitFor();
+      await second.page.getByRole('button', { name: 'Ask AptiMate about this report', exact: true }).click();
+      await second.page.getByRole('textbox', { name: 'Type a question…' }).fill('Explain this report');
+      await second.page.getByRole('button', { name: 'Send', exact: true }).click();
+      await second.page.waitForFunction(() => document.querySelector('textarea')?.value === '');
+      assert.equal(chatPayload?.insightId, reportId);
+      assert.equal(chatPayload?.attemptId, undefined);
+      await second.page.getByRole('button', { name: 'Close', exact: true }).and(second.page.locator('[aria-expanded="true"]')).click();
       await second.page.getByLabel('Duration (3–180 days)').fill('14');
       const applySuggestion = () => second.page.getByRole('button', { name: 'Set suggested goal', exact: true }).click();
       await applySuggestion();
@@ -407,6 +414,8 @@ test(
       assert.equal(suggestionWrites, 1);
       goal = null;
       await second.page.reload();
+      // The report URL still has chat=1, so a reload intentionally opens chat again.
+      await second.page.getByRole('button', { name: 'Close', exact: true }).and(second.page.locator('[aria-expanded="true"]')).click();
       await applySuggestion();
       await second.page.getByRole('dialog').getByRole('button', { name: 'Confirm', exact: true }).click();
       await second.page.getByText('New goal created.', { exact: false }).waitFor();

@@ -11,8 +11,9 @@ import AssistantPet from './AssistantPet';
 export default function ChatAssistantWidget() {
   const {user}=useAuth();const location=useLocation();
   if(!user||!chatAllowed(location.pathname))return null;
-  const autoOpen = location.pathname === '/profile/mistakes' && new URLSearchParams(location.search).get('chat') === '1';
-  return <ChatWidget key={user.id + (autoOpen ? location.search : '')} autoOpen={autoOpen} context={resultContext(location.pathname,location.search)}/>;
+  const context = resultContext(location.pathname,location.search);
+  const autoOpen = (location.pathname === '/profile/mistakes' || context?.insightId) && new URLSearchParams(location.search).get('chat') === '1';
+  return <ChatWidget key={user.id + (autoOpen ? location.pathname + location.search : '')} autoOpen={!!autoOpen} context={context}/>;
 }
 function ChatWidget({context,autoOpen = false}) {
   const {t,i18n}=useTranslation();const tr=key=>t(`chat.${key}`);
@@ -22,6 +23,7 @@ function ChatWidget({context,autoOpen = false}) {
   const [page,setPage]=useState(1),[more,setMore]=useState(false),[messagePage,setMessagePage]=useState(1),[older,setOlder]=useState(false);
   const [replyingTo,setReplyingTo]=useState(undefined);
   const [rename,setRename]=useState(null),[title,setTitle]=useState('');
+  const activeContext = active ? sessions.find(session => session.id === active) : context;
   const alive=useRef(true),activeRef=useRef(null),version=useRef(0),requests=useRef(new Set()),mutating=useRef(false),pendingSend=useRef(null);
   const scroller=useRef(null),follow=useRef(true);
   useEffect(()=>{alive.current=true;return()=>{alive.current=false;requests.current.forEach(c=>c.abort());};},[]);
@@ -105,7 +107,8 @@ function ChatWidget({context,autoOpen = false}) {
         </div>
       </div>:<div className={styles.messages} ref={scroller} onScroll={()=>{const el=scroller.current;follow.current=el.scrollHeight-el.scrollTop-el.clientHeight<60;}}>
         {older&&<button onClick={()=>{follow.current=false;load(active,messagePage+1).catch(failure);}}>{tr('older')}</button>}
-        {!messages.length&&!loading&&<div className={styles.welcome}><span><Sparkles size={22}/></span><h2>{tr('welcome')}</h2><p>{tr(context?'resultContext':'intro')}</p><div className={styles.suggestions}>{['grammar','stats','features'].map(k=><button key={k} onClick={()=>setDraft(tr(k))}>{tr(k)}</button>)}</div></div>}
+        {activeContext?.insightId && <p>{tr('reportContext')} <Link to={`/profile/reports/${activeContext.insightId}`}>{tr('openReport')}</Link></p>}
+        {!messages.length&&!loading&&<div className={styles.welcome}><span><Sparkles size={22}/></span><h2>{tr('welcome')}</h2><p>{tr(activeContext?.insightId?'reportIntro':activeContext?.attemptId?'resultContext':'intro')}</p><div className={styles.suggestions}>{(activeContext?.insightId?['reportQuestion','reportNextSteps']:['grammar','stats','features']).map(k=><button key={k} onClick={()=>setDraft(tr(k))}>{tr(k)}</button>)}</div></div>}
         {loading&&<p role="status">{tr('loading')}</p>}
         {messages.map(m=><ChatMessage key={m.id} message={m} tr={tr} disabled={busy} onFeedback={v=>feedback(m,v)} onRetry={()=>retryMessage(m.id)} canRetry={m.id===messages.at(-1)?.id}/>)}
         {replyingTo!==undefined&&replyingTo===active&&!hasPending&&<TypingBubble label={tr('thinking')}/>}

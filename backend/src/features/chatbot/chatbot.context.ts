@@ -1,5 +1,6 @@
 import { Injectable, Optional } from '@nestjs/common';
 import { SnapshotService } from '../personalization/services/snapshot.service';
+import { InsightContextService } from '../personalization/services/insight-context.service';
 import { DataSource } from 'typeorm';
 import { TestAttemptsService } from '../test-attempts/services/test-attempts.service';
 import { PracticeAttemptsService } from '../test-attempts/services/practice-attempts.service';
@@ -16,7 +17,12 @@ export class ChatbotContext {
     private readonly exams: TestAttemptsService,
     private readonly practice: PracticeAttemptsService,
     @Optional() private readonly snapshots?: SnapshotService,
+    @Optional() private readonly insights?: InsightContextService,
   ) {}
+  async insight(actor: AuthUser, insightId: string) {
+    if (!this.insights) throw chatError('CHAT_INSIGHT_UNAVAILABLE', 404);
+    return this.insights.read(actor.id, insightId);
+  }
   async review(actor: AuthUser, attemptId: string, questionKey?: string) {
     const [a] = await this.db.query(
       `SELECT id,purpose,part_number,assessment_revision,status FROM test_attempts WHERE id=$1 AND student_id=$2`,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ProfileSidebar from '../../profile/components/ProfileSidebar';
 import { personalizationApi } from '../services/personalizationApi';
@@ -13,6 +13,7 @@ export default function WeeklyReportPage() {
 }
 
 function ReportDetail({ id }) {
+  const [, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const [report, setReport] = useState(null);
   const [error, setError] = useState(false);
@@ -45,6 +46,11 @@ function ReportDetail({ id }) {
         <button onClick={() => setReload(value => value + 1)}>{t('personalization.reload')}</button>
         {report && <>
           <p>{report.coversFrom} – {report.coversTo}</p>
+          <button onClick={() => setSearchParams(previous => {
+            const next = new URLSearchParams(previous);
+            next.set('chat', '1'); next.set('chatRequest', crypto.randomUUID());
+            return next;
+          }, { replace: true })}>{t('personalization.askReport')}</button>
           {report.source !== 'AI' && <p className={styles.muted} role="status">{t('personalization.reportFallback')}</p>}
           <dl className={styles.reportMetrics}>
             <div><dt>{t(final ? 'personalization.finalTests' : 'personalization.reportTests')}</dt><dd>{snapshot.period.completed}</dd></div>

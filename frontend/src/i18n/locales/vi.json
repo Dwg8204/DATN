@@ -135,7 +135,8 @@
       "REACHED": "Band ước lượng đã đạt band đích.",
       "NOT_REACHED": "Band ước lượng chưa đạt band đích.",
       "INSUFFICIENT_DATA": "Chưa đủ dữ liệu để kết luận band đích."
-    }
+    },
+    "askReport": "Hỏi AptiMate về báo cáo này"
   },
   "speakingDetailedFeedback": {
     "partAssessment": "Đánh giá Speaking theo Part",

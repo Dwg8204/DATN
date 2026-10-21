@@ -21,16 +21,16 @@ export class ChatbotRepository {
       WHERE session_id=$1 AND role='ASSISTANT' AND status='PENDING' AND created_at<clock_timestamp()-interval '90 seconds'`,[id]);
   }
   async sessions(userId: string, page: number) {
-    const rows = await this.db.query(`SELECT id,title,context_attempt_id AS "attemptId",context_question_key AS "questionKey",updated_at AS "updatedAt"
+    const rows = await this.db.query(`SELECT id,title,context_attempt_id AS "attemptId",context_question_key AS "questionKey",context_insight_id AS "insightId",updated_at AS "updatedAt"
       FROM chat_sessions WHERE user_id=$1 AND deleted_at IS NULL ORDER BY updated_at DESC,id DESC LIMIT 21 OFFSET $2`,[userId,(page-1)*20]);
     return { items:rows.slice(0,20),hasMore:rows.length>20,page };
   }
-  async create(userId: string, id: string, attemptId?: string, questionKey?: string) {
-    await this.db.query(`INSERT INTO chat_sessions(id,user_id,title,context_attempt_id,context_question_key)
-      VALUES($1,$2,'New conversation',$3,$4) ON CONFLICT(id) DO NOTHING`,[id,userId,attemptId??null,questionKey??null]);
+  async create(userId: string, id: string, attemptId?: string, questionKey?: string, insightId?: string) {
+    await this.db.query(`INSERT INTO chat_sessions(id,user_id,title,context_attempt_id,context_question_key,context_insight_id)
+      VALUES($1,$2,'New conversation',$3,$4,$5) ON CONFLICT(id) DO NOTHING`,[id,userId,attemptId??null,questionKey??null,insightId??null]);
     const session = await this.owned(userId,id);
-    if (session.context_attempt_id !== (attemptId??null) || session.context_question_key !== (questionKey??null)) throw chatError('CHAT_REQUEST_CONFLICT');
-    return {id:session.id,title:session.title,attemptId:session.context_attempt_id,questionKey:session.context_question_key,updatedAt:session.updated_at};
+    if (session.context_attempt_id !== (attemptId??null) || session.context_question_key !== (questionKey??null) || session.context_insight_id !== (insightId??null)) throw chatError('CHAT_REQUEST_CONFLICT');
+    return {id:session.id,title:session.title,attemptId:session.context_attempt_id,questionKey:session.context_question_key,insightId:session.context_insight_id,updatedAt:session.updated_at};
   }
   async messages(userId: string,id: string,page: number) {
     await this.owned(userId,id);
