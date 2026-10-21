@@ -12,6 +12,14 @@ export interface WeeklyContent {
   report?: { headline: string; narrative: string; wins: string[]; nextSteps: string[]; progressSoFar?: string };
 }
 export interface ReportJob {
+  outcome?: {
+    lifecycle: string;
+    testTargetReached: boolean;
+    targetReachedOn: string | null;
+    bandTargetStatus: 'REACHED' | 'NOT_REACHED' | 'INSUFFICIENT_DATA';
+    endedOn: string;
+  };
+
   snapshotVersion: number;
   learner: ReturnType<typeof reportSnapshot>;
   candidates: PlanCandidate[];

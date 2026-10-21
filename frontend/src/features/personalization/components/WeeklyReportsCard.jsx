@@ -16,8 +16,9 @@ export default function WeeklyReportsCard() {
   return <section className={styles.card}>
     <h2>{t('personalization.recentReports')}</h2>
     <ul className={styles.history}>{reports.map(report => <li key={report.id}>
-      <Link to={`/profile/reports/${report.id}`}>{t(report.kind === 'MIDTERM' ? 'personalization.midtermReport' : 'personalization.weeklyReport', { week: report.weekIndex })}</Link>
+      <Link to={`/profile/reports/${report.id}`}>{t(report.kind === 'FINAL' ? 'personalization.finalReport' : report.kind === 'MIDTERM' ? 'personalization.midtermReport' : 'personalization.weeklyReport', { week: report.weekIndex })}</Link>
       <span className={styles.muted}> — {report.coversFrom} – {report.coversTo}</span>
     </li>)}</ul>
+    <Link to="/profile/reports">{t('personalization.reportsTitle')}</Link>
   </section>;
 }

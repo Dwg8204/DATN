@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { FINAL_PROMPT_VERSION, FINAL_SCHEMA, FINAL_SYSTEM, validateFinalContent } from '../ai/final.contract';
 import { ConfigService } from '@nestjs/config';
 import { JsonGenerationService } from '../../ai-shared/json-generation.service';
 import { AiProviderError } from '../../ai-shared/ai-provider.error';
@@ -34,6 +35,7 @@ export class PersonalizationAiService {
       provider: this.config.get('PERSONALIZATION_PROVIDER', 'gemini'),
       model: this.config.get('PERSONALIZATION_MODEL') || this.config.get('CHATBOT_MODEL', 'gemini-3.5-flash-lite'),
       promptVersion: REPORT_PROMPT_VERSION,
+      finalPromptVersion: FINAL_PROMPT_VERSION,
     })).digest('hex');
   }
 
@@ -51,6 +53,12 @@ export class PersonalizationAiService {
     const result = await this.generate(userId, kind === 'PLAN_START' ? 'PERSONAL_PLAN' : 'PERSONAL_WEEKLY',
       REPORT_PROMPT_VERSION, REPORT_SYSTEM, reportSchema(kind), reportPromptInput(kind, job), issues, 8192);
     return { content: validateWeeklyContent(result.parsed, kind, job), requestId: result.requestId };
+  }
+
+  async finalReport(userId: string, job: ReportJob, issues: string[] = []) {
+    const result = await this.generate(userId, 'PERSONAL_FINAL', FINAL_PROMPT_VERSION,
+      FINAL_SYSTEM, FINAL_SCHEMA, { snapshot: job.learner, outcome: job.outcome }, issues, 2048);
+    return { content: validateFinalContent(result.parsed, job), requestId: result.requestId };
   }
 
   private async generate(

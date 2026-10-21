@@ -7,6 +7,7 @@ import { PersonalizationAiService } from '../services/personalization-ai.service
 import { PersonalizationClock } from '../services/personalization-clock';
 import { ReportJobsService } from '../services/report-jobs.service';
 import { ReportJob, ReportKind, validateWeeklyContent } from '../ai/report.contract';
+import { validateFinalContent } from '../ai/final.contract';
 
 const BACKOFF = [15 * 60_000, 60 * 60_000, 4 * 60 * 60_000];
 
@@ -39,7 +40,7 @@ export class CommentGenerationWorker {
         Array<LearningInsightRow & { timezone: string }>
       >(
         `SELECT i.*,u.timezone FROM learning_insights i JOIN users u ON u.id=i.user_id JOIN roles r ON r.id=u.role_id
-         WHERE (i.kind='COMMENT' OR ($2 AND i.kind IN ('PLAN_START','WEEKLY','MIDTERM')))
+         WHERE (i.kind='COMMENT' OR ($2 AND i.kind IN ('PLAN_START','WEEKLY','MIDTERM','FINAL') AND i.snapshot ? 'learner'))
            AND (i.status IN ('PENDING','FAILED') OR ($2 AND i.kind<>'COMMENT' AND i.status='FALLBACK'))
            AND i.retry_count<=3
            AND (i.next_retry_at IS NULL OR i.next_retry_at<=$1)
@@ -57,7 +58,9 @@ export class CommentGenerationWorker {
           const { source: _source, ...raw } = cached.content;
           void _source;
           try {
-            const content = validateWeeklyContent(raw, row.kind as ReportKind, row.snapshot as unknown as ReportJob);
+            const content = row.kind === 'FINAL'
+              ? validateFinalContent(raw.report, row.snapshot as unknown as ReportJob)
+              : validateWeeklyContent(raw, row.kind as ReportKind, row.snapshot as unknown as ReportJob);
             await this.reports!.completeLocked(manager, row, content, cached.ai_request_id, row.timezone);
             return true;
           } catch (error) {
@@ -88,7 +91,9 @@ export class CommentGenerationWorker {
               [row.id, result.content, result.requestId],
             );
           } else {
-            const result = await this.ai.report(row.user_id, row.kind as ReportKind, row.snapshot as unknown as ReportJob, issues);
+            const result = row.kind === 'FINAL'
+              ? await this.ai.finalReport(row.user_id, row.snapshot as unknown as ReportJob, issues)
+              : await this.ai.report(row.user_id, row.kind as ReportKind, row.snapshot as unknown as ReportJob, issues);
             await this.reports!.completeLocked(manager, row, result.content, result.requestId, row.timezone);
           }
           return true;

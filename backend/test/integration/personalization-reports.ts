@@ -61,6 +61,12 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     assert.equal(payload.generationConfig.temperature, 0.2);
     if (quota) return new Response('{}', { status: 429, headers: { 'retry-after': '60' } });
     const prompt = JSON.parse(promptText);
+    if (prompt.outcome) return new Response(JSON.stringify({
+      candidates: [{ finishReason: 'STOP', content: { role: 'model', parts: [{ text: JSON.stringify({
+        headline: 'Tổng kết mục tiêu', narrative: 'Tiếp tục luyện tập.', achievements: [],
+        nextGoalSuggestion: { targetCefr: 'B2', targetTests: 40, durationDays: 30 },
+      }) }] } }], usageMetadata: { promptTokenCount: 100, candidatesTokenCount: 100 },
+    }), { status: 200 });
     const c = prompt.candidates.find((entry: { activityType: string }) => entry.activityType === 'TEST');
     const content: WeeklyContent = { plan: { items: Array.from({ length: prompt.plan.days }, (_, day) => ({
       dayIndex: day + 1, candidateId: c.candidateId, targetCount: Math.max(1, prompt.plan.requiredPace),
@@ -139,11 +145,11 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     now = new Date('2026-11-01T02:00:00Z');
     await goals.current(alice);
     await jobs.scheduleBatch();
-    const periods = await db.query("SELECT period_key,kind FROM learning_insights WHERE goal_id=$1 AND kind<>'PLAN_START' ORDER BY period_key", [goal.id]);
+    const periods = await db.query("SELECT period_key,kind FROM learning_insights WHERE goal_id=$1 AND kind IN ('WEEKLY','MIDTERM') ORDER BY period_key", [goal.id]);
     assert.deepEqual(periods.map((p: { kind: string }) => p.kind), ['WEEKLY', 'MIDTERM', 'WEEKLY', 'WEEKLY']);
     assert.equal(periods.length, 4);
     await runAi();
-    assert.equal(calls, 6);
+    assert.equal(calls, 7);
     const finalPartial = (await db.query("SELECT snapshot FROM learning_insights WHERE goal_id=$1 AND period_key='W4'", [goal.id]))[0].snapshot as ReportJob;
     assert.equal(finalPartial.plan.days, 2);
     assert.equal((await db.query("SELECT count(*)::int n FROM study_plans WHERE goal_id=$1 AND week_index>=3", [goal.id]))[0].n, 0, 'historical AI must not create plans for expired goals');
@@ -153,7 +159,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     const secondGoal = await goalRepo.create(alice, { targetCefr: 'B1', targetTests: 10, durationDays: 10, startDate: '2026-10-20', timezone: 'Asia/Bangkok' });
     await jobs.scheduleBatch();
     await runAi();
-    assert.equal(calls, 6);
+    assert.equal(calls, 7);
     const [fallback] = await db.query("SELECT * FROM learning_insights WHERE goal_id=$1 AND kind='WEEKLY'", [secondGoal.id]);
     assert.equal(fallback.status, 'FALLBACK');
     assert.equal((await reports.read(alice, fallback.id)).source, 'RULE');
@@ -162,7 +168,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     await reports.enqueueDeliveries();
     await notificationService.processDueScheduledBatch(25, now);
     assert.equal(emailSends.length, 2);
-    assert.equal(emailSends[1].reports.length, 4, 'multiple goals and overdue periods share one email');
+    assert.equal(emailSends[1].reports.length, 5, 'multiple goals, final and overdue periods share one email');
 
     // Delivery rechecks opt-out after enqueue; web remains available.
     await db.query("UPDATE learning_goals SET status='EXPIRED',ended_at=$2 WHERE id=$1", [secondGoal.id, now]);

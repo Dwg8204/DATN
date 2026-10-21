@@ -43,8 +43,17 @@
     "ask": "Ask AptiMate about this question",
     "reviewed": "Reviewed",
     "markReviewed": "Mark as reviewed",
-    "activities": {"VOCAB_REVIEW":"Review {{count}} vocabulary cards","MISTAKE_REVIEW":"Review {{count}} mistakes"},
-    "skills": {"GRAMMAR_VOCAB":"Grammar & Vocabulary","READING":"Reading","LISTENING":"Listening","WRITING":"Writing","SPEAKING":"Speaking"},
+    "activities": {
+      "VOCAB_REVIEW": "Review {{count}} vocabulary cards",
+      "MISTAKE_REVIEW": "Review {{count}} mistakes"
+    },
+    "skills": {
+      "GRAMMAR_VOCAB": "Grammar & Vocabulary",
+      "READING": "Reading",
+      "LISTENING": "Listening",
+      "WRITING": "Writing",
+      "SPEAKING": "Speaking"
+    },
     "progressTitle": "Goal progress",
     "loading": "Loading…",
     "noGoal": "Set a goal to track your learning progress.",
@@ -53,7 +62,11 @@
     "bandEstimate": "Estimated CEFR",
     "insufficient": "Insufficient data",
     "habit": "Streak: {{streak}} days · {{activeDaysThisWeek}} active days this week",
-    "pace": {"AHEAD":"Ahead","ON_TRACK":"On track","BEHIND":"Behind"},
+    "pace": {
+      "AHEAD": "Ahead",
+      "ON_TRACK": "On track",
+      "BEHIND": "Behind"
+    },
     "title": "Learning goal",
     "days": "Duration (3–180 days)",
     "goalSummary": "{{targetCefr}} · {{completed}}/{{targetTests}} tests · {{startDate}} – {{endsOn}}",
@@ -95,6 +108,33 @@
       "CANCELLED": "Cancelled",
       "COMPLETED": "Completed",
       "EXPIRED": "Expired"
+    },
+    "reportsTitle": "Learning reports",
+    "filterGoal": "Filter by goal",
+    "allGoals": "All goals",
+    "selectedGoal": "Selected goal",
+    "moreGoals": "Load more goals",
+    "noReports": "No reports for this goal yet.",
+    "finalReport": "Goal summary",
+    "reportAi": "AI feedback",
+    "reportNumbers": "Statistics report",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "finalTests": "Tests submitted during the goal",
+    "finalPlanDone": "Goal plan completion",
+    "finalLifecycle": "Final status",
+    "finalTestsReached": "Test count target reached.",
+    "finalTestsNotReached": "Test count target not reached.",
+    "reachedOn": "Test target reached on {{date}}",
+    "nextGoal": "Suggested next goal",
+    "suggestionHelp": "You can edit the values before confirming. The new goal starts today.",
+    "applySuggestion": "Set suggested goal",
+    "confirmSuggestion": "Create a new goal with these values starting today?",
+    "suggestionSaved": "New goal created.",
+    "bandOutcome": {
+      "REACHED": "Estimated band meets the target band.",
+      "NOT_REACHED": "Estimated band does not yet meet the target band.",
+      "INSUFFICIENT_DATA": "Not enough data to assess the target band."
     }
   },
   "speakingDetailedFeedback": {

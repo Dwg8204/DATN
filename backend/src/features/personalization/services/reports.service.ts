@@ -12,7 +12,7 @@ export class ReportsService {
   async list(userId: string, goalId: string | undefined, page = 1) {
     const rows = await this.db.query<LearningInsightRow[]>(
       `SELECT *,covers_from::text covers_from,covers_to::text covers_to FROM learning_insights
-       WHERE user_id=$1 AND kind IN ('WEEKLY','MIDTERM') AND ($2::uuid IS NULL OR goal_id=$2)
+       WHERE user_id=$1 AND kind IN ('WEEKLY','MIDTERM','FINAL') AND snapshot ? 'learner' AND ($2::uuid IS NULL OR goal_id=$2)
        ORDER BY learning_insights.covers_to DESC,created_at DESC,id DESC LIMIT 21 OFFSET $3`, [userId, goalId ?? null, (page - 1) * 20],
     );
     return { items: rows.slice(0, 20).map(row => this.present(row)), page, hasMore: rows.length > 20 };
@@ -21,7 +21,7 @@ export class ReportsService {
   async read(userId: string, id: string) {
     const [row] = await this.db.query<LearningInsightRow[]>(
       `WITH viewed AS (UPDATE learning_insights SET read_at=COALESCE(read_at,$3)
-       WHERE id=$1 AND user_id=$2 AND kind IN ('WEEKLY','MIDTERM') RETURNING *)
+       WHERE id=$1 AND user_id=$2 AND kind IN ('WEEKLY','MIDTERM','FINAL') AND snapshot ? 'learner' RETURNING *)
        SELECT *,covers_from::text covers_from,covers_to::text covers_to FROM viewed`, [id, userId, this.clock.now()],
     );
     if (!row) throw new ApplicationError('REPORT_NOT_FOUND', 'Learning report not found.', 404);
@@ -34,7 +34,7 @@ export class ReportsService {
       id: row.id, goalId: row.goal_id, kind: row.kind, weekIndex: row.week_index,
       coversFrom: row.covers_from, coversTo: row.covers_to, status: row.status,
       source: row.content?.source ?? 'RULE', content: row.content?.report ?? null,
-      snapshot: job.learner, deliverAt: row.deliver_at, readAt: row.read_at,
+      snapshot: job.learner, outcome: job.outcome ?? null, deliverAt: row.deliver_at, readAt: row.read_at,
     };
   }
 
@@ -45,7 +45,7 @@ export class ReportsService {
         `SELECT i.*,COALESCE(p.email_report_enabled,true) email_enabled FROM learning_insights i
          JOIN users u ON u.id=i.user_id JOIN roles r ON r.id=u.role_id
          LEFT JOIN learner_preferences p ON p.user_id=i.user_id
-         WHERE i.kind IN ('WEEKLY','MIDTERM') AND i.status IN ('READY','FALLBACK')
+         WHERE i.kind IN ('WEEKLY','MIDTERM','FINAL') AND i.status IN ('READY','FALLBACK')
            AND i.deliver_at<=$1 AND i.notified_at IS NULL AND u.status='ACTIVE' AND u.deleted_at IS NULL AND r.code='STUDENT'
            AND NOT EXISTS(SELECT 1 FROM notifications n WHERE n.dedupe_key='report:'||i.id::text||':IN_APP')
          ORDER BY i.deliver_at,i.id LIMIT 50 FOR UPDATE OF i SKIP LOCKED`, [this.clock.now()],
@@ -55,7 +55,7 @@ export class ReportsService {
         const report = row.content?.report as { headline?: string } | undefined;
         const title = report?.headline ?? (row.kind === 'MIDTERM' ? 'Báo cáo học tập giữa kỳ' : 'Báo cáo học tập tuần');
         // The email contains only a headline and three code-derived aggregates.
-        const summary = `Bài đã nộp trong tuần: ${job.learner.period.completed}\nNgày có học: ${job.learner.period.activeDays}\nTiến độ mục tiêu: ${job.learner.goal?.completed ?? 0}/${job.learner.goal?.targetTests ?? 0} bài`;
+        const summary = `${row.kind === 'FINAL' ? 'Bài đã nộp trong mục tiêu' : 'Bài đã nộp trong tuần'}: ${job.learner.period.completed}\nNgày có học: ${job.learner.period.activeDays}\nTiến độ mục tiêu: ${job.learner.goal?.completed ?? 0}/${job.learner.goal?.targetTests ?? 0} bài`;
         for (const channel of row.email_enabled ? ['IN_APP', 'EMAIL'] : ['IN_APP']) {
           await manager.query(
             `WITH queued AS (

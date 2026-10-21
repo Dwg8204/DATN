@@ -12,6 +12,7 @@ import { addDays, localDay } from '../policies/calendar';
 import { PersonalizationClock } from './personalization-clock';
 import { PlanProgressRepository } from '../repositories/plan-progress.repository';
 import { recordGoalAchievement } from './goal-achievement';
+import { queueFinalReport } from './final-report-queue';
 
 export function presentGoal(goal: LearningGoalRow, completed: number) {
   return {
@@ -101,6 +102,7 @@ export class GoalsService {
           goal.timezone,
         ],
       );
+      await queueFinalReport(manager, goal.id);
       return null;
     }
     return { goal, completed: counts.completed };
@@ -155,6 +157,7 @@ export class GoalsService {
         'UPDATE learning_goals SET replaced_by_goal_id=$2 WHERE id=$1',
         [dto.goalId, goal.id],
       );
+      await queueFinalReport(manager, dto.goalId);
       const refreshed = await this.reconcile(manager, userId, now);
       return { goal: presentGoal(refreshed!.goal, refreshed!.completed) };
     });
@@ -176,6 +179,7 @@ export class GoalsService {
         'UPDATE learning_goals SET status=$2,ended_at=$3,updated_at=now() WHERE id=$1',
         [goalId, finish ? 'COMPLETED' : 'CANCELLED', now],
       );
+      if (finish) await queueFinalReport(manager, goalId);
       return { goal: null };
     });
   }

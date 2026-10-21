@@ -14,6 +14,7 @@ import TestListPage from '../pages/TestListPage';
 import ProfilePage from '../features/profile/pages/ProfilePage';
 import MistakeReviewPage from '../features/personalization/components/MistakeReviewPage';
 import WeeklyReportPage from '../features/personalization/components/WeeklyReportPage';
+import ReportsPage from '../features/personalization/components/ReportsPage';
 import NotificationsPage from '../features/profile/pages/NotificationsPage';
 import LearningHistoryPage from '../features/profile/pages/LearningHistoryPage';
 import ChangePasswordPage from '../features/profile/pages/ChangePasswordPage';
@@ -74,6 +75,10 @@ export const appRoutes = [
       {
         path: 'profile/reports/:id',
         element: <RoleGuard allowedRoles={['STUDENT']}><WeeklyReportPage /></RoleGuard>,
+      },
+      {
+        path: 'profile/reports',
+        element: <RoleGuard allowedRoles={['STUDENT']}><ReportsPage /></RoleGuard>,
       },
       {
         path: 'profile/history',

@@ -43,8 +43,17 @@
     "ask": "Hỏi AptiMate về câu này",
     "reviewed": "Đã ôn xong",
     "markReviewed": "Đã ôn xong",
-    "activities": {"VOCAB_REVIEW":"Ôn {{count}} thẻ từ vựng","MISTAKE_REVIEW":"Ôn {{count}} câu sai"},
-    "skills": {"GRAMMAR_VOCAB":"Ngữ pháp & Từ vựng","READING":"Đọc","LISTENING":"Nghe","WRITING":"Viết","SPEAKING":"Nói"},
+    "activities": {
+      "VOCAB_REVIEW": "Ôn {{count}} thẻ từ vựng",
+      "MISTAKE_REVIEW": "Ôn {{count}} câu sai"
+    },
+    "skills": {
+      "GRAMMAR_VOCAB": "Ngữ pháp & Từ vựng",
+      "READING": "Đọc",
+      "LISTENING": "Nghe",
+      "WRITING": "Viết",
+      "SPEAKING": "Nói"
+    },
     "progressTitle": "Tiến độ mục tiêu",
     "loading": "Đang tải…",
     "noGoal": "Đặt mục tiêu để theo dõi tiến độ học của bạn.",
@@ -53,7 +62,11 @@
     "bandEstimate": "CEFR ước lượng",
     "insufficient": "Chưa đủ dữ liệu",
     "habit": "Chuỗi học: {{streak}} ngày · {{activeDaysThisWeek}} ngày học trong tuần",
-    "pace": {"AHEAD":"Vượt tiến độ","ON_TRACK":"Đúng tiến độ","BEHIND":"Chậm tiến độ"},
+    "pace": {
+      "AHEAD": "Vượt tiến độ",
+      "ON_TRACK": "Đúng tiến độ",
+      "BEHIND": "Chậm tiến độ"
+    },
     "title": "Mục tiêu học tập",
     "days": "Thời gian (3–180 ngày)",
     "goalSummary": "{{targetCefr}} · {{completed}}/{{targetTests}} bài · {{startDate}} – {{endsOn}}",
@@ -95,6 +108,33 @@
       "CANCELLED": "Đã hủy",
       "COMPLETED": "Hoàn thành",
       "EXPIRED": "Hết hạn"
+    },
+    "reportsTitle": "Báo cáo học tập",
+    "filterGoal": "Lọc theo mục tiêu",
+    "allGoals": "Tất cả mục tiêu",
+    "selectedGoal": "Mục tiêu đang chọn",
+    "moreGoals": "Tải thêm mục tiêu",
+    "noReports": "Chưa có báo cáo cho mục tiêu này.",
+    "finalReport": "Tổng kết mục tiêu",
+    "reportAi": "Nhận xét AI",
+    "reportNumbers": "Báo cáo số liệu",
+    "previousPage": "Trang trước",
+    "nextPage": "Trang sau",
+    "finalTests": "Bài đã nộp trong mục tiêu",
+    "finalPlanDone": "Hoàn thành lộ trình mục tiêu",
+    "finalLifecycle": "Trạng thái kết thúc",
+    "finalTestsReached": "Đã đạt số bài mục tiêu.",
+    "finalTestsNotReached": "Chưa đạt số bài mục tiêu.",
+    "reachedOn": "Đủ số bài từ ngày {{date}}",
+    "nextGoal": "Mục tiêu tiếp theo được gợi ý",
+    "suggestionHelp": "Bạn có thể chỉnh các giá trị trước khi xác nhận. Mục tiêu mới bắt đầu từ hôm nay.",
+    "applySuggestion": "Đặt mục tiêu gợi ý",
+    "confirmSuggestion": "Tạo mục tiêu mới với các giá trị đã chọn, bắt đầu từ hôm nay?",
+    "suggestionSaved": "Đã đặt mục tiêu mới.",
+    "bandOutcome": {
+      "REACHED": "Band ước lượng đã đạt band đích.",
+      "NOT_REACHED": "Band ước lượng chưa đạt band đích.",
+      "INSUFFICIENT_DATA": "Chưa đủ dữ liệu để kết luận band đích."
     }
   },
   "speakingDetailedFeedback": {

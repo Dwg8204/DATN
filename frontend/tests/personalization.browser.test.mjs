@@ -19,7 +19,7 @@ before(async () => {
     { stdio: 'ignore' },
   );
   let ready = false;
-  for (let i = 0; i < 150; i++) {
+  for (let i = 0; i < 600; i++) {
     try {
       ready = (await fetch(origin)).ok;
     } catch {}
@@ -49,16 +49,19 @@ test(
       chatPayload;
     let commentStatus = 'PENDING';
     let reportStatus = 'READY';
+    let finalMode = false, suggestionConflict = true, suggestionWrites = 0;
+    let lastReportQuery;
     const reportId = '00000000-0000-4000-8000-000000000003';
     const weeklyReport = () => ({
-      id: reportId, kind: 'MIDTERM', weekIndex: 2, coversFrom: '2026-10-08', coversTo: '2026-10-14',
+      id: reportId, goalId: 'goal', kind: finalMode ? 'FINAL' : 'MIDTERM', weekIndex: 2, coversFrom: '2026-10-08', coversTo: '2026-10-14',
       status: reportStatus, source: reportStatus === 'READY' ? 'AI' : 'RULE',
       snapshot: {
         period: { completed: 7, activeDays: 4, vocabReviewed: 80, planDoneRatio: 0.6 },
         goal: { completed: 12, targetTests: 40, expected: 18.7, status: 'BEHIND' },
         band: { overallEstimate: null, target: 'B2' },
       },
-      content: { headline: 'A steady learning habit', narrative: 'Continue practicing Reading.', wins: ['Regular practice.'], nextSteps: ['Review weak parts.'], progressSoFar: 'Keep working towards your goal.' },
+      outcome: finalMode ? { lifecycle: 'COMPLETED', testTargetReached: true, targetReachedOn: '2026-10-12', bandTargetStatus: 'INSUFFICIENT_DATA' } : null,
+      content: finalMode ? { headline: 'Goal completed', narrative: 'Keep practicing.', achievements: ['Regular practice.'], nextGoalSuggestion: { targetCefr: 'B2', targetTests: 40, durationDays: 30 } } : { headline: 'A steady learning habit', narrative: 'Continue practicing Reading.', wins: ['Regular practice.'], nextSteps: ['Review weak parts.'], progressSoFar: 'Keep working towards your goal.' },
     });
     let prefs = {
       reminderEnabled: true,
@@ -108,7 +111,11 @@ test(
             },
           });
         if (req.method() === 'OPTIONS') return respond({});
-        if (path === '/me/reports') return respond({ items: [weeklyReport()], page: 1, hasMore: false });
+        if (path === '/me/reports') {
+          lastReportQuery = new URL(req.url()).searchParams;
+          const page = Number(lastReportQuery.get('page') || 1);
+          return respond({ items: page === 1 ? [weeklyReport()] : [], page, hasMore: finalMode && page === 1 });
+        }
         if (path === `/me/reports/${reportId}`) return reportStatus === 'ERROR' ? respond({}, 404) : respond(weeklyReport());
         if (path === '/me/insights/comment') {
           if (commentStatus === 'ERROR') return respond({}, 503);
@@ -138,7 +145,14 @@ test(
             timezone: 'Asia/Bangkok',
             canFinish: false,
           };
+          if (finalMode) suggestionWrites++;
           return respond({ goal }, 201);
+        }
+        if (path === '/me/learning-goal/replace' && req.method() === 'POST') {
+          if (suggestionConflict) { suggestionConflict = false; return respond({}, 409); }
+          assert.equal(req.postDataJSON().goalId, goal.id);
+          goal = { ...goal, ...req.postDataJSON() }; suggestionWrites++;
+          return respond({ goal });
         }
         if (path === '/me/learning-goal')
           return respond({
@@ -365,6 +379,39 @@ test(
       await second.page.reload();
       await second.page.getByRole('alert').filter({ hasText: 'This report could not be opened.' }).waitFor();
       reportStatus = 'READY';
+      finalMode = true;
+      await second.page.goto(`${origin}/profile/reports`, { waitUntil: 'domcontentloaded' });
+      await second.page.getByRole('heading', { name: 'Learning reports', exact: true }).waitFor();
+      await second.page.getByLabel('Filter by goal').selectOption('goal');
+      await second.page.getByRole('link', { name: 'Goal summary', exact: true }).waitFor();
+      assert.equal(lastReportQuery.get('goalId'), 'goal');
+      await second.page.getByRole('button', { name: 'Next page', exact: true }).click();
+      await second.page.getByText('No reports for this goal yet.').waitFor();
+      assert.equal(lastReportQuery.get('page'), '2');
+      await second.page.getByRole('button', { name: 'Previous page', exact: true }).click();
+      await second.page.getByRole('link', { name: 'Goal summary', exact: true }).click();
+      await second.page.getByText('Test count target reached.', { exact: true }).waitFor();
+      await second.page.getByText('Not enough data to assess the target band.', { exact: true }).waitFor();
+      await second.page.getByLabel('Duration (3–180 days)').fill('14');
+      const applySuggestion = () => second.page.getByRole('button', { name: 'Set suggested goal', exact: true }).click();
+      await applySuggestion();
+      await second.page.getByRole('dialog').waitFor();
+      assert.equal(suggestionWrites, 0, 'opening suggestion confirmation must not mutate a goal');
+      await second.page.getByRole('dialog').getByRole('button', { name: 'Confirm', exact: true }).click();
+      await second.page.getByRole('alert').waitFor();
+      assert.equal(suggestionWrites, 0, 'stale current goal is not overwritten');
+      await applySuggestion();
+      await second.page.getByRole('dialog').getByRole('button', { name: 'Confirm', exact: true }).click();
+      await second.page.getByText('New goal created.', { exact: false }).waitFor();
+      assert.equal(goal.durationDays, 14);
+      assert.equal(suggestionWrites, 1);
+      goal = null;
+      await second.page.reload();
+      await applySuggestion();
+      await second.page.getByRole('dialog').getByRole('button', { name: 'Confirm', exact: true }).click();
+      await second.page.getByText('New goal created.', { exact: false }).waitFor();
+      assert.equal(suggestionWrites, 2, 'suggestion creates a goal when no active goal remains');
+      assert.ok(await second.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
       await second.page.goto(`${origin}/profile/mistakes?itemId=${itemId}`, {
         waitUntil: 'domcontentloaded',
       });
