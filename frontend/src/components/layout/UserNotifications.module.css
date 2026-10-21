@@ -3,6 +3,10 @@
 @media(min-width:701px){.container{position:static}.panel{right:0!important}.panel:before{right:calc(var(--profile-area-width, 132px) + 15px)!important}}
 .message span svg{width:11px;height:11px;display:inline;vertical-align:-2px}
 
+/* Keep the bell menu compact; the full message remains available in notification details. */
+.message p{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.message span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 
 /* Dark Mode Overrides */
 :global([data-theme="dark"]) .bellButton {
