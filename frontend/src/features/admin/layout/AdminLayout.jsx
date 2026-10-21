@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import AdminSidebar from './AdminSidebar';
 import AdminTopbar from './AdminTopbar';
+import TopicReviewNotice from '../topics/TopicReviewNotice';
 import styles from './AdminLayout.module.css';
 import './AdminLayoutEnhancements.css';
 
@@ -26,7 +27,7 @@ export default function AdminLayout() {
       <AdminSidebar collapsed={collapsed} />
       <div className={styles.workspace}>
         <AdminTopbar collapsed={collapsed} onToggleSidebar={() => setCollapsed((value) => !value)} />
-        <main className={styles.main}><Outlet /></main>
+        <main className={styles.main}><TopicReviewNotice /><Outlet /></main>
       </div>
     </div>
   );

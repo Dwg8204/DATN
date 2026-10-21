@@ -8,12 +8,15 @@ import { useAuth } from '../../../context/AuthContext';
 import { hasAnyRole } from '../../auth/utils/authorization';
 
 function NavigationItem({ item, onClick }) {
+  const { pathname } = useLocation();
+  const sectionActive = item.activePaths?.includes(pathname);
+  const ItemLink = item.activePaths ? Link : NavLink;
   const ui = useUiTranslation();
   const Icon = item.icon;
   return (
-    <NavLink to={item.to} onClick={onClick} className={({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}>
+    <ItemLink to={item.to} aria-current={sectionActive ? "page" : undefined} onClick={onClick} className={item.activePaths ? `${styles.navItem} ${sectionActive ? styles.navItemActive : ''}` : ({ isActive }) => `${styles.navItem} ${isActive ? styles.navItemActive : ''}`}>
       <Icon aria-hidden="true" /><span>{ui(item.label)}</span>
-    </NavLink>
+    </ItemLink>
   );
 }
 
