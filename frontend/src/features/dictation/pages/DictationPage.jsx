@@ -5,7 +5,7 @@ import ConfirmModal from '../../../components/common/ConfirmModal';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeftRight, BookOpen, Check, ChevronLeft, ChevronRight, CircleHelp, Eye, FolderOpen, Headphones, Lightbulb, List, Pencil, Play, Plus, Search, RotateCcw, Shuffle, Trash2, Volume2, X } from 'lucide-react';
+import { ArrowLeftRight, BookOpen, Check, ChevronLeft, ChevronRight, CircleHelp, Eye, FolderOpen, Headphones, Lightbulb, List, Pencil, Play, Plus, Search, RotateCcw, Shuffle, Trash2, Upload, Volume2, X } from 'lucide-react';
 import { useAuth } from '../../../context/AuthContext';
 import { useStudyData } from '../hooks/useStudyData';
 import { studyApi } from '../services/studyApi';
@@ -14,6 +14,7 @@ import { normalizeApiError } from '../../../services/apiError';
 import { useToast } from '../../../context/ToastContext';
 import styles from './DictationPage.module.css';
 import VocabularyWordInput from '../components/VocabularyWordInput';
+import VocabularyBulkImport from '../components/VocabularyBulkImport';
 
 const positiveQueryInt = (value, fallback, maximum = 100) => {
   const parsed = Number.parseInt(value, 10);
@@ -74,6 +75,7 @@ export default function DictationPage() {
   const notebookQuery = searchParams.get('q') || '';
   const notebookTopic = searchParams.get('filterTopic') || 'All topics';
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showBulkImport, setShowBulkImport] = useState(false);
   const [showTopicCreator, setShowTopicCreator] = useState(false);
   const [newTopicName, setNewTopicName] = useState('');
   const [notebookNotice, setNotebookNotice] = useState('');
@@ -744,6 +746,7 @@ export default function DictationPage() {
             <div className={styles.notebookHeaderActions}>
               <label className={styles.topicFilter}><FolderOpen size={17} /><AnswerSelect value={notebookTopic} onChange={(event) => setNotebookPagination({ filterTopic: event.target.value === 'All topics' ? '' : event.target.value, page: 1 })} options={[{ value: 'All topics', label: t('dictation.allTopics') }, ...availableTopics.map((topic) => topic.name), { value: 'Other', label: t('dictation.other') }]} ariaLabel={t('dictation.filterTopic')} /></label>
               <label className={styles.notebookSearch}><Search size={17} /><input value={notebookQuery} onChange={(event) => setNotebookPagination({ q: event.target.value, page: 1 })} placeholder={t('dictation.searchSaved')} aria-label={t('dictation.searchSaved')} /></label>
+              {notebookTab === 'words' && <button type="button" className={styles.bulkImportButton} onClick={() => setShowBulkImport(true)}><Upload size={17} /> {t('dictation.bulkOpen')}</button>}
               <button className={styles.createButton} onClick={() => openCreateForm()}><Plus size={18} /> {t('dictation.addNew')}</button>
             </div>
           </header>
@@ -783,6 +786,8 @@ export default function DictationPage() {
             </aside>
           </div>
 
+          {showBulkImport && <VocabularyBulkImport key={user.id} onClose={() => setShowBulkImport(false)} mutate={mutate}
+            onComplete={saved => setNotebookNotice(t('dictation.bulkDone', { created: saved.created, duplicate: saved.duplicate, folders: saved.foldersCreated.length }))} />}
           {showCreateForm && <div className={styles.modalBackdrop} onMouseDown={() => setShowCreateForm(false)}>
             <form className={styles.createModal} onSubmit={createNotebookItem} onMouseDown={(event) => event.stopPropagation()} noValidate>
               <div className={styles.createModalHeader}><div><span>{t(editingItemId ? 'dictation.edit' : 'dictation.createNew')}</span><h3>{t(editingItemId ? (createType === 'word' ? 'dictation.editWord' : 'dictation.editSentence') : (createType === 'word' ? 'dictation.addWord' : 'dictation.addSentence'))}</h3></div><button type="button" onClick={() => setShowCreateForm(false)} aria-label={t('dictation.close')}><X /></button></div>

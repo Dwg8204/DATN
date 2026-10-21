@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "test:dictation": "node --test src/features/dictation/utils/legacyStudyImport.test.js src/features/dictation/hooks/useStudyData.test.js src/features/dictation/pages/DictationPage.test.js src/features/dictation/components/VocabularyWordInput.test.js",
+    "test:dictation": "node --test src/features/dictation/utils/legacyStudyImport.test.js src/features/dictation/utils/bulkWordFile.test.js src/features/dictation/hooks/useStudyData.test.js src/features/dictation/pages/DictationPage.test.js src/features/dictation/components/VocabularyWordInput.test.js",
     "test:reading": "node --test src/features/module-reading/utils/readingResultSections.test.js src/features/module-reading/utils/part2Placement.test.js src/features/module-reading/components/test-engine/parts/Part1GapFilling.test.js src/features/module-reading/components/test-engine/parts/Part2TextCohesion.test.js src/features/module-reading/pages/ReadingAttemptPage.test.js src/features/test-attempts/context/PracticeAttemptContext.test.js src/features/module-reading/utils/readingResultPresentation.test.js src/features/module-reading/pages/ReadingResults.test.js",
     "test:reading:layout": "node --test tests/readingPart1.layout.test.mjs",
     "test:dictionary": "node --test src/features/practice/utils/dictionaryVocabulary.test.js src/features/practice/hooks/useDictionaryVocabulary.test.js tests/dictionaryVocabulary.browser.test.mjs",
