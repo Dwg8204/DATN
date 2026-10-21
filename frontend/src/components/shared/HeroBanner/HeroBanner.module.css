@@ -42,14 +42,14 @@
 }
 
 .title {
-  color: var(--brand-hover);
+  color: #000;
   font-size: 28px;
   font-weight: bold;
   margin-left: 41px;
 }
 
 .description {
-  color: var(--text-primary);
+  color: #000;
   font-size: 16px;
   width: 100%;
   max-width: 415px;
