@@ -119,4 +119,26 @@ describe('MailService errors', () => {
       message: 'The notification email could not be delivered. Please check the SMTP configuration and try again.',
     });
   });
+
+  it('groups learning reports into one email with escaped headlines, three metrics and report opt-out links', async () => {
+    sendMail.mockResolvedValue({});
+    const service = new MailService(new ConfigService({
+      smtp: { enabled: true, host: 'localhost', from: 'test@example.com' },
+      app: { frontendOrigin: 'https://aptimate.example' },
+    }));
+    const entries = [1, 2].map(value => ({
+      headline: 'Tuần <mới>', summary: 'Bài: 3\nNgày học: 2\nTiến độ: 8/30',
+      actionPath: `/profile/reports/00000000-0000-4000-8000-00000000000${value}`,
+    }));
+    await service.sendLearningReportEmail('one@example.com', entries);
+    expect(sendMail).toHaveBeenCalledTimes(1);
+    const mail = sendMail.mock.calls[0][0];
+    expect(mail.to).toBe('one@example.com');
+    expect(mail.html).toContain('Tuần &lt;mới&gt;');
+    expect(mail.text).toContain(entries[0].actionPath);
+    expect(mail.text).toContain(entries[1].actionPath);
+    expect(mail.html).toContain('disableReportEmail=1#learning-preferences');
+    expect(mail.attachments).toBeUndefined();
+    await expect(service.sendLearningReportEmail('one@example.com', [{ ...entries[0], actionPath: '//other.example' }])).rejects.toMatchObject({ code: 'REPORT_EMAIL_LINK_INVALID' });
+  });
 });

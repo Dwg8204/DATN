@@ -11,13 +11,15 @@ for (const name of [
   'personalization-snapshot',
   'personalization-plan',
   'personalization-reminders',
+  'personalization-comments',
+  'personalization-reports',
 ]) {
   const result = spawnSync(
     process.execPath,
     ['-r', 'ts-node/register', resolve(__dirname, `${name}.ts`)],
     {
       stdio: 'inherit',
-      env: { ...process.env, PERSONALIZATION_WORKER_ENABLED: 'false' },
+      env: { ...process.env, PERSONALIZATION_WORKER_ENABLED: 'false', PERSONALIZATION_AI_ENABLED: 'false' },
     },
   );
   if (result.status !== 0) {

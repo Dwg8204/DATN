@@ -57,6 +57,8 @@ withPersonalizationDatabase(async (db, alice, bob) => {
   const payload = { targetCefr: 'B2', targetTests: 40, durationDays: 30 };
   try {
     await api().get('/me/learning-goal').set('x-role', 'ADMIN').expect(403);
+    await api().get('/me/insights/comment').set('x-role', 'ADMIN').expect(403);
+    assert.equal((await api().get('/me/insights/comment').expect(200)).body.status, 'HIDDEN');
     for (const durationDays of [2, 181, 3.5])
       await api()
         .post('/me/learning-goal')

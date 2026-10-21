@@ -3,6 +3,7 @@ import {
   Logger,
   OnModuleDestroy,
   OnModuleInit,
+  Optional,
 } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -10,6 +11,9 @@ import { GoalsService } from '../services/goals.service';
 import { PlanService } from '../services/plan.service';
 import { PersonalizationClock } from '../services/personalization-clock';
 import { RemindersService } from '../services/reminders.service';
+import { CommentGenerationWorker } from './comment-generation.worker';
+import { ReportJobsService } from '../services/report-jobs.service';
+import { ReportsService } from '../services/reports.service';
 
 @Injectable()
 export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
@@ -22,6 +26,9 @@ export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
     private readonly plans: PlanService,
     private readonly clock: PersonalizationClock,
     private readonly reminders: RemindersService,
+    @Optional() private readonly comments?: CommentGenerationWorker,
+    @Optional() private readonly reportJobs?: ReportJobsService,
+    @Optional() private readonly reports?: ReportsService,
   ) {}
   onModuleInit() {
     if (process.env.PERSONALIZATION_WORKER_ENABLED !== 'true') return;
@@ -90,5 +97,8 @@ export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
         );
       }
     }
+    await this.reportJobs?.scheduleBatch();
+    await this.comments?.runBatch();
+    await this.reports?.enqueueDeliveries();
   }
 }

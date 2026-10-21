@@ -195,28 +195,79 @@ export class NotificationsRepository {
     });
   }
 
-  async claimDueNotifications(limit: number): Promise<NotificationRow[]> {
+  async claimDueNotifications(limit: number, asOf = new Date()): Promise<NotificationRow[]> {
     // Keep the outer command a SELECT: TypeORM returns [rows, affected] for
     // a raw UPDATE, which is not the NotificationRow[] consumed by the worker.
     return this.dataSource.query<NotificationRow[]>(
       `WITH due AS (
          SELECT id
          FROM notifications
-         WHERE (status = 'SCHEDULED' AND scheduled_at <= now())
-            OR (status = 'SENDING' AND updated_at < now() - interval '10 minutes')
+         WHERE ((status = 'SCHEDULED' AND scheduled_at <= $2)
+            OR (status = 'SENDING' AND updated_at < $2::timestamptz - interval '10 minutes'))
+           AND NOT (type='LEARNING_REPORT' AND channel='EMAIL' AND dedupe_key LIKE 'report:%')
          ORDER BY scheduled_at ASC
          FOR UPDATE SKIP LOCKED
          LIMIT $1
        ), claimed AS (
        UPDATE notifications n
-       SET status = 'SENDING', updated_at = now()
+       SET status = 'SENDING', updated_at = $2
        FROM due
        WHERE n.id = due.id
        RETURNING n.id, n.created_by, n.title, n.content, n.type, n.channel, n.audience_type,
                  n.audience_role_id, n.attachment, n.action_path, n.scheduled_at, n.status,
                  n.sent_at, n.created_at, n.updated_at, n.dedupe_key
        ) SELECT * FROM claimed`,
-      [limit],
+      [limit, asOf],
+    );
+  }
+
+  /** Claim complete recipient groups, not a truncated list of individual emails. */
+  async claimDueReportEmailGroups(limit: number, asOf = new Date()): Promise<Array<{ userId: string; notifications: NotificationRow[] }>> {
+    return this.dataSource.transaction(async manager => {
+      const users = await manager.query<Array<{ id: string }>>(
+        `SELECT u.id FROM users u WHERE EXISTS(
+          SELECT 1 FROM notification_recipients r JOIN notifications n ON n.id=r.notification_id
+          WHERE r.user_id=u.id AND r.delivery_status='PENDING' AND n.type='LEARNING_REPORT' AND n.channel='EMAIL' AND n.dedupe_key LIKE 'report:%'
+            AND ((n.status='SCHEDULED' AND n.scheduled_at<=$2) OR (n.status='SENDING' AND n.updated_at<$2::timestamptz-interval '10 minutes')))
+          AND NOT EXISTS(SELECT 1 FROM notification_recipients r JOIN notifications n ON n.id=r.notification_id
+            WHERE r.user_id=u.id AND n.type='LEARNING_REPORT' AND n.channel='EMAIL' AND n.status='SENDING' AND n.updated_at>=$2::timestamptz-interval '10 minutes')
+        ORDER BY u.id LIMIT $1 FOR UPDATE OF u SKIP LOCKED`, [limit, asOf],
+      );
+      const groups: Array<{ userId: string; notifications: NotificationRow[] }> = [];
+      for (const user of users) {
+        const notifications = await manager.query<NotificationRow[]>(
+          `WITH due AS (
+            SELECT n.id FROM notifications n JOIN notification_recipients r ON r.notification_id=n.id
+            WHERE r.user_id=$1 AND r.delivery_status='PENDING' AND n.type='LEARNING_REPORT' AND n.channel='EMAIL' AND n.dedupe_key LIKE 'report:%'
+              AND ((n.status='SCHEDULED' AND n.scheduled_at<=$2) OR (n.status='SENDING' AND n.updated_at<$2::timestamptz-interval '10 minutes'))
+            FOR UPDATE OF n SKIP LOCKED
+          ), claimed AS (UPDATE notifications n SET status='SENDING',updated_at=$2 FROM due WHERE n.id=due.id RETURNING n.*)
+          SELECT * FROM claimed ORDER BY scheduled_at,id`, [user.id, asOf],
+        );
+        if (notifications.length) groups.push({ userId: user.id, notifications });
+      }
+      return groups;
+    });
+  }
+
+  async isReportEmailEligible(userId: string, dedupeKey: string): Promise<boolean> {
+    const [row] = await this.dataSource.query<Array<{ eligible: boolean }>>(
+      `SELECT EXISTS(SELECT 1 FROM learning_insights i JOIN users u ON u.id=i.user_id JOIN roles r ON r.id=u.role_id
+        LEFT JOIN learner_preferences p ON p.user_id=u.id
+        WHERE i.user_id=$1 AND $2='report:'||i.id::text||':EMAIL'
+          AND i.kind IN ('WEEKLY','MIDTERM','FINAL') AND u.status='ACTIVE' AND u.deleted_at IS NULL AND r.code='STUDENT'
+          AND COALESCE(p.email_report_enabled,true)) eligible`, [userId, dedupeKey],
+    );
+    return row.eligible;
+  }
+
+  async recordReportDelivered(userId: string, dedupeKey: string, channel: string) {
+    if (!dedupeKey.startsWith('report:')) return;
+    await this.dataSource.query(
+      `UPDATE learning_insights SET
+        notified_at=CASE WHEN $3='IN_APP' THEN COALESCE(notified_at,now()) ELSE notified_at END,
+        emailed_at=CASE WHEN $3='EMAIL' THEN COALESCE(emailed_at,now()) ELSE emailed_at END
+       WHERE user_id=$1 AND $2='report:'||id::text||':'||$3`, [userId, dedupeKey, channel],
     );
   }
 

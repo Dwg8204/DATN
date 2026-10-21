@@ -80,11 +80,20 @@ describe('Shared generation and request recording', () => {
       null,
       expect.stringMatching(/^[a-f0-9]{64}$/),
       JSON.stringify({ promptVersion: 'test-v1', model: 'test-model' }),
+      'gemini',
+      JSON.stringify({ tier: 'FREE' }),
     ]);
     expect(JSON.stringify(query.mock.calls)).not.toMatch(
       /private system prompt|private snapshot|test-only/,
     );
-    expect(query.mock.calls[1][1]).toEqual([result.requestId, 123, 45, 67, 8]);
+    expect(query.mock.calls[1][1]).toEqual([
+      result.requestId,
+      123,
+      45,
+      67,
+      8,
+      0,
+    ]);
   });
 
   test('records quota failure once and exposes backoff to the caller without retrying', async () => {

@@ -64,7 +64,9 @@ export class SnapshotService {
       period AS (SELECT ${scoreFields} FROM test_attempts WHERE ${where} AND submitted_at >= ($6::date::timestamp AT TIME ZONE $4)
         AND submitted_at < (($7::date+1)::timestamp AT TIME ZONE $4) ORDER BY submitted_at DESC,id DESC LIMIT 200)
       SELECT * FROM cumulative UNION SELECT * FROM period`
-      : `SELECT ${scoreFields} FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id DESC LIMIT 200`;
+      : window.kind === 'COMMENT'
+        ? `SELECT ${scoreFields} FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id ASC LIMIT 20`
+        : `SELECT ${scoreFields} FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id DESC LIMIT 200`;
     const [attempts, scoredAttempts, reviews, [vocab], planItems, mistakes] =
       await Promise.all([
         this.db.query<SnapshotAttempt[]>(

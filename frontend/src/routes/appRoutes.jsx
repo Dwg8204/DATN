@@ -13,6 +13,7 @@ import GrammarVocabResultPage from '../features/grammar_vocab/pages/GrammarVocab
 import TestListPage from '../pages/TestListPage';
 import ProfilePage from '../features/profile/pages/ProfilePage';
 import MistakeReviewPage from '../features/personalization/components/MistakeReviewPage';
+import WeeklyReportPage from '../features/personalization/components/WeeklyReportPage';
 import NotificationsPage from '../features/profile/pages/NotificationsPage';
 import LearningHistoryPage from '../features/profile/pages/LearningHistoryPage';
 import ChangePasswordPage from '../features/profile/pages/ChangePasswordPage';
@@ -69,6 +70,10 @@ export const appRoutes = [
       {
         path: 'profile/mistakes',
         element: <RoleGuard allowedRoles={['STUDENT']}><MistakeReviewPage /></RoleGuard>,
+      },
+      {
+        path: 'profile/reports/:id',
+        element: <RoleGuard allowedRoles={['STUDENT']}><WeeklyReportPage /></RoleGuard>,
       },
       {
         path: 'profile/history',

@@ -12,6 +12,7 @@ export default function LearningGoalSettings() {
   const { showSuccess, showError } = useToast();
   const [searchParams] = useSearchParams();
   const disableEmailRequested = searchParams.get('disableReminderEmail') === '1';
+  const disableReportRequested = searchParams.get('disableReportEmail') === '1';
   const [state, setState] = useState(null);
   const [form, setForm] = useState({ targetCefr: 'B2', targetTests: 40, durationDays: 30 });
   const [preferences, setPreferences] = useState(null);
@@ -21,8 +22,8 @@ export default function LearningGoalSettings() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   useEffect(() => {
-    if (preferences && disableEmailRequested) document.getElementById('learning-preferences')?.scrollIntoView();
-  }, [preferences, disableEmailRequested]);
+    if (preferences && (disableEmailRequested || disableReportRequested)) document.getElementById('learning-preferences')?.scrollIntoView();
+  }, [preferences, disableEmailRequested, disableReportRequested]);
   const load = async () => {
     const [current, settings, previous] = await Promise.all([api.goal(), api.preferences(), api.history(1)]);
     setState(current); setPreferences(settings); setHistory(previous);
@@ -87,6 +88,9 @@ export default function LearningGoalSettings() {
         {disableEmailRequested && (preferences.emailReminderEnabled
           ? <button type="button" disabled={busy} onClick={() => run(() => api.savePreferences({ ...preferences, emailReminderEnabled: false }))}>{t('personalization.disableReminderEmail')}</button>
           : <p role="status">{t('personalization.reminderEmailDisabled')}</p>)}
+        {disableReportRequested && (preferences.emailReportEnabled
+          ? <button type="button" disabled={busy} onClick={() => run(() => api.savePreferences({ ...preferences, emailReportEnabled: false }))}>{t('personalization.disableReportEmail')}</button>
+          : <p role="status">{t('personalization.reportEmailDisabled')}</p>)}
         {['reminderEnabled', 'emailReminderEnabled', 'emailReportEnabled'].map(key => <label key={key} className={styles.check}><input type="checkbox" checked={preferences[key]} onChange={e => setPreferences({ ...preferences, [key]: e.target.checked })} />{t(`personalization.${key}`)}</label>)}
         <label className={styles.field}>{t('personalization.reminderTime')}<input type="time" required value={preferences.reminderTime} onChange={e => setPreferences({ ...preferences, reminderTime: e.target.value })} /></label>
         <div className={styles.actions}><button disabled={busy}>{t('personalization.savePreferences')}</button></div>

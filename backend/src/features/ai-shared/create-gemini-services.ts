@@ -4,6 +4,11 @@ import { AiRequestRecorder } from './ai-request-recorder.service';
 import { GeminiClient } from './gemini-client.service';
 import { GeminiGenerationService } from './gemini-generation.service';
 import { GeminiRateLimiter } from './gemini-rate-limiter.service';
+import {
+  GeminiJsonProvider,
+  OpenAiCompatibleJsonProvider,
+  JsonGenerationService,
+} from './json-generation.service';
 
 /** CLI composition root. Nest applications should import AiSharedModule instead. */
 export function createGeminiServices(config: ConfigService, db: DataSource) {
@@ -12,5 +17,9 @@ export function createGeminiServices(config: ConfigService, db: DataSource) {
     client,
     new AiRequestRecorder(db),
   );
-  return { client, generation };
+  const jsonGeneration = new JsonGenerationService(
+    new GeminiJsonProvider(generation),
+    new OpenAiCompatibleJsonProvider(config, new AiRequestRecorder(db)),
+  );
+  return { client, generation, jsonGeneration };
 }

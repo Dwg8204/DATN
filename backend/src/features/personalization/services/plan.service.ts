@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -15,6 +15,7 @@ import { SnapshotService } from './snapshot.service';
 import { PlanCandidatesService } from './plan-candidates.service';
 import { PersonalizationClock } from './personalization-clock';
 import { MistakeSourceService } from './mistake-source.service';
+import { ReportJobsService } from './report-jobs.service';
 
 @Injectable()
 export class PlanService {
@@ -28,6 +29,7 @@ export class PlanService {
     private readonly candidates: PlanCandidatesService,
     private readonly clock: PersonalizationClock,
     private readonly mistakes: MistakeSourceService,
+    @Optional() private readonly reports?: ReportJobsService,
   ) {}
 
   async current(actor: AuthUser) {
@@ -46,8 +48,13 @@ export class PlanService {
   async afterGoalCreated(actor: AuthUser) {
     try {
       await this.current(actor);
+      if (this.reports) await this.db.transaction(async manager => {
+        await this.goals.lockUser(manager, actor.id);
+        const active = await this.goals.reconcile(manager, actor.id, this.clock.now());
+        if (active) await this.reports!.queueStartLocked(manager, active.goal);
+      });
     } catch {
-      this.logger.warn('Initial RULE plan deferred to reconciliation.');
+      this.logger.warn('Initial study plan or AI job deferred to reconciliation.');
     }
   }
 

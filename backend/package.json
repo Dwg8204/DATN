@@ -31,6 +31,9 @@
     "db:migrate:generate": "typeorm-ts-node-commonjs migration:generate -d src/database/data-source.ts",
     "db:seed": "ts-node src/database/seeds/run-seeds.ts",
     "db:seed:samples": "ts-node src/database/seeds/seed-sample-tests.ts",
+    "db:seed:expanded": "ts-node src/database/seeds/seed-expanded-tests.ts",
+    "seed:expanded:audio": "ts-node scripts/prepare-expanded-audio.ts",
+    "test:seed:expanded:db": "ts-node test/integration/expanded-seed.ts",
     "test:roles:db": "ts-node test/integration/account-roles.ts",
     "test:comments:db": "ts-node test/integration/comments-database.ts",
     "test:comments": "jest --runInBand --testPathPattern comments",
@@ -39,7 +42,8 @@
     "knowledge:validate": "ts-node scripts/chatbot-knowledge.ts --validate",
     "knowledge:import": "ts-node scripts/chatbot-knowledge.ts --apply",
     "ai:chatbot:smoke": "ts-node scripts/chatbot-smoke.ts",
-    "test:personalization": "jest --runInBand --testPathPattern personalization"
+    "test:personalization": "jest --runInBand --testPathPattern personalization",
+    "ai:personalization:smoke": "ts-node scripts/personalization-smoke.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",

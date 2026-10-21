@@ -12,6 +12,12 @@ const routes = {
   WRITING: 'writing',
   SPEAKING: 'speaking',
 };
+const ruleReasons = new Set([
+  'DAILY_VOCAB',
+  'GOAL_PACE',
+  'BAND_PRACTICE',
+  'RECENT_MISTAKES',
+]);
 export default function StudyPlanCard() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -74,6 +80,9 @@ export default function StudyPlanCard() {
               count: item.questionCount ?? item.targetCount,
             })}
       </span>
+      {data?.plan?.source === 'AI' && item.reason && !ruleReasons.has(item.reason) && (
+        <span className={styles.muted}>{item.reason}</span>
+      )}
       <span>
         {item.doneCount}/{item.targetCount}
       </span>

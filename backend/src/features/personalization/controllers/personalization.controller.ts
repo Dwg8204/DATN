@@ -25,6 +25,7 @@ import { GoalsService } from '../services/goals.service';
 import { PreferencesService } from '../services/preferences.service';
 import { SnapshotService } from '../services/snapshot.service';
 import { PlanService } from '../services/plan.service';
+import { CommentsService } from '../services/comments.service';
 
 @Controller('me')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -35,7 +36,11 @@ export class PersonalizationController {
     private readonly preferences: PreferencesService,
     private readonly snapshots: SnapshotService,
     private readonly plans: PlanService,
+    private readonly comments: CommentsService,
   ) {}
+  @Get('insights/comment') comment(@CurrentUser() actor: AuthUser) {
+    return this.comments.current(actor);
+  }
   @Get('learning-goal') current(@CurrentUser() actor: AuthUser) {
     return this.snapshots.current(actor);
   }

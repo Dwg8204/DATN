@@ -1,0 +1,56 @@
+import { ReportJob, reportPromptInput, validateWeeklyContent, WeeklyContent } from './report.contract';
+import { buildLearnerSnapshot } from '../policies/learner-snapshot';
+import { reportSnapshot } from './report.contract';
+
+const snapshot = buildLearnerSnapshot('private-user', null, { kind: 'GOAL' }, new Date('2026-10-01T00:00:00Z'), {
+  attempts: [], scoredAttempts: [], reviewDates: [], learningCount: 20, mistakes: [], planItems: [],
+}, 'Asia/Bangkok');
+export const fixtureJob = (): ReportJob => ({
+  snapshotVersion: 1, learner: reportSnapshot({ ...snapshot, inputHash: 'fixture' }, 0), promptVersion: 'test',
+  plan: { weekIndex: 1, startsOn: '2026-10-01', endsOn: '2026-10-03', days: 3, requiredPace: 2, remainingTests: 6 },
+  candidates: [
+    { candidateId: 'c1', activityType: 'TEST', testId: 'private-test', component: 'READING', purpose: 'PRACTICE', title: 'private-title' },
+    { candidateId: 'c2', activityType: 'VOCAB_REVIEW', targetCount: 20 },
+    { candidateId: 'c3', activityType: 'MISTAKE_REVIEW', sourceAttemptId: 'private-attempt', component: 'READING', questionKeys: ['p1:q1', 'p1:q2', 'p1:q3'] },
+  ],
+});
+const good = (): WeeklyContent => ({
+  report: { headline: 'Tiếp tục luyện tập', narrative: 'Hãy duy trì thói quen học tập.', wins: [], nextSteps: ['Ôn lại các phần còn yếu.'] },
+  plan: { items: [1, 2, 3].map(dayIndex => ({ dayIndex, candidateId: 'c1', targetCount: 2, reason: 'Duy trì tiến độ học tập.' })) },
+});
+
+describe('weekly AI contract', () => {
+  it('accepts a combined report and bounded plan', () => {
+    expect(validateWeeklyContent(good(), 'WEEKLY', fixtureJob())).toEqual(good());
+  });
+  it('accepts PLAN_START without report and requires cumulative text for MIDTERM', () => {
+    expect(validateWeeklyContent({ plan: good().plan }, 'PLAN_START', fixtureJob())).toBeDefined();
+    expect(() => validateWeeklyContent(good(), 'MIDTERM', fixtureJob())).toThrow();
+    const content = good();
+    content.report!.progressSoFar = 'Tiếp tục học để có thêm dữ liệu.';
+    expect(validateWeeklyContent(content, 'MIDTERM', fixtureJob())).toBeDefined();
+  });
+  it.each([
+    (c: WeeklyContent) => { c.plan.items[0].candidateId = 'invented'; },
+    (c: WeeklyContent) => { c.plan.items[0].dayIndex = 4; },
+    (c: WeeklyContent) => { c.plan.items.push(...Array.from({ length: 3 }, () => ({ ...c.plan.items[0] }))); },
+    (c: WeeklyContent) => { c.plan.items[0].targetCount = 1; },
+    (c: WeeklyContent) => { c.report!.narrative = 'Bạn đã hoàn thành 999 bài.'; },
+    (c: WeeklyContent) => { c.report!.narrative = 'từ '.repeat(121); },
+    (c: WeeklyContent) => { c.plan.items[0].reason = 'từ '.repeat(21); },
+    (c: WeeklyContent) => { c.plan.items.push({ dayIndex: 1, candidateId: 'c2', targetCount: 10, reason: 'Ôn từ vựng.' }); },
+    (c: WeeklyContent) => { c.plan.items.push({ dayIndex: 1, candidateId: 'c3', targetCount: 2, reason: 'Ôn câu sai.' }); },
+  ])('rejects invalid output %#', change => {
+    const content = good(); change(content);
+    expect(() => validateWeeklyContent(content, 'WEEKLY', fixtureJob())).toThrow();
+  });
+  it('sends short candidate references, never titles, database IDs or question keys', () => {
+    const prompt = JSON.stringify(reportPromptInput('MIDTERM', fixtureJob()));
+    expect(prompt).not.toMatch(/private|testId|sourceAttemptId|questionKeys|p1:q1/);
+    expect(prompt).toContain('"isMidterm":true');
+  });
+  it('requires practice after reaching the test target', () => {
+    const job = fixtureJob(); job.plan.remainingTests = 0; job.plan.requiredPace = 0;
+    expect(() => validateWeeklyContent({ plan: { items: [] } }, 'PLAN_START', job)).toThrow();
+  });
+});

@@ -1,4 +1,8 @@
-# Personalization — GĐ1–GĐ5
+# Personalization — GĐ1–GĐ7
+
+GĐ7 adds PLAN_START and combined WEEKLY/MIDTERM report + next-week AI planning, historical report windows, safe replacement of untouched plan days, 08:00 delivery, grouped report emails and owned report read APIs/UI. See `docs/PERSONALIZATION_GD7_REPORT.md`; the complete original implementation plan is preserved in `docs/PERSONALIZATION_IMPLEMENTATION_PLAN_V2.md`. FINAL remains GĐ8 and insight chatbot context remains GĐ9.
+
+GĐ6 adds opt-in Gemini COMMENT generation through `GET /me/insights/comment`, a private numeric snapshot, schema/content validation, shared request/token recording, persistent per-user/day and feature/minute limits, bounded retries and a Dashboard card. `PERSONALIZATION_AI_ENABLED` defaults to false. See `docs/PERSONALIZATION_GD6_REPORT.md` for activation, synthetic smoke tests and phase boundaries.
 
 GĐ5 adds template-based daily reminders after progress reconciliation. The account timezone controls reminder time; the frozen goal timezone controls today's activities and deadline. Notifications and the daily marker commit together under the user lock; per-user/day/channel keys prevent duplicate queue entries. Delivery rechecks eligibility and discards past-day reminders. Email includes dashboard and authenticated opt-out links. See `docs/PERSONALIZATION_GD5_REPORT.md` for configuration, tests and delivery limits. No AI is used.
 
@@ -21,7 +25,7 @@ The pure snapshot builder reuses `learningStats`; the hash excludes `asOf`. Scor
 
 All user-facing reads require `userId`. Composite foreign keys enforce matching owners for goals, insights and plans, and matching goals for a plan's insight. Controllers also enforce JWT authentication and the STUDENT role.
 
-Goal replacement ends the old active goal, inserts the replacement, then assigns `replaced_by_goal_id` in one transaction. This order satisfies the active-goal unique index and the immediate replacement FK. State transitions, candidate eligibility, owned question keys, RULE scheduling and pagination are implemented. AI output validation and report scheduling remain in later phases.
+Goal replacement ends the old active goal, inserts the replacement, then assigns `replaced_by_goal_id` in one transaction. This order satisfies the active-goal unique index and the immediate replacement FK. State transitions, candidate eligibility, owned question keys, RULE scheduling, pagination, weekly AI output validation and report scheduling are implemented. FINAL scheduling remains GĐ8.
 
 ## Migrations
 
