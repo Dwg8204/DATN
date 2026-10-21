@@ -34,6 +34,11 @@ async function main() {
     assert.equal(a.words.length, 10); assert.equal(a.exercises.length, 5);
     assert.equal((await study.state(userA)).words.length, 10, 'bootstrap is idempotent');
     assert.notEqual(a.words[0].id, b.words[0].id, 'notebook items belong to individual users');
+    const screenshotRow = { rowNumber: 2, word: 'accomplish', pronunciation: '/əˈkʌm.plɪʃ/',
+      word_type: 'Verb', vietnamese_meaning: 'Hoàn thành, đạt được',
+      example_sentence: 'Hoàn thành, đạt được', topic: 'Education' };
+    assert.deepEqual((await study.previewBulk(userA, [screenshotRow])).counts,
+      { ready: 1, duplicate: 0, error: 0 }, 'the six columns shown in the user file pass backend preview');
 
     const folder = await folders.create(userA, { name: 'Integration private' });
     assert.equal((await folders.create(userA, { name: 'integration private' })).id, folder.id, 'topic creation can be retried');
@@ -47,6 +52,26 @@ async function main() {
     assert.ok(!(await study.state(userB)).words.some(w => w.id === word.id), 'no cross-account word leakage');
     await study.update(userA, word.id, { ...wordDto, word: 'edited test word' });
     assert.equal((await study.state(userA)).words.find(w => w.id === word.id)?.word, 'edited test word');
+    const bulkRows = [
+      { rowNumber: 2, word: 'fresh phrase', pronunciation: '/freʃ/', word_type: 'phrase', vietnamese_meaning: 'cụm từ mới', example_sentence: '', topic: 'integration PRIVATE' },
+      { rowNumber: 3, word: 'fresh phrase', pronunciation: '/freʃ/', word_type: 'phrase', vietnamese_meaning: 'cụm từ mới', example_sentence: '', topic: 'Integration private' },
+      { rowNumber: 4, word: 'another phrase', pronunciation: '/əˈnʌðə/', word_type: 'phrase', vietnamese_meaning: 'cụm khác', example_sentence: 'An example.', topic: 'Bulk new folder' },
+    ];
+    const bulkPreview = await study.previewBulk(userA, bulkRows);
+    assert.deepEqual(bulkPreview.counts, { ready: 2, duplicate: 1, error: 0 });
+    assert.deepEqual(bulkPreview.newFolders, ['Bulk new folder']);
+    const bulkRequest = { clientRequestId: randomUUID(), rows: bulkRows };
+    const bulkResult = await study.importBulk(userA, bulkRequest);
+    assert.deepEqual(bulkResult, { created: 2, duplicate: 1, foldersCreated: ['Bulk new folder'] });
+    assert.deepEqual(await study.importBulk(userA, bulkRequest), bulkResult, 'network retry is idempotent');
+    await assert.rejects(study.importBulk(userA, { ...bulkRequest, rows: bulkRows.slice(0, 1) }), /identifier already used/);
+    assert.equal((await study.previewBulk(userA, bulkRows)).counts.duplicate, 3, 'saved words are detected as duplicates');
+    assert.equal((await study.state(userA)).words.find(w => w.word === 'fresh phrase')?.example, '', 'example can be empty');
+    assert.ok(!(await study.state(userB)).words.some(w => w.word === 'fresh phrase'), 'imports stay in the owner account');
+    const invalidRows = [{ ...bulkRows[0], rowNumber: 5, word: 'invalid bulk', vietnamese_meaning: '中文' }];
+    assert.equal((await study.previewBulk(userA, invalidRows)).counts.error, 1);
+    await assert.rejects(study.importBulk(userA, { clientRequestId: randomUUID(), rows: invalidRows }), /Correct the highlighted rows/);
+    assert.ok(!(await study.state(userA)).words.some(w => w.word === 'invalid bulk'), 'invalid import is atomic');
     const review = { notebookItemId: word.id, clientEventId: randomUUID(), rating: VocabularyRating.KNOWN };
     assert.equal(await notebook.recordReviewEvent(userB, review), false);
     await notebook.recordReviewEvent(userA, review); await notebook.recordReviewEvent(userA, review);

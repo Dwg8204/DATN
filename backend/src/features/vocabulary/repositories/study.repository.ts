@@ -2,6 +2,9 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { DataSource, EntityManager } from 'typeorm';
 import { ImportStudyDto, StudyItemDto, StudyKind } from '../dto/study-item.dto';
 import { STUDY_TOPICS } from '../data/dictation-defaults-v1';
+import { createHash } from 'node:crypto';
+import { BulkStudyImportDto } from '../dto/bulk-study.dto';
+import { analyzeBulkWords, bulkKey } from '../bulk-study-validation';
 
 @Injectable()
 export class StudyRepository {
@@ -93,6 +96,59 @@ export class StudyRepository {
     return this.db.transaction(async m => {
       await this.lock(m, userId);
       return this.insertItem(m, userId, dto, dto.clientRequestId ? `request:${dto.clientRequestId}` : null);
+    });
+  }
+
+  private async bulkAnalysis(m: Pick<EntityManager, 'query'>, userId: string, rows: unknown[]) {
+    const folders = await m.query(`SELECT id,name FROM vocabulary_folders
+      WHERE (owner_id IS NULL OR owner_id=$1) AND archived_at IS NULL
+      ORDER BY owner_id NULLS FIRST,created_at,id`, [userId]);
+    const savedWords = await m.query(`SELECT n.folder_id,COALESCE(n.custom_content->>'word',e.term) AS word
+      FROM user_notebook_items n LEFT JOIN vocabulary_entries e ON e.id=n.vocabulary_entry_id
+      WHERE n.user_id=$1 AND n.item_type='WORD' AND n.is_saved=true AND n.archived_at IS NULL
+        AND n.folder_id IN (SELECT id FROM vocabulary_folders WHERE archived_at IS NULL)`, [userId]);
+    return analyzeBulkWords(rows, folders, savedWords);
+  }
+
+  async previewBulk(userId: string, rows: unknown[]) {
+    await this.bootstrap(userId);
+    const analyzed = await this.bulkAnalysis(this.db, userId, rows);
+    return { rows: analyzed.rows, newFolders: analyzed.newFolders, counts: analyzed.counts };
+  }
+
+  async importBulk(userId: string, dto: BulkStudyImportDto) {
+    await this.bootstrap(userId);
+    const hash = createHash('sha256').update(JSON.stringify(dto.rows)).digest('hex');
+    return this.db.transaction(async m => {
+      await this.lock(m, userId);
+      const [previous] = await m.query(`SELECT payload_hash,result FROM vocabulary_bulk_imports
+        WHERE user_id=$1 AND id=$2`, [userId, dto.clientRequestId]);
+      if (previous) {
+        if (previous.payload_hash !== hash) throw new ConflictException('Import identifier already used for another file.');
+        return previous.result;
+      }
+      const analyzed = await this.bulkAnalysis(m, userId, dto.rows);
+      if (analyzed.counts.error) throw new BadRequestException({ code: 'BULK_IMPORT_INVALID',
+        message: 'Correct the highlighted rows before importing.', rows: analyzed.rows });
+      const folderByName = new Map<string, string>();
+      const available = await m.query(`SELECT id,name FROM vocabulary_folders
+        WHERE (owner_id IS NULL OR owner_id=$1) AND archived_at IS NULL ORDER BY owner_id NULLS FIRST,created_at,id`, [userId]);
+      for (const folder of available) if (!folderByName.has(bulkKey(folder.name))) folderByName.set(bulkKey(folder.name), folder.id);
+      for (const name of analyzed.newFolders) {
+        const [folder] = await m.query(`INSERT INTO vocabulary_folders(owner_id,name)
+          VALUES($1,$2) RETURNING id`, [userId, name]);
+        folderByName.set(bulkKey(name), folder.id);
+      }
+      for (const row of analyzed.readyRows) {
+        await this.insertItem(m, userId, { kind: StudyKind.WORD, folderId: folderByName.get(bulkKey(row.topic))!,
+          word: row.word, pronunciation: row.pronunciation, type: row.word_type,
+          meaning: row.vietnamese_meaning, example: row.example_sentence }, null);
+      }
+      const result = { created: analyzed.counts.ready, duplicate: analyzed.counts.duplicate,
+        foldersCreated: analyzed.newFolders };
+      await m.query(`INSERT INTO vocabulary_bulk_imports(id,user_id,payload_hash,result)
+        VALUES($1,$2,$3,$4::jsonb)`, [dto.clientRequestId, userId, hash, JSON.stringify(result)]);
+      return result;
     });
   }
 

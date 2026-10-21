@@ -17,7 +17,8 @@ async function bootstrap() {
   app.enableShutdownHooks();
   const requestContext = new RequestContextMiddleware();
   app.use(requestContext.use.bind(requestContext));
-  app.use(json({ limit: '2mb' }));
+  // Vocabulary CSV/XLSX imports are parsed in the browser and sent as JSON (up to 5 MB).
+  app.use(json({ limit: '6mb' }));
   app.use(urlencoded({ extended: true, limit: '2mb' }));
   app.use(helmet());
   app.use(cookieParser());
