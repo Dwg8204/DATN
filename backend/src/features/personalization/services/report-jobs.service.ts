@@ -1,3 +1,4 @@
+import { CEFR_LEVELS } from '../../ai-shared/ability-profile';
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -119,7 +120,6 @@ export class ReportJobsService {
             "SELECT LEAST(ended_at,((start_date+duration_days)::timestamp AT TIME ZONE timezone)-interval '1 millisecond') cutoff FROM learning_goals WHERE id=$1", [goal.id]);
           const full = await this.snapshots.build({ id: goal.user_id, role: 'STUDENT' } as AuthUser, goal, { kind: 'FINAL' }, boundary.cutoff);
           const learner = reportSnapshot(full, full.cumulative.completed);
-          const bands: Record<string, number> = { A1: 1, A2: 2, B1: 3, B2: 4, C: 5, C1: 5, C2: 6 };
           const estimate = learner.band.overallEstimate;
           const job: ReportJob = {
             snapshotVersion: full.snapshotVersion, learner, candidates: [],
@@ -128,7 +128,7 @@ export class ReportJobsService {
             promptVersion: FINAL_PROMPT_VERSION,
             outcome: { lifecycle: goal.status, testTargetReached: full.cumulative.completed >= goal.target_test_count,
               targetReachedOn: goal.target_reached_at ? localDay(goal.target_reached_at, goal.timezone) : null,
-              bandTargetStatus: !estimate ? 'INSUFFICIENT_DATA' : bands[estimate] >= bands[goal.target_cefr] ? 'REACHED' : 'NOT_REACHED',
+              bandTargetStatus: !estimate ? 'INSUFFICIENT_DATA' : CEFR_LEVELS[estimate] >= CEFR_LEVELS[goal.target_cefr] ? 'REACHED' : 'NOT_REACHED',
               endedOn: localDay(boundary.cutoff, goal.timezone) },
           };
           const [user] = await manager.query<Array<{ timezone: string }>>('SELECT timezone FROM users WHERE id=$1', [goal.user_id]);

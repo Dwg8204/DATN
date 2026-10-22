@@ -1,3 +1,5 @@
+import { AbilityProfile, buildAbilityProfile } from '../../ai-shared/ability-profile';
+import { readAbilityProfile } from '../../ai-shared/ability-profile.repository';
 import { Injectable } from '@nestjs/common';
 import { localDay } from '../../personalization/policies/calendar';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -8,8 +10,6 @@ const SKILLS = {
   GRAMMAR_VOCAB: 'grammar', READING: 'reading', LISTENING: 'listening',
   WRITING: 'writing', SPEAKING: 'speaking',
 } as const;
-const BANDS: Record<string, number> = { A1: 1, A2: 2, B1: 3, B2: 4, C: 5, C1: 5, C2: 6 };
-const BAND_LABELS: Record<number, string> = { 1: 'A1', 2: 'A2', 3: 'B1', 4: 'B2', 5: 'C', 6: 'C2' };
 function dayNumber(key: string): number {
   return Math.floor(Date.parse(`${key}T00:00:00Z`) / 86_400_000);
 }
@@ -29,27 +29,20 @@ function validPercentage(row: DashboardAttemptRow, part: string): number | null 
   return Math.max(0, Math.min(100, (score / maximum) * 100));
 }
 
-function bandStats(rows: DashboardAttemptRow[]) {
-  const bySkill = new Map<string, number[]>();
+function bandStats(rows: DashboardAttemptRow[], profile: AbilityProfile) {
+  const bySkill = new Map(profile.bySkill.map(s=>[SKILLS[s.skill],s.band]));
   const scoresBySkill = new Map<string, number[]>();
   for (const row of rows) {
     const skill = SKILLS[row.component];
     const score = validPercentage(row, 'full');
     if (score != null) scoresBySkill.set(skill, [...(scoresBySkill.get(skill) ?? []), score]);
-    // Writing AI has no calibrated numeric score; keep its experimental CEFR out of the cross-skill average.
-    if (row.component !== 'WRITING' && (row.result?.method === 'OBJECTIVE' || row.result?.method === 'AI') && row.estimatedCefr && BANDS[row.estimatedCefr]) {
-      bySkill.set(skill, [...(bySkill.get(skill) ?? []), BANDS[row.estimatedCefr]]);
-    }
   }
-  const all = [...bySkill.values()].flat();
-  const avgBand = all.length ? BAND_LABELS[Math.round(all.reduce((sum, value) => sum + value, 0) / all.length)] : null;
+  const avgBand = profile.overall.band;
   const ranked = [...scoresBySkill.entries()].map(([name, values]) => ({
     name, average: values.reduce((sum, value) => sum + value, 0) / values.length,
   })).sort((a, b) => a.average - b.average);
   const skillBand = (entry?: { name: string; average: number }) => entry
-    ? { name: entry.name, band: bySkill.has(entry.name)
-      ? BAND_LABELS[Math.round(bySkill.get(entry.name)!.reduce((sum, value) => sum + value, 0) / bySkill.get(entry.name)!.length)]
-      : null } : { name: null, band: null };
+    ? { name: entry.name, band: bySkill.get(entry.name as typeof SKILLS[keyof typeof SKILLS]) ?? null } : { name: null, band: null };
   return { avgBand, bestSkill: skillBand(ranked.at(-1)),
     weakSkill: skillBand(ranked.length > 1 ? ranked[0] : undefined) };
 }
@@ -65,7 +58,7 @@ function streak(rows: DashboardAttemptRow[], now: Date, timezone: string): numbe
   return count;
 }
 
-export function buildStudentDashboard(rows: DashboardAttemptRow[], query: StudentDashboardQueryDto, now = new Date(), timezone = 'Asia/Ho_Chi_Minh') {
+export function buildStudentDashboard(rows: DashboardAttemptRow[], query: StudentDashboardQueryDto, now = new Date(), timezone = 'Asia/Ho_Chi_Minh', abilityProfile?: AbilityProfile) {
   const skillCounts: Record<string, number> = { all: rows.length, listening: 0, reading: 0, writing: 0, speaking: 0, grammar: 0 };
   const partCounts: Record<string, number> = { full: 0, part1: 0, part2: 0, part3: 0, part4: 0 };
   for (const row of rows) {
@@ -79,7 +72,8 @@ export function buildStudentDashboard(rows: DashboardAttemptRow[], query: Studen
   }
 
   const realScores = rows.map(row => validPercentage(row, 'full')).filter((value): value is number => value != null);
-  const { avgBand, bestSkill, weakSkill } = bandStats(rows);
+  const profile = abilityProfile ?? buildAbilityProfile(rows.map(row=>({...row,result:row.result ? {...row.result,parts:row.result.parts.map(p=>({...p,maxScore:p.maxScore??0}))} : null,status:'SUBMITTED',scope:'FULL_SKILL',submitted_at:row.submittedAt,max_score:row.maxScore,estimated_cefr:row.estimatedCefr})),now);
+  const { avgBand, bestSkill, weakSkill } = bandStats(rows, profile);
   const earliestDay = query.range === 'all' ? -Infinity : dayNumber(localDay(now, timezone)) - Number(query.range) + 1;
   const dated = rows.filter(row => dayNumber(localDay(new Date(row.submittedAt), timezone)) >= earliestDay);
   const distribution = Object.entries(SKILLS).map(([component, name]) => ({
@@ -101,7 +95,7 @@ export function buildStudentDashboard(rows: DashboardAttemptRow[], query: Studen
       ...Object.fromEntries(Object.entries(values).map(([skill, scores]) => [skill, roundedAverage(scores)])) }));
 
   return {
-    totalTests: rows.length, averageScore: roundedAverage(realScores), averageBand: avgBand,
+    abilityProfile: profile, totalTests: rows.length, averageScore: roundedAverage(realScores), averageBand: avgBand,
     streak: streak(rows, now, timezone), bestSkill, weakSkill,
     skillCounts, partCounts, scoreOverTime, skillDistribution: distribution,
     excludedSimulatedScores: rows.filter(row => row.result?.method === 'SIMULATED').length,
@@ -114,6 +108,8 @@ export class StudentDashboardService {
 
   async get(actor: AuthUser, query: StudentDashboardQueryDto) {
     const [user] = await this.repository.dataSource.query<Array<{ timezone: string }>>('SELECT timezone FROM users WHERE id=$1', [actor.id]);
-    return buildStudentDashboard(await this.repository.dashboardAttempts(actor.id), query, new Date(), user?.timezone ?? 'UTC');
+    const now = new Date();
+    const profile = await readAbilityProfile(this.repository.dataSource.manager, actor.id, now);
+    return buildStudentDashboard(await this.repository.dashboardAttempts(actor.id), query, now, user?.timezone ?? 'UTC', profile);
   }
 }

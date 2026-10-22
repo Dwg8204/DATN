@@ -69,7 +69,9 @@ withPersonalizationDatabase(async (db, alice, bob) => {
   assert.equal(weekly.goal?.completed, 206);
   assert.equal(weekly.statistics.attemptsConsidered, 1);
   assert.equal(weekly.cumulative.statistics.attemptsConsidered, 200);
-  assert.equal(weekly.band.overallEstimate, 'B2');
+  assert.equal(weekly.band.overallEstimate, null, 'one skill is not an overall band');
+  assert.equal(weekly.band.bySkill.find(s=>s.skill==='READING')?.band,'B2');
+  assert.equal(weekly.band.bySkill.find(s=>s.skill==='READING')?.sampleSize,3);
   const comment = await service.build(actor, null, { kind: 'COMMENT' });
   assert.equal(comment.statistics.attemptsConsidered, 20);
   const other = await service.build({ ...actor, id: bob }, null, {

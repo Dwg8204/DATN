@@ -84,7 +84,7 @@ export class ChatbotContext {
         this.snapshots.current(actor),
       ]);
       return { ...comment.statistics, goal: current.snapshot?.goal ?? null,
-        band: current.snapshot?.band ?? comment.band, habit: current.snapshot?.habit ?? comment.habit,
+        band: comment.band, habit: current.snapshot?.habit ?? comment.habit,
         limitation: comment.limitation };
     }
     const rows = await this.db.query<LearningAttempt[]>(

@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { learningStats } from '../../ai-shared/learning-statistics';
-import { readingCefrEstimate } from '../../test-attempts/policies/reading-cefr.policy';
+import { buildAbilityProfile, ABILITY_SKILLS } from '../../ai-shared/ability-profile';
 import { LearningGoalRow } from '../types/personalization.type';
 import {
   SnapshotAttempt,
@@ -9,28 +9,8 @@ import {
 } from '../types/snapshot.type';
 import { addDays, dayNumber, localDay } from './calendar';
 
-export const SNAPSHOT_VERSION = 2;
-export const SNAPSHOT_SKILLS = [
-  'GRAMMAR_VOCAB',
-  'READING',
-  'LISTENING',
-  'WRITING',
-  'SPEAKING',
-] as const;
-const BANDS: Record<string, number> = {
-  A1: 1,
-  A2: 2,
-  B1: 3,
-  B2: 4,
-  C: 5,
-  C1: 5,
-  C2: 6,
-};
-const LABELS = ['', 'A1', 'A2', 'B1', 'B2', 'C', 'C2'];
-const average = (values: number[]) =>
-  values.length
-    ? values.reduce((sum, value) => sum + value, 0) / values.length
-    : null;
+export const SNAPSHOT_VERSION = 3;
+export const SNAPSHOT_SKILLS = ABILITY_SKILLS;
 
 export function goalProgress(
   goal: LearningGoalRow,
@@ -173,55 +153,7 @@ export function buildLearnerSnapshot(
     0,
     window.kind === 'COMMENT' ? 20 : 200,
   );
-  const full = cumulativeScores
-    .map((row) => ({
-      ...row,
-      estimated_cefr: readingCefrEstimate(row)?.level ?? row.estimated_cefr,
-    }))
-    .filter(
-      (row) =>
-        row.scope === 'FULL_SKILL' &&
-        (row.result?.method === 'OBJECTIVE' || row.result?.method === 'AI') &&
-        BANDS[row.estimated_cefr ?? ''],
-    );
-  const eligible: number[] = [];
-  const bySkill = SNAPSHOT_SKILLS.map((skill) => {
-    const values = full
-      .filter((row) => row.component === skill)
-      .map((row) => BANDS[row.estimated_cefr!]);
-    if (values.length < 2)
-      return {
-        skill,
-        band: null,
-        reason: 'INSUFFICIENT_DATA',
-        sampleSize: values.length,
-      };
-    if (skill !== 'WRITING') eligible.push(...values);
-    return {
-      skill,
-      band: LABELS[Math.round(average(values)!)],
-      reason: null,
-      sampleSize: values.length,
-    };
-  });
-  const parts = statistics.groups.flatMap((group) => {
-    const weakest = group.parts
-      .filter((part) => part.attempts >= 2)
-      .sort((a, b) => a.percent - b.percent || a.partNumber - b.partNumber)[0];
-    return weakest
-      ? [
-          {
-            skill: group.component,
-            purpose: group.purpose,
-            scope: group.scope,
-            partNumber: group.partNumber,
-            part: weakest.partNumber,
-            percent: weakest.percent,
-            attempts: weakest.attempts,
-          },
-        ]
-      : [];
-  });
+  const profile = rows.abilityProfile ?? buildAbilityProfile(rows.scoredAttempts.filter(r=>r.student_id===userId), asOf);
   const reviewDates = rows.reviewDates.filter(
     (date) =>
       new Date(date) <= asOf &&
@@ -250,13 +182,9 @@ export function buildLearnerSnapshot(
     timezone,
     window,
     goal: progress,
-    band: {
-      overallEstimate: eligible.length
-        ? LABELS[Math.round(average(eligible)!)]
-        : null,
-      target: goal?.target_cefr ?? null,
-      bySkill,
-    },
+    baseline: goal?.baseline_profile ?? null,
+    bandChange: profile.bySkill.map(s=>({skill:s.skill, baseline:goal?.baseline_profile?.bySkill.find(b=>b.skill===s.skill)?.band ?? null,current:s.band})),
+    band: { overallEstimate: profile.overall.band, overall:profile.overall, target:goal?.target_cefr ?? null, bySkill:profile.bySkill.map(s=>({...s,reason:s.status==='NONE'?'INSUFFICIENT_DATA':null})) },
     statistics,
     cumulative: {
       completed: attempts.length,
@@ -267,38 +195,7 @@ export function buildLearnerSnapshot(
         ),
       ),
     },
-    weak: {
-      parts,
-      writingCriteria: statistics.groups.flatMap((group) =>
-        group.writingCriteria.map((criterion) => ({
-          ...criterion,
-          purpose: group.purpose,
-          scope: group.scope,
-          partNumber: group.partNumber,
-        })),
-      ),
-      speakingCriteria: statistics.groups.flatMap((group) => {
-        const criteria = new Map<string, number[]>();
-        for (const assessment of group.speakingCriteria)
-          for (const [key, value] of Object.entries(
-            assessment.percentages ?? {},
-          )) {
-            if (Number.isFinite(value))
-              criteria.set(key, [...(criteria.get(key) ?? []), value]);
-          }
-        return [...criteria]
-          .map(([criterion, values]) => ({
-            criterion,
-            percent: Math.round(average(values)!),
-            observations: values.length,
-            purpose: group.purpose,
-            scope: group.scope,
-            partNumber: group.partNumber,
-          }))
-          .sort((a, b) => a.percent - b.percent);
-      }),
-      topics: rows.weakTopics ?? [],
-    },
+    weak: {...profile.weak, topics:rows.weakTopics ?? []},
     mistakes: {
       count: mistakes.length,
       references: mistakes,

@@ -22,7 +22,8 @@ describe('student dashboard summary', () => {
     const result = buildStudentDashboard(rows, new StudentDashboardQueryDto(), now);
     expect(result.totalTests).toBe(4);
     expect(result.averageScore).toBe(70);
-    expect(result.averageBand).toBe('B2');
+    // One assessed skill gives a preliminary skill band, not an overall band.
+    expect(result.averageBand).toBeNull();
     expect(result.bestSkill.name).toBe('listening');
     expect(result.weakSkill.name).toBe('reading');
     expect(result.skillCounts.speaking).toBe(1);

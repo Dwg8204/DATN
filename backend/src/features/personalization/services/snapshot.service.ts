@@ -1,3 +1,4 @@
+import { readAbilityProfile } from '../../ai-shared/ability-profile.repository';
 import { Injectable } from '@nestjs/common';
 import { readWeakTopics } from '../../topics/topic-evidence';
 import { DataSource } from 'typeorm';
@@ -104,6 +105,7 @@ export class SnapshotService {
       ]);
     const [bounds] = await this.db.query('SELECT $1::date::timestamp AT TIME ZONE $2 AS start', [period?.from ?? from, timezone]);
     const weakTopics = await readWeakTopics(this.db.manager, actor.id, bounds.start, end);
+    const abilityProfile = await readAbilityProfile(this.db.manager, actor.id, end);
     const snapshot = buildLearnerSnapshot(
       actor.id,
       goal,
@@ -112,6 +114,7 @@ export class SnapshotService {
       {
         attempts,
         scoredAttempts,
+        abilityProfile,
         reviewDates: reviews.map((row) => row.reviewed_at),
         learningCount: vocab.count,
         activeCount: vocab.active_count,

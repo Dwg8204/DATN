@@ -1,3 +1,4 @@
+import { AbilityProfile } from '../../ai-shared/ability-profile';
 import { LearningAttempt } from '../../ai-shared/learning-statistics.types';
 import { SkillComponent } from '../../test-attempts/types/attempt.type';
 
@@ -21,6 +22,7 @@ export interface MistakeReference {
   partNumber: number;
 }
 export interface SnapshotRows {
+  abilityProfile?: AbilityProfile;
   weakTopics?: Array<{topicId:string;code:string;name:string;component:string;opportunities:number;errors:number;errorRatio:number;distinctTests:number}>;
   /** All lightweight metadata in the goal window; never truncate progress counts. */
   attempts: SnapshotAttempt[];

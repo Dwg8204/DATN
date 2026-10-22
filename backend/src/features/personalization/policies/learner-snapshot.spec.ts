@@ -152,13 +152,13 @@ describe('learner snapshot', () => {
         ?.completed,
     ).toBe(1);
   });
-  it('does not infer CEFR from PART or fewer than two FULL_SKILL attempts', () => {
+  it('does not infer overall CEFR from a single skill or Part evidence', () => {
     expect(
       build([attempt('a'), attempt('b', { scope: 'PART', part_number: 1 })])
         .band.overallEstimate,
     ).toBeNull();
   });
-  it('uses real full-skill bands and excludes Writing from overall', () => {
+  it('includes Writing equally in the overall skill mean', () => {
     const s = build([
       attempt('a'),
       attempt('b'),
@@ -173,7 +173,7 @@ describe('learner snapshot', () => {
         result: { method: 'AI' },
       }),
     ]);
-    expect(s.band.overallEstimate).toBe('B2');
+    expect(s.band.overallEstimate).toBe('B1');
     expect(s.band.bySkill.find((s) => s.skill === 'WRITING')?.band).toBe('A1');
   });
   it('keeps purposes and scopes separate and needs two part observations', () => {

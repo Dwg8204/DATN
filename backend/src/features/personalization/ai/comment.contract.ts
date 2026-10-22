@@ -34,7 +34,7 @@ export function commentSnapshot(
   return {
     snapshotVersion: snapshot.snapshotVersion,
     goal: snapshot.goal,
-    band: snapshot.band,
+    band: {...snapshot.band,bySkill:snapshot.band.bySkill.map(({skill,band,status,sampleSize,reason})=>({skill,band,status,sampleSize,reason}))},
     statistics: snapshot.statistics.groups.map((group) => ({
       component: group.component,
       purpose: group.purpose,

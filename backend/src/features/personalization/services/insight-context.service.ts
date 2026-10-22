@@ -27,7 +27,7 @@ export class InsightContextService {
       status: row.status, source: row.content?.source ?? 'RULE',
       snapshotVersion: row.snapshot_version, inputHash: row.input_hash,
       snapshot: {
-        goal: learner.goal, band: learner.band, statistics: groups(learner.statistics),
+        goal: learner.goal, band: learner.band, baseline: learner.baseline ?? null, bandChange: learner.bandChange ?? [], statistics: groups(learner.statistics),
         cumulative: { completed: learner.cumulative.completed, statistics: groups(learner.cumulative.statistics) },
         weak: learner.weak, mistakes: learner.mistakes, vocab: learner.vocab,
         habit: learner.habit, period: learner.period,

@@ -46,7 +46,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     `INSERT INTO test_attempts(student_id,snapshot_id,component,scope,status,purpose,started_at,submitted_at)
      VALUES($1,$2,'READING','FULL_SKILL','SUBMITTED','PRACTICE',$3,$3)`, [alice, snapshotId, date]);
   const readFinal = async (id: string) => (await db.query("SELECT * FROM learning_insights WHERE goal_id=$1 AND kind='FINAL'", [id]))[0];
-  const start = async (days: number, tests = 40) => (await goals.create(alice, { targetCefr: 'B2', targetTests: tests, durationDays: days })).goal;
+  const start = async (days: number, tests = Math.min(40, days * 3)) => (await goals.create(alice, { targetCefr: 'B2', targetTests: tests, durationDays: days })).goal;
   // Required duration schedules: FINAL only once and no weekly on the last day.
   for (const [days, weekly] of [[3, 0], [10, 1], [14, 1], [30, 4]]) {
     now = new Date('2026-10-01T02:00:00Z');
@@ -117,7 +117,8 @@ withPersonalizationDatabase(async (db, alice, bob) => {
 
   // Every metadata attempt counts, while score samples stay bounded at 200.
   now = new Date('2027-03-01T02:00:00Z');
-  const many = await start(3, 500);
+  // Simulate an existing legacy goal above the S1 creation limit.
+  const many = await goalRepo.create(alice,{targetCefr:'B2',targetTests:500,durationDays:3,startDate:'2027-03-01',timezone:'Asia/Bangkok'});
   await db.query(
     `INSERT INTO test_attempts(student_id,snapshot_id,component,scope,status,purpose,started_at,submitted_at,score,max_score,result)
      SELECT $1,$2,'READING','FULL_SKILL','SUBMITTED','PRACTICE',$3,$3,7,10,'{"method":"OBJECTIVE","parts":[]}'::jsonb FROM generate_series(1,205)`,

@@ -43,3 +43,10 @@ describe('FINAL contract', () => {
     expect(() => validateFinalContent({ ...good(), achievements: Array(4).fill('Cố gắng học tập.') }, job)).toThrow();
   });
 });
+
+it('grounds both explicitly named baseline and current bands',()=>{
+ const historical=structuredClone(job);
+ historical.learner.bandChange=[{skill:'READING',baseline:'A2',current:'B2'}];
+ expect(()=>validateFinalContent({...good(),narrative:'Đầu kỳ Reading ở A2; hiện tại Reading ước lượng B2.'},historical)).not.toThrow();
+ expect(()=>validateFinalContent({...good(),narrative:'Đầu kỳ Reading ở C; hiện tại Reading ước lượng B2.'},historical)).toThrow();
+});

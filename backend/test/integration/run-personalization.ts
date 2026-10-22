@@ -9,6 +9,7 @@ for (const name of [
   'personalization-database',
   'personalization-goals',
   'personalization-snapshot',
+  'personalization-ability',
   'personalization-plan',
   'personalization-reminders',
   'personalization-comments',
