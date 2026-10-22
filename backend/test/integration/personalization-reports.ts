@@ -99,7 +99,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     const rule = (await plans.current(actor)).plan!;
     assert.equal(rule.source, 'RULE');
     await inserted('2026-10-01T02:00:00Z');
-    await plans.current(actor); // One submitted attempt partially completes today's target of two.
+    await plans.sync(actor); // One submitted attempt partially completes today's target of two.
     const before = await planRepo.findItems(alice, rule.id);
     const partial = before.find(item => item.activity_type === 'TEST' && item.scheduled_on === '2026-10-01')!;
     assert.equal(partial.done_count, 1);
@@ -143,7 +143,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
 
     // Downtime: create W2, W3, W4 using each historical cutoff, even after the goal expired.
     now = new Date('2026-11-01T02:00:00Z');
-    await goals.current(alice);
+    await plans.sync(actor);
     await jobs.scheduleBatch();
     const periods = await db.query("SELECT period_key,kind FROM learning_insights WHERE goal_id=$1 AND kind IN ('WEEKLY','MIDTERM') ORDER BY period_key", [goal.id]);
     assert.deepEqual(periods.map((p: { kind: string }) => p.kind), ['WEEKLY', 'MIDTERM', 'WEEKLY', 'WEEKLY']);

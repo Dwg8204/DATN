@@ -1,3 +1,4 @@
+import {PersonalizationOverviewController} from './controllers/personalization-overview.controller';
 import {AdminPlacementController} from './controllers/admin-placement.controller';
 import {AbilityProfileController} from './controllers/ability-profile.controller';
 import { Module } from '@nestjs/common';
@@ -23,7 +24,7 @@ import { InsightContextService } from './services/insight-context.service';
 
 @Module({
   imports: [PersonalizationDataModule, TestAttemptsModule, AiSharedModule, ConfigModule],
-  controllers: [AdminPlacementController, AbilityProfileController, PersonalizationController, StudyPlanController, ReportsController],
+  controllers: [PersonalizationOverviewController, AdminPlacementController, AbilityProfileController, PersonalizationController, StudyPlanController, ReportsController],
   providers: [
     SnapshotService,
     MistakeSourceService,

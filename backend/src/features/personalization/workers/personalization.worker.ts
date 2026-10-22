@@ -56,8 +56,19 @@ export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
   async runBatch(): Promise<void> {
     const users = await this.db.query<
       Array<{ user_id: string; updated_at: string }>
-    >(`SELECT g.user_id,g.updated_at::text updated_at FROM learning_goals g JOIN users u ON u.id=g.user_id JOIN roles r ON r.id=u.role_id
-      WHERE g.status='ACTIVE' AND u.status='ACTIVE' AND u.deleted_at IS NULL AND r.code='STUDENT' ORDER BY g.updated_at,g.id LIMIT 50`);
+    >(
+      `SELECT g.user_id,g.updated_at::text updated_at FROM learning_goals g JOIN users u ON u.id=g.user_id JOIN roles r ON r.id=u.role_id
+      LEFT JOIN learner_preferences pref ON pref.user_id=g.user_id
+      WHERE g.status='ACTIVE' AND u.status='ACTIVE' AND u.deleted_at IS NULL AND r.code='STUDENT'
+      AND (
+        ($1::timestamptz AT TIME ZONE g.timezone)::date >= g.start_date+g.duration_days
+        OR NOT EXISTS(SELECT 1 FROM study_plans p WHERE p.goal_id=g.id AND ($1::timestamptz AT TIME ZONE g.timezone)::date BETWEEN p.starts_on AND p.ends_on)
+        OR EXISTS(SELECT 1 FROM study_plans p WHERE p.goal_id=g.id AND p.progress_finalized_at IS NULL AND p.ends_on<($1::timestamptz AT TIME ZONE g.timezone)::date)
+        OR (($1::timestamptz AT TIME ZONE g.timezone)::time>=COALESCE(pref.reminder_time,'19:00'::time)
+          AND pref.last_reminded_on IS DISTINCT FROM ($1::timestamptz AT TIME ZONE g.timezone)::date)
+      ) ORDER BY g.updated_at,g.id LIMIT 50`,
+      [this.clock.now()],
+    );
     for (const user of users) {
       try {
         await this.db.transaction(async (manager) => {

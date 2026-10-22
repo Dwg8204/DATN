@@ -1,4 +1,4 @@
-import {missingPlacement} from '../../ai-shared/placement';
+import { missingPlacement } from '../../ai-shared/placement';
 import { readAbilityProfile } from '../../ai-shared/ability-profile.repository';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
@@ -112,13 +112,20 @@ export class GoalsService {
   }
 
   async current(userId: string) {
-    return this.db.transaction(async (manager) => {
-      await this.lockUser(manager, userId);
-      const active = await this.reconcile(manager, userId, this.clock.now());
-      return {
-        goal: active ? presentGoal(active.goal, active.completed) : null,
-      };
-    });
+    const goal = await this.goals.findActive(userId);
+    if (!goal) return { goal: null };
+    const now = this.clock.now();
+    const counts = await this.count(this.db.manager, goal, now);
+    return {
+      goal: {
+        ...presentGoal(goal, counts.completed),
+        effectiveStatus:
+          localDay(now, goal.timezone) >=
+          addDays(goal.start_date, goal.duration_days)
+            ? 'ENDING'
+            : goal.status,
+      },
+    };
   }
 
   async create(userId: string, dto: CreateLearningGoalDto) {
@@ -138,9 +145,15 @@ export class GoalsService {
         manager,
       );
       const baseline = await readAbilityProfile(manager, userId, now);
-      await manager.query('UPDATE learning_goals SET baseline_profile=$2 WHERE id=$1', [goal.id, baseline]);
+      await manager.query(
+        'UPDATE learning_goals SET baseline_profile=$2 WHERE id=$1',
+        [goal.id, baseline],
+      );
       const refreshed = await this.reconcile(manager, userId, now);
-      return { goal: presentGoal(refreshed!.goal, refreshed!.completed), placementComplete: missingPlacement(baseline).length===0 };
+      return {
+        goal: presentGoal(refreshed!.goal, refreshed!.completed),
+        placementComplete: missingPlacement(baseline).length === 0,
+      };
     });
   }
 
@@ -166,9 +179,15 @@ export class GoalsService {
       );
       await queueFinalReport(manager, dto.goalId);
       const baseline = await readAbilityProfile(manager, userId, now);
-      await manager.query('UPDATE learning_goals SET baseline_profile=$2 WHERE id=$1', [goal.id, baseline]);
+      await manager.query(
+        'UPDATE learning_goals SET baseline_profile=$2 WHERE id=$1',
+        [goal.id, baseline],
+      );
       const refreshed = await this.reconcile(manager, userId, now);
-      return { goal: presentGoal(refreshed!.goal, refreshed!.completed), placementComplete: missingPlacement(baseline).length===0 };
+      return {
+        goal: presentGoal(refreshed!.goal, refreshed!.completed),
+        placementComplete: missingPlacement(baseline).length === 0,
+      };
     });
   }
 

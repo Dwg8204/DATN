@@ -1,7 +1,7 @@
 import { readAbilityProfile } from '../../ai-shared/ability-profile.repository';
 import { Injectable } from '@nestjs/common';
 import { readWeakTopics } from '../../topics/topic-evidence';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { LearningGoalsRepository } from '../repositories/learning-goals.repository';
 import {
@@ -41,8 +41,9 @@ export class SnapshotService {
     goal: LearningGoalRow | null,
     window: SnapshotWindow,
     asOf = this.clock.now(),
+    manager: EntityManager = this.db.manager,
   ) {
-    const [user] = await this.db.query<Array<{ timezone: string }>>(
+    const [user] = await manager.query<Array<{ timezone: string }>>(
       'SELECT timezone FROM users WHERE id=$1',
       [actor.id],
     );
@@ -70,42 +71,51 @@ export class SnapshotService {
         ? `SELECT ${scoreFields} FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id ASC LIMIT 20`
         : `SELECT ${scoreFields} FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id DESC LIMIT 200`;
     const [attempts, scoredAttempts, reviews, [vocab], planItems, mistakes] =
-      await Promise.all([
-        this.db.query<SnapshotAttempt[]>(
-          `SELECT id,student_id,component,purpose,scope,part_number,status,submitted_at FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id DESC`,
-          params,
-        ),
-        this.db.query<SnapshotAttempt[]>(
-          scoreQuery,
-          period ? [...params, period.from, period.to] : params,
-        ),
-        this.db.query<Array<{ reviewed_at: Date }>>(
-          `SELECT e.reviewed_at FROM vocabulary_review_events e JOIN user_notebook_items n ON n.id=e.notebook_item_id
+      await (async () =>
+        [
+          await manager.query<SnapshotAttempt[]>(
+            `SELECT id,student_id,component,purpose,scope,part_number,status,submitted_at FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id DESC`,
+            params,
+          ),
+          await manager.query<SnapshotAttempt[]>(
+            scoreQuery,
+            period ? [...params, period.from, period.to] : params,
+          ),
+          await manager.query<Array<{ reviewed_at: Date }>>(
+            `SELECT e.reviewed_at FROM vocabulary_review_events e JOIN user_notebook_items n ON n.id=e.notebook_item_id
         WHERE n.user_id=$1 AND e.reviewed_at >= ($2::date::timestamp AT TIME ZONE $4) AND e.reviewed_at < ($3::date::timestamp AT TIME ZONE $4) AND e.reviewed_at <= $5 ORDER BY e.reviewed_at`,
-          params,
-        ),
-        this.db.query<Array<{ count: number; active_count: number }>>(
-          "SELECT count(*) FILTER(WHERE last_rating='LEARNING')::int count, count(*)::int active_count FROM user_notebook_items WHERE user_id=$1 AND archived_at IS NULL",
-          [actor.id],
-        ),
-        goal
-          ? this.db.query<
-              Array<{
-                scheduledOn: string;
-                targetCount: number;
-                doneCount: number;
-              }>
-            >(
-              `SELECT i.scheduled_on::text AS "scheduledOn",i.target_count AS "targetCount",i.done_count AS "doneCount"
+            params,
+          ),
+          await manager.query<Array<{ count: number; active_count: number }>>(
+            "SELECT count(*) FILTER(WHERE last_rating='LEARNING')::int count, count(*)::int active_count FROM user_notebook_items WHERE user_id=$1 AND archived_at IS NULL",
+            [actor.id],
+          ),
+          goal
+            ? await manager.query<
+                Array<{
+                  scheduledOn: string;
+                  targetCount: number;
+                  doneCount: number;
+                }>
+              >(
+                `SELECT i.scheduled_on::text AS "scheduledOn",i.target_count AS "targetCount",i.done_count AS "doneCount"
         FROM study_plan_items i JOIN study_plans p ON p.id=i.plan_id WHERE p.user_id=$1 AND p.goal_id=$2 ORDER BY i.scheduled_on,i.sort_order,i.id`,
-              [actor.id, goal.id],
-            )
-          : Promise.resolve([]),
-        this.mistakes.recent(actor, end, timezone),
-      ]);
-    const [bounds] = await this.db.query('SELECT $1::date::timestamp AT TIME ZONE $2 AS start', [period?.from ?? from, timezone]);
-    const weakTopics = await readWeakTopics(this.db.manager, actor.id, bounds.start, end);
-    const abilityProfile = await readAbilityProfile(this.db.manager, actor.id, end);
+                [actor.id, goal.id],
+              )
+            : [],
+          await this.mistakes.recent(actor, end, timezone, manager),
+        ] as const)();
+    const [bounds] = await manager.query(
+      'SELECT $1::date::timestamp AT TIME ZONE $2 AS start',
+      [period?.from ?? from, timezone],
+    );
+    const weakTopics = await readWeakTopics(
+      manager,
+      actor.id,
+      bounds.start,
+      end,
+    );
+    const abilityProfile = await readAbilityProfile(manager, actor.id, end);
     const snapshot = buildLearnerSnapshot(
       actor.id,
       goal,

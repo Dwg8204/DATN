@@ -8,6 +8,7 @@ import { PlanProgressRepository } from "../repositories/plan-progress.repository
 import {
   LearningGoalRow,
   StudyPlanItemRow,
+  StudyPlanRow,
 } from "../types/personalization.type";
 import { addDays, dayNumber, localDay } from "../policies/calendar";
 import { buildRulePlan } from "../policies/rule-plan";
@@ -82,6 +83,7 @@ export class PlanService {
           goal,
           { kind: "GOAL" },
           this.clock.now(),
+        manager,
         );
         const original = await this.plans.findItems(
           row.user_id,
@@ -148,21 +150,26 @@ export class PlanService {
   }
 
   async current(actor: AuthUser) {
-    return this.db.transaction(async (manager) => {
-      await this.goals.lockUser(manager, actor.id);
-      const active = await this.goals.reconcile(
-        manager,
-        actor.id,
-        this.clock.now(),
-      );
-      if (!active) return { plan: null, today: null };
-      return this.ensureLocked(manager, actor, active.goal);
+    const [goal] = await this.db.query<LearningGoalRow[]>("SELECT *,start_date::text start_date FROM learning_goals WHERE user_id=$1 AND status='ACTIVE'",[actor.id]);
+    if (!goal) return {plan:null,today:null};
+    const today=localDay(this.clock.now(),goal.timezone);
+    if(today>=addDays(goal.start_date,goal.duration_days))return {plan:null,today};
+    const week=Math.floor((dayNumber(today)-dayNumber(goal.start_date))/7)+1;
+    const plan=await this.plans.findWeek(actor.id,goal.id,week);
+    return plan ? this.presentPlan(this.db.manager,actor,goal,plan,today) : {plan:null,today};
+  }
+
+  async sync(actor: AuthUser) {
+    return this.db.transaction(async manager=>{
+      await this.goals.lockUser(manager,actor.id);
+      const active=await this.goals.reconcile(manager,actor.id,this.clock.now());
+      return active ? this.ensureLocked(manager,actor,active.goal) : {plan:null,today:null};
     });
   }
 
   async afterGoalCreated(actor: AuthUser) {
     try {
-      await this.current(actor);
+      await this.sync(actor);
       if (this.reports)
         await this.db.transaction(async (manager) => {
           await this.goals.lockUser(manager, actor.id);
@@ -201,6 +208,7 @@ export class PlanService {
         goal,
         { kind: "GOAL" },
         this.clock.now(),
+        manager,
       );
       const candidates = await this.candidates.build(
         manager,
@@ -227,6 +235,10 @@ export class PlanService {
       );
       await this.progress.syncPlan(manager, goal, plan, this.clock.now());
     }
+    return this.presentPlan(manager,actor,goal,plan,today);
+  }
+
+  private async presentPlan(manager: EntityManager,actor: AuthUser,goal: LearningGoalRow,plan: StudyPlanRow,today: string) {
     const items = await this.plans.findItems(actor.id, plan.id, manager);
     const tests = await manager.query<
       Array<{ id: string; title: string; purpose: string; available: boolean }>

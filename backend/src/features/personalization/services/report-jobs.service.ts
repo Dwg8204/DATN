@@ -118,7 +118,7 @@ export class ReportJobsService {
           if (!row) return;
           const [boundary] = await manager.query<Array<{ cutoff: Date }>>(
             "SELECT LEAST(ended_at,((start_date+duration_days)::timestamp AT TIME ZONE timezone)-interval '1 millisecond') cutoff FROM learning_goals WHERE id=$1", [goal.id]);
-          const full = await this.snapshots.build({ id: goal.user_id, role: 'STUDENT' } as AuthUser, goal, { kind: 'FINAL' }, boundary.cutoff);
+          const full = await this.snapshots.build({ id: goal.user_id, role: 'STUDENT' } as AuthUser, goal, { kind: 'FINAL' }, boundary.cutoff, manager);
           const learner = reportSnapshot(full, full.cumulative.completed);
           const estimate = learner.band.overallEstimate;
           const job: ReportJob = {
@@ -171,7 +171,7 @@ export class ReportJobsService {
     // Historical reports use the lifecycle as it stood at that boundary.
     const historicalGoal = { ...goal, status: 'ACTIVE' as const, ended_at: null };
     const actor = { id: goal.user_id, role: 'STUDENT' } as AuthUser;
-    const full = await this.snapshots.build(actor, historicalGoal, week ? { kind: kind as 'WEEKLY' | 'MIDTERM', from, to } : { kind: 'GOAL' }, asOf);
+    const full = await this.snapshots.build(actor, historicalGoal, week ? { kind: kind as 'WEEKLY' | 'MIDTERM', from, to } : { kind: 'GOAL' }, asOf, manager);
     const [periodCount] = await manager.query<Array<{ count: number }>>(
       `SELECT count(*)::int count FROM test_attempts WHERE student_id=$1 AND status='SUBMITTED'
        AND submitted_at>=($2::date::timestamp AT TIME ZONE $4)

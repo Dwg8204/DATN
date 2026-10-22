@@ -55,6 +55,8 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     clock,
     ai,
   );
+  const syncComment = (actor:AuthUser) => db.transaction(async manager=>{const timezone=await goals.lockUser(manager,actor.id);return comments.syncLocked(actor,manager,timezone);});
+
   const workers = [0, 1].map(() => new CommentGenerationWorker(db, ai, clock));
   const actor = (id: string) => ({ id, role: 'STUDENT' }) as AuthUser;
   const good = {
@@ -101,7 +103,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     );
   };
   try {
-    assert.equal((await comments.current(actor(alice))).status, 'HIDDEN');
+    assert.equal((await syncComment(actor(alice))).status, 'HIDDEN');
     const testId = randomUUID(),
       snapshotId = randomUUID();
     await db.query(
@@ -130,14 +132,17 @@ withPersonalizationDatabase(async (db, alice, bob) => {
       return row.id;
     };
     const pending = await submit(alice, 'PENDING_AI');
-    assert.equal((await comments.current(actor(alice))).status, 'HIDDEN');
+    assert.equal((await syncComment(actor(alice))).status, 'HIDDEN');
     await db.query(
       "UPDATE test_attempts SET result=jsonb_set(result,'{method}','\"OBJECTIVE\"') WHERE id=$1",
       [pending],
     );
+    assert.equal(await comments.needsSync(actor(alice)),true);
+    assert.equal((await comments.current(actor(alice))).status,'HIDDEN');
+    assert.equal((await db.query('SELECT count(*)::int n FROM learning_insights'))[0].n,0);
     const queued = await Promise.all([
-      comments.current(actor(alice)),
-      comments.current(actor(alice)),
+      syncComment(actor(alice)),
+      syncComment(actor(alice)),
     ]);
     assert.ok(queued.every((row) => row.status === 'PENDING'));
     assert.equal(
@@ -146,10 +151,10 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     );
     await Promise.all(workers.map((worker) => worker.runBatch()));
     assert.equal(calls, 1);
-    const ready = await comments.current(actor(alice));
+    const ready = await syncComment(actor(alice));
     assert.equal(ready.status, 'READY');
     assert.deepEqual(ready.comment?.content, good);
-    assert.equal((await comments.current(actor(bob))).status, 'HIDDEN');
+    assert.equal((await syncComment(actor(bob))).status, 'HIDDEN');
     assert.equal(await insights.findById(bob, ready.comment!.id), null);
     const [request] = await db.query(
       "SELECT status,input_tokens,output_tokens FROM ai_requests WHERE purpose='PERSONAL_COMMENT'",
@@ -159,28 +164,28 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     assert.equal(Number(request.output_tokens), 30);
     await submit(alice);
     assert.equal(
-      (await comments.current(actor(alice))).comment?.id,
+      (await syncComment(actor(alice))).comment?.id,
       ready.comment?.id,
       'one comment per local day',
     );
     now = new Date(now.getTime() + 86_400_000);
-    assert.equal((await comments.current(actor(alice))).status, 'PENDING');
+    assert.equal((await syncComment(actor(alice))).status, 'PENDING');
     invalid = 1;
     await workers[0].runBatch();
     assert.equal(calls, 3, 'invalid output gets exactly one immediate repair');
-    assert.equal((await comments.current(actor(alice))).status, 'READY');
+    assert.equal((await syncComment(actor(alice))).status, 'READY');
     now = new Date(now.getTime() + 86_400_000);
-    await comments.current(actor(alice));
+    await syncComment(actor(alice));
     await workers[0].runBatch();
     assert.equal(calls, 3, 'time alone cannot trigger generation');
 
     await submit(bob);
-    await comments.current(actor(bob));
+    await syncComment(actor(bob));
     config.set('PERSONALIZATION_AI_ENABLED', false);
     await workers[0].runBatch();
     assert.equal(calls, 3);
     assert.equal(
-      (await comments.current(actor(alice))).status,
+      (await syncComment(actor(alice))).status,
       'HIDDEN',
       'disabled hides old comments too',
     );
@@ -195,7 +200,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     assert.equal(failed.retry_count, 0, '429 does not consume a retry');
     assert.equal(failed.status, 'FAILED');
     assert.ok(failed.next_retry_at > now);
-    assert.equal((await comments.current(actor(bob))).status, 'HIDDEN');
+    assert.equal((await syncComment(actor(bob))).status, 'HIDDEN');
     assert.equal(
       (
         await db.query(
@@ -231,7 +236,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
       0,
     );
     await submit(alice);
-    assert.equal((await comments.current(actor(alice))).status, 'PENDING');
+    assert.equal((await syncComment(actor(alice))).status, 'PENDING');
     config.set('PERSONALIZATION_MAX_RPM', 1);
     await workers[0].runBatch();
     assert.equal(calls, 4, 'persisted RPM window blocks calls across users');
