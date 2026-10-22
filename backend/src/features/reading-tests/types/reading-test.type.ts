@@ -9,6 +9,7 @@ export type ReadingTestAggregate = {
   id?: string;
   mode: ReadingTestMode;
   purpose: TestPurpose;
+  isPlacement?: boolean;
   details: { title: string; pictureUrl?: string };
   parts: Record<string, any>;
   status?: ReadingTestStatus;

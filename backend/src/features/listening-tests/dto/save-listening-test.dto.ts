@@ -1,8 +1,10 @@
+import { IsBoolean } from 'class-validator';
 import { IsIn, IsInt, IsObject, IsOptional, IsUUID, Max, Min } from 'class-validator';
 import { TestPurpose } from '../../../common/tests/test-purpose';
 import { ListeningTestAggregate, ListeningTestMode } from '../types/listening-test.type';
 
 export class CreateListeningTestDto {
+  @IsOptional() @IsBoolean() isPlacement?: boolean;
   @IsOptional() @IsUUID() creationRequestId?: string;
 
   @IsOptional()

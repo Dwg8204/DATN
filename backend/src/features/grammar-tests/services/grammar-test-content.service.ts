@@ -1,3 +1,4 @@
+import { assertPlacement } from '../../../common/tests/test-placement';
 import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { plainRichText, richTextWordCount, sanitizeRichText } from '../../../common/content/rich-text';
@@ -13,7 +14,7 @@ const LETTERS = 'ABCDEFGHIJ'.split('');
 
 @Injectable()
 export class GrammarTestContentService {
-  normalize(input: Pick<GrammarTestAggregate, 'mode' | 'details' | 'parts'> & Partial<Pick<GrammarTestAggregate, 'purpose'>>): GrammarTestAggregate {
+  normalize(input: Pick<GrammarTestAggregate, 'mode' | 'details' | 'parts'> & Partial<Pick<GrammarTestAggregate, 'purpose' | 'isPlacement'>>): GrammarTestAggregate {
     const mode = input.mode;
     const parts: GrammarTestAggregate['parts'] = {};
     if (mode === 'part1' || mode === 'full') parts[1] = this.normalizePart1(input.parts?.[1]);
@@ -22,6 +23,7 @@ export class GrammarTestContentService {
     const cover = this.normalizeCover(input.details?.cover, input.details?.pictureUrl);
     return {
       mode,
+      isPlacement: assertPlacement(input.isPlacement, mode),
       purpose: input.purpose ?? defaultTestPurpose(mode),
       details: { title, pictureUrl: cover?.url ?? '', cover },
       parts,

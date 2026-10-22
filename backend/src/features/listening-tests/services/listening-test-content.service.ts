@@ -1,3 +1,4 @@
+import { assertPlacement } from '../../../common/tests/test-placement';
 import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { ListeningTestAggregate } from '../types/listening-test.type';
@@ -10,7 +11,7 @@ export class ListeningTestContentService {
   normalize(dto: CreateListeningTestDto | UpdateListeningTestDto): ListeningTestAggregate {
     return {
       mode: dto.mode,
-      purpose: dto.purpose ?? defaultTestPurpose(dto.mode),
+      isPlacement: assertPlacement(dto.isPlacement, dto.mode), purpose: dto.purpose ?? defaultTestPurpose(dto.mode),
       details: {
         title: dto.details?.title?.trim() || 'Untitled Listening Test',
         pictureUrl: dto.details?.pictureUrl || undefined,

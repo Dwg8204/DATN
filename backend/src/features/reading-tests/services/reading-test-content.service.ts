@@ -1,3 +1,4 @@
+import { assertPlacement } from '../../../common/tests/test-placement';
 import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { defaultTestPurpose } from '../../../common/tests/test-purpose';
@@ -8,7 +9,7 @@ import { assertDraftCollection, assertDraftParts } from '../../../common/tests/d
 @Injectable()
 export class ReadingTestContentService {
   normalize(dto: CreateReadingTestDto): ReadingTestAggregate {
-    return { mode: dto.mode, purpose: dto.purpose ?? defaultTestPurpose(dto.mode),
+    return { mode: dto.mode, isPlacement: assertPlacement(dto.isPlacement, dto.mode), purpose: dto.purpose ?? defaultTestPurpose(dto.mode),
       details: { title: dto.details?.title?.trim() || 'Untitled Reading Test', pictureUrl: dto.details?.pictureUrl },
       parts: dto.parts ?? {} };
   }

@@ -1,3 +1,4 @@
+import { assertPlacement } from '../../../common/tests/test-placement';
 import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { plainRichText, richTextWordCount, sanitizeRichText } from '../../../common/content/rich-text';
@@ -56,7 +57,7 @@ export class WritingTestContentService {
     }
     const title = this.plain(input.details?.title ?? '').trim();
     const pictureUrl = this.normalizeCover(input.details?.pictureUrl ?? '');
-    return { mode, purpose: input.purpose ?? defaultTestPurpose(mode), details: { title, pictureUrl }, parts };
+    return { mode, isPlacement: assertPlacement(input.isPlacement, mode), purpose: input.purpose ?? defaultTestPurpose(mode), details: { title, pictureUrl }, parts };
   }
 
   assertDraftShape(test: WritingTestAggregate): void {

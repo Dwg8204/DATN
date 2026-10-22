@@ -30,14 +30,14 @@ export class ReadingTestsRepository {
     const [{ total }] = await this.dataSource.query<Array<{ total: string }>>(
       `SELECT count(*)::text AS total FROM tests t WHERE ${where.join(' AND ')}`, values);
     const rows = await this.dataSource.query<any[]>(
-      `SELECT t.id,t.title,t.purpose,t.scope,t.part_number,t.status,t.cover,t.version,t.created_at,t.updated_at,t.created_by,
+      `SELECT t.id,t.is_placement,t.title,t.purpose,t.scope,t.part_number,t.status,t.cover,t.version,t.created_at,t.updated_at,t.created_by,
         (SELECT count(*) FROM test_attempts a WHERE a.snapshot_id=t.published_snapshot_id) AS attempts_count
        FROM tests t WHERE ${where.join(' AND ')} ORDER BY t.created_at DESC,t.id DESC
        LIMIT $${values.length + 1} OFFSET $${values.length + 2}`,
       [...values, query.pageSize, (query.page - 1) * query.pageSize]);
     return { tests: rows.map(row => {
       const mode = row.scope === 'FULL_SKILL' ? 'full' : `part${row.part_number}`;
-      return { id: row.id, title: row.title, name: row.title, purpose: row.purpose, mode,
+      return { id: row.id, title: row.title, name: row.title, purpose: row.purpose, isPlacement: row.is_placement, mode,
         section: mode === 'full' ? 'Full Test' : `Part ${row.part_number}`, component: 'Reading', status: row.status,
         attempts: Number(row.attempts_count), questionType: 'Reading', pictureUrl: row.cover?.pictureUrl ?? '', version: row.version,
         dateAdded: row.created_at, createdAt: row.created_at, updatedAt: row.updated_at,
@@ -70,10 +70,10 @@ export class ReadingTestsRepository {
     await this.dataSource.transaction(async manager => {
       if (await findCreatedTest(manager, id, creationRequestId)) { replayed = true; return; }
       await manager.query(
-        `INSERT INTO tests(id,created_by,title,component,purpose,scope,part_number,cover,part_contents,version,status,updated_by)
-         VALUES($1,$2,$3,'READING',$4,$5,$6,$7,$8,1,'DRAFT',$2)`,
+        `INSERT INTO tests(id,created_by,title,component,purpose,scope,part_number,cover,part_contents,version,status,updated_by,is_placement)
+         VALUES($1,$2,$3,'READING',$4,$5,$6,$7,$8,1,'DRAFT',$2,$9)`,
         [id, actor.id, aggregate.details.title, aggregate.purpose, scope, partNumber,
-          { pictureUrl: aggregate.details.pictureUrl }, { schemaVersion: 1, parts: aggregate.parts }]);
+          { pictureUrl: aggregate.details.pictureUrl }, { schemaVersion: 1, parts: aggregate.parts }, aggregate.isPlacement ?? false]);
       await this.syncQuestions(manager, id, aggregate);
       await this.audit(manager, actor.id, 'CREATE_READING_TEST', id, aggregate, audit);
     });
@@ -89,10 +89,10 @@ export class ReadingTestsRepository {
       if (!locked) { outcome = 'NOT_FOUND'; return; }
       if (locked.version !== version) { outcome = 'VERSION_CONFLICT'; return; }
       await manager.query(
-        `UPDATE tests SET title=$2,purpose=$3,scope=$4,part_number=$5,cover=$6,part_contents=$7,
+        `UPDATE tests SET is_placement=COALESCE($9,CASE WHEN $4::test_scope='FULL_SKILL' THEN is_placement ELSE false END),title=$2,purpose=$3,scope=$4,part_number=$5,cover=$6,part_contents=$7,
          version=version+1,status='DRAFT',updated_by=$8,updated_at=now() WHERE id=$1`,
         [id, aggregate.details.title, aggregate.purpose, scope, partNumber, { pictureUrl: aggregate.details.pictureUrl },
-          { schemaVersion: 1, parts: aggregate.parts }, actor.id]);
+          { schemaVersion: 1, parts: aggregate.parts }, actor.id, aggregate.isPlacement ?? null]);
       await this.syncQuestions(manager, id, aggregate);
       await this.audit(manager, actor.id, 'UPDATE_READING_TEST', id, aggregate, audit);
     });
@@ -130,7 +130,7 @@ export class ReadingTestsRepository {
 
   private aggregate(row: any): ReadingTestAggregate {
     return { id: row.id, mode: (row.scope === 'FULL_SKILL' ? 'full' : `part${row.part_number}`) as ReadingTestMode,
-      purpose: row.purpose, details: { title: row.title, pictureUrl: row.cover?.pictureUrl },
+      purpose: row.purpose, isPlacement: row.is_placement, details: { title: row.title, pictureUrl: row.cover?.pictureUrl },
       parts: row.part_contents?.parts ?? {}, status: row.status, version: row.version,
       createdAt: row.created_at, updatedAt: row.updated_at };
   }
