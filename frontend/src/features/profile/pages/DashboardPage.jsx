@@ -1,6 +1,7 @@
+import { personalizationApi } from '../../personalization/services/personalizationApi';
 import AbilityAssessmentCard from '../../personalization/components/AbilityAssessmentCard';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -30,6 +31,39 @@ const SKILL_COLORS = {
 export default function DashboardPage() {
   const ui = useUiTranslation();
   const { t } = useTranslation();
+  const overviewRequest = useRef(null);
+  const [overview, setOverview] = useState(null);
+  const [personalizationError, setPersonalizationError] = useState(false);
+  useEffect(() => {
+    let active = true,
+      timer;
+    const load = async () => {
+      try {
+        let value = await (overviewRequest.current ??=
+          personalizationApi.overview());
+        overviewRequest.current = null;
+        if (!active) return;
+        if (value.needsSync) {
+          await personalizationApi.sync();
+          if (!active) return;
+          value = await personalizationApi.overview();
+        }
+        if (!active) return;
+        setOverview(value);
+        setPersonalizationError(false);
+        if (value.comment?.status === 'PENDING')
+          timer = setTimeout(load, 15000);
+      } catch {
+        overviewRequest.current = null;
+        if (active) setPersonalizationError(true);
+      }
+    };
+    void load();
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, []);
   const [dashboard, setDashboard] = useState(null);
   const [loadError, setLoadError] = useState('');
   const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
@@ -76,11 +110,11 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <AbilityAssessmentCard />
-          <GoalProgressCard />
-          <PersonalCommentCard />
-          <StudyPlanCard />
-          <WeeklyReportsCard />
+          <AbilityAssessmentCard profile={overview?.profile} loadError={personalizationError} />
+          <GoalProgressCard data={overview ? {goal:overview.goal,snapshot:overview.progress} : null} error={personalizationError} />
+          <PersonalCommentCard result={overview?.comment} />
+          <StudyPlanCard data={overview ? {plan:overview.plan,today:overview.today} : null} loadError={personalizationError} />
+          <WeeklyReportsCard reports={overview?.recentReports} />
           <div className={styles.kpiGrid}>
             <div className={styles.kpiCard} style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #e0f2fe', boxShadow: '0 4px 12px rgba(2, 132, 199, 0.15)' }}>
               <div className={styles.kpiIcon} style={{ background: 'rgba(2, 132, 199, 0.15)' }}>

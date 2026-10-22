@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { personalizationApi } from '../services/personalizationApi';
 import { practiceAttemptsApi } from '../../test-attempts/services/practiceAttemptsApi';
 import styles from './Personalization.module.css';
 const routes = {
@@ -11,26 +10,11 @@ const routes = {
   WRITING: 'writing',
   SPEAKING: 'speaking',
 };
-export default function AbilityAssessmentCard() {
+export default function AbilityAssessmentCard({ profile, loadError = false }) {
   const { t } = useTranslation(),
     navigate = useNavigate();
-  const [profile, setProfile] = useState(null),
-    [error, setError] = useState(false),
+  const [error, setError] = useState(false),
     [busy, setBusy] = useState(false);
-  useEffect(() => {
-    let active = true;
-    personalizationApi
-      .ability()
-      .then((p) => {
-        if (active) setProfile(p);
-      })
-      .catch(() => {
-        if (active) setError(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
   const open = async (test) => {
     if (busy) return;
     const route = routes[test.skill];
@@ -65,12 +49,14 @@ export default function AbilityAssessmentCard() {
     }
   };
   if (profile?.placement.complete) return null;
-  if (!profile && !error) return null;
+  if (!profile && !error && !loadError) return null;
   return (
     <section className={styles.card}>
       <h2>{t('personalization.placement.title')}</h2>
       <p>{t('personalization.placement.help')}</p>
-      {error && <p role="alert">{t('personalization.loadFailed')}</p>}
+      {(error || loadError) && (
+        <p role="alert">{t('personalization.loadFailed')}</p>
+      )}
       <ul className={styles.history}>
         {profile?.bySkill.map((s) => {
           const test = profile.placement.tests.find((x) => x.skill === s.skill),

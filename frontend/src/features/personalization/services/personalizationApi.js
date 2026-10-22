@@ -3,6 +3,8 @@ import api from '../../../services/api';
 const options = { notifyOnError: false };
 const data = response => response.data;
 export const personalizationApi = {
+  overview: () => api.get('/me/personalization/overview', options).then(data),
+  sync: () => api.post('/me/personalization/sync', {}, options).then(data),
   ability: () => api.get('/me/ability-profile', options).then(data),
   reports: (params = {}) => api.get('/me/reports', { ...options, params }).then(data),
   report: id => api.get(`/me/reports/${encodeURIComponent(id)}`, options).then(data),

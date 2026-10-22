@@ -1,17 +1,9 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { personalizationApi } from '../services/personalizationApi';
 import styles from './Personalization.module.css';
 
-export default function GoalProgressCard() {
+export default function GoalProgressCard({ data, error = false }) {
   const { t } = useTranslation();
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(false);
-  useEffect(() => { let active = true;
-    personalizationApi.goal().then(value => { if (active) { setData(value); setError(false); } }).catch(() => { if (active) setError(true); });
-    return () => { active = false; };
-  }, []);
   const progress = data?.snapshot?.goal;
   return <section className={styles.card}>
     <h2>{t('personalization.progressTitle')}</h2>

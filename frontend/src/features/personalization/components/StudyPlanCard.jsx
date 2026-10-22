@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { personalizationApi } from '../services/personalizationApi';
 import { practiceAttemptsApi } from '../../test-attempts/services/practiceAttemptsApi';
 import styles from './Personalization.module.css';
 
@@ -20,26 +19,12 @@ const ruleReasons = new Set([
   'RECENT_MISTAKES',
   'WEAK_TOPIC',
 ]);
-export default function StudyPlanCard() {
+export default function StudyPlanCard({ data, loadError = false }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [data, setData] = useState(null);
+
   const [error, setError] = useState(false);
   const [busy, setBusy] = useState(false);
-  useEffect(() => {
-    let active = true;
-    personalizationApi
-      .plan()
-      .then((value) => {
-        if (active) setData(value);
-      })
-      .catch(() => {
-        if (active) setError(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
   const open = async (item) => {
     if (item.activityType === 'VOCAB_REVIEW') {
       navigate('/dictation?mode=flashcard');
@@ -76,17 +61,23 @@ export default function StudyPlanCard() {
     <li key={item.id} className={styles.task}>
       <span>
         {item.completedAt ? '✓ ' : ''}
-        {item.activityType==='TOPIC_REVIEW' && `${item.topicName ?? ''} · `}
-        {['TEST','TOPIC_REVIEW'].includes(item.activityType)
+        {item.activityType === 'TOPIC_REVIEW' && `${item.topicName ?? ''} · `}
+        {['TEST', 'TOPIC_REVIEW'].includes(item.activityType)
           ? `${item.title} · ${t(`personalization.skills.${item.component}`)}${item.partNumber ? ` · Part ${item.partNumber}` : ''}`
           : t(`personalization.activities.${item.activityType}`, {
               count: item.questionCount ?? item.targetCount,
             })}
       </span>
-      {item.reason === 'PLACEMENT' && <span className={styles.muted}>{t('personalization.placement.title')}</span>}
-      {data?.plan?.source === 'AI' && item.reason && !ruleReasons.has(item.reason) && (
-        <span className={styles.muted}>{item.reason}</span>
+      {item.reason === 'PLACEMENT' && (
+        <span className={styles.muted}>
+          {t('personalization.placement.title')}
+        </span>
       )}
+      {data?.plan?.source === 'AI' &&
+        item.reason &&
+        !ruleReasons.has(item.reason) && (
+          <span className={styles.muted}>{item.reason}</span>
+        )}
       <span>
         {item.doneCount}/{item.targetCount}
       </span>
@@ -109,12 +100,12 @@ export default function StudyPlanCard() {
   return (
     <section className={styles.card}>
       <h2>{t('personalization.today')}</h2>
-      {error && (
+      {(error || loadError) && (
         <p role="alert" className={styles.error}>
           {t('personalization.planFailed')}
         </p>
       )}
-      {!data && !error && <p>{t('personalization.loading')}</p>}
+      {!data && !error && !loadError && <p>{t('personalization.loading')}</p>}
       {data && !data.plan && <p>{t('personalization.noGoal')}</p>}
       {data?.plan && (
         <>

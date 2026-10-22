@@ -97,9 +97,9 @@ test(
           ? route.continue()
           : route.abort(),
       );
-      await context.route('**/api/v1/**', async (route) => {
+      const handleApi = async (route, forcedPath) => {
         const req = route.request(),
-          path = new URL(req.url()).pathname.replace('/api/v1', '');
+          path = forcedPath ?? new URL(req.url()).pathname.replace('/api/v1', '');
         const respond = (json, status = 200) =>
           route.fulfill({
             json,
@@ -112,6 +112,11 @@ test(
             },
           });
         if (req.method() === 'OPTIONS') return respond({});
+        if(path==='/me/personalization/overview'){
+          const mock={request:()=>route.request(),fulfill:({json})=>json};
+          const [goal,schedule,profile,comment,reports]=await Promise.all(['/me/learning-goal','/me/study-plan/current','/me/ability-profile','/me/insights/comment','/me/reports'].map(path=>handleApi(mock,path)));
+          return respond({goal:goal.goal,progress:goal.snapshot,profile,plan:schedule.plan,today:schedule.today,comment,recentReports:reports.items??[],needsSync:false});
+        }
         if (path === '/me/ability-profile') return respond({bySkill:[],overall:{band:null},placement:{complete:true,missing:[],required:[],tests:[]}});
         if (path === '/me/reports') {
           lastReportQuery = new URL(req.url()).searchParams;
@@ -279,7 +284,8 @@ test(
           unreadCount: 0,
           pagination: { totalItems: 0 },
         });
-      });
+      };
+    await context.route('**/api/v1/**', route=>handleApi(route));
       const page = await context.newPage();
       page.setDefaultTimeout(20000);
       page.setDefaultNavigationTimeout(60000);

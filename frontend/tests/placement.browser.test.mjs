@@ -55,8 +55,8 @@ test(
         ? route.continue()
         : route.abort(),
     );
-    await context.route('**/api/v1/**', async (route) => {
-      const path = new URL(route.request().url()).pathname.replace(
+    const handleApi = async (route, forcedPath) => {
+      const path = forcedPath ?? new URL(route.request().url()).pathname.replace(
         '/api/v1',
         '',
       );
@@ -78,7 +78,12 @@ test(
           lastName: 'Learner',
           email: 'test@example.invalid',
         });
-      if (path === '/me/ability-profile')
+      if(path==='/me/personalization/overview'){
+          const mock={request:()=>route.request(),fulfill:({json})=>json};
+          const [goal,schedule,profile,comment,reports]=await Promise.all(['/me/learning-goal','/me/study-plan/current','/me/ability-profile','/me/insights/comment','/me/reports'].map(path=>handleApi(mock,path)));
+          return respond({goal:goal.goal,progress:goal.snapshot,profile,plan:schedule.plan,today:schedule.today,comment,recentReports:reports.items??[],needsSync:false});
+        }
+        if (path === '/me/ability-profile')
         return respond({
           bySkill: [
             'GRAMMAR_VOCAB',
@@ -131,7 +136,8 @@ test(
         unreadCount: 0,
         pagination: { totalItems: 0 },
       });
-    });
+    };
+    await context.route('**/api/v1/**', route=>handleApi(route));
     const page = await context.newPage();
     page.on('pageerror', (error) => errors.push(error.message));
     page.setDefaultTimeout(30000);
