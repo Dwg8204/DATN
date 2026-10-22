@@ -297,7 +297,8 @@ export class TestAttemptsService {
       estimatedCefr: attempt.component === 'READING' ? cefrEstimate?.level ?? null : isSpeakingPart(attempt) ? null : attempt.estimated_cefr,
       ...(attempt.component === 'READING' ? { cefrEstimate } : {}),
       ...(attempt.component === 'WRITING' && this.writing ? { assessment: await this.writing.status(attempt, manager) } : {}),
-      ...(attempt.component === 'SPEAKING' && this.speaking ? { assessment: { enabled: this.speaking.enabled } } : {}),
+      ...(attempt.component === 'SPEAKING' && this.speaking ? { assessment: { enabled: this.speaking.enabled,
+        ...await this.repository.speakingAssessmentStatus(attempt.id, manager) } } : {}),
       result: writingSummary(presented, attempt.component), submittedAt: attempt.submitted_at,
       completedAt: attempt.completed_at, startedAt: attempt.started_at, expiresAt: attempt.expires_at,
       submittedAfterExpiry: !!attempt.expires_at && !!attempt.submitted_at &&

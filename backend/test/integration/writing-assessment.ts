@@ -25,6 +25,9 @@ import { ObjectiveGraderService } from '../../src/features/test-attempts/assessm
 import { AuthUser } from '../../src/features/auth/types/auth-user.type';
 import { AssessmentResult } from '../../src/features/test-attempts/types/attempt.type';
 import { AiError } from '../../src/common/ai/ai-error';
+import { AddWritingPartCheckpoints1760000020000 } from '../../src/database/migrations/1760000020000-AddWritingPartCheckpoints';
+import { AddWritingRetryDiagnostics1760000021000 } from '../../src/database/migrations/1760000021000-AddWritingRetryDiagnostics';
+import { evidenceFixture } from '../../src/features/writing-assessment/testing/writing-evidence.fixture';
 
 async function main() {
   const url = process.env.TEST_DATABASE_URL;
@@ -61,11 +64,14 @@ async function main() {
     await runner.connect();
     await new AddSpeakingAiGrading1760000011000().up(runner);
     await new AddWritingAiGrading1760000012000().up(runner);
+    await new AddWritingPartCheckpoints1760000020000().up(runner);
+    await new AddWritingRetryDiagnostics1760000021000().up(runner);
     const actor = { id: randomUUID() } as AuthUser;
     await db.query('INSERT INTO users(id) VALUES($1)', [actor.id]);
     const config = new WritingAiConfig(
       new ConfigService({
         WRITING_AI_ENABLED: true,
+        WRITING_AI_MIN_INTERVAL_MS: 0,
         GEMINI_API_KEY: 'test-key-not-a-real-credential',
         GEMINI_BILLING_TIER: 'FREE',
         GEMINI_FREE_PROJECT_CONFIRMED: true,
@@ -82,12 +88,18 @@ async function main() {
     const practices = new PracticeAttemptsService(repo, factory, grader, coordinator);
     let calls = 0;
     let failure = false;
+    let badPartFour = false;
     const provider = {
       generateStructured: async (request: { input: unknown }) => {
         calls++;
         if (failure) throw new AiError('GEMINI_HTTP_429', true, 60000);
-        const input = request.input as ReturnType<typeof writingFixture>['input'];
-        return writingFixture(input.scope === 'PART' ? input.parts[0].partNumber : undefined).result;
+        const input = request.input as ReturnType<typeof writingFixture>['input'] & { evidenceCatalog?: any[]; validatedPartFeedback?: unknown };
+        const fixture = writingFixture(input.scope === 'PART' ? input.parts[0].partNumber : undefined);
+        const value = input.validatedPartFeedback ? { cefr: fixture.result.cefr, summary: fixture.result.summary } : fixture.result;
+        const raw = input.evidenceCatalog ? evidenceFixture(value, input.evidenceCatalog) : value;
+        if (badPartFour && input.scope === 'PART' && input.parts[0].partNumber === 4)
+          raw.details.parts[0].questions[1].criteria.VOCABULARY.evidenceIds = ['invalid-id'];
+        return raw;
       },
     };
     const assessor = new WritingAssessmentService(provider, new WritingAssessmentValidator());
@@ -148,7 +160,27 @@ async function main() {
     assert.equal(detail.items[0].selectedAnswer?.kind, 'TEXT');
     await exams.result(full.id, actor);
     await exams.details(full.id, 4, actor);
-    assert.equal(calls, 1, 'Reading results must not call AI');
+    assert.equal(calls, 5, 'Reading results must not call AI after four Parts and synthesis');
+
+    const resumable = await create('EXAM');
+    await exams.submit(resumable.id, actor, { expectedRevision: 0, finalChanges: resumable.answers });
+    badPartFour = true;
+    await run();
+    const [failedPartJob] = await db.query('SELECT * FROM writing_grading_jobs WHERE attempt_id=$1', [resumable.id]);
+    assert.deepEqual(Object.keys(failedPartJob.stage_results.parts).sort(), ['1', '2', '3']);
+    assert.equal(failedPartJob.last_validation_failure.questionKey, 'p4:q2');
+    // Simulate exhausted automatic retries; all changes are inside this dedicated test schema.
+    await db.query("UPDATE writing_grading_jobs SET status='FAILED',attempt_count=8,created_at=now()-interval '2 minutes' WHERE id=$1", [failedPartJob.id]);
+    await db.query("UPDATE test_attempts SET grading_status='FAILED' WHERE id=$1", [resumable.id]);
+    await coordinator.retry(resumable.id, actor.id, 'EXAM');
+    const [inherited] = await db.query('SELECT * FROM writing_grading_jobs WHERE attempt_id=$1 ORDER BY assessment_revision DESC LIMIT 1', [resumable.id]);
+    assert.deepEqual(Object.keys(inherited.stage_results.parts).sort(), ['1', '2', '3']);
+    assert.equal(inherited.last_validation_failure.questionKey, 'p4:q2');
+    badPartFour = false;
+    const beforeResume = calls;
+    await run();
+    assert.equal(calls - beforeResume, 2, 'Manual retry must call Part 4 and synthesis only');
+    assert.equal((await exams.result(resumable.id, actor)).gradingStatus, 'COMPLETED');
 
     const practice = await create('PRACTICE', 4);
     await practices.complete(practice.id, { answers: practice.answers, revealedKeys: ['p4:q1'] }, actor);
@@ -357,6 +389,8 @@ async function main() {
 
     assert.equal((await db.query('SELECT * FROM speaking_grading_jobs')).length, 0);
     assert.equal((await db.query('SELECT * FROM speaking_ai_costs')).length, 0);
+    await new AddWritingRetryDiagnostics1760000021000().down(runner);
+    await new AddWritingPartCheckpoints1760000020000().down(runner);
     await new AddWritingAiGrading1760000012000().down(runner);
     assert.equal(
       (

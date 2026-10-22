@@ -4,8 +4,9 @@ import { AiError } from '../../../common/ai/ai-error';
 import { WritingInput } from '../contracts/writing-assessment-input';
 import { Finding, WritingAssessment, WRITING_CRITERIA } from '../contracts/writing-assessment-output';
 import { writingOutputSchema } from '../contracts/writing-assessment.schema';
+import { WritingEvidenceError, WritingEvidenceLocation } from './writing-evidence.error';
 
-function assertShape(value: unknown, schema: JsonSchema, path = 'root'): void {
+export function assertShape(value: unknown, schema: JsonSchema, path = 'root'): void {
   const bad = (rule: string): never => {
     throw new AiError('AI_INVALID_RESPONSE', true, undefined, `${rule}:${path}`);
   };
@@ -91,8 +92,8 @@ export class WritingAssessmentValidator {
     }
     assertShape(value, writingOutputSchema(input.scope));
     const result = value as WritingAssessment;
-    const invalid = (rule: string): never => {
-      throw new AiError('AI_WRITING_EVIDENCE_INVALID', true, undefined, rule);
+    const invalid = (rule: string, location?: WritingEvidenceLocation): never => {
+      throw new WritingEvidenceError(rule, location);
     };
     if (result.feedbackLocale !== input.feedbackLocale || result.scope !== input.scope)
       invalid('LOCALE_OR_SCOPE');
@@ -101,20 +102,22 @@ export class WritingAssessmentValidator {
         part.questions.map((question) => [question.questionKey, question] as const),
       ),
     );
-    const quote = (key: string, text: string): void => {
+    const quote = (key: string, text: string, path: string, criterion?: string): void => {
       if (
         !normalize(text) ||
         !expected.has(key) ||
         !normalize(expected.get(key)!.response).includes(normalize(text))
       )
-        invalid('QUOTE_NOT_IN_RESPONSE');
+        invalid('QUOTE_NOT_IN_RESPONSE', { path, questionKey: key, criterion });
     };
-    const findings = (rows: Finding[], allowedKeys: Set<string>): void => {
-      for (const row of rows) {
-        if (row.criterion !== 'TASK' && row.evidence.length === 0) invalid('FINDING_WITHOUT_EVIDENCE');
-        for (const evidence of row.evidence) {
-          if (!allowedKeys.has(evidence.questionKey)) invalid('EVIDENCE_QUESTION_KEY');
-          quote(evidence.questionKey, evidence.quote);
+    const findings = (rows: Finding[], allowedKeys: Set<string>, path: string): void => {
+      for (const [index, row] of rows.entries()) {
+        if (row.criterion !== 'TASK' && row.evidence.length === 0)
+          invalid('FINDING_WITHOUT_EVIDENCE', { path: `${path}[${index}].evidence`, criterion: row.criterion });
+        for (const [evidenceIndex, evidence] of row.evidence.entries()) {
+          const evidencePath = `${path}[${index}].evidence[${evidenceIndex}].quote`;
+          if (!allowedKeys.has(evidence.questionKey)) invalid('EVIDENCE_QUESTION_KEY', { path: evidencePath });
+          quote(evidence.questionKey, evidence.quote, evidencePath, row.criterion);
         }
       }
     };
@@ -126,16 +129,18 @@ export class WritingAssessmentValidator {
     )
       invalid('PART_KEYS');
     const seen = new Set<string>();
-    for (const part of result.details.parts) {
+    for (const [partIndex, part] of result.details.parts.entries()) {
+      const partPath = `details.parts[${partIndex}]`;
       const keys = new Set(
         input.parts
           .find((candidate) => candidate.partNumber === part.partNumber)!
           .questions.map((question) => question.questionKey),
       );
       if (part.questions.length !== keys.size) invalid('QUESTION_COUNT');
-      findings(part.strengths, keys);
-      findings(part.weaknesses, keys);
-      for (const question of part.questions) {
+      findings(part.strengths, keys, `${partPath}.strengths`);
+      findings(part.weaknesses, keys, `${partPath}.weaknesses`);
+      for (const [questionIndex, question] of part.questions.entries()) {
+        const questionPath = `${partPath}.questions[${questionIndex}]`;
         if (!keys.has(question.questionKey) || seen.has(question.questionKey)) invalid('QUESTION_KEY');
         seen.add(question.questionKey);
         const original = expected.get(question.questionKey)!;
@@ -157,11 +162,13 @@ export class WritingAssessmentValidator {
             [...WRITING_CRITERIA].sort().join(',')
         )
           invalid('CRITERIA_KEYS');
-        for (const criterion of question.criteria)
-          for (const evidence of criterion.evidenceQuotes) quote(question.questionKey, evidence);
-        findings(question.strengths, new Set([question.questionKey]));
-        findings(question.weaknesses, new Set([question.questionKey]));
-        for (const correction of question.corrections) quote(question.questionKey, correction.original);
+        for (const [criterionIndex, criterion] of question.criteria.entries())
+          for (const [evidenceIndex, evidence] of criterion.evidenceQuotes.entries())
+            quote(question.questionKey, evidence, `${questionPath}.criteria[${criterionIndex}].evidenceQuotes[${evidenceIndex}]`, criterion.criterion);
+        findings(question.strengths, new Set([question.questionKey]), `${questionPath}.strengths`);
+        findings(question.weaknesses, new Set([question.questionKey]), `${questionPath}.weaknesses`);
+        for (const [index, correction] of question.corrections.entries())
+          quote(question.questionKey, correction.original, `${questionPath}.corrections[${index}].original`, correction.criterion);
         if (
           status === 'BLANK' &&
           (question.strengths.length ||
@@ -177,7 +184,7 @@ export class WritingAssessmentValidator {
           invalid('BLANK_RESPONSE');
       }
     }
-    for (const evidence of result.cefr.evidence) quote(evidence.questionKey, evidence.quote);
+    for (const [index, evidence] of result.cefr.evidence.entries()) quote(evidence.questionKey, evidence.quote, `cefr.evidence[${index}].quote`);
     if (input.scope === 'PART') {
       if (result.cefr.level !== null) invalid('PART_CEFR');
       // Scope is authoritative. Provider wording about why CEFR is unavailable is not grading evidence.

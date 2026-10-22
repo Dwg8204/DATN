@@ -13,6 +13,7 @@ export type WritingJobConfig = {
   promptVersion: string;
   schemaVersion: 1;
   inputVersion?: 1 | 2;
+  assessmentMode?: 'PARTS_V1';
 };
 
 @Injectable()
@@ -40,15 +41,16 @@ export class WritingAiConfig {
   snapshot(_feedbackLocale: FeedbackLocale): WritingJobConfig {
     return {
       provider: this.config.get('WRITING_AI_PROVIDER', 'gemini'),
-      model: this.config.get('WRITING_AI_MODEL', 'gemini-3.1-flash-lite'),
+      model: this.config.get('WRITING_AI_MODEL', 'gemini-3.5-flash-lite'),
       timeoutMs: Number(this.config.get('WRITING_AI_REQUEST_TIMEOUT_MS', 60000)),
       maxOutputTokens: Number(this.config.get('WRITING_AI_MAX_OUTPUT_TOKENS', 8192)),
       maxAttempts: Number(this.config.get('WRITING_AI_MAX_ATTEMPTS', 3)),
       feedbackLocale: 'vi',
       rubricVersion: 'writing-rubric-v2',
-      promptVersion: 'writing-prompt-v3',
+      promptVersion: 'writing-prompt-v4-evidence-ids',
       inputVersion: 2,
       schemaVersion: 1,
+      assessmentMode: 'PARTS_V1',
     };
   }
 }

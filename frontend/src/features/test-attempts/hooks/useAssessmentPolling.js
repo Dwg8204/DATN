@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { normalizeApiError } from '../../../services/apiError.js';
 
 export function useAssessmentPolling(attemptId, api, component, practice = false, poll = true) {
-  const key = `${attemptId}:${component}:${practice}`;
+  const key = `${attemptId}:${component}:${practice}:${api.assessmentProvider ?? 'gemini'}`;
   const [state, setState] = useState({ key: null, data: null, error: '', paused: false });
   const [refreshKey, setRefreshKey] = useState(0);
   const refresh = useCallback(() => setRefreshKey(value => value + 1), []);
@@ -10,7 +10,7 @@ export function useAssessmentPolling(attemptId, api, component, practice = false
     if (!attemptId) return undefined;
     const controller = new AbortController();
     let timer, pending = false, stopped = false, count = 0;
-    const started = Date.now();
+    let started = Date.now(), deadline = started + 300000;
     const read = async () => {
       if (pending || stopped || controller.signal.aborted || document.hidden) return;
       pending = true;
@@ -20,6 +20,8 @@ export function useAssessmentPolling(attemptId, api, component, practice = false
         if (controller.signal.aborted) return;
         if (component && data.component !== component) throw new Error('This result belongs to another skill.');
         setState({ key, data, error: '', paused: false });
+        const retryAt = Date.parse(data.assessment?.nextRetryAt ?? '');
+        if (Number.isFinite(retryAt)) deadline = Math.max(deadline, Math.min(started + 1800000, retryAt + 300000));
         again = poll && ['QUEUED', 'PROCESSING'].includes(data.gradingStatus) && data.assessment?.enabled !== false;
       } catch (error) {
         if (controller.signal.aborted) return;
@@ -29,14 +31,20 @@ export function useAssessmentPolling(attemptId, api, component, practice = false
       } finally {
         pending = false;
         if (controller.signal.aborted) return;
-        if (again && Date.now() - started < 300000) timer = window.setTimeout(read, Math.min(10000, 3000 + count++ * 1000));
+        if (again && Date.now() < deadline) timer = window.setTimeout(read, Math.min(10000, 3000 + count++ * 1000));
         else {
           stopped = true;
           if (again) setState(previous => ({ ...previous, paused: true }));
         }
       }
     };
-    const visible = () => { window.clearTimeout(timer); if (!document.hidden) void read(); };
+    const visible = () => {
+      window.clearTimeout(timer);
+      if (!document.hidden) {
+        stopped = false; started = Date.now(); deadline = started + 300000;
+        void read();
+      }
+    };
     document.addEventListener('visibilitychange', visible);
     void read();
     return () => { controller.abort(); window.clearTimeout(timer); document.removeEventListener('visibilitychange', visible); };

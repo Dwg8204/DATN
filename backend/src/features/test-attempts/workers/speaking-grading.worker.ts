@@ -8,6 +8,7 @@ import { AssessmentPaperFactory } from '../assessments/assessment-paper.factory'
 import { AssessmentResult } from '../types/attempt.type';
 import { finalizeSpeaking } from '../assessments/speaking-ai-policy';
 import { ApplicationError } from '../../../common/errors/application.error';
+import { AiError } from '../../../common/ai/ai-error';
 
 @Injectable()
 export class SpeakingGradingWorker implements OnModuleInit, OnModuleDestroy {
@@ -47,12 +48,13 @@ export class SpeakingGradingWorker implements OnModuleInit, OnModuleDestroy {
     } catch (error) {
       const message = error instanceof ApplicationError ? error.code : error instanceof Error ? error.message : '';
       const code = /^[A-Z][A-Z0-9_]{1,99}$/.test(message) ? message : 'SPEAKING_AI_UNAVAILABLE';
-      this.logger.warn(`Speaking grading failed: ${code}.`); // Never log provider response, secrets or student audio/text.
+      this.logger.warn(`Speaking grading failed: attempt=${job?.attempt_id ?? 'unclaimed'} run=${job?.failures ?? 0} code=${code}.`); // No audio, text or secrets.
       if (job) {
-        const retry = /HTTP_(429|5\d\d)$/.test(code) || ['SPEAKING_AI_UNAVAILABLE','AUDIO_DOWNLOAD_FAILED'].includes(code);
+        const retry = /HTTP_(429|5\d\d)$/.test(code) || ['SPEAKING_AI_UNAVAILABLE','AUDIO_DOWNLOAD_FAILED','SPEAKING_CEFR_INCONSISTENT'].includes(code);
         await this.jobs.fail(job, code, retry, code === 'SPEAKING_BUDGET_EXCEEDED'
           ? 'Đã hết ngân sách chấm AI tháng này. Bản ghi âm vẫn được lưu; bài sẽ được thử lại vào tháng sau.'
-          : `Chưa chấm được bài (${code}). ${retry && job.failures < 3 ? 'Hệ thống sẽ thử lại sau.' : 'Vui lòng liên hệ quản trị viên.'}`)
+          : `Chưa chấm được bài (${code}). ${retry && job.failures < 3 ? 'Hệ thống sẽ thử lại sau.' : 'Vui lòng liên hệ quản trị viên.'}`,
+          error instanceof AiError ? error.retryAfterMs : undefined)
           .catch(() => this.logger.warn('Could not persist Speaking grading failure.'));
       }
     }

@@ -50,7 +50,7 @@ export default function SpeakingAttemptDetailPage() {
   const isFullSkill = summary.data.scope === 'FULL_SKILL';
   const partFeedback = speaking?.partFeedback?.find(part => part.partNumber === activePart);
   return <div className={styles.page}><main>
-    <ResultBackButton to={`/speaking/result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}`} />
+    <ResultBackButton to={`/speaking/result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}${params.get('model')==='groq'?'&model=groq':''}`} />
     <header className={styles.title}><div><span>Speaking Part {activePart}</span><h1>{summary.data.title || ui("Submitted responses")}</h1></div></header>
     {parts.length > 1 && <nav className={styles.partTabs} aria-label={ui("Speaking parts")}>
       {parts.map(part => <button type="button" key={part} className={part === activePart ? styles.active : ''}
@@ -94,7 +94,7 @@ export default function SpeakingAttemptDetailPage() {
             <div className={feedbackStyles.criteria}>{CRITERIA.map(([key, label]) => {
               const feedback = item.assessment.details?.criterionFeedback?.[key];
               return <details key={key} className={styles.criterionFeedback}>
-                <summary>{ui(label)} · <span className={styles.score}>{item.assessment.criteria?.[key] ?? '—'}%</span></summary>
+                <summary>{ui(label)} · <span className={styles.score}>{item.assessment.criteria?.[key]==null?'—':`${item.assessment.criteria[key]}%`}</span></summary>
                 {feedback && <><p>{feedback.comment}</p>
                   <FeedbackList label={ui("Strengths")} items={feedback.strengths} />
                   <FeedbackList label={ui("Weaknesses")} items={feedback.weaknesses} />

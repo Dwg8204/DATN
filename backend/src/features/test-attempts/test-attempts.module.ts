@@ -17,12 +17,17 @@ import { SpeakingAudioService } from './services/speaking-audio.service';
 import { SpeakingAiProvider } from './services/speaking-ai-provider.service';
 import { SpeakingGradingWorker } from './workers/speaking-grading.worker';
 import { SpeakingGradingController } from './controllers/speaking-grading.controller';
+import { SharedSpeakingTranscript } from './services/shared-speaking-transcript.service';
+import { GroqReferenceProvider } from '../reference-assessment/groq-reference.provider';
+import { ReferenceAssessmentService } from '../reference-assessment/reference-assessment.service';
+import { ReferenceAssessmentController } from '../reference-assessment/reference-assessment.controller';
 
 @Module({
   imports: [AuthModule, WritingAssessmentModule, PersonalizationProgressModule],
-  controllers: [TestAttemptsController, PracticeAttemptsController, SpeakingGradingController],
+  controllers: [TestAttemptsController, PracticeAttemptsController, SpeakingGradingController, ReferenceAssessmentController],
   providers: [AssessmentPaperFactory, ObjectiveGraderService, TestAttemptsRepository, TestAttemptsService, PracticeAttemptsService, StudentDashboardService, AttemptExpiryWorker,
-    SpeakingGradingRepository, SpeakingAiConfig, SpeakingAudioService, SpeakingAiProvider, SpeakingGradingWorker],
+    SpeakingGradingRepository, SpeakingAiConfig, SpeakingAudioService, SpeakingAiProvider, SpeakingGradingWorker,
+    SharedSpeakingTranscript, GroqReferenceProvider, ReferenceAssessmentService],
   exports: [TestAttemptsService, PracticeAttemptsService],
 })
 export class TestAttemptsModule {}

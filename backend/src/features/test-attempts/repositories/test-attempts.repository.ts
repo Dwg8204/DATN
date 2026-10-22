@@ -23,6 +23,17 @@ export type DashboardAttemptRow = {
 export class TestAttemptsRepository {
   constructor(readonly dataSource: DataSource) {}
 
+  async speakingAssessmentStatus(attemptId: string, manager?: EntityManager) {
+    const rows = await (manager ?? this.dataSource).query(`SELECT status,error_code,failures,next_run_at
+      FROM speaking_grading_jobs WHERE attempt_id=$1`, [attemptId]);
+    const job = rows[0];
+    return {
+      errorCode: job?.error_code ?? null,
+      nextRetryAt: job?.status === 'QUEUED' ? job.next_run_at : null,
+      attempts: job?.failures ?? 0,
+    };
+  }
+
   async published(testId: string, manager: EntityManager): Promise<PublishedTest | null> {
     const rows = await manager.query<PublishedTest[]>(
       `SELECT t.id,t.component,t.purpose,t.scope,t.part_number,ts.id AS snapshot_id,ts.version,ts.schema_version

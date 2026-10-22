@@ -3,6 +3,7 @@ import { createElement, lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 import TestLayout from '../../components/layout/TestLayout';
 import AttemptRoleGuard from '../test-attempts/components/AttemptRoleGuard.jsx';
+import AssessmentModelView from '../test-attempts/components/AssessmentModelView.jsx';
 
 const load = element => <Suspense fallback={<div role="status"><UiText text={"Loading…"} /></div>}>{element}</Suspense>;
 const lazyElement = importer => load(createElement(lazy(importer)));
@@ -16,7 +17,7 @@ const writingResultDetailPage = lazyElement(() => import('./pages/WritingResultD
 export const writingMainRoutes = [
   { path: 'writing', element: <Navigate to="/writing/overview" replace /> },
   { path: 'writing/overview', element: writingOverviewPage },
-  { path: 'writing/result', element: <AttemptRoleGuard>{writingResultPage}</AttemptRoleGuard> },
+  { path: 'writing/result', element: <AttemptRoleGuard><AssessmentModelView skill="writing">{writingResultPage}</AssessmentModelView></AttemptRoleGuard> },
 ];
 
 export const writingTestRoutes = [
@@ -30,6 +31,6 @@ export const writingTestRoutes = [
   {
     path: '/writing/result-detail',
     element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false, confirmExit: false }} /></AttemptRoleGuard>,
-    children: [{ index: true, element: writingResultDetailPage }],
+    children: [{ index: true, element: <AssessmentModelView skill="writing" detail>{writingResultDetailPage}</AssessmentModelView> }],
   },
 ];

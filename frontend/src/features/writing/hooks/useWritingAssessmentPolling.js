@@ -4,33 +4,38 @@ import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
 import { practiceAttemptsApi } from '../../test-attempts/services/practiceAttemptsApi';
 import api from '../../../services/api';
 import { useAssessmentPolling } from '../../test-attempts/hooks/useAssessmentPolling';
+import { referenceAssessmentsApi, selectAssessmentApi } from '../../test-attempts/services/referenceAssessmentsApi.js';
 
 export function useWritingAssessmentPolling(attemptId) {
   const [params] = useSearchParams();
   const practice = params.get('practice') === 'true';
-  const attemptsApi = practice ? practiceAttemptsApi : testAttemptsApi;
+  const provider=params.get('model')==='groq'?'groq':'gemini';
+  const attemptsApi = selectAssessmentApi(practice ? practiceAttemptsApi : testAttemptsApi,provider);
   const polling = useAssessmentPolling(attemptId, attemptsApi, 'WRITING', practice);
   const { refresh } = polling;
-  const [retrying, setRetrying] = useState(false);
-  const [retryError, setRetryError] = useState('');
-  const [runKey, setRunKey] = useState(0);
+  const retryKey=`${attemptId}:${practice}:${provider}`;
+  const [retryStates,setRetryStates]=useState({});
+  const retryState=retryStates[retryKey] ?? {};
+  const retrying=!!retryState.retrying;
+  const retryError=retryState.error ?? '';
+  const runKey=retryState.runKey ?? 0;
   const retry = useCallback(async () => {
     if (retrying) return;
-    setRetrying(true);
-    setRetryError('');
+    setRetryStates(previous=>({...previous,[retryKey]:{...previous[retryKey],retrying:true,error:''}}));
     try {
-      await api.post(
+      if(provider==='groq') await referenceAssessmentsApi.retry(attemptId);
+      else await api.post(
         `/${practice ? 'practice-attempts' : 'test-attempts'}/${attemptId}/assessment/retry`,
         {},
         { notifyOnError: false },
       );
-      setRunKey(value => value + 1);
+      setRetryStates(previous=>({...previous,[retryKey]:{...previous[retryKey],runKey:(previous[retryKey]?.runKey ?? 0)+1}}));
       refresh();
     } catch {
-      setRetryError('writingAi.retryError');
+      setRetryStates(previous=>({...previous,[retryKey]:{...previous[retryKey],error:'writingAi.retryError'}}));
     } finally {
-      setRetrying(false);
+      setRetryStates(previous=>({...previous,[retryKey]:{...previous[retryKey],retrying:false}}));
     }
-  }, [attemptId, practice, refresh, retrying]);
+  }, [attemptId, practice, provider, refresh, retrying, retryKey]);
   return { ...polling, retry, retrying, retryError, runKey, attemptId };
 }
