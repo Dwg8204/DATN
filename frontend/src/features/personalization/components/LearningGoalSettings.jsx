@@ -46,7 +46,7 @@ export default function LearningGoalSettings() {
       catch { setError(t('personalization.refreshAfterSaveFailed')); }
     }
     catch (err) {
-      const message = t(err.response?.status === 409 ? 'personalization.conflict' : 'personalization.saveFailed');
+      const message = t(err.response?.data?.error?.code === 'GOAL_PACE_TOO_HIGH' ? 'personalization.paceTooHigh' : err.response?.status === 409 ? 'personalization.conflict' : 'personalization.saveFailed');
       setError(message);
       showError(message);
     }
@@ -55,6 +55,7 @@ export default function LearningGoalSettings() {
   const goal = state?.goal;
   const saveGoal = event => {
     event.preventDefault();
+    if(form.targetTests > 3 * form.durationDays){setError(t('personalization.paceTooHigh'));return;}
     if (goal) setConfirmation({ kind: 'replace', action: () => api.replace({ ...form, goalId: goal.id }) });
     else void run(() => api.create(form));
   };

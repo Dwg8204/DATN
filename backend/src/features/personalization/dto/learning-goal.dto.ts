@@ -1,3 +1,4 @@
+import { ApplicationError } from '../../../common/errors/application.error';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
@@ -11,6 +12,10 @@ import {
 } from 'class-validator';
 import { GoalStatus, TargetCefr } from '../types/personalization.type';
 
+export const MAX_DAILY_TESTS = 3;
+export function assertGoalPace(dto: {targetTests:number;durationDays:number}) {
+  if(dto.targetTests > MAX_DAILY_TESTS * dto.durationDays) throw new ApplicationError('GOAL_PACE_TOO_HIGH','The goal cannot exceed three tests per day.',400);
+}
 export class CreateLearningGoalDto {
   @IsIn(['A1', 'A2', 'B1', 'B2', 'C']) targetCefr!: TargetCefr;
   @IsInt() @Min(1) @Max(500) targetTests!: number;

@@ -17,11 +17,12 @@ export default function FinalGoalSuggestion({ suggestion }) {
     if (pending.current) return;
     pending.current = true; setBusy(true); setError('');
     try { await action(); }
-    catch (err) { setError(t(err.response?.status === 409 ? 'personalization.conflict' : 'personalization.saveFailed')); setConfirmation(null); }
+    catch (err) { setError(t(err.response?.data?.error?.code === 'GOAL_PACE_TOO_HIGH' ? 'personalization.paceTooHigh' : err.response?.status === 409 ? 'personalization.conflict' : 'personalization.saveFailed')); setConfirmation(null); }
     finally { pending.current = false; setBusy(false); }
   };
   const prepare = event => {
     event.preventDefault();
+    if(form.targetTests > 3 * form.durationDays){setError(t('personalization.paceTooHigh'));return;}
     void run(async () => {
       const { goal } = await api.goal();
       setConfirmation({ goalId: goal?.id ?? null, form: { ...form } });

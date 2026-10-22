@@ -136,7 +136,8 @@
       "NOT_REACHED": "Band ước lượng chưa đạt band đích.",
       "INSUFFICIENT_DATA": "Chưa đủ dữ liệu để kết luận band đích."
     },
-    "askReport": "Hỏi AptiMate về báo cáo này"
+    "askReport": "Hỏi AptiMate về báo cáo này",
+    "paceTooHigh": "Mục tiêu không được vượt quá 3 bài mỗi ngày. Hãy giảm số bài hoặc tăng số ngày."
   },
   "speakingDetailedFeedback": {
     "partAssessment": "Đánh giá Speaking theo Part",

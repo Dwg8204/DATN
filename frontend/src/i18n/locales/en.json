@@ -136,7 +136,8 @@
       "NOT_REACHED": "Estimated band does not yet meet the target band.",
       "INSUFFICIENT_DATA": "Not enough data to assess the target band."
     },
-    "askReport": "Ask AptiMate about this report"
+    "askReport": "Ask AptiMate about this report",
+    "paceTooHigh": "A goal cannot exceed 3 tests per day. Reduce the test count or increase the duration."
   },
   "speakingDetailedFeedback": {
     "partAssessment": "Speaking Part assessment",
