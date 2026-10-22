@@ -1,5 +1,15 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa S1 — 22/10/2026
+
+- Thực hiện theo bản kế hoạch sửa ở root; nhánh fix/personalization-s1 từ origin/develop 3112208, theo yêu cầu không thêm codex vào tên nhánh. Dừng nghiệm thu S1 trước S2.
+- Đã sửa ứng viên Part yếu/21 đề mỗi kỹ năng, ôn thẻ theo activeCount, một TEST=một đề tối đa ba bài/ngày, tiến độ khớp test_id và cho làm trước/làm bù, hợp đồng AI v2, chặn GOAL_PACE_TOO_HIGH và thông báo Việt/Anh.
+- Script personalization:replan-current tái sử dụng thay ngày chưa học của GĐ7, khóa user và audit để chạy một lần. Đã apply database local: eligible=1, updated=1. Không thay .env, không migration, không gọi AI/email thật.
+- SNAPSHOT_VERSION đã tăng lên 2 do thêm activeCount. S2 phải tăng tiếp lên 3 khi đổi snapshot; giữ nguyên tài liệu kế hoạch gốc, ghi giải thích tại báo cáo.
+- TypeScript, 11 suite/123 unit test và 2 suite/23 test bổ sung, PostgreSQL S1/GĐ4/GĐ7, browser desktop/mobile kèm chặn nhịp cao, build frontend và diff check đạt. Chi tiết tại docs/PERSONALIZATION_S1_REPORT.md.
+- Commit tiếng Việt theo task, chưa push. S2–S5 và GĐ11 chưa triển khai. Các ghi chú chưa commit của những đợt cũ bên dưới là lịch sử; develop đã chứa các đợt đó.
+
+
 ## Seed mở rộng 5 đề mỗi nhóm — 21/10/2026
 
 - Đã hoàn thành yêu cầu thêm 5 Tests Full và 5 Practice Full/từng Part cho mỗi kỹ năng: **140 đề mới PUBLISHED** (Grammar & Vocabulary 20; Reading, Listening, Writing, Speaking mỗi kỹ năng 30). Database local từ **39 lên 179 đề**, thêm **1.905 câu hỏi**, đủ 1.905 ánh xạ câu/snapshot. Lần seed đầu `created=140, skipped=0`; chạy lại `created=0, skipped=140`.
