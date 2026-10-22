@@ -15,6 +15,8 @@ import { addDays, localDay } from '../policies/calendar';
 import { nextReportDelivery, planWindow, reportWeeks } from '../policies/report-schedule';
 import { snapshotHash } from '../policies/learner-snapshot';
 import { REPORT_PROMPT_VERSION, ReportJob, ReportKind, reportSnapshot, resolveAiItems, WeeklyContent } from '../ai/report.contract';
+import { FINAL_PROMPT_VERSION, FinalContent } from '../ai/final.contract';
+import { queueFinalReport } from './final-report-queue';
 
 @Injectable()
 export class ReportJobsService {
@@ -40,6 +42,7 @@ export class ReportJobsService {
 
   async scheduleBatch() {
     const now = this.clock.now();
+    await this.scheduleFinalBatch();
     // Select only missing periods so the first 50 old goals cannot starve later learners.
     const due = await this.db.query<Array<{ goal_id: string; user_id: string; week: number }>>(
       `SELECT g.id goal_id,g.user_id,w.week FROM learning_goals g
@@ -70,7 +73,7 @@ export class ReportJobsService {
       await this.db.transaction(async manager => {
         const rows = await manager.query<Array<LearningInsightRow & { timezone: string }>>(
           `SELECT i.*,u.timezone FROM learning_insights i JOIN users u ON u.id=i.user_id
-           WHERE i.kind IN ('PLAN_START','WEEKLY','MIDTERM') AND
+           WHERE i.kind IN ('PLAN_START','WEEKLY','MIDTERM','FINAL') AND i.snapshot ? 'learner' AND
              (i.status IN ('PENDING','FAILED') OR (i.status='FALLBACK' AND i.retry_count>3))
            ORDER BY i.created_at LIMIT 50 FOR UPDATE OF i SKIP LOCKED`,
         );
@@ -84,10 +87,62 @@ export class ReportJobsService {
       await this.db.query(
         `UPDATE learning_insights SET retry_count=0,next_retry_at=NULL,
          content=jsonb_set(COALESCE(content,'{}'::jsonb),'{generationKey}',to_jsonb($1::text))
-         WHERE id IN (SELECT id FROM learning_insights WHERE kind IN ('PLAN_START','WEEKLY','MIDTERM')
+         WHERE id IN (SELECT id FROM learning_insights WHERE kind IN ('PLAN_START','WEEKLY','MIDTERM','FINAL')
            AND status='FALLBACK' AND retry_count>3 AND content->>'generationKey' IS DISTINCT FROM $1
            ORDER BY created_at LIMIT 50 FOR UPDATE SKIP LOCKED)`, [this.ai.configurationKey],
       );
+    }
+  }
+
+  private async scheduleFinalBatch() {
+    // Also recover goals ended before GĐ8 was deployed or while the worker was stopped.
+    const due = await this.db.query<Array<{ id: string; user_id: string }>>(
+      `SELECT g.id,g.user_id FROM learning_goals g
+       JOIN users u ON u.id=g.user_id JOIN roles r ON r.id=u.role_id
+       WHERE u.status='ACTIVE' AND u.deleted_at IS NULL AND r.code='STUDENT' AND g.ended_at<=$1
+         AND (g.status IN ('COMPLETED','EXPIRED') OR (g.status='REPLACED' AND
+           (g.ended_at AT TIME ZONE g.timezone)::date-g.start_date+1>=3))
+         AND NOT EXISTS(SELECT 1 FROM learning_insights i WHERE i.goal_id=g.id AND i.kind='FINAL' AND i.snapshot ? 'learner')
+       ORDER BY g.ended_at,g.id LIMIT 50`, [this.clock.now()],
+    );
+    for (const target of due) {
+      try {
+        await this.db.transaction(async manager => {
+          const [lock] = await manager.query('SELECT id FROM users WHERE id=$1 FOR UPDATE SKIP LOCKED', [target.user_id]);
+          if (!lock) return;
+          const goal = (await this.goalRepository.findById(target.user_id, target.id, manager))!;
+          await queueFinalReport(manager, goal.id);
+          const [row] = await manager.query<LearningInsightRow[]>(
+            "SELECT * FROM learning_insights WHERE goal_id=$1 AND kind='FINAL' AND NOT(snapshot ? 'learner') FOR UPDATE SKIP LOCKED", [goal.id]);
+          if (!row) return;
+          const [boundary] = await manager.query<Array<{ cutoff: Date }>>(
+            "SELECT LEAST(ended_at,((start_date+duration_days)::timestamp AT TIME ZONE timezone)-interval '1 millisecond') cutoff FROM learning_goals WHERE id=$1", [goal.id]);
+          const full = await this.snapshots.build({ id: goal.user_id, role: 'STUDENT' } as AuthUser, goal, { kind: 'FINAL' }, boundary.cutoff);
+          const learner = reportSnapshot(full, full.cumulative.completed);
+          const bands: Record<string, number> = { A1: 1, A2: 2, B1: 3, B2: 4, C: 5, C1: 5, C2: 6 };
+          const estimate = learner.band.overallEstimate;
+          const job: ReportJob = {
+            snapshotVersion: full.snapshotVersion, learner, candidates: [],
+            plan: { weekIndex: 0, startsOn: goal.start_date, endsOn: localDay(boundary.cutoff, goal.timezone),
+              days: 0, requiredPace: 0, remainingTests: 0 },
+            promptVersion: FINAL_PROMPT_VERSION,
+            outcome: { lifecycle: goal.status, testTargetReached: full.cumulative.completed >= goal.target_test_count,
+              targetReachedOn: goal.target_reached_at ? localDay(goal.target_reached_at, goal.timezone) : null,
+              bandTargetStatus: !estimate ? 'INSUFFICIENT_DATA' : bands[estimate] >= bands[goal.target_cefr] ? 'REACHED' : 'NOT_REACHED',
+              endedOn: localDay(boundary.cutoff, goal.timezone) },
+          };
+          const [user] = await manager.query<Array<{ timezone: string }>>('SELECT timezone FROM users WHERE id=$1', [goal.user_id]);
+          await manager.query(
+            `UPDATE learning_insights SET snapshot=$2,input_hash=$3,snapshot_version=$4,content=$5,status=$6,deliver_at=$7,
+             covers_to=$8,updated_at=now() WHERE id=$1`,
+            [row.id, job, snapshotHash(job), job.snapshotVersion,
+              { ...this.fallback('FINAL'), generationKey: this.ai.configurationKey },
+              this.ai.enabled ? 'PENDING' : 'FALLBACK', nextReportDelivery(this.clock.now(), user.timezone), job.outcome!.endedOn],
+          );
+        });
+      } catch {
+        this.logger.warn('One final report could not be prepared; retrying on the next run.');
+      }
     }
   }
 
@@ -150,6 +205,11 @@ export class ReportJobsService {
   }
 
   fallback(kind: string) {
+    if (kind === 'FINAL') return { source: 'RULE', report: {
+      headline: 'Tổng kết mục tiêu học tập',
+      narrative: 'Mục tiêu đã kết thúc. Xem số bài đã hoàn thành và band ước lượng trong bảng số liệu để chuẩn bị mục tiêu tiếp theo.',
+      achievements: [], nextGoalSuggestion: null,
+    } };
     return { source: 'RULE', ...(kind !== 'PLAN_START' ? { report: {
       headline: kind === 'MIDTERM' ? 'Báo cáo học tập giữa kỳ' : 'Báo cáo học tập tuần',
       narrative: 'Số liệu học tập đã được cập nhật. Tiếp tục theo lộ trình để tiến tới mục tiêu.',
@@ -158,15 +218,15 @@ export class ReportJobsService {
     } } : {}) };
   }
 
-  async completeLocked(manager: EntityManager, row: LearningInsightRow, content: WeeklyContent, requestId: string, timezone: string) {
-    await this.applyPlanLocked(manager, row, content);
+  async completeLocked(manager: EntityManager, row: LearningInsightRow, content: WeeklyContent | FinalContent, requestId: string, timezone: string) {
+    if (row.kind !== 'FINAL') await this.applyPlanLocked(manager, row, content as WeeklyContent);
     const readyAt = this.clock.now();
     await manager.query(
       `UPDATE learning_insights SET status='READY',content=$2,ai_request_id=$3,next_retry_at=NULL,
        deliver_at=CASE WHEN kind='PLAN_START' THEN NULL
          WHEN notified_at IS NULL AND NOT EXISTS(SELECT 1 FROM notifications WHERE dedupe_key='report:'||$1::text||':IN_APP') THEN $4 ELSE deliver_at END,
        updated_at=now() WHERE id=$1`,
-      [row.id, { ...content, source: 'AI' }, requestId, nextReportDelivery(readyAt, timezone)],
+      [row.id, row.kind === 'FINAL' ? { report: content, source: 'AI' } : { ...content, source: 'AI' }, requestId, nextReportDelivery(readyAt, timezone)],
     );
   }
 

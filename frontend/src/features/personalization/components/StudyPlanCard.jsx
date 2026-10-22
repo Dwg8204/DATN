@@ -17,6 +17,7 @@ const ruleReasons = new Set([
   'GOAL_PACE',
   'BAND_PRACTICE',
   'RECENT_MISTAKES',
+  'WEAK_TOPIC',
 ]);
 export default function StudyPlanCard() {
   const { t } = useTranslation();
@@ -74,7 +75,8 @@ export default function StudyPlanCard() {
     <li key={item.id} className={styles.task}>
       <span>
         {item.completedAt ? '✓ ' : ''}
-        {item.activityType === 'TEST'
+        {item.activityType==='TOPIC_REVIEW' && `${item.topicName ?? ''} · `}
+        {['TEST','TOPIC_REVIEW'].includes(item.activityType)
           ? `${item.title} · ${t(`personalization.skills.${item.component}`)}${item.partNumber ? ` · Part ${item.partNumber}` : ''}`
           : t(`personalization.activities.${item.activityType}`, {
               count: item.questionCount ?? item.targetCount,

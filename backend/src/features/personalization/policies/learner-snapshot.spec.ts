@@ -23,6 +23,21 @@ const goal: LearningGoalRow = {
   updated_at: new Date('2026-10-01'),
 };
 const now = new Date('2026-10-14T05:00:00Z');
+
+it('FINAL aggregates activities and plan completion across the whole goal and excludes later activity', () => {
+  const snapshot = buildLearnerSnapshot('alice', { ...goal, status: 'COMPLETED', ended_at: now }, { kind: 'FINAL' }, now, {
+    attempts: [], scoredAttempts: [], mistakes: [], learningCount: 0,
+    reviewDates: ['2026-10-02T02:00:00Z', '2026-10-14T04:00:00Z', '2026-10-15T02:00:00Z'],
+    planItems: [
+      { scheduledOn: '2026-10-02', targetCount: 10, doneCount: 10 },
+      { scheduledOn: '2026-10-14', targetCount: 10, doneCount: 0 },
+      { scheduledOn: '2026-10-15', targetCount: 100, doneCount: 100 },
+    ],
+  });
+  expect(snapshot.habit.activeDaysThisWeek).toBe(2);
+  expect(snapshot.vocab.reviewedThisWeek).toBe(2);
+  expect(snapshot.habit.planDoneRatio).toBe(0.5);
+});
 const attempt = (
   id: string,
   patch: Partial<SnapshotAttempt> = {},

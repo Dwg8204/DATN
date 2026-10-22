@@ -1,6 +1,12 @@
-# Personalization — GĐ1–GĐ7
+# Personalization — GĐ1–GĐ10
 
-GĐ7 adds PLAN_START and combined WEEKLY/MIDTERM report + next-week AI planning, historical report windows, safe replacement of untouched plan days, 08:00 delivery, grouped report emails and owned report read APIs/UI. See `docs/PERSONALIZATION_GD7_REPORT.md`; the complete original implementation plan is preserved in `docs/PERSONALIZATION_IMPLEMENTATION_PLAN_V2.md`. FINAL remains GĐ8 and insight chatbot context remains GĐ9.
+GĐ10 adds a 45-topic catalog (30 initial + 15 additional Grammar topics), admin review, queued AI suggestions and snapshot-versioned topic evidence. Only current APPROVED labels count; each skill needs 80% coverage before weak topics and TOPIC_REVIEW become available. A weak topic requires at least 3 distinct assessed questions and a weighted incorrect/skipped ratio of 40% or more. Writing/Speaking topic observations do not imply errors. Run migrations before starting this code; `npm run topics:backfill` previews old tests and `-- --apply` queues missing labels without resetting active jobs or approving labels. The admin review page provides a bulk queue button, 10-second progress polling, review filters and paginated labels. See `docs/PERSONALIZATION_GD10_REPORT.md` for tests, local rollout and the remaining real-data review requirement.
+
+GĐ9 adds owned WEEKLY/MIDTERM/FINAL report context to chatbot sessions. The report page opens contextual chat; each turn/retry reads the saved snapshot and report through the read-only `InsightContextService`, without recalculating scores. `OPEN_STUDY_PLAN` and `OPEN_MISTAKE_REVIEW` use fixed frontend routes. See `docs/PERSONALIZATION_GD9_REPORT.md` for validation and operating limits. No new migration is needed.
+
+GĐ8 adds atomic FINAL scheduling for completed/expired and eligible replaced goals, full-goal statistics, validated next-goal suggestions, report history/filtering in ProfileSidebar and explicit create/replace confirmation. See `docs/PERSONALIZATION_GD8_REPORT.md` for lifecycle cutoffs, tests and operating limits.
+
+GĐ7 adds PLAN_START and combined WEEKLY/MIDTERM report + next-week AI planning, historical report windows, safe replacement of untouched plan days, 08:00 delivery, grouped report emails and owned report read APIs/UI. See `docs/PERSONALIZATION_GD7_REPORT.md`; the complete original implementation plan is preserved in `docs/PERSONALIZATION_IMPLEMENTATION_PLAN_V2.md`.
 
 GĐ6 adds opt-in Gemini COMMENT generation through `GET /me/insights/comment`, a private numeric snapshot, schema/content validation, shared request/token recording, persistent per-user/day and feature/minute limits, bounded retries and a Dashboard card. `PERSONALIZATION_AI_ENABLED` defaults to false. See `docs/PERSONALIZATION_GD6_REPORT.md` for activation, synthetic smoke tests and phase boundaries.
 
@@ -25,7 +31,7 @@ The pure snapshot builder reuses `learningStats`; the hash excludes `asOf`. Scor
 
 All user-facing reads require `userId`. Composite foreign keys enforce matching owners for goals, insights and plans, and matching goals for a plan's insight. Controllers also enforce JWT authentication and the STUDENT role.
 
-Goal replacement ends the old active goal, inserts the replacement, then assigns `replaced_by_goal_id` in one transaction. This order satisfies the active-goal unique index and the immediate replacement FK. State transitions, candidate eligibility, owned question keys, RULE scheduling, pagination, weekly AI output validation and report scheduling are implemented. FINAL scheduling remains GĐ8.
+Goal replacement ends the old active goal, inserts the replacement, then assigns `replaced_by_goal_id` in one transaction. This order satisfies the active-goal unique index and the immediate replacement FK. State transitions, candidate eligibility, owned question keys, RULE scheduling, pagination, weekly AI output validation and report scheduling (including FINAL) are implemented.
 
 ## Migrations
 

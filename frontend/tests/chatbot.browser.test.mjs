@@ -28,7 +28,7 @@ test('chat sessions, feedback, retry, ownership boundary and exam visibility',as
       if(path.endsWith('/messages')&&method==='GET')return ok({items:list,hasMore:false});
       if(path.endsWith('/messages')&&method==='POST'){
         if(holdReply)await holdReply;
-        const d=r.postDataJSON();const reply={id:`reply-${list.length}`,role:'assistant',status:failNext?'FAILED':'COMPLETED',content:failNext?'':`Answer: ${d.content}`,citations:[],actions:[{code:'OPEN_NOTEBOOK'}]};failNext=false;
+        const d=r.postDataJSON();const reply={id:`reply-${list.length}`,role:'assistant',status:failNext?'FAILED':'COMPLETED',content:failNext?'':`Answer: ${d.content}`,citations:[],actions:sessions.find(s=>s.id===id).insightId?[{code:'OPEN_STUDY_PLAN'},{code:'OPEN_MISTAKE_REVIEW'}]:[{code:'OPEN_NOTEBOOK'}]};failNext=false;
         list.push({id:d.clientMessageId,role:'user',content:d.content,status:'COMPLETED'},reply);sessions.find(s=>s.id===id).title=d.content;return ok(reply);
       }
       if(action==='feedback'){const m=list.find(m=>m.id===messageId);m.feedback=r.postDataJSON().feedback;return ok(m);}
@@ -89,6 +89,23 @@ test('chat sessions, feedback, retry, ownership boundary and exam visibility',as
     const panel=await page.getByRole('region',{name:'AptiMate Assistant'}).boundingBox();assert.ok(panel.x>=0&&panel.x+panel.width<=391);
     await page.evaluate(()=>window.go('/writing/test'));assert.equal(await page.getByRole('button',{name:'AptiMate Assistant',exact:true}).count(),0);
     await page.evaluate(()=>window.go('/writing/result'));await page.getByRole('button',{name:'AptiMate Assistant',exact:true}).waitFor();
+    const reportA='00000000-0000-4000-8000-000000000001',reportB='00000000-0000-4000-8000-000000000002';
+    await page.evaluate(id=>window.go(`/profile/reports/${id}?chat=1`),reportA);
+    await page.getByText('Discussing a saved report.',{exact:false}).waitFor();
+    await ask('Report A question');await page.getByText('Answer: Report A question',{exact:true}).waitFor();
+    const sessionA=sessions[0].id;assert.equal(sessions[0].insightId,reportA);assert.equal(sessions[0].attemptId,undefined);
+    assert.equal(await page.getByRole('link',{name:'Open study plan',exact:true}).getAttribute('href'),'/profile/dashboard');
+    await page.getByRole('link',{name:'Open study plan',exact:true}).click();await page.waitForFunction(()=>window.chatPath==='/profile/dashboard');
+    await page.evaluate(id=>window.go(`/profile/reports/${id}?chat=1`),reportB);
+    await ask('Report B question');await page.getByText('Answer: Report B question',{exact:true}).waitFor();
+    assert.equal(sessions[0].insightId,reportB);assert.notEqual(sessions[0].id,sessionA);
+    await page.getByRole('link',{name:'Open mistake review',exact:true}).click();await page.waitForFunction(()=>window.chatPath==='/profile/mistakes');
+    await page.getByRole('button',{name:'AptiMate Assistant',exact:true}).click();
+    await page.getByRole('button',{name:'Chat history',exact:true}).click();
+    await page.getByRole('button',{name:/Report A question/}).click();await page.getByText('Answer: Report A question',{exact:true}).waitFor();
+    assert.equal(await page.getByRole('link',{name:'View report',exact:true}).getAttribute('href'),`/profile/reports/${reportA}`);
+    await ask('Follow up on A');await page.getByText('Answer: Follow up on A',{exact:true}).waitFor();
+    assert.equal(messages.get(sessionA).at(-1).content,'Answer: Follow up on A');
     await page.evaluate(()=>{window.chatUser=null;window.rerender();});assert.equal(await page.getByRole('button',{name:'AptiMate Assistant',exact:true}).count(),0);
     assert.deepEqual(errors,[]);
   }finally{await browser.close();}

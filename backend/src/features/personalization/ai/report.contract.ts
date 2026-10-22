@@ -12,6 +12,13 @@ export interface WeeklyContent {
   report?: { headline: string; narrative: string; wins: string[]; nextSteps: string[]; progressSoFar?: string };
 }
 export interface ReportJob {
+  outcome?: {
+    lifecycle: string;
+    testTargetReached: boolean;
+    targetReachedOn: string | null;
+    bandTargetStatus: 'REACHED' | 'NOT_REACHED' | 'INSUFFICIENT_DATA';
+    endedOn: string;
+  };
   snapshotVersion: number;
   learner: ReturnType<typeof reportSnapshot>;
   candidates: PlanCandidate[];
@@ -47,6 +54,7 @@ export function reportPromptInput(kind: ReportKind, job: ReportJob) {
     plan: { days: job.plan.days, requiredPace: job.plan.requiredPace, remainingTests: job.plan.remainingTests },
     candidates: job.candidates.map(candidate => ({
       candidateId: candidate.candidateId, activityType: candidate.activityType,
+      ...(candidate.activityType==='TOPIC_REVIEW'?{topicName:candidate.topicName}:{}),
       ...('component' in candidate ? { component: candidate.component } : {}),
       ...('partNumber' in candidate ? { partNumber: candidate.partNumber } : {}),
       ...('purpose' in candidate ? { purpose: candidate.purpose } : {}),
@@ -149,6 +157,7 @@ export function validateWeeklyContent(value: unknown, kind: ReportKind, job: Rep
     if (candidate.activityType === 'TEST') { testCount += Number(item.targetCount); skills.add(candidate.component); }
     if (candidate.activityType === 'VOCAB_REVIEW' && item.targetCount !== candidate.targetCount) fail('VOCAB_COUNT');
     if (candidate.activityType === 'MISTAKE_REVIEW' && item.targetCount !== 1) fail('REVIEW_COUNT');
+    if (candidate.activityType === 'TOPIC_REVIEW' && item.targetCount !== 1) fail('REVIEW_COUNT');
     text(item.reason, 200, 20);
   }
   const availableSkills = new Set(job.candidates.flatMap(c => c.activityType === 'TEST' ? [c.component] : []));
@@ -165,6 +174,7 @@ export function resolveAiItems(content: WeeklyContent, job: ReportJob): CreatePl
     const base = { scheduledOn: addDays(job.plan.startsOn, item.dayIndex - 1), sortOrder, targetCount: item.targetCount, reason: item.reason };
     if (candidate.activityType === 'TEST') return { ...base, activityType: 'TEST', component: candidate.component, testId: candidate.testId, partNumber: candidate.partNumber };
     if (candidate.activityType === 'VOCAB_REVIEW') return { ...base, activityType: 'VOCAB_REVIEW' };
+    if (candidate.activityType === 'TOPIC_REVIEW') return {...base,activityType:'TOPIC_REVIEW',topicId:candidate.topicId,testId:candidate.testId,component:candidate.component,partNumber:candidate.partNumber};
     return { ...base, activityType: 'MISTAKE_REVIEW', sourceAttemptId: candidate.sourceAttemptId, questionKeys: candidate.questionKeys, component: candidate.component };
   });
 }

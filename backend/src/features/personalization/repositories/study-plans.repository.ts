@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { TOPIC_COVERAGE_SQL } from '../../topics/topics.service';
 import { DataSource, EntityManager } from 'typeorm';
 import { ApplicationError } from '../../../common/errors/application.error';
 import {
@@ -101,6 +102,16 @@ export class StudyPlansRepository {
             'Submitted attempt not found.',
             404,
           );
+      }
+      if(item.activityType==='TOPIC_REVIEW') {
+        const [eligible]=await manager.query(`WITH coverage AS (${TOPIC_COVERAGE_SQL}) SELECT 1 FROM learning_topics p
+          JOIN coverage c ON c.component=p.component AND c.total>0 AND c.approved::numeric/c.total>=0.8
+          JOIN question_topics l ON l.topic_id=p.id AND l.status='APPROVED'
+          JOIN topic_question_catalog q ON q.id=l.question_id AND q.question_hash=l.question_hash
+          JOIN tests t ON t.id=q.test_id AND t.status='PUBLISHED' AND t.archived_at IS NULL
+          JOIN topic_snapshot_questions sq ON sq.snapshot_id=t.published_snapshot_id AND sq.question_id=q.id AND sq.question_hash=q.question_hash
+          WHERE p.id=$1 AND p.is_active AND t.id=$2 LIMIT 1`,[item.topicId,item.testId]);
+        if(!eligible) throw new ApplicationError('TOPIC_REVIEW_UNAVAILABLE','Topic coverage or published labels changed.',409);
       }
       await manager.query(
         `INSERT INTO study_plan_items(plan_id,scheduled_on,sort_order,activity_type,component,

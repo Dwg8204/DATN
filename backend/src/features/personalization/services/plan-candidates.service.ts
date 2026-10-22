@@ -104,6 +104,16 @@ export class PlanCandidatesService {
         activityType: 'VOCAB_REVIEW',
         targetCount,
       });
+    for (const weak of snapshot.weak.topics) {
+      const [test] = await manager.query(`SELECT DISTINCT t.id,t.title,t.component,t.part_number,t.purpose
+        FROM tests t JOIN topic_question_catalog q ON q.test_id=t.id
+        JOIN question_topics l ON l.question_id=q.id AND l.status='APPROVED' AND l.question_hash=q.question_hash
+        JOIN topic_snapshot_questions sq ON sq.snapshot_id=t.published_snapshot_id AND sq.question_id=q.id AND sq.question_hash=q.question_hash
+        JOIN learning_topics p ON p.id=l.topic_id AND p.is_active
+        WHERE l.topic_id=$1 AND t.status='PUBLISHED' AND t.archived_at IS NULL
+          AND (t.purpose='PRACTICE' OR t.scope='FULL_SKILL') ORDER BY t.id LIMIT 1`,[weak.topicId]);
+      if(test) candidates.push({candidateId:'',activityType:'TOPIC_REVIEW',topicId:weak.topicId,topicName:weak.name,testId:test.id,title:test.title,component:test.component,partNumber:test.part_number??undefined,purpose:test.purpose});
+    }
     for (const [sourceAttemptId, group] of groups)
       if (group.keys.length >= 3 && candidates.length < 30)
         candidates.push({

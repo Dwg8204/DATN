@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { getAdminLandingPath } from '../auth/utils/authorization';
 
 const AdminDashboardPage = lazy(() => import('./dashboard/AdminDashboardPage'));
+const TopicsPage = lazy(() => import('./topics/TopicsPage'));
 const TestManagerPage = lazy(() => import('./tests/TestManagerPage'));
 const UserManagementPage = lazy(() => import('./users/UserManagementPage'));
 const WritingBuilderLayout = lazy(() => import('./writing/components/WritingBuilderLayout'));
@@ -45,6 +46,8 @@ export const adminRoutes = [
     element: <RoleGuard allowedRoles={['ADMIN']}><AdminLayout /></RoleGuard>,
     children: [
       { index: true, element: <AdminHomeRedirect /> },
+      { path: 'learning-topics', element: adminOnly(load(<TopicsPage />)) },
+      { path: 'topic-labels', element: adminOnly(load(<TopicsPage review />)) },
       { path: 'dashboard', element: adminOnly(load(<AdminDashboardPage />)) },
       { path: 'tests', element: load(<TestManagerPage />) },
       { path: 'tests/reading/:testId/preview', element: load(<ReadingTestPreviewPage />) },

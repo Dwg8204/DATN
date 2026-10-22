@@ -235,7 +235,9 @@ export function buildLearnerSnapshot(
     ...attempts.map((row) => row.submitted_at),
     ...reviewDates,
   ];
-  const inWeek = (day: string) => day >= weekStart && day <= weekEnd;
+  const inWeek = (day: string) => window.kind === 'FINAL' && goal
+    ? day >= goal.start_date && day <= today && day < addDays(goal.start_date, goal.duration_days)
+    : day >= weekStart && day <= weekEnd;
   const planItems = rows.planItems.filter((item) => inWeek(item.scheduledOn));
   const totalTarget = planItems.reduce(
     (sum, item) => sum + item.targetCount,
@@ -295,7 +297,7 @@ export function buildLearnerSnapshot(
           }))
           .sort((a, b) => a.percent - b.percent);
       }),
-      topics: [],
+      topics: rows.weakTopics ?? [],
     },
     mistakes: {
       count: mistakes.length,

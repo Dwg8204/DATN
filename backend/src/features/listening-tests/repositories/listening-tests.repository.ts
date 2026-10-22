@@ -386,14 +386,15 @@ export class ListeningTestsRepository {
   }
 
   private async syncQuestions(manager: EntityManager, testId: string, aggregate: ListeningTestAggregate): Promise<void> {
-    await manager.query(`UPDATE questions SET deleted_at = now() WHERE test_id = $1 AND deleted_at IS NULL`, [testId]);
+    const before = await manager.query<Array<{id:string}>>('SELECT id FROM questions WHERE test_id=$1 AND deleted_at IS NULL',[testId]);
+    const [{stamp}] = await manager.query('SELECT clock_timestamp()::text stamp');
     
     if (aggregate.parts[1]) {
       let position = 1;
       for (const q of aggregate.parts[1].questions) {
         await manager.query(
           `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer, explanation)
-           VALUES ($1, 1, $2, 'MCQ_LISTENING_P1', $3, $4, $5)`,
+           VALUES ($1, 1, $2, 'MCQ_LISTENING_P1', $3, $4, $5) ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET question_type=EXCLUDED.question_type,content=EXCLUDED.content,correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=clock_timestamp()`,
           [testId, position++, { text: q.text, options: q.options, audioUrl: q.audioUrl }, { optionIndex: q.correctAnswer }, { text: q.explanation ?? '' }]
         );
       }
@@ -404,7 +405,7 @@ export class ListeningTestsRepository {
       for (const [idx, speaker] of aggregate.parts[2].speakers.entries()) {
         await manager.query(
           `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer, explanation)
-           VALUES ($1, 2, $2, 'MATCHING_LISTENING_P2', $3, $4, $5)`,
+           VALUES ($1, 2, $2, 'MATCHING_LISTENING_P2', $3, $4, $5) ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET question_type=EXCLUDED.question_type,content=EXCLUDED.content,correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=clock_timestamp()`,
           [testId, position++, { speakerLabel: speaker }, { optionLabel: aggregate.parts[2].answers[idx] },
             { text: aggregate.parts[2].explanations?.[`speaker-${idx}`] ?? '' }]
         );
@@ -416,7 +417,7 @@ export class ListeningTestsRepository {
       for (const stmt of aggregate.parts[3].statements) {
         await manager.query(
           `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer, explanation)
-           VALUES ($1, 3, $2, 'OPINION_LISTENING_P3', $3, $4, $5)`,
+           VALUES ($1, 3, $2, 'OPINION_LISTENING_P3', $3, $4, $5) ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET question_type=EXCLUDED.question_type,content=EXCLUDED.content,correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=clock_timestamp()`,
           [testId, position++, { statement: stmt.text }, { opinion: stmt.answer }, { text: stmt.explanation ?? '' }]
         );
       }
@@ -428,13 +429,14 @@ export class ListeningTestsRepository {
         for (const q of rec.subQuestions) {
           await manager.query(
             `INSERT INTO questions (test_id, part_number, position, question_type, content, correct_answer, explanation)
-             VALUES ($1, 4, $2, 'MCQ_LISTENING_P4', $3, $4, $5)`,
+             VALUES ($1, 4, $2, 'MCQ_LISTENING_P4', $3, $4, $5) ON CONFLICT(test_id,part_number,position) WHERE deleted_at IS NULL DO UPDATE SET question_type=EXCLUDED.question_type,content=EXCLUDED.content,correct_answer=EXCLUDED.correct_answer,explanation=EXCLUDED.explanation,updated_at=clock_timestamp()`,
             [testId, position++, { text: q.text, options: q.options, recordingIndex: idx }, { optionIndex: q.correctAnswer },
               { text: q.explanation ?? '' }]
           );
         }
       }
     }
+    await manager.query('UPDATE questions SET deleted_at=now(),updated_at=now() WHERE id=ANY($1::uuid[]) AND updated_at<$2::timestamptz',[before.map(row=>row.id),stamp]);
   }
 
   private async audit(manager: EntityManager, actorId: string, action: string, entityId: string, changes: unknown, audit: ListeningAudit): Promise<void> {

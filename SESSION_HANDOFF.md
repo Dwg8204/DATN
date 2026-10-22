@@ -11,6 +11,57 @@
 - Kiểm chứng: 10 unit test của seed cũ/mới đạt; typecheck và ESLint file seed đạt; PostgreSQL schema cách ly chạy migrations hiện hành, kiểm tra 140 đề/1.905 câu/đủ snapshot/140 job và giữ nguyên đề sau sửa/lưu trữ khi rerun, rồi rollback/dọn schema. Đã đối chiếu database thật: đủ 28 nhóm × 5 đề. `git diff --check` đạt.
 - Đã cập nhật `backend/README.md` và `backend/src/database/seeds/SAMPLE_TESTS.md` về số lượng, lệnh, media, nội dung dùng chung và tác động tới nhãn chủ đề. Những thay đổi cá nhân hóa/GĐ10 có sẵn trong workspace được giữ nguyên.
 
+## Bổ sung thao tác và thống kê chủ đề — 21/10/2026
+
+- Bỏ nút tải lại và viền đỏ khi click button; giữ chỉ báo bàn phím màu trung tính. Các thao tác xem/sửa/xóa dùng icon với tên truy cập và tooltip; mobile là từng thẻ riêng.
+- Chi tiết chủ đề dùng Modal chung, hiển thị mã, kỹ năng, loại, mô tả, trạng thái, số câu liên quan/đã duyệt/chờ duyệt và số đề. Đếm câu khác nhau với nhãn APPROVED/SUGGESTED đúng fingerprint, cùng kỹ năng, đề chưa lưu trữ (gồm nháp); không tính nhãn từ chối/lỗi thời. Chủ đề ẩn vẫn giữ số liên kết.
+- Xóa mềm tái sử dụng trạng thái is_active=false qua DELETE /admin/learning-topics/:id (ADMIN), có xác nhận, transaction và audit TOPIC_DELETE. Giữ toàn bộ nhãn/lịch sử; có thể bật lại bằng sửa. Không thêm migration hoặc xóa cứng dữ liệu.
+- Độ phủ hiển thị trực tiếp 5 khung thống kê với tỷ lệ, số câu đã duyệt/tổng và thanh tiến độ; chỉ tính đề đã xuất bản, ngưỡng 80% như trước.
+- Kiểm chứng: PostgreSQL GĐ10 gồm số câu, quyền xóa, 404, giữ nhãn khi xóa và khôi phục; browser kiểm tra chi tiết, hủy/xác nhận xóa, icon sửa, không còn tải lại, thống kê luôn hiện và luồng duyệt cũ. Build frontend, typecheck và ESLint backend đạt; Oxlint còn cảnh báo effect tải dữ liệu có sẵn. Đã xem ảnh desktop/mobile. Chưa commit/push và chưa làm GĐ11.
+
+
+## Cập nhật giao diện quản lý chủ đề — 21/10/2026
+
+- Sidebar admin chỉ còn **Quản lý chủ đề**, sáng đúng ở cả hai URL cũ. Bên trong có hai tab **Chủ đề học tập / Duyệt chủ đề**; topbar dùng cùng tên quản lý.
+- Danh mục chuyển sang danh sách gọn, thêm/sửa trong Modal chung; tìm tên/mã/mô tả, lọc kỹ năng và trạng thái bật/ẩn. Phần duyệt có tìm tên đề hoặc nội dung/mã câu/chủ đề, các bộ lọc công việc, trạng thái và nhãn cần xem lại.
+- Tái sử dụng Button, Modal, ConfirmModal, Pagination và paginate có sẵn. Phân trang cả danh mục, đề và nhãn; thay đổi số dòng, nhảy trang. API tests/labels thêm search, pageSize (1–100), totalItems chính xác kể cả kết quả rỗng; tìm kiếm trên toàn bộ kết quả phía server.
+- Tông đỏ theo admin, tab và khối lọc thống nhất; câu hỏi/điều khiển duyệt chia hai cột trên desktop, xếp dọc trên mobile. Hướng dẫn, độ phủ và thêm nhãn thủ công thu gọn; xử lý AI hàng loạt nằm ở danh sách đề. Giữ nguyên xác nhận duyệt cả đề theo revision, không bị giới hạn bởi tìm kiếm/phân trang.
+- Kiểm chứng: PostgreSQL GĐ10 gồm tìm kiếm/phân trang/tổng số và toàn bộ luồng duyệt; browser Anh–Việt, tìm kiếm danh mục, Pagination, thêm/sửa/ẩn và duyệt cả đề; ảnh desktop/mobile, typecheck, build frontend. Không migration, không duyệt nhãn thật, chưa triển khai GĐ11.
+
+
+## Cá nhân hóa GĐ10 — 21/10/2026
+
+- **Yêu cầu tiếp theo đã làm:** thêm nút **Duyệt tất cả nhãn chờ của đề** ở chi tiết đề. Áp dụng toàn bộ đề, vượt bộ lọc/phân trang; server preview đếm nhãn/câu và revision, xác nhận transaction kiểm tra lại trạng thái/phiên bản/chủ đề. Giữ nhãn APPROVED/REJECTED, bỏ qua stale/hidden, audit từng nhãn và xếp lại evidence. API `GET /admin/tests/:id/topic-approval`, `POST /admin/tests/:id/approve-topics`. Không migration và không tự duyệt dữ liệu thật. PostgreSQL (104 nhãn, concurrency, stale preview), browser UI và typecheck đã đạt.
+
+- **Cập nhật mới nhất:** người dùng đã chốt triển khai luồng gợi ý hàng loạt. Đã thêm nút theo kỹ năng/toàn bộ đề còn thiếu nhãn, tiến độ poll 10 giây, bộ lọc đề/nhãn cần xem lại, phân trang nhãn và hiển thị câu dạng văn bản. API mới `POST /admin/topic-labels/suggest-missing`, `GET /admin/topic-labels/progress`; giữ nguyên nhãn và công việc đang chạy, cooldown/retry. Backfill CLI dùng cùng logic.
+- Đã áp dụng `1760000020000-ExpandGrammarTopics` local, thêm 15 mã Grammar (tổng 45 chủ đề), sau đó xếp thêm **35 đề** bằng backfill. Lần quan sát có 103/565 câu có nhãn hiện hành, 111 nhãn chờ duyệt trên 38 đề gồm nháp. Chưa tự duyệt nhãn thật. Các mô tả “30 chủ đề/chưa xếp hàng/74 câu thiếu mã” bên dưới là mốc trước cập nhật này.
+- Kiểm thử bổ sung: PostgreSQL GĐ10 (hai yêu cầu đồng thời, 50 đề, cooldown, giữ nhãn, retry, tiến độ/bộ lọc, phân trang 106 nhãn), migration up/down/up, typecheck, build hai phía, browser UI đều đạt. Không commit/push.
+
+- Đã triển khai catalog 30 chủ đề, API/UI ADMIN quản lý và duyệt, queue AI khi lưu/xuất bản, backfill đề cũ, evidence theo đúng phiên bản snapshot, weak topics và TOPIC_REVIEW. Chi tiết ở [báo cáo GĐ10](docs/PERSONALIZATION_GD10_REPORT.md); yêu cầu gốc vẫn giữ trong file kế hoạch.
+- Người dùng chốt: ít nhất 3 câu đã chấm, sai/bỏ trống ≥40%; triển khai dùng 3 câu khác nhau. Mỗi kỹ năng chỉ bật sau ≥80% câu của đề xuất bản có nhãn APPROVED đúng phiên bản/chủ đề đang bật. Writing/Speaking không suy lỗi từ nhãn câu hỏi. AI chỉ gợi ý SUGGESTED, admin quyết định duyệt.
+- Migration `1760000019000-AddTopicWorkflow` đã áp dụng database local, seed 30 chủ đề và backfill 533 ánh xạ câu/snapshot; không đổi `.env`. Khởi động lại backend để nhận TopicsModule. Máy khác cần chạy migration. `topics:backfill` mặc định chỉ xem số đề, `-- --apply` mới xếp queue; chưa chạy AI hàng loạt.
+- Hỗ trợ rà soát dữ liệu thật đã làm trong [đề xuất nhãn](docs/PERSONALIZATION_GD10_LABEL_REVIEW.md): 275 câu Grammar & Vocab / 151 nhóm, gồm 198 câu có mã phù hợp, 74 câu cần mã bổ sung, 3 câu tạm giữ. Có ID đề/câu và lý do. Chưa ghi nhãn thật hoặc sửa đáp án. **Còn thiếu admin duyệt ít nhất 220/275 câu để nghiệm thu GĐ10**, không đánh đồng fixture 80% với dữ liệu thật.
+- Kiểm chứng: backend 80 suite/555 test, typecheck/build; PostgreSQL GĐ1–GĐ10 và chatbot cũ; frontend 95 test chính, browser chủ đề 1/1 và browser cá nhân hóa 1/1; build frontend và diff check đạt. Chi tiết ca ngưỡng, regrade, RPM/429, ownership và bảo toàn ID câu nằm trong báo cáo. Không gọi AI/SMTP thật trong kiểm thử.
+- GĐ8–GĐ10 vẫn chưa commit/push. Chưa triển khai GĐ11. Các dòng “chưa làm GĐ10” ở phần lịch sử bên dưới đã được thay thế bởi mục này.
+
+## Cá nhân hóa GĐ9 — 21/10/2026
+
+- Đã triển khai hỏi chatbot về báo cáo theo mục 7.7 và hàng GĐ9 trong [kế hoạch bản 2](docs/PERSONALIZATION_IMPLEMENTATION_PLAN_V2.md). Chi tiết, kiểm thử và giới hạn ở [báo cáo GĐ9](docs/PERSONALIZATION_GD9_REPORT.md).
+- Trang chi tiết WEEKLY/MIDTERM/FINAL có nút mở chat theo `insightId`, nhãn ngữ cảnh và gợi ý Anh–Việt. Chuyển báo cáo không dùng nhầm phiên trước; mở lịch sử lấy ngữ cảnh từ phiên đã lưu. Hai action mới mở Dashboard/lộ trình và trang ôn câu sai bằng route cố định.
+- Backend kiểm tra sở hữu trước tạo phiên và mỗi lần gửi/retry; chỉ nạp snapshot/content đã lưu qua `InsightContextService`, không cập nhật báo cáo hay tính lại điểm. Loại dữ liệu ứng viên/lộ trình nội bộ, giữ tổng số chính xác; metadata lưu insight ID/hash. Không nhận đồng thời ngữ cảnh báo cáo và kết quả bài.
+- Không có migration/env mới: dùng cột `context_insight_id` của GĐ1. Khởi động lại backend để nhận code; trả lời thực tế cần cấu hình chatbot hiện có (`CHATBOT_ENABLED=true`). Không thay `.env`, không gọi AI/email thật trong kiểm thử.
+- Kiểm chứng GĐ9: backend typecheck, 13 suite/138 test liên quan, PostgreSQL GĐ9 và chatbot cũ đạt; frontend chính 95/95, chatbot 6/6 và browser cá nhân hóa 1/1 đạt; build hai phía, ESLint backend và diff check đạt. Oxlint frontend không lỗi, còn hai cảnh báo widget có sẵn. Chạy các bộ DB tuần tự vì extension PostgreSQL dùng chung cấp database.
+- Giữ thay đổi GĐ8 có sẵn. GĐ8/GĐ9 chưa commit/push; dừng tại GĐ9 để người dùng nghiệm thu, chưa làm GĐ10/GĐ11.
+
+## Cá nhân hóa GĐ8 và commit GĐ7 — 20/10/2026
+
+- Theo yêu cầu người dùng, đã commit GĐ7 thành `0a877ca` (backend), `d9b1a66` (giao diện), `568c802` (kế hoạch/tài liệu). Không push, không đưa `.env` vào Git; tiếp tục nhánh chung `feat/learning-personalization`.
+- Đã triển khai GĐ8 theo [bản kế hoạch đầy đủ](docs/PERSONALIZATION_IMPLEMENTATION_PLAN_V2.md): FINAL cho COMPLETED/EXPIRED và REPLACED từ ngày thứ ba của mục tiêu; CANCELLED không có. Đủ bài trước hạn vẫn ACTIVE, chỉ FINAL khi hết hạn hoặc người dùng kết thúc sớm.
+- Yêu cầu FINAL được ghi cùng transaction kết thúc/thay mục tiêu. Worker chuẩn bị snapshot sau commit, tạo bù khi downtime; unique period FINAL chống trùng. Snapshot dừng ở ranh giới cuối ngày/hay ended_at, tổng hợp toàn mục tiêu, đếm đủ bài độc lập mẫu điểm tối đa 200. Kết quả số bài và band ước lượng hiển thị riêng, có ngày đạt số bài.
+- Có prompt/schema/validator FINAL và `PERSONAL_FINAL`, dùng chung queue/quota/retry/fallback/08:00/email GĐ7. Không tạo lộ trình từ FINAL. Trang Báo cáo trong ProfileSidebar hỗ trợ lọc mục tiêu và phân trang; chi tiết có form gợi ý chỉnh được, xác nhận trước tạo/thay và xử lý mục tiêu đã đổi bằng phản hồi 409.
+- Kiểm thử đã đạt: backend toàn bộ 78 suite/538 test và snapshot 25/25 sau khi thêm ca FINAL toàn kỳ (hiện 539 ca); PostgreSQL GĐ1–GĐ8, gồm ca New York qua đổi giờ mùa đông; frontend 95 test và browser cá nhân hóa (FINAL/gợi ý/lọc/phân trang/mobile). Typecheck backend, build cả hai phía, ESLint/Oxlint file thay đổi và diff whitespace đạt. Build frontend vẫn có cảnh báo chunk lớn.
+- Không có migration/env mới; chưa gọi AI hoặc SMTP thật. GĐ8 chưa commit/push, dừng tại GĐ8 chờ nghiệm thu; GĐ9–GĐ11 chưa triển khai. Tài liệu vận hành và giới hạn: [báo cáo GĐ8](docs/PERSONALIZATION_GD8_REPORT.md).
+
 ## Cá nhân hóa GĐ7 — 20/10/2026
 
 - Đã triển khai theo bản kế hoạch người dùng cung cấp: [kế hoạch đầy đủ bản 2](docs/PERSONALIZATION_IMPLEMENTATION_PLAN_V2.md). File Markdown giữ nội dung gốc, có bảng/mục để tiếp tục các giai đoạn sau; các mã migration trong nguồn là lịch sử, không dùng lại máy móc.

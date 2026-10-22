@@ -21,6 +21,7 @@ export interface MistakeReference {
   partNumber: number;
 }
 export interface SnapshotRows {
+  weakTopics?: Array<{topicId:string;code:string;name:string;component:string;opportunities:number;errors:number;errorRatio:number;distinctTests:number}>;
   /** All lightweight metadata in the goal window; never truncate progress counts. */
   attempts: SnapshotAttempt[];
   /** Assessment payloads can be bounded independently of progress. */

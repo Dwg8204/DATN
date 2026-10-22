@@ -17,6 +17,7 @@ import { CommentGenerationWorker } from './workers/comment-generation.worker';
 import { ReportJobsService } from './services/report-jobs.service';
 import { ReportsService } from './services/reports.service';
 import { ReportsController } from './controllers/reports.controller';
+import { InsightContextService } from './services/insight-context.service';
 
 @Module({
   imports: [PersonalizationDataModule, TestAttemptsModule, AiSharedModule, ConfigModule],
@@ -33,7 +34,8 @@ import { ReportsController } from './controllers/reports.controller';
     CommentGenerationWorker,
     ReportJobsService,
     ReportsService,
+    InsightContextService,
   ],
-  exports: [PersonalizationDataModule, SnapshotService],
+  exports: [PersonalizationDataModule, SnapshotService, InsightContextService],
 })
 export class PersonalizationModule {}

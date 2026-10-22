@@ -31,8 +31,14 @@ export class PlanProgressRepository {
       asOf,
     ];
     const attempts = await manager.query<ProgressAttempt[]>(
-      `SELECT id,component,part_number,submitted_at FROM test_attempts WHERE student_id=$1 AND status='SUBMITTED'
-      AND submitted_at >= ($2::date::timestamp AT TIME ZONE $4) AND submitted_at < (($3::date+1)::timestamp AT TIME ZONE $4) AND submitted_at <= $5 ORDER BY submitted_at,id`,
+      `SELECT a.id,a.component,a.part_number,a.submitted_at,s.test_id,
+        ARRAY(SELECT DISTINCT l.topic_id FROM topic_snapshot_questions sq
+          JOIN question_topics l ON l.question_id=sq.question_id AND l.question_hash=sq.question_hash AND l.status='APPROVED'
+          JOIN topic_question_catalog q ON q.id=l.question_id AND q.question_hash=l.question_hash
+          JOIN learning_topics p ON p.id=l.topic_id AND p.is_active
+          WHERE sq.snapshot_id=a.snapshot_id AND (a.part_number IS NULL OR q.part_number=a.part_number)) topic_ids
+      FROM test_attempts a JOIN test_snapshots s ON s.id=a.snapshot_id WHERE student_id=$1 AND a.status='SUBMITTED'
+      AND submitted_at >= ($2::date::timestamp AT TIME ZONE $4) AND submitted_at < (($3::date+1)::timestamp AT TIME ZONE $4) AND submitted_at <= $5 ORDER BY submitted_at,a.id`,
       parameters,
     );
     const reviews = await manager.query<Array<{ reviewed_at: Date }>>(

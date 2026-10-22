@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TopicsModule } from './features/topics/topics.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { environmentSchema } from './config/env.validation';
@@ -29,6 +30,7 @@ import { ChatbotModule } from './features/chatbot/chatbot.module';
 import { PersonalizationModule } from './features/personalization/personalization.module';
 @Module({
   imports: [
+    TopicsModule,
     ConfigModule.forRoot({ isGlobal: true, cache: true, load: [configuration], validationSchema: environmentSchema }),
     DatabaseModule,
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 120 }]),

@@ -7,6 +7,7 @@ export class ChatPageDto {
 export class CreateChatDto {
   @IsUUID() id: string;
   @IsOptional() @IsUUID() attemptId?: string;
+  @IsOptional() @IsUUID() insightId?: string;
   @IsOptional() @Matches(/^p[1-4]:[qs]\d{1,3}$/) questionKey?: string;
 }
 export class RenameChatDto {

@@ -13,6 +13,9 @@ for (const name of [
   'personalization-reminders',
   'personalization-comments',
   'personalization-reports',
+  'personalization-final',
+  'personalization-chatbot',
+  'personalization-topics',
 ]) {
   const result = spawnSync(
     process.execPath,

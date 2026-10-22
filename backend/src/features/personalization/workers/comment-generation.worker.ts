@@ -7,6 +7,7 @@ import { PersonalizationAiService } from '../services/personalization-ai.service
 import { PersonalizationClock } from '../services/personalization-clock';
 import { ReportJobsService } from '../services/report-jobs.service';
 import { ReportJob, ReportKind, validateWeeklyContent } from '../ai/report.contract';
+import { validateFinalContent } from '../ai/final.contract';
 
 const BACKOFF = [15 * 60_000, 60 * 60_000, 4 * 60 * 60_000];
 
@@ -39,7 +40,7 @@ export class CommentGenerationWorker {
         Array<LearningInsightRow & { timezone: string }>
       >(
         `SELECT i.*,u.timezone FROM learning_insights i JOIN users u ON u.id=i.user_id JOIN roles r ON r.id=u.role_id
-         WHERE (i.kind='COMMENT' OR ($2 AND i.kind IN ('PLAN_START','WEEKLY','MIDTERM')))
+         WHERE (i.kind='COMMENT' OR ($2 AND i.kind IN ('PLAN_START','WEEKLY','MIDTERM','FINAL') AND i.snapshot ? 'learner'))
            AND (i.status IN ('PENDING','FAILED') OR ($2 AND i.kind<>'COMMENT' AND i.status='FALLBACK'))
            AND i.retry_count<=3
            AND (i.next_retry_at IS NULL OR i.next_retry_at<=$1)
@@ -57,7 +58,9 @@ export class CommentGenerationWorker {
           const { source: _source, ...raw } = cached.content;
           void _source;
           try {
-            const content = validateWeeklyContent(raw, row.kind as ReportKind, row.snapshot as unknown as ReportJob);
+            const content = row.kind === 'FINAL'
+              ? validateFinalContent(raw.report, row.snapshot as unknown as ReportJob)
+              : validateWeeklyContent(raw, row.kind as ReportKind, row.snapshot as unknown as ReportJob);
             await this.reports!.completeLocked(manager, row, content, cached.ai_request_id, row.timezone);
             return true;
           } catch (error) {
@@ -88,7 +91,9 @@ export class CommentGenerationWorker {
               [row.id, result.content, result.requestId],
             );
           } else {
-            const result = await this.ai.report(row.user_id, row.kind as ReportKind, row.snapshot as unknown as ReportJob, issues);
+            const result = row.kind === 'FINAL'
+              ? await this.ai.finalReport(row.user_id, row.snapshot as unknown as ReportJob, issues)
+              : await this.ai.report(row.user_id, row.kind as ReportKind, row.snapshot as unknown as ReportJob, issues);
             await this.reports!.completeLocked(manager, row, result.content, result.requestId, row.timezone);
           }
           return true;
@@ -136,9 +141,9 @@ export class CommentGenerationWorker {
     const [counts] = await manager.query<
       Array<{ daily: number; minute_count: number }>
     >(
-      `SELECT count(*) FILTER (WHERE user_id=$1 AND (started_at AT TIME ZONE $2)::date=($3::timestamptz AT TIME ZONE $2)::date)::int daily,
+      `SELECT count(*) FILTER (WHERE purpose<>'TOPIC_TAGGING' AND user_id=$1 AND (started_at AT TIME ZONE $2)::date=($3::timestamptz AT TIME ZONE $2)::date)::int daily,
         count(*) FILTER (WHERE started_at>$3::timestamptz-interval '1 minute')::int minute_count
-       FROM ai_requests WHERE purpose IN ('PERSONAL_COMMENT','PERSONAL_PLAN','PERSONAL_WEEKLY','PERSONAL_FINAL') AND started_at >= LEAST(($3::timestamptz AT TIME ZONE $2)::date::timestamp AT TIME ZONE $2,$3::timestamptz-interval '1 minute')`,
+       FROM ai_requests WHERE purpose IN ('TOPIC_TAGGING','PERSONAL_COMMENT','PERSONAL_PLAN','PERSONAL_WEEKLY','PERSONAL_FINAL') AND started_at >= LEAST(($3::timestamptz AT TIME ZONE $2)::date::timestamp AT TIME ZONE $2,$3::timestamptz-interval '1 minute')`,
       [userId, timezone, now],
     );
     return counts.daily >= 6
