@@ -83,8 +83,8 @@ export class SnapshotService {
         WHERE n.user_id=$1 AND e.reviewed_at >= ($2::date::timestamp AT TIME ZONE $4) AND e.reviewed_at < ($3::date::timestamp AT TIME ZONE $4) AND e.reviewed_at <= $5 ORDER BY e.reviewed_at`,
           params,
         ),
-        this.db.query<Array<{ count: number }>>(
-          "SELECT count(*)::int count FROM user_notebook_items WHERE user_id=$1 AND archived_at IS NULL AND last_rating='LEARNING'",
+        this.db.query<Array<{ count: number; active_count: number }>>(
+          "SELECT count(*) FILTER(WHERE last_rating='LEARNING')::int count, count(*)::int active_count FROM user_notebook_items WHERE user_id=$1 AND archived_at IS NULL",
           [actor.id],
         ),
         goal
@@ -114,6 +114,7 @@ export class SnapshotService {
         scoredAttempts,
         reviewDates: reviews.map((row) => row.reviewed_at),
         learningCount: vocab.count,
+        activeCount: vocab.active_count,
         mistakes,
         planItems,
         weakTopics,

@@ -28,6 +28,7 @@ export interface SnapshotRows {
   scoredAttempts: SnapshotAttempt[];
   reviewDates: Array<Date | string>;
   learningCount: number;
+  activeCount?: number;
   mistakes: MistakeReference[];
   planItems: Array<{
     scheduledOn: string;

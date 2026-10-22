@@ -70,7 +70,7 @@ describe('RULE plan and reconciliation', () => {
         plan.filter((i) => i.scheduledOn === day).length,
       ).toBeLessThanOrEqual(3);
   });
-  it('bundles a high pace without exceeding the remaining target', () => {
+  it('caps legacy high pace at three distinct tests per day', () => {
     const plan = buildRulePlan(
       candidates,
       '2026-10-01',
@@ -80,7 +80,7 @@ describe('RULE plan and reconciliation', () => {
     );
     expect(
       plan.filter((i) => i.activityType === 'TEST').map((i) => i.targetCount),
-    ).toEqual([167, 167, 166]);
+    ).toEqual(Array(21).fill(1));
   });
   it('limits the last partial week', () => {
     expect(
@@ -114,29 +114,30 @@ describe('RULE plan and reconciliation', () => {
       ),
     ).toHaveLength(1);
   });
-  it('uses an attempt only once and never for a future task', () => {
+  it('uses an attempt only once, assigning to the earliest eligible task', () => {
     const result = allocatePlanProgress(
       [item('a', '2026-10-01'), item('b', '2026-10-02')],
       [
         {
-          id: 'x',
+          id: 'x', test_id: 't',
           component: 'READING',
           part_number: null,
           submitted_at: new Date('2026-10-01T05:00Z'),
         },
       ],
       [],
+      '2026-10-01',
       '2026-10-07',
       'Asia/Bangkok',
     );
     expect(result.map((i) => i.doneCount)).toEqual([1, 0]);
   });
-  it('matches component and requested Part, rejects attempts outside the week', () => {
+  it('matches the exact suggested test, rejects attempts outside the week', () => {
     const result = allocatePlanProgress(
       [item('a', '2026-10-01', { part_number: 2 })],
       [
         {
-          id: 'x',
+          id: 'x', test_id: 'other',
           component: 'READING',
           part_number: 1,
           submitted_at: new Date('2026-10-01T05:00Z'),
@@ -149,6 +150,7 @@ describe('RULE plan and reconciliation', () => {
         },
       ],
       [],
+      '2026-10-01',
       '2026-10-07',
       'Asia/Bangkok',
     );
@@ -159,19 +161,20 @@ describe('RULE plan and reconciliation', () => {
       [item('a', '2026-10-01')],
       [
         {
-          id: 'x',
+          id: 'x', test_id: 't',
           component: 'READING',
           part_number: null,
           submitted_at: new Date('2026-10-07T16:59Z'),
         },
       ],
       [],
+      '2026-10-01',
       '2026-10-07',
       'Asia/Bangkok',
     );
     expect(result[0].doneCount).toBe(1);
   });
-  it('counts 20 events on their own local day without carrying over', () => {
+  it('uses each review event once from the shared weekly pool', () => {
     const tasks = [
       item('a', '2026-10-01', {
         activity_type: 'VOCAB_REVIEW',
@@ -187,7 +190,7 @@ describe('RULE plan and reconciliation', () => {
       () => new Date('2026-10-01T16:59Z'),
     );
     expect(
-      allocatePlanProgress(tasks, [], events, '2026-10-07', 'Asia/Bangkok').map(
+      allocatePlanProgress(tasks, [], events, '2026-10-01', '2026-10-07', 'Asia/Bangkok').map(
         (i) => i.doneCount,
       ),
     ).toEqual([20, 0]);
@@ -199,29 +202,50 @@ describe('RULE plan and reconciliation', () => {
       completed_at: new Date('2026-10-01T05:00Z'),
     });
     expect(
-      allocatePlanProgress([task], [], [], '2026-10-07', 'Asia/Bangkok')[0],
+      allocatePlanProgress([task], [], [], '2026-10-01', '2026-10-07', 'Asia/Bangkok')[0],
     ).toMatchObject({ doneCount: 1, completedAt: task.completed_at });
   });
   it('produces deterministic allocation regardless of input order', () => {
     const tasks = [item('a', '2026-10-01'), item('b', '2026-10-01')];
     const attempts = [
       {
-        id: 'x',
+        id: 'x', test_id: 't',
         component: 'READING',
         part_number: null,
         submitted_at: new Date('2026-10-01T05:00Z'),
       },
     ];
     expect(
-      allocatePlanProgress(tasks, attempts, [], '2026-10-07', 'Asia/Bangkok'),
+      allocatePlanProgress(tasks, attempts, [], '2026-10-01', '2026-10-07', 'Asia/Bangkok'),
     ).toEqual(
       allocatePlanProgress(
         [...tasks].reverse(),
         attempts,
         [],
+        '2026-10-01',
         '2026-10-07',
         'Asia/Bangkok',
       ),
     );
+  });
+});
+
+describe('S1 daily planning',()=>{
+  const many:PlanCandidate[]=Array.from({length:30},(_,i)=>({candidateId:'t'+i,activityType:'TEST',testId:'t'+i,component:i%2?'READING':'LISTENING',title:'Test',purpose:'PRACTICE'}));
+  it.each([1,2,3])('creates one test per slot at pace %i without repeating a test',pace=>{
+    const plan=buildRulePlan(many,'2026-10-01','2026-10-07',pace,100);
+    expect(plan).toHaveLength(pace*7);expect(plan.every(i=>i.targetCount===1)).toBe(true);
+    expect(new Set(plan.map(i=>'testId' in i?i.testId:null)).size).toBe(pace*7);
+    expect(plan.some(i=>i.activityType==='VOCAB_REVIEW')).toBe(false);
+  });
+  it('uses fewer slots when only one published test exists',()=>{
+    const plan=buildRulePlan(many.slice(0,1),'2026-10-01','2026-10-03',3,9);
+    expect(plan).toHaveLength(3);expect(plan.every(i=>i.targetCount===1)).toBe(true);
+  });
+  it('keeps the largest available vocabulary option after test and review priority',()=>{
+    const pool:PlanCandidate[]=[...many,{candidateId:'v10',activityType:'VOCAB_REVIEW',targetCount:10},{candidateId:'v20',activityType:'VOCAB_REVIEW',targetCount:20},candidates.find(i=>i.activityType==='MISTAKE_REVIEW')!];
+    const plan=buildRulePlan(pool,'2026-10-01','2026-10-01',1,1);
+    expect(plan.map(i=>i.activityType)).toEqual(['TEST','MISTAKE_REVIEW','VOCAB_REVIEW']);expect(plan[2].targetCount).toBe(20);
+    expect(buildRulePlan(pool,'2026-10-01','2026-10-01',3,3).map(i=>i.activityType)).toEqual(['TEST','TEST','TEST']);
   });
 });

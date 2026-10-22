@@ -9,7 +9,7 @@ import {
 } from '../types/snapshot.type';
 import { addDays, dayNumber, localDay } from './calendar';
 
-export const SNAPSHOT_VERSION = 1;
+export const SNAPSHOT_VERSION = 2;
 export const SNAPSHOT_SKILLS = [
   'GRAMMAR_VOCAB',
   'READING',
@@ -314,6 +314,7 @@ export function buildLearnerSnapshot(
         inWeek(localDay(new Date(date), timezone)),
       ).length,
       learningCount: rows.learningCount,
+      activeCount: rows.activeCount ?? 0,
     },
     habit: {
       streak: learningStreak(activityDates, asOf, timezone),

@@ -51,6 +51,7 @@ export class PlanProgressRepository {
       items,
       attempts,
       reviews.map((row) => row.reviewed_at),
+      plan.starts_on,
       plan.ends_on,
       goal.timezone,
     );
