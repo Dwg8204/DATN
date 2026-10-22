@@ -325,6 +325,12 @@ test(
         await second.page.getByLabel('Duration (3–180 days)').inputValue(),
         '30',
       );
+      await second.page.getByLabel('Duration (3–180 days)').fill('3');
+      await second.page.getByRole('button', { name: 'Replace goal', exact: true }).click();
+      await second.page.getByRole('alert').filter({ hasText: 'A goal cannot exceed 3 tests per day.' }).waitFor();
+      assert.equal(suggestionWrites, 0, 'excessive pace must not submit a replacement');
+      assert.equal(await second.page.getByRole('dialog').count(), 0);
+      await second.page.getByLabel('Duration (3–180 days)').fill('30');
       prefs.emailReminderEnabled = true;
       await second.page.goto(`${origin}/profile?disableReminderEmail=1#learning-preferences`, { waitUntil: 'domcontentloaded' });
       await second.page.getByRole('button', { name: 'Turn off reminder emails', exact: true }).click();

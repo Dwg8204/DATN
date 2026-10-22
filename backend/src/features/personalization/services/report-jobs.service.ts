@@ -177,7 +177,7 @@ export class ReportJobsService {
        AND submitted_at>=($2::date::timestamp AT TIME ZONE $4)
        AND submitted_at<(($3::date+1)::timestamp AT TIME ZONE $4) AND submitted_at<=$5`, [goal.user_id, from, to, goal.timezone, asOf],
     );
-    const candidates = (await this.candidates.build(manager, goal.user_id, full)).map(candidate =>
+    const candidates = (await this.candidates.build(manager, goal.user_id, full, week + 1)).map(candidate =>
       candidate.activityType === 'TEST' ? { ...candidate, title: '' } : candidate);
     const plan = planWindow(goal.start_date, goal.duration_days, week + 1);
     const remainingTests = Math.max(0, goal.target_test_count - full.cumulative.completed);
@@ -246,8 +246,8 @@ export class ReportJobsService {
     await this.replaceUntouched(manager, goal, plan, row.id, resolveAiItems(content, job), today);
   }
 
-  private async replaceUntouched(
-    manager: EntityManager, goal: LearningGoalRow, plan: StudyPlanRow, insightId: string,
+  async replaceUntouched(
+    manager: EntityManager, goal: LearningGoalRow, plan: StudyPlanRow, insightId: string | null,
     proposed: ReturnType<typeof resolveAiItems>, today: string,
   ) {
     const original = await this.plans.findItems(goal.user_id, plan.id, manager);
@@ -261,14 +261,15 @@ export class ReportJobsService {
       const available = await manager.query<Array<{ id: string }>>(
         "SELECT id FROM tests WHERE id=ANY($1::uuid[]) AND status='PUBLISHED' AND archived_at IS NULL AND published_snapshot_id IS NOT NULL FOR SHARE", [ids],
       );
-      if (ids.some(id => !available.some(test => test.id === id))) return;
+      if (ids.some(id => !available.some(test => test.id === id))) return false;
     }
     await manager.query(
       `DELETE FROM study_plan_items WHERE plan_id=$1 AND scheduled_on>=$2 AND NOT(scheduled_on=ANY($3::date[]))
        AND done_count=0 AND completed_at IS NULL`, [plan.id, today, [...frozenDays]],
     );
     await this.plans.insertItems(goal.user_id, plan, replacement, manager);
-    await manager.query("UPDATE study_plans SET source='AI',insight_id=$2 WHERE id=$1", [plan.id, insightId]);
+    await manager.query("UPDATE study_plans SET source=$3,insight_id=$2 WHERE id=$1", [plan.id, insightId, insightId ? 'AI' : 'RULE']);
     await this.progress.syncPlan(manager, goal, plan, this.clock.now());
+    return true;
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { ApplicationError } from '../../../common/errors/application.error';
 import {
+  assertGoalPace,
   CreateLearningGoalDto,
   GoalHistoryQueryDto,
   ReplaceLearningGoalDto,
@@ -119,6 +120,7 @@ export class GoalsService {
   }
 
   async create(userId: string, dto: CreateLearningGoalDto) {
+    assertGoalPace(dto);
     return this.db.transaction(async (manager) => {
       const timezone = await this.lockUser(manager, userId),
         now = this.clock.now();
@@ -139,6 +141,7 @@ export class GoalsService {
   }
 
   async replace(userId: string, dto: ReplaceLearningGoalDto) {
+    assertGoalPace(dto);
     return this.db.transaction(async (manager) => {
       const timezone = await this.lockUser(manager, userId),
         now = this.clock.now();

@@ -69,7 +69,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     }), { status: 200 });
     const c = prompt.candidates.find((entry: { activityType: string }) => entry.activityType === 'TEST');
     const content: WeeklyContent = { plan: { items: Array.from({ length: prompt.plan.days }, (_, day) => ({
-      dayIndex: day + 1, candidateId: c.candidateId, targetCount: Math.max(1, prompt.plan.requiredPace),
+      dayIndex: day + 1, candidateId: c.candidateId, targetCount: 1,
       reason: 'Duy trì thói quen luyện tập.',
     })) } };
     if (prompt.kind !== 'PLAN_START') content.report = {
