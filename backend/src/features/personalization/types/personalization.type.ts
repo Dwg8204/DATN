@@ -1,3 +1,4 @@
+import { AbilityProfile } from '../../ai-shared/ability-profile';
 import { SkillComponent } from '../../test-attempts/types/attempt.type';
 
 export type GoalStatus =
@@ -12,6 +13,7 @@ export type TopicLabelStatus = 'SUGGESTED' | 'APPROVED' | 'REJECTED';
 
 // Repository projections cast calendar dates to text; timestamps remain Date.
 export interface LearningGoalRow {
+  baseline_profile?: AbilityProfile | null;
   id: string;
   user_id: string;
   target_cefr: TargetCefr;

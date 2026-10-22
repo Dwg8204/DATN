@@ -1,3 +1,4 @@
+import { readAbilityProfile } from '../../ai-shared/ability-profile.repository';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
 import { ApplicationError } from '../../../common/errors/application.error';
@@ -130,11 +131,13 @@ export class GoalsService {
           'An active goal already exists.',
           409,
         );
-      await this.goals.create(
+      const goal = await this.goals.create(
         userId,
         { ...dto, startDate: localDay(now, timezone), timezone },
         manager,
       );
+      const baseline = await readAbilityProfile(manager, userId, now);
+      await manager.query('UPDATE learning_goals SET baseline_profile=$2 WHERE id=$1', [goal.id, baseline]);
       const refreshed = await this.reconcile(manager, userId, now);
       return { goal: presentGoal(refreshed!.goal, refreshed!.completed) };
     });
@@ -161,6 +164,8 @@ export class GoalsService {
         [dto.goalId, goal.id],
       );
       await queueFinalReport(manager, dto.goalId);
+      const baseline = await readAbilityProfile(manager, userId, now);
+      await manager.query('UPDATE learning_goals SET baseline_profile=$2 WHERE id=$1', [goal.id, baseline]);
       const refreshed = await this.reconcile(manager, userId, now);
       return { goal: presentGoal(refreshed!.goal, refreshed!.completed) };
     });
