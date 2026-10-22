@@ -112,6 +112,7 @@ test(
             },
           });
         if (req.method() === 'OPTIONS') return respond({});
+        if (path === '/me/ability-profile') return respond({bySkill:[],overall:{band:null},placement:{complete:true,missing:[],required:[],tests:[]}});
         if (path === '/me/reports') {
           lastReportQuery = new URL(req.url()).searchParams;
           const page = Number(lastReportQuery.get('page') || 1);

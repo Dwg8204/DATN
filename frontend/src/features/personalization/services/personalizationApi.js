@@ -3,6 +3,7 @@ import api from '../../../services/api';
 const options = { notifyOnError: false };
 const data = response => response.data;
 export const personalizationApi = {
+  ability: () => api.get('/me/ability-profile', options).then(data),
   reports: (params = {}) => api.get('/me/reports', { ...options, params }).then(data),
   report: id => api.get(`/me/reports/${encodeURIComponent(id)}`, options).then(data),
   comment: () => api.get('/me/insights/comment', options).then(data),

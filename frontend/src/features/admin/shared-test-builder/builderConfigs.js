@@ -27,7 +27,7 @@ export const builderConfigs = {
   speaking: {
     create: createSpeakingDraft, load: speakingTestsApi.getOne,
     save: test => {
-      const payload = { ...(!test.id && test.creationRequestId ? { creationRequestId: test.creationRequestId } : {}), purpose: test.purpose, mode: test.mode, details: test.details, parts: test.parts, version: test.version };
+      const payload = { ...(!test.id && test.creationRequestId ? { creationRequestId: test.creationRequestId } : {}), purpose: test.purpose, isPlacement: test.isPlacement, mode: test.mode, details: test.details, parts: test.parts, version: test.version };
       return test.id ? speakingTestsApi.update(test.id, payload) : speakingTestsApi.create(payload);
     },
     publish: test => speakingTestsApi.publish(test.id, test.version),

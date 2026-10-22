@@ -3,6 +3,7 @@ import api from '../../../../services/api.js';
 const toApi = test => ({
   mode: test.mode,
   purpose: test.purpose,
+  isPlacement: test.isPlacement,
   details: test.details,
   parts: Object.fromEntries([1, 2, 3, 4]
     .filter(number => test.mode === 'full' || test.mode === `part${number}`)

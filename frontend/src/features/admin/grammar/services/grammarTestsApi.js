@@ -6,6 +6,7 @@ const silent = { notifyOnError: false };
 function payload(test, includeVersion = false) {
   return {
     purpose: test.purpose,
+    isPlacement: test.isPlacement,
     ...(!includeVersion && test.creationRequestId ? { creationRequestId: test.creationRequestId } : {}),
     mode: test.mode,
     details: {

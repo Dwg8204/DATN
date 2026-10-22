@@ -13,6 +13,7 @@ const routes = {
   SPEAKING: 'speaking',
 };
 const ruleReasons = new Set([
+  'PLACEMENT',
   'DAILY_VOCAB',
   'GOAL_PACE',
   'BAND_PRACTICE',
@@ -82,6 +83,7 @@ export default function StudyPlanCard() {
               count: item.questionCount ?? item.targetCount,
             })}
       </span>
+      {item.reason === 'PLACEMENT' && <span className={styles.muted}>{t('personalization.placement.title')}</span>}
       {data?.plan?.source === 'AI' && item.reason && !ruleReasons.has(item.reason) && (
         <span className={styles.muted}>{item.reason}</span>
       )}

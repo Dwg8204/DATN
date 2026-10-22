@@ -1,3 +1,4 @@
+import AbilityAssessmentCard from '../../personalization/components/AbilityAssessmentCard';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useEffect } from 'react';
 import ProfileSidebar from '../components/ProfileSidebar';
@@ -75,6 +76,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
+          <AbilityAssessmentCard />
           <GoalProgressCard />
           <PersonalCommentCard />
           <StudyPlanCard />

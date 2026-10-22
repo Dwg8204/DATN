@@ -1,3 +1,4 @@
+import {PlacementControl,PlacementCoverage} from '../shared-test-builder/PlacementControl';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +15,7 @@ import styles from '../writing/WritingTestDetailsPage.module.css';
 
 export default function SpeakingTestDetailsPage() {
   const ui = useUiTranslation();
-  const { test, updateDetails, goTo, saveDraft, publishTest } = useSpeakingBuilder();
+  const { test, setTest, updateDetails, goTo, saveDraft, publishTest } = useSpeakingBuilder();
   const navigate = useNavigate();
   const [errors, setErrors] = useState([]);
   const [confirm, setConfirm] = useState(false);
@@ -42,7 +43,8 @@ export default function SpeakingTestDetailsPage() {
     <AdminValidationToast errors={errors} onClose={() => setErrors([])} />
     <AdminConfirmDialog open={confirm} title={test.id ? ui("Save changes to this Speaking test?") : ui("Create Speaking test?")} message="The test will be displayed in Test Management and the candidate Speaking test list." confirmLabel={test.id ? ui("Save changes") : ui("Create test")} onCancel={() => setConfirm(false)} onConfirm={persist} />
     <AdminBreadcrumb current={test.details.title || 'New Speaking test'} purpose={test.purpose} />
-    <section className={styles.information} inert={saving ? '' : undefined}><h2>{ui("INFORMATION TEST")}</h2><div className={styles.infoGrid}><div className={styles.fields}><Field label={ui("Title")} value={test.details.title} onChange={(value) => updateDetails('title', value)} /><ImageField label={ui("Test cover")} value={test.details.pictureUrl} onChange={(value) => updateDetails('pictureUrl', value)} /><button className={styles.saveInfo} disabled={saving} onClick={saveInformation}>{ui("Save draft")}</button></div><aside><b>{ui("Preview")}</b><div><header><span>{test.mode === 'full' ? ui("Full test") : test.mode.replace('part', 'Part ')}</span></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt={ui("Test cover")} /> : <strong>AptiMate<br /><em>{ui("Speaking")}</em></strong>}<button onClick={requestSave}>{ui("Preview")}</button></div></aside></div></section>
+    <section className={styles.information} inert={saving ? '' : undefined}><h2>{ui("INFORMATION TEST")}</h2><div className={styles.infoGrid}><div className={styles.fields}><Field label={ui("Title")} value={test.details.title} onChange={(value) => updateDetails('title', value)} /><PlacementCoverage /><PlacementControl test={test} onChange={value=>setTest(current=>({...current,isPlacement:value}))} />
+          <ImageField label={ui("Test cover")} value={test.details.pictureUrl} onChange={(value) => updateDetails('pictureUrl', value)} /><button className={styles.saveInfo} disabled={saving} onClick={saveInformation}>{ui("Save draft")}</button></div><aside><b>{ui("Preview")}</b><div><header><span>{test.mode === 'full' ? ui("Full test") : test.mode.replace('part', 'Part ')}</span></header>{test.details.pictureUrl ? <img src={test.details.pictureUrl} alt={ui("Test cover")} /> : <strong>AptiMate<br /><em>{ui("Speaking")}</em></strong>}<button onClick={requestSave}>{ui("Preview")}</button></div></aside></div></section>
     <section className={styles.content} inert={saving ? '' : undefined}><h2>{ui("CONTENT TEST")}</h2><div>{parts.map((part) => <PartSummaryCard key={part.number} part={part} onEdit={() => goTo(part.number)} />)}</div><button className={styles.saveAll} onClick={requestSave}>{test.id ? ui("Update test & preview") : ui("Save test & preview")}</button></section>
   </div>;
 }
