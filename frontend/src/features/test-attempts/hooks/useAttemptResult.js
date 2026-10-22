@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { normalizeApiError } from '../../../services/apiError.js';
 import { testAttemptsApi } from '../services/testAttemptsApi.js';
 import { practiceAttemptsApi } from '../services/practiceAttemptsApi.js';
+import { selectAssessmentApi } from '../services/referenceAssessmentsApi.js';
 
 function ensureComponent(data, expectedComponent) {
   if (expectedComponent && data.component !== expectedComponent) throw new Error('This result belongs to another skill.');
@@ -13,18 +14,21 @@ function ensureComponent(data, expectedComponent) {
 export function useAttemptResult(attemptId, expectedComponent) {
   const [searchParams] = useSearchParams();
   const isPractice = searchParams.get('practice') === 'true';
-  const attemptsApi = isPractice ? practiceAttemptsApi : testAttemptsApi;
+  const model=['WRITING','SPEAKING'].includes(expectedComponent)?searchParams.get('model'):null;
+  const attemptsApi = selectAssessmentApi(isPractice ? practiceAttemptsApi : testAttemptsApi,model);
   return useAssessmentPolling(attemptId, attemptsApi, expectedComponent, isPractice, expectedComponent === 'SPEAKING');
 }
 
 export function useAttemptPartResult(attemptId, partNumber, expectedComponent, refreshKey = 0) {
   const [searchParams] = useSearchParams();
   const isPractice = searchParams.get('practice') === 'true';
-  const attemptsApi = isPractice ? practiceAttemptsApi : testAttemptsApi;
-  const requestKey = attemptId && partNumber ? `${attemptId}:${partNumber}:${refreshKey}` : null;
+  const model=['WRITING','SPEAKING'].includes(expectedComponent)?searchParams.get('model'):null;
+  const attemptsApi = selectAssessmentApi(isPractice ? practiceAttemptsApi : testAttemptsApi,model);
+  const validPart=Number.isInteger(Number(partNumber)) && Number(partNumber)>=1 && Number(partNumber)<=4;
+  const requestKey = attemptId && validPart ? `${attemptId}:${partNumber}:${refreshKey}:${attemptsApi.assessmentProvider ?? 'gemini'}` : null;
   const [state, setState] = useState({ requestKey: null, data: null, error: '' });
   useEffect(() => {
-    if (!attemptId || !partNumber) {
+    if (!requestKey) {
       return undefined;
     }
     const controller = new AbortController();

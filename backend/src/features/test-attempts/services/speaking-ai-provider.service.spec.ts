@@ -73,4 +73,69 @@ describe('Speaking provider integration contract (mock HTTP only)', () => {
     expect(audio.normalize).not.toHaveBeenCalled();
     expect(jobs.reserve).not.toHaveBeenCalled();
   });
+  it('preserves Retry-After on 503 without hidden provider retries', async () => {
+    const { provider, job } = fixture();
+    const request = jest.fn(async () => new Response('{}', { status: 503, headers: { 'Retry-After': '120' } }));
+    global.fetch = request as unknown as typeof fetch;
+    await expect(provider.assess(job, paper, [{ key: 'p1:q1', mediaKey: 'url' }])).rejects.toMatchObject({
+      code: 'GEMINI_HTTP_503', retryable: true, retryAfterMs: 120000,
+    });
+    expect(request).toHaveBeenCalledTimes(1);
+  });
+  it('repairs CEFR only for an incomplete full test without changing its response scores', async () => {
+    const { provider, job, jobs } = fixture();
+    const full = { ...paper, mode: 'full', items: [...paper.items, { ...paper.items[0], key: 'p1:q2' }] };
+    const initial = { ...result, estimatedCefr: null, cefrReason: 'Một phần thi không thể xác định CEFR.' };
+    let generations = 0;
+    const request = jest.fn(async (url: any, options: any) => {
+      if (String(url).includes('groq.com')) return new Response(JSON.stringify({ text: 'I like reading.' }));
+      if (String(url).endsWith(':countTokens')) return new Response(JSON.stringify({ totalTokens: 2000 }));
+      const body = JSON.parse(options.body);
+      const isRepair = !body.generationConfig.responseSchema.properties.responses;
+      if (!isRepair) {
+        const facts = JSON.parse(body.contents[0].parts[0].text);
+        expect(facts).toMatchObject({ mode: 'full', assessmentScope: 'FULL_SKILL', responseKeys: ['p1:q1'], skippedKeys: ['p1:q2'] });
+        expect(body.generationConfig.responseSchema.properties.responses.items.properties.key.enum).toEqual(['p1:q1']);
+      } else {
+        expect(JSON.parse(body.contents[0].parts[0].text).completion.practiceScoreOutOf50).toBe(12.5);
+      }
+      generations++;
+      const value = isRepair ? { estimatedCefr: 'B1', cefrReason: 'Lời nói rõ ý ở mức B1; bỏ một câu nên bằng chứng còn hạn chế.' } : initial;
+      return new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(value) }] } }] }));
+    });
+    global.fetch = request as unknown as typeof fetch;
+    const assessed = await provider.assess(job, full, [{ key: 'p1:q1', mediaKey: 'url' }]);
+    expect(assessed.estimatedCefr).toBe('B1');
+    expect(assessed.responses).toEqual(initial.responses);
+    expect(generations).toBe(2);
+    expect(jobs.reserve).toHaveBeenCalledTimes(2);
+  });
+  it('keeps validated audio findings through a failed CEFR repair and resumes without replaying audio/ASR', async () => {
+    const { provider, job, audio } = fixture();
+    const full = { ...paper, mode: 'full' };
+    job.responses['p1:q1'] = 'I like reading.';
+    const initial = { ...result, estimatedCefr: null };
+    job.responses.__assessment = JSON.stringify(initial);
+    job.responses.__assessmentPromptVersion = SPEAKING_PROMPT_VERSION;
+    let unavailable = true;
+    global.fetch = jest.fn(async (url: any) => {
+      if (String(url).endsWith(':countTokens')) return new Response(JSON.stringify({ totalTokens: 2000 }));
+      if (unavailable) return new Response('{}', { status: 503 });
+      return new Response(JSON.stringify({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ estimatedCefr: 'A2', cefrReason: 'Ước lượng thận trọng dựa trên lời nói đã đánh giá.' }) }] } }] }));
+    }) as unknown as typeof fetch;
+    await expect(provider.assess(job, full, [{ key: 'p1:q1', mediaKey: 'url' }])).rejects.toThrow('GEMINI_HTTP_503');
+    expect(JSON.parse(job.responses.__assessment).responses).toEqual(initial.responses);
+    unavailable = false;
+    await expect(provider.assess(job, full, [{ key: 'p1:q1', mediaKey: 'url' }])).resolves.toMatchObject({ estimatedCefr: 'A2' });
+    expect(audio.normalize).not.toHaveBeenCalled();
+  });
+  it('does not accept another null CEFR from the repair request or discard cached response scores', async () => {
+    const { provider, job } = fixture();
+    job.responses.__assessment = JSON.stringify({ ...result, estimatedCefr: null });
+    job.responses.__assessmentPromptVersion = SPEAKING_PROMPT_VERSION;
+    global.fetch = jest.fn(async (url: any) => new Response(JSON.stringify(String(url).endsWith(':countTokens') ? { totalTokens: 2000 }
+      : { candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ estimatedCefr: null, cefrReason: 'Chỉ một phần thi.' }) }] } }] }))) as unknown as typeof fetch;
+    await expect(provider.assess(job, { ...paper, mode: 'full' }, [{ key: 'p1:q1', mediaKey: 'url' }])).rejects.toMatchObject({ code: 'SPEAKING_CEFR_INCONSISTENT', retryable: true });
+    expect(JSON.parse(job.responses.__assessment).responses).toEqual(result.responses);
+  });
 });

@@ -6,6 +6,10 @@ import { ApplicationError } from '../../../common/errors/application.error';
 import { AssessmentResult, LockedAttemptRow } from '../../test-attempts/types/attempt.type';
 import { WritingInput } from '../contracts/writing-assessment-input';
 import { WritingJobConfig } from '../writing-ai-config.service';
+import { WritingStageResults } from '../services/writing-assessment.service';
+import { AiError } from '../../../common/ai/ai-error';
+import { writingAttemptLimit } from '../writing-retry.policy';
+import { WritingRetryFeedback } from '../services/writing-evidence-ids';
 
 export type WritingJob = {
   id: string;
@@ -16,6 +20,8 @@ export type WritingJob = {
   attempt_count: number;
   lease_token: string;
   error_code: string | null;
+  stage_results?: WritingStageResults;
+  last_validation_failure?: WritingRetryFeedback;
 };
 function canonical(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
@@ -41,10 +47,20 @@ export class WritingGradingJobsRepository {
     if (attempt.component !== 'WRITING' || attempt.status !== 'SUBMITTED')
       throw new Error('WRITING_ATTEMPT_INVALID');
     const revision = attempt.assessment_revision + 1;
+    const inputHash = writingInputHash(input, config);
+    // Reuse only the immediately preceding FAILED job for this same attempt and exact input/config.
+    // Prompt/model/rubric changes naturally invalidate the immutable hash.
+    const [prior] = await manager.query(`SELECT stage_results,last_validation_failure FROM writing_grading_jobs
+      WHERE attempt_id=$1 AND assessment_revision=$2 AND status='FAILED' AND input_hash=$3`,
+      [attempt.id, attempt.assessment_revision, inputHash]);
+    const priorCache = prior?.stage_results as WritingStageResults | undefined;
+    const inherited = priorCache?.version === 1 && priorCache.inputHash === inputHash
+      ? { version: 1, inputHash, parts: priorCache.parts } : {};
     await manager.query(
-      `INSERT INTO writing_grading_jobs(attempt_id,assessment_revision,input_hash,config_snapshot)
-      VALUES($1,$2,$3,$4::jsonb)`,
-      [attempt.id, revision, writingInputHash(input, config), JSON.stringify(config)],
+      `INSERT INTO writing_grading_jobs(attempt_id,assessment_revision,input_hash,config_snapshot,stage_results,last_validation_failure)
+      VALUES($1,$2,$3,$4::jsonb,$5::jsonb,$6::jsonb)`,
+      [attempt.id, revision, inputHash, JSON.stringify(config), JSON.stringify(inherited),
+        priorCache?.inputHash === inputHash && prior?.last_validation_failure ? JSON.stringify(prior.last_validation_failure) : null],
     );
     const rows = await manager.query(
       `UPDATE test_attempts SET assessment_revision=$2,grading_status='QUEUED',completed_at=NULL,
@@ -73,7 +89,7 @@ export class WritingGradingJobsRepository {
       const [job] = await manager.query('SELECT * FROM writing_grading_jobs WHERE id=$1 FOR UPDATE', [
         candidate.job_id,
       ]);
-      if (job.attempt_count >= job.config_snapshot.maxAttempts) {
+      if (job.attempt_count >= writingAttemptLimit(job.config_snapshot.maxAttempts, job.error_code)) {
         await manager.query(
           `UPDATE writing_grading_jobs SET status='FAILED',error_code='JOB_LEASE_EXPIRED',completed_at=now(),updated_at=now() WHERE id=$1`,
           [job.id],
@@ -120,6 +136,14 @@ export class WritingGradingJobsRepository {
     );
     return !!lease;
   }
+  async checkpoint(job: WritingJob, cache?: WritingStageResults): Promise<void> {
+    await this.db.transaction(async manager => {
+      if (!(await this.ownedLease(manager, job))) throw new AiError('WRITING_LEASE_LOST');
+      await manager.query(`UPDATE writing_grading_jobs SET stage_results=COALESCE($3::jsonb,stage_results),
+        lease_expires_at=now()+($2::integer * interval '1 millisecond'),updated_at=now() WHERE id=$1`,
+        [job.id, Math.max(120000, job.config_snapshot.timeoutMs + 60000), cache ? JSON.stringify(cache) : null]);
+    });
+  }
   async finish(job: WritingJob, result: AssessmentResult): Promise<void> {
     await this.db.transaction(async (manager) => {
       if (!(await this.ownedLease(manager, job))) return;
@@ -135,14 +159,15 @@ export class WritingGradingJobsRepository {
       );
     });
   }
-  async fail(job: WritingJob, code: string, retry: boolean, delayMs: number): Promise<void> {
+  async fail(job: WritingJob, code: string, retry: boolean, delayMs: number, feedback?: WritingRetryFeedback): Promise<void> {
     await this.db.transaction(async (manager) => {
       if (!(await this.ownedLease(manager, job))) return;
-      const status = retry && job.attempt_count < job.config_snapshot.maxAttempts ? 'QUEUED' : 'FAILED';
+      const status = retry && job.attempt_count < writingAttemptLimit(job.config_snapshot.maxAttempts, code) ? 'QUEUED' : 'FAILED';
       await manager.query(
         `UPDATE writing_grading_jobs SET status=$2::varchar,error_code=$3,available_at=now()+($4::integer * interval '1 millisecond'),
-        lease_token=NULL,lease_expires_at=NULL,completed_at=CASE WHEN $2::varchar='FAILED' THEN now() ELSE NULL END,updated_at=now() WHERE id=$1`,
-        [job.id, status, code, Math.min(86400000, Math.max(1000, delayMs))],
+        lease_token=NULL,lease_expires_at=NULL,last_validation_failure=$5::jsonb,
+        completed_at=CASE WHEN $2::varchar='FAILED' THEN now() ELSE NULL END,updated_at=now() WHERE id=$1`,
+        [job.id, status, code, Math.min(86400000, Math.max(1000, delayMs)), feedback ? JSON.stringify(feedback) : null],
       );
       await manager.query(
         `UPDATE test_attempts SET grading_status=$2::grading_status,updated_at=now() WHERE id=$1 AND component='WRITING'`,

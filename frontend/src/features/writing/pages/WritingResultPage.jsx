@@ -67,7 +67,7 @@ export default function WritingResultPage() {
         <div className={styles.actions}>
           <button
             onClick={() =>
-              navigate(`/writing/result-detail?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)
+              navigate(`/writing/result-detail?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}${params.get('model')==='groq'?'&model=groq':''}`)
             }
           >
             {t('writingAi.detail')}

@@ -13,10 +13,11 @@ describe('Writing AI configuration isolation', () => {
   });
   it('uses the existing Gemini key/model without Groq or Cloudinary', () => {
     const config = new WritingAiConfig(new ConfigService(free));
-    expect(config.snapshot('vi').model).toBe('gemini-3.1-flash-lite');
+    expect(config.snapshot('vi').model).toBe('gemini-3.5-flash-lite');
+    expect(config.snapshot('vi').assessmentMode).toBe('PARTS_V1');
     expect(config.enabled).toBe(true);
     expect(config.snapshot('en').feedbackLocale).toBe('vi');
-    expect(config.snapshot('en').promptVersion).toBe('writing-prompt-v3');
+    expect(config.snapshot('en').promptVersion).toBe('writing-prompt-v4-evidence-ids');
   });
   it.each([
     { ...free, GEMINI_BILLING_TIER: 'PAID' },

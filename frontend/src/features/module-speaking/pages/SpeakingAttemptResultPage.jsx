@@ -55,13 +55,13 @@ export default function SpeakingAttemptResultPage() {
         {assessment ? <div className={styles.criteriaGrid}>{CRITERIA.map(({ key, label }) => {
           const value = assessment.criteria[key];
           return <div key={key} className={styles.criteriaItem}>
-            <div className={styles.criteriaCircleWrap} role="img" aria-label={ui("{{value0}}: {{value1}}%", {value0:(label),value1:(value)})}>
+            <div className={styles.criteriaCircleWrap} role="img" aria-label={value==null?`${ui(label)}: —`:ui("{{value0}}: {{value1}}%", {value0:(label),value1:(value)})}>
               <svg viewBox="0 0 100 100" width="100" height="100" aria-hidden="true">
                 <circle cx="50" cy="50" r="46" fill="white" stroke="#E0E0E0" strokeWidth="8" />
                 <circle cx="50" cy="50" r="46" fill="transparent" stroke={getStatColor(value)} strokeWidth="8"
-                  strokeDasharray={`${value * 2.89} 289`} transform="rotate(-90 50 50)" />
+                  strokeDasharray={`${(value ?? 0) * 2.89} 289`} transform="rotate(-90 50 50)" />
               </svg>
-              <span className={styles.criteriaPctText}>{value}%</span>
+              <span className={styles.criteriaPctText}>{value==null?'—':`${value}%`}</span>
             </div>
             <span className={styles.criteriaName}>{ui(label)}</span>
           </div>;
@@ -70,7 +70,7 @@ export default function SpeakingAttemptResultPage() {
     </div>
     <div className={styles.actionRow}>
       <ResultBackButton to={isPractice ? '/speaking/practice' : '/speaking/tests'} />
-      <button className={styles.tryAgainBtn} onClick={() => navigate(`/speaking/detail-result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}`)}>{ui("View detail result")}</button>
+      <button className={styles.tryAgainBtn} onClick={() => navigate(`/speaking/detail-result?attemptId=${attemptId}${isPractice ? '&practice=true' : ''}${params.get('model')==='groq'?'&model=groq':''}`)}>{ui("View detail result")}</button>
     </div>
   </div></div>;
 }

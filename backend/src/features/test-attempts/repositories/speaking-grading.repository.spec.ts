@@ -2,6 +2,17 @@ import { DataSource } from 'typeorm';
 import { SpeakingGradingRepository, SpeakingJob } from './speaking-grading.repository';
 const job: SpeakingJob = { attempt_id: 'attempt', lease_token: 'lease', failures: 1, responses: {} };
 describe('Speaking AI budget reservations', () => {
+  it('queues transient failures using provider delay but stops after the third run', async () => {
+    const query = jest.fn(async () => [{ attempt_id: 'attempt' }]);
+    const db = { transaction: async (fn: (manager: { query: typeof query }) => Promise<unknown>) => fn({ query }) };
+    const repository = new SpeakingGradingRepository(db as unknown as DataSource);
+    await repository.fail(job, 'GEMINI_HTTP_503', true, 'Retrying', 120000);
+    expect(query).toHaveBeenNthCalledWith(1, expect.stringContaining('$6::double precision'),
+      ['attempt', 'lease', 'QUEUED', false, 'GEMINI_HTTP_503', 120000]);
+    query.mockClear();
+    await repository.fail({ ...job, failures: 3 }, 'GEMINI_HTTP_503', true, 'Failed');
+    expect(query.mock.calls[0]).toEqual([expect.any(String), expect.arrayContaining(['FAILED'])]);
+  });
   it('does not reuse consent from another billing policy', async () => {
     const query = jest.fn(async (sql: string) => sql.includes('SELECT id FROM test_attempts') ? [{ id: 'attempt' }] : []);
     const db = { transaction: async (fn: (manager: { query: typeof query }) => Promise<unknown>) => fn({ query }) };

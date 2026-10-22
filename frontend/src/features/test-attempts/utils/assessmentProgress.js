@@ -10,15 +10,35 @@ export function progressStage({ loading, error, data, submissionState, paused })
   if (['UNASSESSED', 'SIMULATED'].includes(data.result?.method)) return 'PAUSED';
   if (status === 'COMPLETED') return 'LOADING_RESULT';
   if (data.assessment?.enabled === false || status === 'NOT_STARTED') return 'PAUSED';
+  if (status === 'QUEUED' && data.assessment?.nextRetryAt && Date.parse(data.assessment.nextRetryAt) > Date.now()) return 'RETRY_WAIT';
   if (paused) return 'LONG_WAIT';
   return status === 'PROCESSING' ? 'PROCESSING' : 'QUEUED';
 }
 
 export function estimatedProgress(stage, seconds, previous = 0) {
   if (stage === 'COMPLETED') return 100;
-  if (['FAILED', 'PAUSED', 'CONNECTION_ERROR', 'LONG_WAIT'].includes(stage)) return Math.min(previous, 95);
+  if (['FAILED', 'PAUSED', 'CONNECTION_ERROR', 'LONG_WAIT', 'RETRY_WAIT'].includes(stage)) return Math.min(previous, 95);
   const [start, ceiling, rate] = stage === 'SUBMITTING' ? [2, 10, 0.5]
     : stage === 'LOADING_RESULT' ? [10, 15, 0.5]
       : stage === 'PROCESSING' ? [25, 90, 0.35] : [15, 25, 0.1];
   return Math.min(95, Math.max(previous, Math.min(ceiling, start + seconds * rate)));
+}
+
+// UI estimates only: never store answers, and never infer completion from this cache.
+export function progressStorageKey(attemptId, provider = 'gemini', runKey = 0) {
+  let user = 'anonymous';
+  try { user = JSON.parse(localStorage.getItem('aptimate.auth.user'))?.id || user; } catch { /* Storage unavailable. */ }
+  return `aptimate.assessment-progress:${user}:${attemptId}:${provider}:${runKey}`;
+}
+
+export function readProgress(key) {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(key));
+    return saved && Date.now() - saved.at < 86400000 && Number.isFinite(saved.value)
+      ? Math.max(0, Math.min(95, saved.value)) : 0;
+  } catch { return 0; }
+}
+
+export function saveProgress(key, value) {
+  try { sessionStorage.setItem(key, JSON.stringify({ value, at: Date.now() })); } catch { /* Optional UI cache. */ }
 }

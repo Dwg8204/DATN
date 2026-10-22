@@ -6,7 +6,7 @@ export const environmentSchema = Joi.object({
   GEMINI_MAX_RPM: Joi.number().integer().min(1).max(1000).default(5),
   WRITING_AI_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
   WRITING_AI_PROVIDER: Joi.string().valid('gemini').default('gemini'),
-  WRITING_AI_MODEL: Joi.string().pattern(/^[a-zA-Z0-9._-]+$/).default('gemini-3.1-flash-lite'),
+  WRITING_AI_MODEL: Joi.string().pattern(/^[a-zA-Z0-9._-]+$/).default('gemini-3.5-flash-lite'),
   WRITING_AI_REQUEST_TIMEOUT_MS: Joi.number().integer().min(1000).max(90000).default(60000),
   WRITING_AI_MAX_OUTPUT_TOKENS: Joi.number().integer().min(512).max(16384).default(8192),
   WRITING_AI_WORKER_CONCURRENCY: Joi.number().valid(1).default(1),

@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { firstMutationRow } from '../../../common/database/mutation-result';
 import { AssessmentResult } from '../types/attempt.type';
+import { speakingRetryDelay } from '../assessments/speaking-retry';
 
 export type SpeakingJob = { attempt_id: string; lease_token: string; failures: number; responses: Record<string, string> };
 
@@ -112,15 +113,16 @@ export class SpeakingGradingRepository {
     });
   }
 
-  async fail(job: SpeakingJob, code: string, retry: boolean, notice: string): Promise<void> {
+  async fail(job: SpeakingJob, code: string, retry: boolean, notice: string, retryAfterMs?: number): Promise<void> {
     await this.db.transaction(async manager => {
       const blocked = code === 'SPEAKING_BUDGET_EXCEEDED';
       const rows = await manager.query(`UPDATE speaking_grading_jobs SET status=$3,
         next_run_at=CASE WHEN $4 THEN (date_trunc('month',now() AT TIME ZONE 'UTC')+interval '1 month') AT TIME ZONE 'UTC'
-          ELSE now()+interval '10 minutes' END,lease_until=NULL,error_code=$5,updated_at=now(),
+          ELSE now()+($6::double precision * interval '1 millisecond') END,lease_until=NULL,error_code=$5,updated_at=now(),
         failures=CASE WHEN $4 THEN greatest(0,failures-1) ELSE failures END
         WHERE attempt_id=$1 AND lease_token=$2 AND status='PROCESSING' RETURNING attempt_id`,
-        [job.attempt_id, job.lease_token, blocked ? 'BLOCKED' : retry && job.failures < 3 ? 'QUEUED' : 'FAILED', blocked, code]);
+        [job.attempt_id, job.lease_token, blocked ? 'BLOCKED' : retry && job.failures < 3 ? 'QUEUED' : 'FAILED', blocked, code,
+          speakingRetryDelay(job.failures, retryAfterMs)]);
       if (!Array.isArray(rows) || !rows.length || Array.isArray(rows[0]) && !rows[0].length) return;
       await manager.query(`UPDATE test_attempts SET grading_status=$2::grading_status,
         result=jsonb_set(result,'{gradingNotice}',to_jsonb($3::text)),assessment_revision=assessment_revision+1

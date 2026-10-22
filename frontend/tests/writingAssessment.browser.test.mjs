@@ -14,6 +14,7 @@ import Summary from './src/features/writing/pages/WritingResultPage.jsx';
 import Detail from './src/features/writing/pages/WritingResultDetailPage.jsx';
 import Speaking from './src/features/module-speaking/pages/SpeakingAttemptResultPage.jsx';
 import SpeakingDetail from './src/features/module-speaking/pages/SpeakingAttemptDetailPage.jsx';
+import ModelView from './src/features/test-attempts/components/AssessmentModelView.jsx';
 i18n.changeLanguage(window.speakingOptions?.language || 'vi');
 const question={questionKey:'p2:q1',responseStatus:'ANSWERED',comment:'Bạn diễn đạt rõ hoạt động nhưng cần sửa thì động từ.',
 criteria:[{criterion:'GRAMMAR',judgment:'NEEDS_IMPROVEMENT',comment:'Dùng thì quá khứ đơn.',evidenceQuotes:['Yesterday I go to the club.']}],
@@ -48,8 +49,11 @@ if (window.speakingOptions) {
     speaking:{provider:'LLM',estimatedCefr:'B2',cefrReason:'Legacy B2 rationale',
       criteria:{grammarVocabulary:75,pronunciation:75,fluency:75,taskFulfillment:75}}};
 }
+window.referenceWriting={...window.writingSummary.result.writing,details:{parts:[{...part,overview:'Nhận xét Groq cho Part 2.',questions:[{...question,comment:'GROQ: Hãy sửa thì động từ.'}]}]}};
+window.referenceSpeaking={summary:'GROQ: Nhận xét từ transcript.',inputs:[{key:'p1:q1',partNumber:1,recorded:true,transcript:'I enjoy reading.'}],responses:[{
+key:'p1:q1',grammarVocabulary:60,taskFulfillment:70,comment:'GROQ: Bạn diễn đạt rõ ý.',coherenceComment:'Các ý có liên kết.',strengths:[],weaknesses:[],suggestions:[],suggestedAnswer:'I enjoy reading books.'}]};
 createRoot(document.getElementById('root')).render(<MemoryRouter initialEntries={[window.writingRoute||'/writing/result?attemptId=test-writing']}>
-<Routes><Route path='/writing/result' element={<Summary/>}/><Route path='/writing/result-detail' element={<Detail/>}/><Route path='/speaking/result' element={<Speaking/>}/><Route path='/speaking/detail-result' element={<SpeakingDetail/>}/></Routes></MemoryRouter>);
+<Routes><Route path='/writing/result' element={<ModelView><Summary/></ModelView>}/><Route path='/writing/result-detail' element={<ModelView><Detail/></ModelView>}/><Route path='/speaking/result' element={<ModelView><Speaking/></ModelView>}/><Route path='/speaking/detail-result' element={<ModelView><SpeakingDetail/></ModelView>}/></Routes></MemoryRouter>);
 `;
 async function bundle() {
   const result = await build({
@@ -64,14 +68,18 @@ async function bundle() {
         name: 'isolated-writing-api',
         setup(builder) {
           builder.onResolve({ filter: /services\/api(?:\.js)?$/ }, () => ({path:'consent-api',namespace:'consent-fixture'}));
-          builder.onLoad({filter:/.*/,namespace:'consent-fixture'},()=>({contents:'export default {get:async()=>({data:{enabled:true,consent:true}}),post:async()=>({data:{}})}',loader:'js'}));
+          builder.onLoad({filter:/.*/,namespace:'consent-fixture'},()=>({contents:`export default {
+            get:async(url)=>({data:url.startsWith('/reference-assessments/')?{
+              component:url.includes('speaking')?'SPEAKING':'WRITING',enabled:true,status:window.referenceStatus||'COMPLETED',revision:window.referenceStatus||'complete',model:'openai/gpt-oss-120b',
+              result:url.includes('speaking')?{speaking:window.referenceSpeaking}:{writing:window.referenceWriting}
+            }:{enabled:true,consent:true}}),post:async()=>({data:{}})}`,loader:'js'}));
           builder.onResolve({ filter: /(?:testAttemptsApi|practiceAttemptsApi)(?:\.js)?$/ }, () => ({
             path: 'attempt-api',
             namespace: 'writing-fixture',
           }));
           builder.onLoad({ filter: /.*/, namespace: 'writing-fixture' }, () => ({
             contents: `
-        const api={result:async(id)=>{window.writingCalls++;return structuredClone(id==='speaking'?window.speakingSummary:window.writingSummary)},partResult:async(id)=>structuredClone(id==='speaking'?window.speakingDetail:window.writingDetail)};
+        const api={result:async(id)=>{window.writingCalls++;return structuredClone(id==='speaking'?window.speakingSummary:window.writingSummary)},partResult:async(id,part)=>{if(!Number.isInteger(part)||part<1||part>4)throw new Error('PART_404');return structuredClone(id==='speaking'?window.speakingDetail:window.writingDetail)}};
         export const testAttemptsApi=api; export const practiceAttemptsApi=api;`,
             loader: 'js',
           }));
@@ -84,6 +92,92 @@ async function bundle() {
     css: result.outputFiles.find((file) => file.path.endsWith('.css')).text,
   };
 }
+test('Gemini and Groq share result layouts with independent progress on desktop and mobile',async()=>{
+  const {script,css}=await bundle();
+  const browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{})});
+  try {
+    for(const width of [1280,390]) for(const skill of ['writing','speaking']) {
+      const page=await browser.newPage({viewport:{width,height:900}}),errors=[];
+      page.on('pageerror',error=>errors.push(error.message));
+      await page.route('**/*',route=>route.request().url()==='http://writing-ui.test/'?route.fulfill({contentType:'text/html',body:'<html><body><div id="root"></div></body></html>'}):route.abort());
+      await page.goto('http://writing-ui.test/');
+      await page.evaluate(skill=>{window.writingRoute=skill==='writing'?'/writing/result?attemptId=test-writing&part=part2':'/speaking/result?attemptId=speaking&part=1';window.speakingOptions={scope:'FULL_SKILL'};},skill);
+      await page.addStyleTag({content:css});await page.addScriptTag({content:script});
+      await page.getByRole('progressbar').waitFor();
+      await page.waitForFunction(()=>document.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')==='100');
+      assert.equal(await page.getByRole('progressbar').getAttribute('aria-valuenow'),'100');
+      const layout=page.locator(skill==='writing'?'main':'#root > div').first();
+      const classBefore=await layout.getAttribute('class');
+      const widthBefore=await layout.evaluate(element=>element.getBoundingClientRect().width);
+      await page.evaluate(()=>{window.referenceStatus='PROCESSING';});
+      await page.getByRole('button',{name:'Groq · Tham khảo',exact:true}).click();
+      await page.locator('section[aria-label^="Groq"]') .waitFor();
+      assert.ok(Number(await page.getByRole('progressbar').getAttribute('aria-valuenow'))<100);
+      await page.getByRole('button',{name:'Gemini · Kết quả chính',exact:true}).click();
+      assert.equal(await page.getByRole('progressbar').getAttribute('aria-valuenow'),'100');
+      await page.evaluate(()=>{window.referenceStatus='COMPLETED';});
+      await page.getByRole('button',{name:'Groq · Tham khảo',exact:true}).click();
+      await page.getByRole('region',{name:/Groq/}).waitFor();
+      await page.waitForFunction(()=>document.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')==='100');
+      assert.equal(await layout.getAttribute('class'),classBefore);
+      assert.equal(await layout.evaluate(element=>element.getBoundingClientRect().width),widthBefore);
+      if(skill==='speaking') assert.equal(await page.locator('svg[viewBox="0 0 100 100"]').count(),4);
+      await page.getByRole('button',{name:skill==='writing'?'Xem kết quả chi tiết':'Xem kết quả chi tiết',exact:true}).click();
+      await page.getByRole('button',{name:'Groq · Tham khảo',exact:true}).waitFor();
+      assert.equal(await page.getByRole('button',{name:'Groq · Tham khảo',exact:true}).getAttribute('aria-pressed'),'true');
+      if(skill==='writing') {
+        await page.getByRole('button',{name:'Phần 2',exact:true}).click();
+        await page.getByText('Nhận xét Groq cho Part 2.',{exact:true}).waitFor();
+        assert.equal(await page.getByRole('heading',{name:'AI feedback',exact:true}).count(),1);
+      } else {
+        await page.getByText('What do you enjoy?',{exact:true}).waitFor();
+        assert.equal(await page.getByRole('button',{name:/^(Part|Phần) 4$/}).count(),1);
+      }
+      assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+      assert.deepEqual(errors,[]);await page.close();
+    }
+  } finally {await browser.close();}
+});
+
+test('Speaking retains Gemini progress across model changes and reload, and freezes while waiting for retry', async () => {
+  const {script,css}=await bundle();
+  const browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{})});
+  try {
+    const page=await browser.newPage(), errors=[];
+    page.on('pageerror',error=>errors.push(error.message));
+    await page.route('**/*',route=>route.request().url()==='http://writing-ui.test/'?route.fulfill({contentType:'text/html',body:'<html><body><div id="root"></div></body></html>'}):route.abort());
+    const mount=async()=>{
+      await page.evaluate(()=>{
+        window.writingRoute='/speaking/result?attemptId=speaking&part=1';
+        window.referenceStatus='PROCESSING';
+      });
+      await page.addStyleTag({content:css}); await page.addScriptTag({content:script});
+      await page.getByRole('progressbar').waitFor();
+    };
+    await page.goto('http://writing-ui.test/');
+    await page.evaluate(()=>sessionStorage.setItem('aptimate.assessment-progress:anonymous:speaking:gemini:0',JSON.stringify({value:52,at:Date.now()})));
+    await mount();
+    assert.ok(Number(await page.getByRole('progressbar').getAttribute('aria-valuenow'))>=52);
+    await page.getByRole('button',{name:'Groq · Tham khảo',exact:true}).click();
+    await page.locator('section[aria-label^="Groq"]').waitFor();
+    await page.getByRole('button',{name:'Gemini · Kết quả chính',exact:true}).click();
+    await page.locator('section[aria-label^="Gemini"]').waitFor();
+    assert.ok(Number(await page.getByRole('progressbar').getAttribute('aria-valuenow'))>=52);
+    await page.reload(); await mount();
+    assert.ok(Number(await page.getByRole('progressbar').getAttribute('aria-valuenow'))>=52);
+    await page.evaluate(()=>{
+      window.speakingSummary.gradingStatus='QUEUED';
+      window.speakingSummary.assessment={enabled:true,errorCode:'GEMINI_HTTP_503',nextRetryAt:new Date(Date.now()+120000).toISOString()};
+    });
+    await page.getByRole('button',{name:'Kiểm tra lại',exact:true}).click();
+    await page.getByText(/Thử lại sau khoảng/).waitFor();
+    const value=await page.getByRole('progressbar').getAttribute('aria-valuenow');
+    await page.waitForTimeout(1100);
+    assert.equal(await page.getByRole('progressbar').getAttribute('aria-valuenow'),value);
+    assert.deepEqual(errors,[]);
+  } finally {await browser.close();}
+});
+
 test('Writing pages show saved feedback with null scores, preserve answers and fit mobile', async () => {
   const { script, css } = await bundle();
   const browser = await chromium.launch({

@@ -8,6 +8,7 @@ import SpeakingAttemptLayout from './components/SpeakingAttemptLayout';
 import SpeakingPartPage from './pages/SpeakingPartPage';
 import SpeakingAttemptResultPage from './pages/SpeakingAttemptResultPage';
 import SpeakingAttemptDetailPage from './pages/SpeakingAttemptDetailPage';
+import AssessmentModelView from '../test-attempts/components/AssessmentModelView.jsx';
 
 export const speakingMainRoutes = [
   {
@@ -21,7 +22,7 @@ export const speakingMainRoutes = [
 
   {
     path: 'speaking/result',
-    element: <AttemptRoleGuard><SpeakingAttemptResultPage /></AttemptRoleGuard>,
+    element: <AttemptRoleGuard><AssessmentModelView skill="speaking"><SpeakingAttemptResultPage /></AssessmentModelView></AttemptRoleGuard>,
   }
 ];
 
@@ -40,7 +41,7 @@ export const speakingTestRoutes = [
     path: 'speaking/detail-result',
     element: <AttemptRoleGuard><TestLayout headerProps={{ showTimer: false, showExit: false, confirmExit: false }} /></AttemptRoleGuard>,
     children: [
-      { index: true, element: <SpeakingAttemptDetailPage /> },
+      { index: true, element: <AssessmentModelView skill="speaking" detail><SpeakingAttemptDetailPage /></AssessmentModelView> },
     ],
   }
 ];

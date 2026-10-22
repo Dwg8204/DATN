@@ -118,7 +118,7 @@ export default function WritingResultDetailPage() {
   return (
     <div className={styles.page}>
       <main>
-        <ResultBackButton to={`/writing/result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}`} />
+        <ResultBackButton to={`/writing/result?attemptId=${encodeURIComponent(attemptId)}${isPractice ? '&practice=true' : ''}${params.get('model')==='groq'?'&model=groq':''}`} />
         <div className={styles.title}>
           <div>
             <span>{t('writingAi.part', { number: partNumber })}</span>

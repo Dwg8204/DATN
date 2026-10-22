@@ -21,7 +21,7 @@ function harness(component = 'WRITING') {
   };
   const api = { result: async () => { calls++; if (failure) throw new Error('offline'); return response; } };
   const module = { exports: {} };
-  runInNewContext(source, { module, AbortController, Date: { now: () => now }, document,
+  runInNewContext(source, { module, AbortController, Date: { now: () => now, parse: Date.parse }, document,
     window: { setTimeout: fn => { timers.set(++id, fn); return id; }, clearTimeout: n => timers.delete(n) },
     require: withUiTranslationMocks(name => name === 'react' ? hooks : { normalizeApiError: e => ({ message: e.message }) }) });
   function render(attempt = 'one', practice = false) {
@@ -61,4 +61,21 @@ test('long wait is explicit, refresh starts a new session, hidden tabs pause and
   assert.equal(h.render('two', true).data, null); await settle();
   assert.equal(h.render('two', true).data.component, 'WRITING');
   h.dispose(); assert.equal(h.timers.size, 0);
+});
+
+test('scheduled retry extends polling, and returning to a paused tab rechecks without a submission', async () => {
+  const h = harness('SPEAKING');
+  h.response = { component: 'SPEAKING', gradingStatus: 'QUEUED', assessment: { nextRetryAt: new Date(600000).toISOString() } };
+  h.render(); await settle();
+  h.now = 300001; await h.tick();
+  assert.equal(h.render().paused, false);
+  h.now = 900001; await h.tick();
+  assert.equal(h.render().paused, true);
+  h.response = { component: 'SPEAKING', gradingStatus: 'COMPLETED' };
+  const before = h.calls;
+  h.listeners.get('visibilitychange')(); await settle();
+  assert.equal(h.calls, before + 1);
+  assert.equal(h.render().data.gradingStatus, 'COMPLETED');
+  assert.equal(h.timers.size, 0);
+  h.dispose();
 });
