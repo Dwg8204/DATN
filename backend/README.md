@@ -328,3 +328,9 @@ Every response includes `x-request-id`; request logs contain the same ID, method
 Migration `1760000015000-RestrictAccountRoles.ts` chuyển tài khoản role cũ thành STUDENT, thu hồi phiên và thêm constraint chỉ cho ADMIN/STUDENT; giữ ID và dữ liệu liên quan. Nguồn chấm/từ vựng thủ công dùng MANUAL. Seed không tạo lại role đã bỏ. Database local đã áp dụng: 1 ADMIN, 4 STUDENT. Môi trường khác chạy `npm run db:migrate` rồi khởi động backend mới; tài khoản đổi role đăng nhập lại.
 
 Kiểm thử: `npm test`, `npm run typecheck`, `npm run build`; `npm run test:roles:db` dùng TEST_DATABASE_URL riêng có tên kết thúc `_test`, tạo schema tạm trong transaction và rollback toàn bộ fixture. Rollback migration không tự khôi phục quyền cũ của tài khoản.
+
+### Hồ sơ năng lực cá nhân hóa — S2
+
+Migration `1760000021000-AddGoalBaselineProfile` thêm `learning_goals.baseline_profile` nullable. Chỉ mục tiêu tạo/thay mới lưu hồ sơ đầu kỳ; không backfill mục tiêu cũ. Hồ sơ năng lực dùng lịch sử trước mục tiêu, ba bài full mới nhất/kỹ năng và điểm yếu 20 bài/60 ngày. Xem `../docs/PERSONALIZATION_S2_REPORT.md`.
+
+Một số migration có cùng timestamp (gồm nhóm `1760000019000`, `1760000020000`, `1760000021000`) nhưng khác tên lớp. Không đổi tên migration đã tồn tại; kiểm tra `db:migrate:status` trước triển khai và rollback đúng migration dự định. S2 local chỉ áp dụng AddGoalBaselineProfile, không chạy các migration khác đang chờ.

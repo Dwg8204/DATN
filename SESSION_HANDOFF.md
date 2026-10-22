@@ -1,5 +1,15 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa S2 — 22/10/2026
+
+- Đã triển khai trên fix/personalization-s2 từ origin/develop 4623efe, hợp nhất S1 đã nghiệm thu. Không có codex trong tên nhánh.
+- Hồ sơ độc lập mục tiêu: ba bài full gần nhất/kỹ năng; band chung R/L/W/S, G&V phá hòa; điểm yếu 20 bài/60 ngày. Lưu baseline lúc create/replace, FINAL/MIDTERM so sánh đầu kỳ → hiện tại. Dashboard/chatbot/báo cáo dùng cùng band.
+- Đã áp dụng riêng AddGoalBaselineProfile1760000021000 local. Mục tiêu cũ NULL. Những migration Writing/Vocabulary khác đang chờ local chưa áp dụng; không đổi .env.
+- SNAPSHOT_VERSION=3, REPORT_PROMPT_VERSION=personal-weekly-v3, FINAL_PROMPT_VERSION=personal-final-v2. S3 nếu đổi snapshot cần tăng tiếp, không dùng lại số 3.
+- 149 unit test/13 suite, PostgreSQL S2 và hồi quy GĐ3/4/7/8/9, browser desktop/mobile, typecheck, lint và build frontend đạt. Chi tiết: docs/PERSONALIZATION_S2_REPORT.md.
+- Commit tiếng Việt theo task; chưa push. Dừng nghiệm thu S2 trước S3, chưa làm S3–S5/GĐ11. Khởi động lại ứng dụng để nhận code.
+
+
 ## Cá nhân hóa S1 — 22/10/2026
 
 - Thực hiện theo bản kế hoạch sửa ở root; nhánh fix/personalization-s1 từ origin/develop 3112208, theo yêu cầu không thêm codex vào tên nhánh. Dừng nghiệm thu S1 trước S2.
