@@ -1,5 +1,6 @@
 {
   "personalization": {
+    "ability": {"missing":"Thiếu: {{skills}}","status":{"NONE":"Chưa có dữ liệu","PRELIMINARY":"Sơ bộ","ESTIMATE":"Ước lượng"},"skills":{"GRAMMAR_VOCAB":"Ngữ pháp & Từ vựng","READING":"Đọc","LISTENING":"Nghe","WRITING":"Viết","SPEAKING":"Nói"},"changeTitle":"Thay đổi band theo kỹ năng","skill":"Kỹ năng","baseline":"Đầu kỳ","current":"Hiện tại","noBaseline":"Mục tiêu này chưa lưu hồ sơ đầu kỳ."},
     "recentReports": "Báo cáo học tập gần đây",
     "weeklyReport": "Báo cáo tuần {{week}}",
     "midtermReport": "Báo cáo giữa kỳ · Tuần {{week}}",

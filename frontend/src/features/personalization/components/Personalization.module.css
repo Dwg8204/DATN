@@ -21,3 +21,7 @@
 .reportMetrics dd { margin: 8px 0 0; font-size: 1.5rem; font-weight: 600; }
 .card article { overflow-wrap: anywhere; line-height: 1.7; }
 @media (max-width: 600px) { .card { padding: 16px; } }
+
+.bandTableWrap { overflow-x: auto; }
+.bandTable { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.bandTable th, .bandTable td { padding: .65rem .5rem; text-align: left; border-bottom: 1px solid #e5e7eb; }

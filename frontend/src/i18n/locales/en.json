@@ -1,5 +1,6 @@
 {
   "personalization": {
+    "ability": {"missing":"Missing: {{skills}}","status":{"NONE":"No data","PRELIMINARY":"Preliminary","ESTIMATE":"Estimate"},"skills":{"GRAMMAR_VOCAB":"Grammar & Vocabulary","READING":"Reading","LISTENING":"Listening","WRITING":"Writing","SPEAKING":"Speaking"},"changeTitle":"Band changes by skill","skill":"Skill","baseline":"At the start","current":"Current","noBaseline":"No baseline profile was saved for this goal."},
     "recentReports": "Recent learning reports",
     "weeklyReport": "Week {{week}} report",
     "midtermReport": "Midterm report · Week {{week}}",

@@ -68,6 +68,14 @@ function ReportDetail({ id }) {
           </section>}
           {snapshot.goal && <p>{t(`personalization.pace.${snapshot.goal.status}`)}</p>}
           <p>{t('personalization.reportEstimatedBand')}: {snapshot.band.overallEstimate ?? t('personalization.reportInsufficient')} · {t('goal.targetBand')}: {snapshot.band.target ?? '—'}</p>
+          {(final || report.kind === 'MIDTERM') && snapshot.bandChange?.length > 0 && <section aria-label={t('personalization.ability.changeTitle')}>
+            <h2>{t('personalization.ability.changeTitle')}</h2>
+            <div className={styles.bandTableWrap}><table className={styles.bandTable}>
+              <thead><tr><th scope="col">{t('personalization.ability.skill')}</th><th scope="col">{t('personalization.ability.baseline')}</th><th scope="col">{t('personalization.ability.current')}</th></tr></thead>
+              <tbody>{snapshot.bandChange.map(row=><tr key={row.skill}><th scope="row">{t('personalization.ability.skills.'+row.skill)}</th><td>{row.baseline ?? '—'}</td><td>{row.current ?? '—'}</td></tr>)}</tbody>
+            </table></div>
+            {!snapshot.baseline && <p className={styles.muted}>{t('personalization.ability.noBaseline')}</p>}
+          </section>}
           {content && <article>
             <h2>{content.headline}</h2><p>{content.narrative}</p>
             {content.progressSoFar && <><h3>{t('personalization.reportSoFar')}</h3><p>{content.progressSoFar}</p></>}

@@ -58,7 +58,8 @@ test(
       snapshot: {
         period: { completed: 7, activeDays: 4, vocabReviewed: 80, planDoneRatio: 0.6 },
         goal: { completed: 12, targetTests: 40, expected: 18.7, status: 'BEHIND' },
-        band: { overallEstimate: null, target: 'B2' },
+        band: { overallEstimate: 'B2', target: 'B2' },
+        baseline: { overall:{band:'A2'} }, bandChange:[{skill:'READING',baseline:'A2',current:'B2'}],
       },
       outcome: finalMode ? { lifecycle: 'COMPLETED', testTargetReached: true, targetReachedOn: '2026-10-12', bandTargetStatus: 'INSUFFICIENT_DATA' } : null,
       content: finalMode ? { headline: 'Goal completed', narrative: 'Keep practicing.', achievements: ['Regular practice.'], nextGoalSuggestion: { targetCefr: 'B2', targetTests: 40, durationDays: 30 } } : { headline: 'A steady learning habit', narrative: 'Continue practicing Reading.', wins: ['Regular practice.'], nextSteps: ['Review weak parts.'], progressSoFar: 'Keep working towards your goal.' },
@@ -166,7 +167,7 @@ test(
                     remainingDays: 28,
                     status: 'BEHIND',
                   },
-                  band: { overallEstimate: null },
+                  band: { overallEstimate: 'B1', overall: { status:'PARTIAL', missing:['WRITING'] }, bySkill:[{skill:'READING',band:'B1',status:'PRELIMINARY'},{skill:'LISTENING',band:'B1',status:'ESTIMATE'}] },
                   habit: { streak: 2, activeDaysThisWeek: 2 },
                 }
               : null,
@@ -353,6 +354,8 @@ test(
       await second.page
         .getByRole('heading', { name: 'Today’s activities' })
         .waitFor();
+      await second.page.getByText('Missing: Writing', {exact:true}).waitFor();
+      await second.page.getByText('B1 · Preliminary', {exact:true}).waitFor();
       await second.page.getByText('Preparing your feedback…', { exact: false }).waitFor();
       commentStatus = 'READY';
       await second.page.getByText('Keep practicing consistently.').waitFor();
@@ -405,6 +408,9 @@ test(
       assert.equal(chatPayload?.insightId, reportId);
       assert.equal(chatPayload?.attemptId, undefined);
       await second.page.getByRole('button', { name: 'Close', exact: true }).and(second.page.locator('[aria-expanded="true"]')).click();
+      await second.page.getByRole('heading', {name:'Band changes by skill'}).waitFor();
+      await second.page.getByRole('cell', {name:'A2',exact:true}).waitFor();
+      await second.page.getByRole('cell', {name:'B2',exact:true}).waitFor();
       await second.page.getByLabel('Duration (3–180 days)').fill('14');
       const applySuggestion = () => second.page.getByRole('button', { name: 'Set suggested goal', exact: true }).click();
       await applySuggestion();

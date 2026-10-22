@@ -21,6 +21,8 @@ export default function GoalProgressCard() {
       <p><strong>{t(`personalization.pace.${progress.status}`)}</strong> · {t('personalization.expected', { expected: progress.expected, pace: progress.requiredPace, days: progress.remainingDays })}</p>
       {progress.targetReached && <p>{t('personalization.reached')}</p>}
       <p>{t('personalization.bandEstimate')}: {data.snapshot.band.overallEstimate ?? t('personalization.insufficient')}</p>
+      {data.snapshot.band.overall?.status === 'PARTIAL' && <p className={styles.muted}>{t('personalization.ability.missing', { skills: data.snapshot.band.overall.missing.map(skill=>t('personalization.ability.skills.'+skill)).join(', ') })}</p>}
+      <dl className={styles.reportMetrics}>{data.snapshot.band.bySkill?.map(skill=><div key={skill.skill}><dt>{t('personalization.ability.skills.'+skill.skill)}</dt><dd>{skill.band ?? '—'} · {t('personalization.ability.status.'+(skill.status ?? 'NONE'))}</dd></div>)}</dl>
       <p className={styles.muted}>{t('personalization.habit', data.snapshot.habit)} · {data.goal.timezone}</p>
     </>}
     <Link to="/profile">{t('personalization.title')}</Link>
