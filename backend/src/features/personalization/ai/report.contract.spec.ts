@@ -71,3 +71,14 @@ it('allows a nearly finished goal without forcing every skill', () => {
   const value = good(); value.plan.items = value.plan.items.slice(0, 1);
   expect(() => validateWeeklyContent(value, 'WEEKLY', job)).not.toThrow();
 });
+
+it('preserves each placement on its own first day, without reserving regular repetition slots',()=>{
+ const job=fixtureJob();job.plan.requiredPace=1;job.plan.remainingTests=3;
+ job.candidates=['GRAMMAR_VOCAB','READING','LISTENING'].map((component,i)=>({candidateId:'p'+i,activityType:'TEST',testId:'placement'+i,component:component as 'READING',purpose:'PLACEMENT',title:''}));
+ const value:WeeklyContent={plan:{items:job.candidates.map((c,i)=>({candidateId:c.candidateId,dayIndex:i+1,targetCount:1,reason:'PLACEMENT'}))}};
+ expect(()=>validateWeeklyContent(value,'PLAN_START',job)).not.toThrow();
+ for(const change of [(v:WeeklyContent)=>{v.plan.items.pop()},(v:WeeklyContent)=>{v.plan.items[1].dayIndex=1},(v:WeeklyContent)=>{v.plan.items[0].reason='Practice'},(v:WeeklyContent)=>{v.plan.items.push({...v.plan.items[0],dayIndex:3})}]){
+ const bad=structuredClone(value);change(bad);expect(()=>validateWeeklyContent(bad,'PLAN_START',job)).toThrow();
+ }
+ expect(JSON.stringify(reportPromptInput('PLAN_START',job))).toContain('PLACEMENT');
+});

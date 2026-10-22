@@ -5,8 +5,12 @@ import { PlanCandidate } from "../policies/rule-plan";
 import { SNAPSHOT_SKILLS } from "../policies/learner-snapshot";
 import { SnapshotService } from "./snapshot.service";
 
-// S3 replaces TRUE with NOT t.is_placement after its migration adds the column.
-export const REGULAR_TEST_SQL = "TRUE";
+import {
+  REGULAR_TEST_SQL,
+  PLACEMENT_REQUIRED,
+  placementTests,
+} from "../../ai-shared/placement";
+export { REGULAR_TEST_SQL } from "../../ai-shared/placement";
 type Snapshot = Awaited<ReturnType<SnapshotService["build"]>>;
 @Injectable()
 export class PlanCandidatesService {
@@ -149,6 +153,30 @@ export class PlanCandidatesService {
           component: group.component,
           questionKeys: group.keys,
         });
+    if (weekIndex === 1) {
+      const available = await placementTests(manager);
+      const missing = PLACEMENT_REQUIRED.filter(
+        (skill) =>
+          !snapshot.band.bySkill.some((s) => s.skill === skill && s.band),
+      );
+      candidates.unshift(
+        ...missing.flatMap((skill) => {
+          const t = available.find((t) => t.skill === skill);
+          return t
+            ? [
+                {
+                  candidateId: "",
+                  activityType: "TEST" as const,
+                  testId: t.testId,
+                  component: t.skill,
+                  purpose: "PLACEMENT",
+                  title: t.title,
+                },
+              ]
+            : [];
+        }),
+      );
+    }
     return candidates.map((candidate, i) => ({
       ...candidate,
       candidateId: `c${i + 1}`,

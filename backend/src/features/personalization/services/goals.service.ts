@@ -1,3 +1,4 @@
+import {missingPlacement} from '../../ai-shared/placement';
 import { readAbilityProfile } from '../../ai-shared/ability-profile.repository';
 import { Injectable } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
@@ -139,7 +140,7 @@ export class GoalsService {
       const baseline = await readAbilityProfile(manager, userId, now);
       await manager.query('UPDATE learning_goals SET baseline_profile=$2 WHERE id=$1', [goal.id, baseline]);
       const refreshed = await this.reconcile(manager, userId, now);
-      return { goal: presentGoal(refreshed!.goal, refreshed!.completed) };
+      return { goal: presentGoal(refreshed!.goal, refreshed!.completed), placementComplete: missingPlacement(baseline).length===0 };
     });
   }
 
@@ -167,7 +168,7 @@ export class GoalsService {
       const baseline = await readAbilityProfile(manager, userId, now);
       await manager.query('UPDATE learning_goals SET baseline_profile=$2 WHERE id=$1', [goal.id, baseline]);
       const refreshed = await this.reconcile(manager, userId, now);
-      return { goal: presentGoal(refreshed!.goal, refreshed!.completed) };
+      return { goal: presentGoal(refreshed!.goal, refreshed!.completed), placementComplete: missingPlacement(baseline).length===0 };
     });
   }
 
