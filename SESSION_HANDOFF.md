@@ -1,5 +1,15 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa S3 — 22/10/2026
+
+- Nhánh fix/personalization-s3 từ origin/develop 9362a8f (S1/S2 đã có trên develop). Không thêm codex vào tên nhánh.
+- Đánh giá đầu vào G&V/Reading/Listening từ lịch sử full; Writing/Speaking tùy chọn. GET hồ sơ chỉ đọc, create/replace trả placementComplete nhưng không chặn, tuần 1 xếp bài thiếu ngày 1–3 và AI phải giữ lịch.
+- Người dùng chốt giữ CHECK FULL_SKILL; Music full để đánh giá, Part cùng nội dung loại khỏi gợi ý bằng placement_family_id. Đã apply riêng migration S3 local và liên kết 10 full + 18 Part; không áp dụng migration Writing/Vocabulary khác, không sửa .env. API ưu tiên EXAM.
+- Công tắc admin ở danh sách/sửa đề năm kỹ năng, version/audit/validation; Dashboard có thẻ đánh giá, Profile hiện band/gợi ý và cảnh báo; chuỗi vi/en.
+- SNAPSHOT_VERSION=4, REPORT_PROMPT_VERSION=personal-weekly-v4, FINAL vẫn v2. Mục tiêu/lộ trình đã có không tự viết lại. Script cấu hình Music chỉ chạy khi chủ động yêu cầu --apply, không chạy trong worker.
+- Kiểm thử: 165 unit test thuộc 17 suite (chạy suite chính và bổ sung sau sửa), PostgreSQL S3 + hồi quy S1/GĐ4/GĐ7; browser cá nhân hóa và S3 desktop/mobile; TypeScript, lint file thay đổi và build frontend. Lint frontend toàn repo còn cảnh báo có sẵn, build còn cảnh báo chunk lớn.
+- Chi tiết và lệnh vận hành: docs/PERSONALIZATION_S3_REPORT.md. Commit tiếng Việt theo task, chưa push/merge S3. Dừng nghiệm thu trước S4/S5/GĐ11; khởi động lại app để nhận code mới.
+
 ## Cá nhân hóa S2 — 22/10/2026
 
 - Đã triển khai trên fix/personalization-s2 từ origin/develop 4623efe, hợp nhất S1 đã nghiệm thu. Không có codex trong tên nhánh.

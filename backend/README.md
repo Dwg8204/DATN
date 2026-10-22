@@ -334,3 +334,7 @@ Kiểm thử: `npm test`, `npm run typecheck`, `npm run build`; `npm run test:ro
 Migration `1760000021000-AddGoalBaselineProfile` thêm `learning_goals.baseline_profile` nullable. Chỉ mục tiêu tạo/thay mới lưu hồ sơ đầu kỳ; không backfill mục tiêu cũ. Hồ sơ năng lực dùng lịch sử trước mục tiêu, ba bài full mới nhất/kỹ năng và điểm yếu 20 bài/60 ngày. Xem `../docs/PERSONALIZATION_S2_REPORT.md`.
 
 Một số migration có cùng timestamp (gồm nhóm `1760000019000`, `1760000020000`, `1760000021000`) nhưng khác tên lớp. Không đổi tên migration đã tồn tại; kiểm tra `db:migrate:status` trước triển khai và rollback đúng migration dự định. S2 local chỉ áp dụng AddGoalBaselineProfile, không chạy các migration khác đang chờ.
+
+### Cá nhân hóa S3: đánh giá đầu vào
+
+Xem [báo cáo S3](../docs/PERSONALIZATION_S3_REPORT.md). Sau migration `1760000022000-AddPlacementTests`, cấu hình bộ Music đã seed bằng `npm run personalization:placement-music -- --dry-run`, rồi `--apply`. Part chỉ liên kết nội dung, không bật `is_placement`. Kiểm thử DB: `npm run test:placement:db` với `TEST_DATABASE_URL` là database riêng kết thúc `_test`.
