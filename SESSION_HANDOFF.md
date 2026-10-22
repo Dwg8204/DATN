@@ -1,5 +1,14 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa S4 — 23/10/2026
+
+- Hoàn thành trên fix/personalization-s4 kế thừa S3 bf4c584, không có codex trong tên nhánh. Chưa push/merge S3/S4 trong phiên này.
+- GET overview và ba GET cũ chỉ đọc. POST sync giữ khóa user, reconcile/ensure/queue comment. Dashboard truyền dữ liệu chung xuống năm thẻ, polling qua overview; StrictMode không nhân đôi request. effectiveStatus ENDING cho mục tiêu quá hạn chưa reconcile.
+- Migration AddPlanProgressFinalizedAt1760000023000 đã áp dụng riêng local; index tuần chưa chốt. Tuần đã chốt không đổi; lần sync đầu sau migration chốt backlog một lần. Các migration ngoài S4 đang chờ được giữ nguyên, không sửa .env.
+- Snapshot nhận manager từ plan/report; truy vấn tuần tự cùng connection. Worker chỉ chọn mục tiêu cần xử lý (kể cả tuần cũ chưa chốt), giữ scheduler báo cáo/comment/delivery.
+- Kiểm thử: 133 unit/12 suite, DB S4 + S1/GĐ4/GĐ6/GĐ7; browser một overview, conditional sync, polling/mobile và hồi quy; typecheck/lint/build. Chi tiết docs/PERSONALIZATION_S4_REPORT.md.
+- Không thay snapshot/prompt version vì không đổi dữ liệu/hợp đồng AI: SNAPSHOT_VERSION=4, WEEKLY v4, FINAL v2. Chưa làm S5/GĐ11. Khởi động lại app sau checkout để nhận code.
+
 ## Cá nhân hóa S3 — 22/10/2026
 
 - Nhánh fix/personalization-s3 từ origin/develop 9362a8f (S1/S2 đã có trên develop). Không thêm codex vào tên nhánh.
