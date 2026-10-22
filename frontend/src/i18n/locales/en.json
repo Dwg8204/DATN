@@ -302,6 +302,16 @@
     }
   },
   "history": {
+    "subtitle": "Your completed activities, results and learning progress in one place.",
+    "summary": "Completed activity totals",
+    "completedAttempts": "completed attempts",
+    "results": "Activity results",
+    "resultCount_one": "{{count}} result",
+    "resultCount_other": "{{count}} results",
+    "dateTime": "Date & time",
+    "score": "Score",
+    "cefr": "CEFR",
+    "actions": "Actions",
     "activity": "Activity",
     "mockTest": "Mock test",
     "mockTests": "Mock tests",

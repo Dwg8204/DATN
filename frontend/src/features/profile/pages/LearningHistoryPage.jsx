@@ -1,9 +1,9 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import Pagination from '../../../components/common/Pagination';
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
-import { ClipboardList, Calendar, Clock, FileText, Search } from 'lucide-react';
+import { ClipboardList, Calendar, Clock, FileText, Search, History, GraduationCap } from 'lucide-react';
 import styles from './LearningHistoryPage.module.css';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
@@ -52,37 +52,34 @@ function remoteHistoryEntry(attempt) {
     assessmentStatus: writingHistoryStatus(attempt),
     simulatedScore: attempt.assessmentMethod === 'SIMULATED',
     cefrLevel: attempt.estimatedCefr,
+    score: attempt.score,
+    maxScore: attempt.maxScore,
   };
 }
 
-function HistoryCards({ entries, navigate, t, locale }) {
-  const ui = useUiTranslation();
-  return <div className={styles.historyList}>{entries.map(entry =>
-    <div key={entry.id} className={`${styles.card} ${entry.reviewUrl ? styles.clickableCard : ''}`}
-      onClick={entry.reviewUrl ? () => navigate(entry.reviewUrl) : undefined}>
-      <div className={styles.cardHeader}>
-        <div>
-          <div className={styles.cardTitleWrap}>
-            <span className={`${styles.skillBadge} ${styles[entry.skill]}`}>{entry.skill}</span>
-            <span className={styles.modeBadge}>{entry.purpose === 'PRACTICE' ? t('common.practice') : t('history.mockTest')}</span>
-            <h3 className={styles.testName}>{entry.testName}</h3>
-            <span className={styles.modeBadge}>{entry.mode === 'full' ? t('common.fullTest') : t('common.part', { number: entry.mode?.replace('part', '') })}</span>
-          </div>
-          <div className={styles.metaInfo}>
-            <span className={styles.metaItem}><Calendar size={14} />{new Date(entry.submittedAt).toLocaleString(locale)}</span>
-            <span className={styles.metaItem}><Clock size={14} />{entry.timeSpent}</span>
-            {entry.cefrLevel && <span className={styles.metaItem}><span className={styles.cefrBadge}>{entry.skill === 'writing' ? t('writingAi.cefr') : ui("CEFR / Band")}: {entry.cefrLevel}</span></span>}
-            {entry.assessmentStatus && <span className={styles.metaItem}>{t(entry.assessmentStatus)}</span>}
-            {entry.simulatedScore && <span className={styles.metaItem}>{t('history.simulatedScore')}</span>}
-          </div>
-        </div>
-        {entry.reviewUrl && <div className={styles.cardAction}>
-          <Link to={entry.reviewUrl} className={styles.reviewBtn} onClick={event => event.stopPropagation()}>
-            <FileText size={16} />{t('history.reviewResult')}
-          </Link>
-        </div>}
-      </div>
-    </div>)}</div>;
+function HistoryTable({ entries, t, locale }) {
+  return <div className={styles.tableScroll}><table className={styles.table} aria-label={t('profile.history')}>
+    <thead><tr>{['dateTime', 'skill', 'part', 'score', 'cefr', 'actions'].map(key =>
+      <th key={key} scope="col">{t(`history.${key}`)}</th>)}</tr></thead>
+    <tbody>{entries.map(entry => {
+      const date = entry.submittedAt ? new Date(entry.submittedAt) : null;
+      return <tr key={entry.id}>
+        <td data-label={t('history.dateTime')}><div className={styles.date}><Calendar size={14} aria-hidden="true" />
+          <time dateTime={entry.submittedAt || undefined}>{date && !Number.isNaN(date.getTime()) ? date.toLocaleDateString(locale) : '—'}</time></div>
+          <span className={styles.secondary}>{date && !Number.isNaN(date.getTime()) ? date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' }) : '—'}</span></td>
+        <td data-label={t('history.skill')}><div className={styles.testCell}><span className={styles.testIcon}><FileText size={19} aria-hidden="true" /></span>
+          <div><span className={styles.skillName}>{t(`nav.${entry.skill}`, { defaultValue: entry.skill })}</span>
+            <div className={styles.testName}>{entry.testName}</div>
+            <span className={styles.duration}><Clock size={12} aria-hidden="true" />{entry.timeSpent}</span></div></div></td>
+        <td data-label={t('history.part')}><span className={styles.modeBadge}>{entry.mode === 'full' ? t('common.fullTest') : t('common.part', { number: entry.mode?.replace('part', '') })}</span></td>
+        <td data-label={t('history.score')}><strong className={styles.score}>{entry.score != null ? Number(entry.score).toLocaleString(locale, { maximumFractionDigits: 2 }) : '—'}{entry.score != null && entry.maxScore != null ? ` / ${entry.maxScore}` : ''}</strong>
+          {entry.assessmentStatus && <span className={styles.secondary}>{t(entry.assessmentStatus)}</span>}
+          {entry.simulatedScore && <span className={styles.secondary}>{t('history.simulatedScore')}</span>}</td>
+        <td data-label={t('history.cefr')}>{entry.cefrLevel ? <span className={styles.cefrBadge}>{entry.cefrLevel}</span> : <span className={styles.secondary}>—</span>}</td>
+        <td data-label={t('history.actions')}>{entry.reviewUrl && <Link to={entry.reviewUrl} className={styles.reviewBtn} aria-label={`${t('history.reviewResult')}: ${entry.testName}`}><FileText size={14} aria-hidden="true" />{t('history.reviewResult')}</Link>}</td>
+      </tr>;
+    })}</tbody>
+  </table></div>;
 }
 
 export default function LearningHistoryPage() {
@@ -97,7 +94,17 @@ export default function LearningHistoryPage() {
   const setPageSize = next => {
     setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
   };
-  const navigate = useNavigate();
+  const [totals, setTotals] = useState({ EXAM: null, PRACTICE: null });
+  useEffect(() => {
+    const controller = new AbortController();
+    // Totals are unfiltered; do not infer global statistics from the current page.
+    for (const [kind, api] of [['EXAM', testAttemptsApi], ['PRACTICE', practiceAttemptsApi]]) {
+      api.history({ page: 1, pageSize: 1, signal: controller.signal }).then(result => {
+        if (!controller.signal.aborted) setTotals(current => ({ ...current, [kind]: result.pagination?.totalItems ?? 0 }));
+      }).catch(() => { /* Keep unavailable totals distinct from zero. The list reports its own errors. */ });
+    }
+    return () => controller.abort();
+  }, []);
   const [remote, setRemote] = useState({ requestKey: null, entries: [], total: 0, error: '' });
   const remoteRequestKey = `${purpose}:${skillFilter}:${partFilter}:${sortOrder}:${page}:${pageSize}:${appliedSearch}`;
   const remoteLoading = REMOTE_SKILLS.has(skillFilter) && remote.requestKey !== remoteRequestKey;
@@ -110,17 +117,17 @@ export default function LearningHistoryPage() {
     historyApi.history({
       page, pageSize, component, mode: purpose === 'EXAM' ? 'all' : partFilter,
       search: appliedSearch, sort: sortOrder, signal: controller.signal,
-    }).then(result => setRemote({
+    }).then(result => { if (!controller.signal.aborted) setRemote({
       requestKey: remoteRequestKey,
       entries: (result.data ?? []).map(remoteHistoryEntry),
       total: result.pagination?.totalItems ?? 0,
       error: '',
-    })).catch(error => {
-      if (error.code !== 'ERR_CANCELED') setRemote({ requestKey: remoteRequestKey, entries: [], total: 0,
+    }); }).catch(error => {
+      if (!controller.signal.aborted && error.code !== 'ERR_CANCELED') setRemote({ requestKey: remoteRequestKey, entries: [], total: 0,
         error: getApiError(error, ui("Unable to load your test history.")) });
     });
     return () => controller.abort();
-  }, [appliedSearch, page, pageSize, partFilter, purpose, remoteRequestKey, skillFilter, sortOrder]);
+  }, [appliedSearch, page, pageSize, partFilter, purpose, remoteRequestKey, skillFilter, sortOrder, ui]);
 
   const handleSortChange = (e) => {
     setUrlState({ sortOrder: e.target.value, page: 1 });
@@ -153,17 +160,23 @@ export default function LearningHistoryPage() {
         <ProfileSidebar activeTab="history" />
 
         <div className={styles.content}>
-          <div className={styles.header}>
-            <h2>{t('profile.history')}</h2>
-          </div>
+          <header className={styles.header}>
+            <div className={styles.heroDecoration} aria-hidden="true" />
+            <div className={styles.heroTitle}><span className={styles.heroIcon}><History size={26} aria-hidden="true" /></span><h1>{t('profile.history')}</h1></div>
+            <p>{t('history.subtitle')}</p>
+          </header>
+          <section className={styles.stats} aria-label={t('history.summary')}>
+            {[['EXAM', ClipboardList, 'history.mockTests'], ['PRACTICE', GraduationCap, 'common.practice']].map(([kind, Icon, label]) =>
+              <div className={styles.statCard} key={kind}><span className={styles.statIcon}><Icon size={24} aria-hidden="true" /></span><div><span className={styles.secondary}>{t(label)}</span><strong>{totals[kind] == null ? '—' : totals[kind].toLocaleString(i18n.language)}</strong><span className={styles.secondary}>{t('history.completedAttempts')}</span></div></div>)}
+          </section>
 
           <div className={styles.filters}>
             <div className={styles.filterRow}>
               <span className={styles.filterLabel}>{t('history.activity')}:</span>
               <div className={styles.filterBtnGroup}>
-                <button className={`${styles.filterBtn} ${purpose === 'EXAM' ? styles.active : ''}`}
+                <button aria-pressed={purpose === 'EXAM'} className={`${styles.filterBtn} ${purpose === 'EXAM' ? styles.active : ''}`}
                   onClick={() => handlePurposeChange('EXAM')}>{t('history.mockTests')}</button>
-                <button className={`${styles.filterBtn} ${purpose === 'PRACTICE' ? styles.active : ''}`}
+                <button aria-pressed={purpose === 'PRACTICE'} className={`${styles.filterBtn} ${purpose === 'PRACTICE' ? styles.active : ''}`}
                   onClick={() => handlePurposeChange('PRACTICE')}>{t('common.practice')}</button>
               </div>
             </div>
@@ -176,6 +189,7 @@ export default function LearningHistoryPage() {
               <div className={styles.searchRow}>
                 <input
                   type="text"
+                  aria-label={t('history.searchPlaceholder')}
                   placeholder={t('history.searchPlaceholder')}
                   className={styles.searchInput}
                   value={searchInput}
@@ -197,7 +211,8 @@ export default function LearningHistoryPage() {
                 {['all', 'listening', 'reading', 'writing', 'speaking', 'grammar'].map(skill => (
                   <button
                     key={skill}
-                    className={`${styles.filterBtn} ${skillFilter === skill && !appliedSearch ? styles.active : ''}`}
+                    aria-pressed={skillFilter === skill}
+                    className={`${styles.filterBtn} ${skillFilter === skill ? styles.active : ''}`}
                     onClick={() => handleSkillChange(skill)}
                   >
                     {skill === 'all' ? t('history.all') : t(`nav.${skill}`)}
@@ -222,7 +237,8 @@ export default function LearningHistoryPage() {
                     return (
                       <button
                         key={part}
-                        className={`${styles.filterBtn} ${partFilter === part && !appliedSearch ? styles.active : ''}`}
+                        aria-pressed={partFilter === part}
+                        className={`${styles.filterBtn} ${partFilter === part ? styles.active : ''}`}
                         onClick={() => handlePartChange(part)}
                       >
                         {ui(label)}
@@ -234,6 +250,8 @@ export default function LearningHistoryPage() {
             )}
           </div>
 
+          <section className={styles.results} aria-label={t('history.results')} aria-busy={remoteLoading}>
+          <div className={styles.resultsHeader}><h2>{t(purpose === 'EXAM' ? 'history.mockTests' : 'common.practice')}</h2><span className={styles.secondary} role="status">{remoteLoading ? t('history.loading') : t('history.resultCount', { count: remote.total })}</span></div>
           {remoteLoading ? <div className={styles.emptyState}><p>{t('history.loading')}</p></div> : remote.error ? (
             <div className={styles.emptyState}><h3>{t('history.loadError')}</h3><p>{ui.error(remote.error)}</p></div>
           ) : remote.entries.length === 0 ? (
@@ -242,8 +260,9 @@ export default function LearningHistoryPage() {
               <h3>{t('common.noTests')}</h3>
               <p>{t('history.noResults')}</p>
             </div>
-          ) : <HistoryCards entries={remote.entries} navigate={navigate} t={t} locale={i18n.language === 'vi' ? 'vi-VN' : 'en-US'} />}
-          <Pagination page={page} totalItems={remote.total} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+          ) : <HistoryTable entries={remote.entries} t={t} locale={i18n.language === 'vi' ? 'vi-VN' : 'en-US'} />}
+          {!remoteLoading && !remote.error && remote.total > 0 && <div className={styles.pagination}><Pagination page={page} totalItems={remote.total} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} /></div>}
+          </section>
         </div>
       </div>
     </div>

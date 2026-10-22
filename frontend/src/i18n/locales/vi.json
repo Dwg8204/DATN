@@ -302,6 +302,16 @@
     }
   },
   "history": {
+    "subtitle": "Theo dõi các bài đã hoàn thành, kết quả và hành trình học tập của bạn.",
+    "summary": "Tổng số hoạt động đã hoàn thành",
+    "completedAttempts": "lượt đã hoàn thành",
+    "results": "Kết quả làm bài",
+    "resultCount_one": "{{count}} kết quả",
+    "resultCount_other": "{{count}} kết quả",
+    "dateTime": "Ngày giờ",
+    "score": "Điểm",
+    "cefr": "CEFR",
+    "actions": "Thao tác",
     "activity": "Hoạt động",
     "mockTest": "Thi thử",
     "mockTests": "Thi thử",
