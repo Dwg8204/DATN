@@ -1,3 +1,7 @@
+import { PlanCandidatesService } from '../../src/features/personalization/services/plan-candidates.service';
+import { SnapshotService } from '../../src/features/personalization/services/snapshot.service';
+import { PlanService } from '../../src/features/personalization/services/plan.service';
+import { buildRulePlan } from '../../src/features/personalization/policies/rule-plan';
 import * as assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { ExecutionContext, Global, Module } from '@nestjs/common';
@@ -142,7 +146,14 @@ withPersonalizationDatabase(async (db, alice, bob) => {
       );
       return id;
     };
+    const invalid = await api().post('/me/learning-goal').send({targetCefr:'B2',targetTests:10,durationDays:3}).expect(400);
+    assert.equal(invalid.body.error.code,'GOAL_PACE_TOO_HIGH');
     const sourceAttempt = await submit(alice);
+    const emptySnapshot=await module.get(SnapshotService).build(actor(alice),null,{kind:'GOAL'},clock.now());
+    assert.equal(emptySnapshot.vocab.activeCount,0);
+    assert.ok(!(await module.get(PlanCandidatesService).build(db.manager,alice,emptySnapshot,1)).some(c=>c.activityType==='VOCAB_REVIEW'));
+    const [seedFolder]=await db.query("INSERT INTO vocabulary_folders(owner_id,name) VALUES($1,'Initial active cards') RETURNING id",[alice]);
+    await db.query(`INSERT INTO user_notebook_items(user_id,folder_id,item_type,custom_content) SELECT $1,$2,'WORD',jsonb_build_object('term','word '||n) FROM generate_series(1,20) n`,[alice,seedFolder.id]);
     const goal = (
       await api()
         .post('/me/learning-goal')
@@ -179,6 +190,8 @@ withPersonalizationDatabase(async (db, alice, bob) => {
       (item: any) => item.activityType === 'TEST',
     );
     await api().post(`/me/study-plan/items/${testTask.id}/done`).expect(400);
+    await db.query("UPDATE study_plan_items SET scheduled_on=scheduled_on+1 WHERE id=$1 AND completed_at IS NULL",[review.id]);
+    assert.equal((await api().get(`/me/mistakes?itemId=${review.id}`)).body.canMarkDone,true);
     await api().post(`/me/study-plan/items/${review.id}/done`).expect(200);
     await api().post(`/me/study-plan/items/${review.id}/done`).expect(200);
     assert.equal(
@@ -282,6 +295,14 @@ withPersonalizationDatabase(async (db, alice, bob) => {
       20,
     );
 
+    const repair=module.get(PlanService);
+    const untouched=plan.items.find((i:any)=>i.activityType==='TEST'&&!i.doneCount&&i.scheduledOn>plan.startsOn);
+    if(untouched)await db.query('UPDATE study_plan_items SET target_count=3 WHERE id=$1',[untouched.id]);
+    const dry=await repair.replanCurrent(false);assert.ok(dry.eligible>=1);assert.equal(dry.updated,0);
+    const markedBefore=await db.query('SELECT done_count,completed_at FROM study_plan_items WHERE id=$1',[review.id]);
+    assert.ok((await repair.replanCurrent(true)).updated>=1);
+    assert.deepEqual(await db.query('SELECT done_count,completed_at FROM study_plan_items WHERE id=$1',[review.id]),markedBefore);
+    assert.equal((await repair.replanCurrent(true)).updated,0);
     const worker = module.get(PersonalizationWorker);
     future = new Date(Date.now() + 7 * 86_400_000);
     await Promise.all([worker.runBatch(), worker.runBatch()]);
@@ -344,6 +365,29 @@ withPersonalizationDatabase(async (db, alice, bob) => {
       )[0].status,
       'COMPLETED',
     );
+    // Ranking happens in SQL before truncation: 30 candidates per skill, weak Part 2 must survive.
+    for(const component of ['GRAMMAR_VOCAB','READING','LISTENING','WRITING','SPEAKING']){
+      for(let n=0;n<30;n++){
+        const [test]=await db.query("INSERT INTO tests(created_by,title,component,purpose,scope,part_number) VALUES($1,$2,$3,'PRACTICE','PART',$4) RETURNING id",[alice,'Ranking '+n,component,n===29?2:1]);
+        const [snap]=await db.query('INSERT INTO test_snapshots(test_id,version,schema_version,snapshot,content_hash) VALUES($1,1,1,$2,$3) RETURNING id',[test.id,source,'b'.repeat(64)]);
+        await db.query("UPDATE tests SET status='PUBLISHED',published_snapshot_id=$2 WHERE id=$1",[test.id,snap.id]);
+      }
+    }
+    const profile=await module.get(SnapshotService).build(actor(alice),null,{kind:'GOAL'},clock.now());
+    profile.weak.parts=[{skill:'READING',part:2,percent:10,sampleSize:3} as any];
+    const candidatesService=module.get(PlanCandidatesService);
+    const choices=await candidatesService.build(db.manager,alice,profile,3);
+    assert.deepEqual(choices,await candidatesService.build(db.manager,alice,profile,3));
+    assert.equal(choices.filter(c=>c.activityType==='TEST').length,105);
+    const rule=buildRulePlan(choices,'2026-10-01','2026-10-07',3,21);
+    assert.equal(rule.length,21);
+    assert.ok(rule.some(i=>i.activityType==='TEST'&&i.component==='READING'&&i.partNumber===2));
+    assert.equal(new Set(rule.map(i=>'testId' in i?i.testId:'')).size,21);
+    for(const activeCount of [0,9,10,19,20,35]){
+      const opts=await candidatesService.build(db.manager,alice,{...profile,vocab:{...profile.vocab,activeCount}},1);
+      assert.deepEqual(opts.filter(c=>c.activityType==='VOCAB_REVIEW').map(c=>c.targetCount),activeCount<10?[]:activeCount<20?[10]:[10,20]);
+    }
+    console.log('PASS S1: SQL weak ranking across 30 tests/skill, deterministic candidates, active-card thresholds, exact tasks, early review, pace limit, idempotent repair.');
     console.log(
       'PASS GĐ4: real practice submission and replay, owned mistake details/manual completion, vocabulary dedupe and 20-event completion, target achievement, concurrent workers, partial final week, expiry and early finish.',
     );
