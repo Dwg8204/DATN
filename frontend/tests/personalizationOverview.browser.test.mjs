@@ -48,7 +48,7 @@ test(
       localStorage.setItem('aptimate-language', 'en'),
     );
     let needed = false,
-      pending = false;
+      pending = false, commentStatus = 'READY';
     const calls = [];
     await context.route('**/*', (route) =>
       route.request().url().startsWith(origin) ||
@@ -80,7 +80,7 @@ test(
           profile: { bySkill: [], placement: { complete: true } },
           plan: null,
           today: '2026-10-23',
-          comment: pending
+          comment: commentStatus !== 'READY' ? {status: commentStatus, comment: null, nextRetryAt: '2026-10-23T12:00:00Z'} : pending
             ? { status: 'PENDING', comment: null }
             : {
                 status: 'READY',
@@ -149,6 +149,38 @@ test(
         '/me/personalization/overview',
         '/me/personalization/overview',
       ]);
+      // FAILED is exposed as RETRYING by the API. Keep the mounted Dashboard alive through recovery.
+      commentStatus = 'RETRYING';
+      calls.length = 0;
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.getByText('Retrying your feedback. It will appear automatically when ready.').waitFor();
+      for (const delay of [15000, 30000, 60000]) {
+        const count = calls.length;
+        await page.clock.runFor(delay - 1000);
+        assert.equal(calls.length, count);
+        const response = page.waitForResponse(r => r.url().includes('/me/personalization/overview'));
+        await page.clock.runFor(1000);
+        await response;
+        await page.waitForTimeout(10);
+        assert.equal(calls.length, count + 1);
+      }
+      commentStatus = 'READY';
+      await page.clock.runFor(60000);
+      await page.getByText('Your progress is ready.').waitFor();
+      const readyCalls = calls.length;
+      await page.clock.runFor(120000);
+      assert.equal(calls.length, readyCalls, 'READY stops polling');
+      for (const status of ['FALLBACK', 'HIDDEN']) {
+        commentStatus = status;
+        const response = page.waitForResponse(r => r.url().includes('/me/personalization/overview'));
+        await page.reload({ waitUntil: 'domcontentloaded' });
+        await response;
+        await page.waitForTimeout(10);
+        const count = calls.length;
+        await page.clock.runFor(120000);
+        assert.equal(calls.length, count, status + ' stops polling');
+      }
+      assert.ok(calls.every(path => path === '/me/personalization/overview'));
       assert.ok(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth + 1,

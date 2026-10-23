@@ -23,6 +23,7 @@
     "disableReportEmail": "Tắt email báo cáo",
     "reportEmailDisabled": "Đã tắt email báo cáo. Bạn vẫn nhận báo cáo trên web.",
     "commentTitle": "Nhận xét của AptiMate",
+    "commentRetrying": "Hệ thống đang thử tạo lại nhận xét. Nhận xét sẽ tự cập nhật khi sẵn sàng.",
     "commentPending": "Đang tạo nhận xét… Bạn vẫn có thể xem tiến độ và học theo lộ trình.",
     "commentStrengths": "Điểm mạnh",
     "commentFocus": "Nên tập trung",

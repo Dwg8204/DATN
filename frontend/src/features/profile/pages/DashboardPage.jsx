@@ -1,3 +1,4 @@
+import {commentPollDelay} from '../../personalization/services/commentPolling';
 import { personalizationApi } from '../../personalization/services/personalizationApi';
 import AbilityAssessmentCard from '../../personalization/components/AbilityAssessmentCard';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
@@ -36,7 +37,7 @@ export default function DashboardPage() {
   const [personalizationError, setPersonalizationError] = useState(false);
   useEffect(() => {
     let active = true,
-      timer;
+      timer, pollAttempt = 0;
     const load = async () => {
       try {
         let value = await (overviewRequest.current ??=
@@ -51,8 +52,8 @@ export default function DashboardPage() {
         if (!active) return;
         setOverview(value);
         setPersonalizationError(false);
-        if (value.comment?.status === 'PENDING')
-          timer = setTimeout(load, 15000);
+        const delay=commentPollDelay(value.comment?.status,pollAttempt++);
+        if(delay!==null)timer=setTimeout(load,delay);
       } catch {
         overviewRequest.current = null;
         if (active) setPersonalizationError(true);
