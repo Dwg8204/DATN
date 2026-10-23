@@ -1,5 +1,14 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Cá nhân hóa S5 — 23/10/2026
+
+- Hoàn thành trên fix/personalization-s5 từ S4 1e4907a. Chưa push/merge; không làm GĐ11.
+- COMMENT/WEEKLY/MIDTERM/FINAL bắt buộc statusEcho, bandClaim; validator dùng chung kiểm tra metadata, cụm từ trái trạng thái và band đích chưa đạt. Không có goal dùng ON_TRACK quy ước nhưng cấm kết luận tiến độ.
+- FAILED còn lượt trả RETRYING + nextRetryAt. Dashboard poll overview 15/30/60 giây, tự hiện READY, dừng FALLBACK/HIDDEN. PersonalCommentCard có thông báo Việt/Anh.
+- COMMENT v2, WEEKLY v5, FINAL v3; snapshot vẫn 4. Cache COMMENT có prompt version. Không migration, không đổi .env, không viết lại READY cũ.
+- 174 unit/13 suite; PostgreSQL GĐ6/GĐ7/GĐ8/S4; browser retry → READY không reload và dừng polling; typecheck/lint/build đạt. Build còn cảnh báo chunk lớn. Chi tiết docs/PERSONALIZATION_S5_REPORT.md.
+
+
 ## Cá nhân hóa S4 — 23/10/2026
 
 - Hoàn thành trên fix/personalization-s4 kế thừa S3 bf4c584, không có codex trong tên nhánh. Chưa push/merge S3/S4 trong phiên này.
