@@ -37,7 +37,8 @@ export async function assessWritingByParts(provider: AiProvider, input: WritingI
     if (part.questions.every(question => !question.response.trim())) assessed = service.blank(partInput);
     else if (cache.parts[String(part.partNumber)]) assessed = validator.validate(structuredClone(cache.parts[String(part.partNumber)]), partInput);
     else {
-      const raw = await provider.generateStructured({ model, systemInstruction: GROQ_COMPACT_WRITING_PROMPT,
+      const raw = await provider.generateStructured({ model, systemInstruction: GROQ_COMPACT_WRITING_PROMPT +
+        '\nThis request assesses ONE PART ONLY. Always use cefr.status="NOT_APPLICABLE", reason="PART_SCOPE", level=null, rationale=null, evidence=[], limitations=[]. Never use ESTIMATED or INSUFFICIENT_EVIDENCE for this request. Each criterion quote must be at most 160 characters; choose a shorter exact substring or null, never a long sentence.',
         input: compactWritingInput(partInput), outputSchema: compactWritingSchema('PART'),
         maxOutputTokens: part.partNumber === 2 ? 1800 : 3000, signal: AbortSignal.timeout(90000) });
       assessed = validator.validate(restoreBlankWriting(expandCompactWriting(raw, partInput), partInput, service.blank(partInput)), partInput);

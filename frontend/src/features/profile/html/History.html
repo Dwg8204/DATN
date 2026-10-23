@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lịch sử làm bài</title>
+<!-- Tailwind CSS CDN with forms & container queries plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Inter & Be Vietnam Pro -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style data-purpose="custom-theme">
+    body {
+      font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+      background-color: #f8f9fc;
+    }
+    .banner-dark {
+      background-color: #240b33;
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 antialiased p-4 sm:p-6 lg:p-8">
+<div class="max-w-[1340px] mx-auto space-y-6">
+<!-- BEGIN: MainHeaderBanner -->
+<header class="relative rounded-2xl overflow-hidden banner-dark shadow-sm pt-3 pb-8 px-8" data-purpose="page-header">
+<!-- Dải hạt trang trí viền trên cùng (Bunting / Decorative line) -->
+<div aria-hidden="true" class="absolute top-0 left-0 w-full flex items-center justify-between px-4 py-2 pointer-events-none select-none">
+<svg class="w-full h-4 overflow-visible" xmlns="http://www.w3.org/2000/svg">
+<line stroke="#522168" stroke-dasharray="1 0" stroke-width="1.5" x1="0" x2="100%" y1="8" y2="8"></line>
+<g>
+<circle cx="2%" cy="8" fill="#f97316" r="3.5"></circle>
+<circle cx="8%" cy="8" fill="#c084fc" r="3"></circle>
+<circle cx="15%" cy="8" fill="#fb923c" r="4"></circle>
+<circle cx="23%" cy="8" fill="#e879f9" r="3"></circle>
+<circle cx="31%" cy="8" fill="#f97316" r="4.5"></circle>
+<circle cx="40%" cy="8" fill="#c084fc" r="3"></circle>
+<circle cx="50%" cy="8" fill="#fb923c" r="4"></circle>
+<circle cx="60%" cy="8" fill="#e879f9" r="3"></circle>
+<circle cx="70%" cy="8" fill="#f97316" r="4.5"></circle>
+<circle cx="80%" cy="8" fill="#c084fc" r="3.5"></circle>
+<circle cx="89%" cy="8" fill="#fb923c" r="4"></circle>
+<circle cx="97%" cy="8" fill="#e879f9" r="3.5"></circle>
+</g>
+</svg>
+</div>
+<!-- Tiêu đề và Mô tả chính -->
+<div class="mt-4 flex flex-col items-start gap-1">
+<div class="flex items-center gap-3">
+<!-- Icon Lịch sử -->
+<div class="w-10 h-10 rounded-full bg-[#3d1852] flex items-center justify-center text-[#f97316]">
+<svg class="w-5 h-5 stroke-current" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+<path d="M3 3v5h5"></path>
+<path d="M12 7v5l3 3"></path>
+</svg>
+</div>
+<h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Lịch sử làm bài
+          </h1>
+</div>
+<p class="text-slate-300 text-sm sm:text-base font-normal mt-2 ml-1">
+          Toàn bộ kết quả các bài bạn đã hoàn thành.
+        </p>
+</div>
+</header>
+<!-- END: MainHeaderBanner -->
+<!-- BEGIN: MetricSummaryCards -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-5" data-purpose="metric-cards">
+<!-- Card 1: Tổng lượt làm -->
+<div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-slate-100/90 flex items-center justify-center text-slate-700 flex-shrink-0">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24">
+<line x1="8" x2="21" y1="6" y2="6"></line>
+<line x1="8" x2="21" y1="12" y2="12"></line>
+<line x1="8" x2="21" y1="18" y2="18"></line>
+<polyline points="3 6 4 7 6 5"></polyline>
+<polyline points="3 12 4 13 6 11"></polyline>
+<polyline points="3 18 4 19 6 17"></polyline>
+</svg>
+</div>
+<div>
+<span class="block text-xs font-medium text-slate-500 mb-0.5">Tổng lượt làm</span>
+<span class="text-2xl font-bold text-slate-900 leading-none">1</span>
+</div>
+</div>
+<!-- Card 2: Số bài tuần này -->
+<div class="bg-white rounded-2xl p-5 border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl bg-slate-100/90 flex items-center justify-center text-slate-700 flex-shrink-0">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24">
+<rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
+<line x1="16" x2="16" y1="2" y2="6"></line>
+<line x1="8" x2="8" y1="2" y2="6"></line>
+<line x1="3" x2="21" y1="10" y2="10"></line>
+</svg>
+</div>
+<div>
+<span class="block text-xs font-medium text-slate-500 mb-0.5">Số bài tuần này</span>
+<span class="text-2xl font-bold text-slate-900 leading-none">1</span>
+</div>
+</div>
+</section>
+<!-- END: MetricSummaryCards -->
+<!-- BEGIN: FilterTabsNav -->
+<nav class="flex items-center gap-2 sm:gap-6 overflow-x-auto py-1 text-sm font-medium scrollbar-none" data-purpose="filter-navigation">
+<!-- Tab Tất cả (Active) -->
+<button class="bg-white text-slate-900 font-semibold px-6 py-2.5 rounded-full shadow-sm border border-slate-200/60 whitespace-nowrap transition-colors">
+        Tất cả
+      </button>
+<!-- Tab Full Test -->
+<button class="flex items-center gap-2 text-slate-600 hover:text-slate-900 px-4 py-2.5 rounded-full whitespace-nowrap transition-colors">
+<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 5.022m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+        Full Test
+      </button>
+<!-- Tab Grammar -->
+<button class="text-slate-600 hover:text-slate-900 px-4 py-2.5 rounded-full whitespace-nowrap transition-colors">
+        Grammar
+      </button>
+<!-- Tab Reading -->
+<button class="text-slate-600 hover:text-slate-900 px-4 py-2.5 rounded-full whitespace-nowrap transition-colors">
+        Reading
+      </button>
+<!-- Tab Listening -->
+<button class="text-slate-600 hover:text-slate-900 px-4 py-2.5 rounded-full whitespace-nowrap transition-colors">
+        Listening
+      </button>
+<!-- Tab Speaking -->
+<button class="text-slate-600 hover:text-slate-900 px-4 py-2.5 rounded-full whitespace-nowrap transition-colors">
+        Speaking
+      </button>
+<!-- Tab Writing -->
+<button class="text-slate-600 hover:text-slate-900 px-4 py-2.5 rounded-full whitespace-nowrap transition-colors">
+        Writing
+      </button>
+</nav>
+<!-- END: FilterTabsNav -->
+<!-- BEGIN: PracticeHistoryTable -->
+<main class="relative bg-white rounded-2xl border border-slate-100 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.05)] overflow-hidden" data-purpose="history-container">
+<div class="overflow-x-auto min-h-[160px]">
+<table class="w-full text-left border-collapse" id="history-table">
+<!-- Header Bảng -->
+<thead>
+<tr class="border-b border-slate-100 text-xs sm:text-sm font-medium text-slate-500">
+<th class="py-4 px-6 font-normal w-1/6" scope="col">Ngày giờ</th>
+<th class="py-4 px-6 font-normal w-1/4" scope="col">Kỹ năng</th>
+<th class="py-4 px-6 font-normal w-1/6" scope="col">Phần</th>
+<th class="py-4 px-6 font-normal text-center w-1/12" scope="col">Điểm</th>
+<th class="py-4 px-6 font-normal text-center w-1/12" scope="col">Band</th>
+<th class="py-4 px-6 font-normal text-right w-1/4" scope="col">Hành động</th>
+</tr>
+</thead>
+<!-- Nội dung Bảng -->
+<tbody class="divide-y divide-slate-50 text-sm">
+<tr class="hover:bg-slate-50/60 transition-colors">
+<!-- Ngày giờ -->
+<td class="py-4 px-6 text-slate-600 text-xs sm:text-sm whitespace-nowrap">
+<div class="flex items-center gap-2">
+<svg class="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<rect height="18" rx="2" ry="2" stroke-width="2" width="18" x="3" y="4"></rect>
+<line stroke-width="2" x1="16" x2="16" y1="2" y2="6"></line>
+<line stroke-width="2" x1="8" x2="8" y1="2" y2="6"></line>
+<line stroke-width="2" x1="3" x2="21" y1="10" y2="10"></line>
+</svg>
+<span>21/10/2026 22:01</span>
+</div>
+</td>
+<!-- Kỹ năng & Tên bài -->
+<td class="py-4 px-6">
+<div class="flex items-start gap-3">
+<!-- Icon bài kiểm tra -->
+<div class="w-8 h-8 rounded-full bg-orange-100/70 text-orange-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 flex-wrap">
+<span class="font-bold text-slate-900 text-sm">Đề 07</span>
+<!-- Badge 'Bộ của tôi' -->
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#ffedd5] text-[#ea580c]">
+                        Bộ của tôi
+                      </span>
+</div>
+<span class="text-xs text-slate-400 mt-0.5">4 phần</span>
+</div>
+</div>
+</td>
+<!-- Phần -->
+<td class="py-4 px-6 text-slate-400 font-medium">
+                —
+              </td>
+<!-- Điểm -->
+<td class="py-4 px-6 text-center">
+<span class="font-bold text-slate-900 text-sm">0/50</span>
+</td>
+<!-- Band -->
+<td class="py-4 px-6 text-center">
+<span class="inline-block px-3 py-0.5 rounded-full text-xs font-semibold bg-[#fff7ed] text-[#ea580c] border border-orange-100">
+                  A0
+                </span>
+</td>
+<!-- Hành động -->
+<td class="py-4 px-6 text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-2">
+<!-- Nút Xem lại -->
+<button class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium border border-[#ea580c] text-[#ea580c] bg-white hover:bg-orange-50 transition-colors shadow-2xs">
+<svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2" viewbox="0 0 24 24">
+<path d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Xem lại</span>
+</button>
+<!-- Nút Làm lại -->
+<button class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-medium text-white bg-[#ea580c] hover:bg-[#c2410c] transition-colors shadow-sm">
+<svg class="w-3.5 h-3.5 stroke-current" fill="none" stroke-width="2.5" viewbox="0 0 24 24">
+<path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Làm lại</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Halloween / Phù thủy decorative element ở góc dưới bên phải -->
+<div aria-hidden="true" class="absolute -bottom-3 -right-2 pointer-events-none select-none opacity-90">
+<svg class="w-12 h-12 text-[#240b33]" fill="currentColor" viewbox="0 0 100 100">
+<!-- Nón phù thủy Halloween trang trí -->
+<path d="M50 15 L78 72 L22 72 Z" fill="#2e1065"></path>
+<ellipse cx="50" cy="74" fill="#1e1b4b" rx="42" ry="10"></ellipse>
+<rect fill="#ea580c" height="6" width="34" x="33" y="66"></rect>
+<!-- Ngôi sao nhỏ -->
+<polygon fill="#facc15" opacity="0.8" points="80,35 83,43 91,44 85,50 87,58 80,54 73,58 75,50 69,44 77,43"></polygon>
+</svg>
+</div>
+</main>
+<!-- END: PracticeHistoryTable -->
+</div>
+</body></html>
