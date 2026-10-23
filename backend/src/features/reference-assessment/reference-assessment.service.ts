@@ -146,11 +146,13 @@ export class ReferenceAssessmentService implements OnModuleInit, OnModuleDestroy
     } catch(error) {
       const code=error instanceof AiError ? error.code : error instanceof Error && /^[A-Z][A-Z0-9_]+$/.test(error.message) ? error.message : 'REFERENCE_UNAVAILABLE';
       const rule=error instanceof AiError?error.validationRule?.replace(/[^a-zA-Z0-9_.:[\]-]/g,'').slice(0,180):undefined;
-      this.logger.warn(`Groq reference failed: job=${job?.id ?? 'none'} stage=${stage} code=${code} rule=${rule ?? 'none'} run=${job?.runs ?? 0} elapsedMs=${Date.now()-started}`);
+      const diagnostic = `job=${job?.id ?? 'none'} stage=${stage} code=${code} rule=${rule ?? 'none'} run=${job?.runs ?? 0} elapsedMs=${Date.now()-started}`;
+      if (['GROQ_RATE_WAIT','GROQ_DAILY_WAIT'].includes(code)) this.logger.log(`Groq reference waiting: ${diagnostic}`);
+      else this.logger.warn(`Groq reference failed: ${diagnostic}`);
       if(!job) return;
       const waiting=['GROQ_RATE_WAIT','GROQ_DAILY_WAIT'].includes(code);
       const retry=waiting || (job.runs<3 && (error instanceof AiError && error.retryable || /HTTP_(429|5\d\d)$/.test(code)));
-      const delay=error instanceof AiError ? error.retryAfterMs ?? 65000 : 65000;
+      const delay=error instanceof AiError ? error.retryAfterMs ?? 30000 : 30000;
       await this.db.query(`UPDATE reference_ai_jobs SET status=$3,error_code=$4,lease=NULL,lease_until=NULL,
         runs=runs-$6,available_at=now()+($5::integer*interval '1 millisecond'),updated_at=now(),
         config=config || jsonb_build_object('lastFailure',$7::jsonb) || $8::jsonb WHERE id=$1 AND lease=$2`,

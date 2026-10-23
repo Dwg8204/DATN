@@ -53,15 +53,18 @@ export class GroqReferenceProvider implements AiProvider {
   constructor(private readonly config: ConfigService, private readonly db: DataSource) {}
   async generateStructured(request: Parameters<AiProvider['generateStructured']>[0]): Promise<unknown> {
     if (String(this.config.get('GROQ_FREE_TIER_CONFIRMED')) !== 'true') throw new AiError('GROQ_FREE_NOT_CONFIRMED');
-    // One request per minute across instances. A conservative daily call cap also bounds retries.
+    // Shared across instances. Upstream token limits may still require a longer wait.
+    const intervalMs = 30000;
     const id = await this.db.transaction(async manager => {
       await manager.query('SELECT pg_advisory_xact_lock(1760000019)');
-      const [count] = await manager.query(`SELECT count(*) FILTER(WHERE created_at>now()-interval '65 seconds') AS minute,
-        count(*) AS day FROM reference_ai_calls WHERE created_at>now()-interval '24 hours'`);
-      if (Number(count.minute)) throw new AiError('GROQ_RATE_WAIT',true,65000);
-      // Default remains 20. A dedicated benchmark instance may explicitly reserve at most 20 extra calls.
-      const configuredCap = Number(this.config.get('GROQ_REFERENCE_DAILY_CALL_CAP', 20));
-      const dailyCap = Number.isInteger(configuredCap) && configuredCap >= 20 && configuredCap <= 40 ? configuredCap : 20;
+      const [count] = await manager.query(`SELECT count(*) FILTER(WHERE created_at>now()-interval '30 seconds') AS minute,
+        count(*) AS day,
+        GREATEST(0,30000-EXTRACT(EPOCH FROM (now()-max(created_at)))*1000) AS wait_ms
+        FROM reference_ai_calls WHERE created_at>now()-interval '24 hours'`);
+      if (Number(count.minute)) throw new AiError('GROQ_RATE_WAIT',true,Math.max(1000,Math.ceil(Number(count.wait_ms) || intervalMs)));
+      // Application cap, not a billing tier or a guarantee of available provider tokens.
+      const configuredCap = Number(this.config.get('GROQ_REFERENCE_DAILY_CALL_CAP', 100));
+      const dailyCap = Number.isInteger(configuredCap) && configuredCap >= 1 && configuredCap <= 100 ? configuredCap : 100;
       if (Number(count.day)>=dailyCap) throw new AiError('GROQ_DAILY_WAIT',true,3600000);
       const [row] = await manager.query('INSERT INTO reference_ai_calls(model) VALUES($1) RETURNING id',[request.model]);
       return row.id;
@@ -98,7 +101,7 @@ export class GroqReferenceProvider implements AiProvider {
         && diagnostic.upstreamType === 'tokens' && limit > 0 && requested > limit;
       throw new AiError(invalidJson?'GROQ_JSON_GENERATION_FAILED':`GROQ_HTTP_${response.status}`,
         invalidJson || response.status===429 || response.status>=500,
-        Math.min(86400000, Math.max(65000,(Number(response.headers.get('retry-after')) || 65)*1000)),
+        Math.min(86400000, Math.max(intervalMs,(Number(response.headers.get('retry-after')) || 30)*1000)),
         tokenLimit ? 'TOKEN_LIMIT_EXCEEDED' : invalidJson ? diagnostic.json.kind : undefined);
     }
     const body = await response.json() as {choices?:Array<{finish_reason:string;message:{content:string}}>;usage?:object};
