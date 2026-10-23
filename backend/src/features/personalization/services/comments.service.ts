@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { DataSource, EntityManager } from 'typeorm';
-import { AuthUser } from '../../auth/types/auth-user.type';
-import { LearningGoalsRepository } from '../repositories/learning-goals.repository';
-import { LearningInsightsRepository } from '../repositories/learning-insights.repository';
-import { LearningInsightRow } from '../types/personalization.type';
-import { localDay } from '../policies/calendar';
-import { goalProgress, snapshotHash } from '../policies/learner-snapshot';
-import { commentSnapshot } from '../ai/comment.contract';
-import { GoalsService } from './goals.service';
-import { SnapshotService } from './snapshot.service';
-import { PersonalizationClock } from './personalization-clock';
-import { PersonalizationAiService } from './personalization-ai.service';
+import { COMMENT_PROMPT_VERSION } from "../ai/comment.contract";
+import { Injectable } from "@nestjs/common";
+import { DataSource, EntityManager } from "typeorm";
+import { AuthUser } from "../../auth/types/auth-user.type";
+import { LearningGoalsRepository } from "../repositories/learning-goals.repository";
+import { LearningInsightsRepository } from "../repositories/learning-insights.repository";
+import { LearningInsightRow } from "../types/personalization.type";
+import { localDay } from "../policies/calendar";
+import { goalProgress, snapshotHash } from "../policies/learner-snapshot";
+import { commentSnapshot } from "../ai/comment.contract";
+import { GoalsService } from "./goals.service";
+import { SnapshotService } from "./snapshot.service";
+import { PersonalizationClock } from "./personalization-clock";
+import { PersonalizationAiService } from "./personalization-ai.service";
 
 @Injectable()
 export class CommentsService {
@@ -25,12 +26,12 @@ export class CommentsService {
   ) {}
 
   async current(actor: AuthUser) {
-    if (!this.ai.enabled) return { status: 'HIDDEN', comment: null };
+    if (!this.ai.enabled) return { status: "HIDDEN", comment: null };
     const [row] = await this.db.query<LearningInsightRow[]>(
       "SELECT * FROM learning_insights WHERE user_id=$1 AND kind='COMMENT' ORDER BY created_at DESC,id DESC LIMIT 1",
       [actor.id],
     );
-    return row ? this.present(row) : { status: 'HIDDEN', comment: null };
+    return row ? this.present(row) : { status: "HIDDEN", comment: null };
   }
 
   async needsSync(actor: AuthUser) {
@@ -47,7 +48,7 @@ export class CommentsService {
   }
 
   async syncLocked(actor: AuthUser, manager: EntityManager, timezone: string) {
-    if (!this.ai.enabled) return { status: 'HIDDEN', comment: null };
+    if (!this.ai.enabled) return { status: "HIDDEN", comment: null };
     const now = this.clock.now();
     const day = localDay(now, timezone);
     const rows = await manager.query<LearningInsightRow[]>(
@@ -72,14 +73,14 @@ export class CommentsService {
           ORDER BY submitted_at DESC,id ASC LIMIT 20) scored WHERE result->>'method' IN ('OBJECTIVE','AI')`,
       [actor.id, now],
     );
-    if (!graded.count) return { status: 'HIDDEN', comment: null };
+    if (!graded.count) return { status: "HIDDEN", comment: null };
     if (latest?.snapshot.gradingFingerprint === graded.fingerprint)
       return this.present(latest);
 
     const full = await this.snapshots.build(
       actor,
       null,
-      { kind: 'COMMENT' },
+      { kind: "COMMENT" },
       now,
       manager,
     );
@@ -90,7 +91,10 @@ export class CommentsService {
       snapshot.goal = goalProgress(goal, counts.completed, now);
       snapshot.band.target = goal.target_cefr;
     }
-    const inputHash = snapshotHash(snapshot);
+    const inputHash = snapshotHash({
+      ...snapshot,
+      promptVersion: COMMENT_PROMPT_VERSION,
+    });
     const [cached] = await manager.query<LearningInsightRow[]>(
       "SELECT * FROM learning_insights WHERE user_id=$1 AND kind='COMMENT' AND input_hash=$2 AND status='READY' ORDER BY created_at DESC LIMIT 1",
       [actor.id, inputHash],
@@ -98,7 +102,7 @@ export class CommentsService {
     const queued = await this.insights.createPending(
       actor.id,
       {
-        kind: 'COMMENT',
+        kind: "COMMENT",
         periodKey: day,
         snapshotVersion: snapshot.snapshotVersion,
         inputHash,
@@ -106,7 +110,7 @@ export class CommentsService {
       },
       manager,
     );
-    if (!queued) return { status: 'PENDING', comment: null };
+    if (!queued) return { status: "PENDING", comment: null };
     if (cached) {
       await manager.query(
         "UPDATE learning_insights SET status='READY',content=$2,ai_request_id=$3,updated_at=now() WHERE id=$1",
@@ -114,7 +118,7 @@ export class CommentsService {
       );
       return this.present({
         ...queued,
-        status: 'READY',
+        status: "READY",
         content: cached.content,
       });
     }
@@ -127,16 +131,23 @@ export class CommentsService {
   }
 
   private present(row: LearningInsightRow) {
-    if (row.status === 'READY')
+    if (row.status === "READY")
       return {
-        status: 'READY',
+        status: "READY",
         comment: {
           id: row.id,
           content: row.content,
           createdAt: row.created_at,
         },
       };
-    if (row.status === 'PENDING') return { status: 'PENDING', comment: null };
-    return { status: 'HIDDEN', comment: null };
+    if (row.status === "PENDING") return { status: "PENDING", comment: null };
+    if (row.status === "FAILED" && row.retry_count <= 3)
+      return {
+        status: "RETRYING",
+        comment: null,
+        nextRetryAt: row.next_retry_at,
+      };
+    if (row.status === "FALLBACK") return { status: "FALLBACK", comment: null };
+    return { status: "HIDDEN", comment: null };
   }
 }

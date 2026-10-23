@@ -1,4 +1,11 @@
 import {
+  StateClaims,
+  CLAIM_PROPERTIES,
+  CLAIM_SYSTEM,
+  claimContext,
+  stateClaimIssues,
+} from "./state-claims";
+import {
   commentSnapshot,
   CommentValidationError,
   groundedTextIssues,
@@ -8,7 +15,7 @@ import { SnapshotService } from "../services/snapshot.service";
 import { addDays } from "../policies/calendar";
 import { CreatePlanItemInput } from "../types/personalization.type";
 
-export const REPORT_PROMPT_VERSION = "personal-weekly-v4";
+export const REPORT_PROMPT_VERSION = "personal-weekly-v5";
 export type ReportKind = "PLAN_START" | "WEEKLY" | "MIDTERM";
 export interface AiPlanItem {
   dayIndex: number;
@@ -18,7 +25,7 @@ export interface AiPlanItem {
 }
 export interface WeeklyContent {
   plan: { items: AiPlanItem[] };
-  report?: {
+  report?: StateClaims & {
     headline: string;
     narrative: string;
     wins: string[];
@@ -95,6 +102,7 @@ export function reportPromptInput(kind: ReportKind, job: ReportJob) {
     kind,
     isMidterm: kind === "MIDTERM",
     snapshot: job.learner,
+    validationContext: claimContext(job.learner),
     plan: {
       days: job.plan.days,
       requiredPace: job.plan.requiredPace,
@@ -124,7 +132,9 @@ export function reportPromptInput(kind: ReportKind, job: ReportJob) {
   };
 }
 
-export const REPORT_SYSTEM = `Bạn là giáo viên Aptis ESOL General của AptiMate. Viết tiếng Việt ngắn gọn, động viên.
+export const REPORT_SYSTEM = `${CLAIM_SYSTEM}
+Các trường statusEcho/bandClaim nằm trong report; PLAN_START không có hai trường này.
+Bạn là giáo viên Aptis ESOL General của AptiMate. Viết tiếng Việt ngắn gọn, động viên.
 Chỉ dùng snapshot số liệu do code tính. Không tự tính điểm, CEFR hoặc tiến độ; không trộn kỹ năng, EXAM/PRACTICE, FULL_SKILL/PART.
 goal.status: AHEAD=vượt tiến độ, ON_TRACK=đúng tiến độ, BEHIND=chậm tiến độ. Band target chỉ là mục tiêu, không phải band đã đạt.
 Band luôn là ước lượng. INSUFFICIENT_DATA nghĩa là chưa đủ dữ liệu, tuyệt đối không đoán. Không hứa điểm thi thật.
@@ -148,6 +158,7 @@ export function reportSchema(kind: ReportKind) {
   const report = {
     type: "OBJECT",
     properties: {
+      ...CLAIM_PROPERTIES,
       headline: textSchema,
       narrative: textSchema,
       wins: listSchema,
@@ -155,6 +166,8 @@ export function reportSchema(kind: ReportKind) {
       ...(kind === "MIDTERM" ? { progressSoFar: textSchema } : {}),
     },
     required: [
+      "statusEcho",
+      "bandClaim",
       "headline",
       "narrative",
       "wins",
@@ -218,14 +231,6 @@ export function validateWeeklyContent(
       return;
     }
     issues.push(...groundedTextIssues([value], job.learner));
-    const goal = job.learner.goal;
-    if (
-      (goal?.status === "BEHIND" &&
-        /(?:vượt|đúng|nhanh hơn) tiến độ/iu.test(value)) ||
-      (goal?.status === "AHEAD" && /(?:chậm|trễ) tiến độ/iu.test(value)) ||
-      (goal?.status === "ON_TRACK" && /(?:vượt|chậm|trễ) tiến độ/iu.test(value))
-    )
-      fail("STATUS_CONTRADICTION");
   };
   if (
     !object(value) ||
@@ -240,6 +245,8 @@ export function validateWeeklyContent(
     if (
       !object(report) ||
       !exact(report, [
+        "statusEcho",
+        "bandClaim",
         "headline",
         "narrative",
         "wins",
@@ -248,6 +255,7 @@ export function validateWeeklyContent(
       ])
     )
       throw new CommentValidationError(["REPORT_SCHEMA"]);
+    issues.push(...stateClaimIssues(report, job.learner));
     text(report.headline, 160, 40);
     text(report.narrative, 1600, 120);
     if (kind === "MIDTERM") text(report.progressSoFar, 1600, 120);
