@@ -118,18 +118,32 @@ describe('Groq reference isolation and evidence boundaries',()=>{
 describe('Groq HTTP contract (mock only)',()=>{
   const original=global.fetch;
   afterEach(()=>{global.fetch=original;});
-  it('keeps the default daily cap and permits a bounded override only on the configured instance',async()=>{
-    const manager={query:jest.fn(async(sql:string)=>sql.startsWith('SELECT count')?[{minute:0,day:20}]:sql.startsWith('INSERT')?[{id:'call'}]:[])};
+  it('waits only for the remaining shared 30-second slot without calling Groq',async()=>{
+    const manager={query:jest.fn(async(sql:string)=>sql.startsWith('SELECT count')?[{minute:1,day:2,wait_ms:22000}]:[])};
+    const db={transaction:async(fn:any)=>fn(manager)};
+    global.fetch=jest.fn() as any;
+    const provider=new GroqReferenceProvider(new ConfigService({GROQ_FREE_TIER_CONFIRMED:'true'}),db as any);
+    await expect(provider.generateStructured({model:'model',systemInstruction:'test',input:{},outputSchema:{type:'object',properties:{},required:[]},maxOutputTokens:100,signal:AbortSignal.timeout(1000)}))
+      .rejects.toMatchObject({code:'GROQ_RATE_WAIT',retryAfterMs:22000});
+    expect(global.fetch).not.toHaveBeenCalled();
+    expect(manager.query.mock.calls.some(([sql])=>sql.includes("interval '30 seconds'"))).toBe(true);
+  });
+  it('defaults to 100 daily calls, honors lower caps and blocks invalid overrides at the default cap',async()=>{
+    let day=99;
+    const manager={query:jest.fn(async(sql:string)=>sql.startsWith('SELECT count')?[{minute:0,day}]:sql.startsWith('INSERT')?[{id:'call'}]:[])};
     const db={transaction:async(fn:any)=>fn(manager),query:jest.fn()};
     const request={model:'openai/gpt-oss-120b',systemInstruction:'test',input:{},outputSchema:{type:'object' as const,properties:{},required:[]},maxOutputTokens:100,signal:AbortSignal.timeout(1000)};
     global.fetch=jest.fn(async()=>new Response(JSON.stringify({choices:[{finish_reason:'stop',message:{content:'{}'}}]}))) as any;
     const normal=new GroqReferenceProvider(new ConfigService({GROQ_FREE_TIER_CONFIRMED:'true'}),db as any);
-    await expect(normal.generateStructured(request)).rejects.toThrow('GROQ_DAILY_WAIT');
-    const benchmark=new GroqReferenceProvider(new ConfigService({GROQ_FREE_TIER_CONFIRMED:'true',GROQ_REFERENCE_DAILY_CALL_CAP:'40'}),db as any);
-    await expect(benchmark.generateStructured(request)).resolves.toEqual({});
+    await expect(normal.generateStructured(request)).resolves.toEqual({});
+    day=100;
     await expect(normal.generateStructured(request)).rejects.toThrow('GROQ_DAILY_WAIT');
     const invalid=new GroqReferenceProvider(new ConfigService({GROQ_FREE_TIER_CONFIRMED:'true',GROQ_REFERENCE_DAILY_CALL_CAP:'9999'}),db as any);
     await expect(invalid.generateStructured(request)).rejects.toThrow('GROQ_DAILY_WAIT');
+    day=20;
+    const lower=new GroqReferenceProvider(new ConfigService({GROQ_FREE_TIER_CONFIRMED:'true',GROQ_REFERENCE_DAILY_CALL_CAP:'20'}),db as any);
+    await expect(lower.generateStructured(request)).rejects.toThrow('GROQ_DAILY_WAIT');
+    await expect(normal.generateStructured(request)).resolves.toEqual({});
   });
   it('marks only confirmed oversized token requests as eligible for compact fallback',async()=>{
     for (const [status,code,type,message,expected] of [
