@@ -33,8 +33,6 @@ export default function WritingResultPage() {
         )}
         <h1>{data.title || t('writingAi.title')}</h1>
         <WritingAssessmentStatus {...assessment} />
-        <div className={writing?.scope === 'FULL_SKILL' ? styles.overview : undefined}>
-        <WritingCefr writing={writing} />
         <section className={styles.panel}>
           <h2>{t('writingAi.testSummary')}</h2>
           <dl className={styles.summaryList}>
@@ -62,7 +60,7 @@ export default function WritingResultPage() {
             </div>
           </dl>
         </section>
-        </div>
+        <WritingCefr writing={writing} />
         <WritingAiSummary writing={writing} assisted={isPractice && !!data.result.assistance?.revealedKeys?.length} />
         <div className={styles.actions}>
           <button

@@ -1,5 +1,12 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Bố cục AI feedback Writing — 26/10/2026
+
+- Trang kết quả Writing hiển thị Test summary trước Estimated Writing CEFR; mỗi khối chiếm toàn chiều rộng, bỏ bố cục hai cột và chiều cao kéo giãn theo nhau.
+- Thông tin summary dàn thành 4 cột desktop, 2 cột tablet và 1 cột mobile. Nhận xét CEFR dài dùng toàn chiều rộng khối; giữ nguyên nội dung và luồng chấm Gemini/Groq.
+- Đã xem ảnh render ở 1280px và 390px, kiểm tra thứ tự/vị trí, chiều rộng bằng nhau và không tràn ngang. Thay đổi tại WritingResultPage.jsx và WritingResultPage.module.css; không sửa các thay đổi đánh giá đầu vào đang có trong workspace.
+- Kiểm chứng: 5/5 browser test Writing/Speaking đạt, build frontend đạt (còn cảnh báo chunk lớn có sẵn), Oxlint file JSX và diff check đạt. Đã đồng bộ origin/develop tại fa9e03d bằng merge 4bb2b66 và chạy lại browser test/build thành công. Commit riêng bố cục Writing và bàn giao; giữ các thay đổi cá nhân hóa ngoài commit, không push.
+
 ## Cá nhân hóa S5 — 23/10/2026
 
 - Hoàn thành trên fix/personalization-s5 từ S4 1e4907a. Chưa push/merge; không làm GĐ11.
