@@ -6,7 +6,7 @@
 .header button { border: 0; background: transparent; color: inherit; cursor: pointer; }
 .modal p { line-height: 1.5; }
 .templates, .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.templates button, .actions button { padding: 10px 14px; border: 1px solid var(--border, #d1d5db); border-radius: 8px; background: var(--bg-surface, #fff); color: inherit; font-weight: 600; cursor: pointer; }
+.templates button, .templates a, .actions button { display: inline-flex; align-items: center; padding: 10px 14px; border: 1px solid var(--border, #d1d5db); border-radius: 8px; background: var(--bg-surface, #fff); color: inherit; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; }
 .columns { overflow-x: auto; padding: 9px 12px; border-radius: 8px; background: var(--bg-hover, #f8fafc); font-size: 12px; }
 .hint { color: var(--text-muted, #64748b); font-size: 12px; }
 .filePicker { display: flex; align-items: center; gap: 9px; padding: 18px; border: 1px dashed #ce2b38; border-radius: 10px; cursor: pointer; font-weight: 650; }
