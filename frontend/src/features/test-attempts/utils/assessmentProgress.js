@@ -10,14 +10,28 @@ export function progressStage({ loading, error, data, submissionState, paused })
   if (['UNASSESSED', 'SIMULATED'].includes(data.result?.method)) return 'PAUSED';
   if (status === 'COMPLETED') return 'LOADING_RESULT';
   if (data.assessment?.enabled === false || status === 'NOT_STARTED') return 'PAUSED';
+  if (status === 'QUEUED' && ['GROQ_RATE_WAIT','GROQ_DAILY_WAIT'].includes(data.assessment?.errorCode)) return 'RATE_WAIT';
   if (status === 'QUEUED' && data.assessment?.nextRetryAt && Date.parse(data.assessment.nextRetryAt) > Date.now()) return 'RETRY_WAIT';
   if (paused) return 'LONG_WAIT';
   return status === 'PROCESSING' ? 'PROCESSING' : 'QUEUED';
 }
 
+export function groqPartProgress(stage, completedParts = []) {
+  if (stage === 'COMPLETED') return 100;
+  const count = new Set(completedParts.filter(part => Number.isInteger(part) && part >= 1 && part <= 4)).size;
+  return [0, 25, 36, 67, 90][count];
+}
+
+export function groqFailureReason(code = '') {
+  if (/EVIDENCE|JSON|INVALID|INCOMPLETE/.test(code)) return 'invalidOutput';
+  if (/429|RATE|DAILY/.test(code)) return 'quota';
+  if (/NETWORK|TIMEOUT|HTTP_5/.test(code)) return 'unavailable';
+  return 'unknown';
+}
+
 export function estimatedProgress(stage, seconds, previous = 0) {
   if (stage === 'COMPLETED') return 100;
-  if (['FAILED', 'PAUSED', 'CONNECTION_ERROR', 'LONG_WAIT', 'RETRY_WAIT'].includes(stage)) return Math.min(previous, 95);
+  if (['FAILED', 'PAUSED', 'CONNECTION_ERROR', 'LONG_WAIT', 'RETRY_WAIT', 'RATE_WAIT'].includes(stage)) return Math.min(previous, 95);
   const [start, ceiling, rate] = stage === 'SUBMITTING' ? [2, 10, 0.5]
     : stage === 'LOADING_RESULT' ? [10, 15, 0.5]
       : stage === 'PROCESSING' ? [25, 90, 0.35] : [15, 25, 0.1];

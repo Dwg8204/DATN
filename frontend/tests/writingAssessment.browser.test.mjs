@@ -71,6 +71,7 @@ async function bundle() {
           builder.onLoad({filter:/.*/,namespace:'consent-fixture'},()=>({contents:`export default {
             get:async(url)=>({data:url.startsWith('/reference-assessments/')?{
               component:url.includes('speaking')?'SPEAKING':'WRITING',enabled:true,status:window.referenceStatus||'COMPLETED',revision:window.referenceStatus||'complete',model:'openai/gpt-oss-120b',
+              ...window.referenceInfo,
               result:url.includes('speaking')?{speaking:window.referenceSpeaking}:{writing:window.referenceWriting}
             }:{enabled:true,consent:true}}),post:async()=>({data:{}})}`,loader:'js'}));
           builder.onResolve({ filter: /(?:testAttemptsApi|practiceAttemptsApi)(?:\.js)?$/ }, () => ({
@@ -113,6 +114,25 @@ test('Gemini and Groq share result layouts with independent progress on desktop 
       await page.getByRole('button',{name:'Groq · Tham khảo',exact:true}).click();
       await page.locator('section[aria-label^="Groq"]') .waitFor();
       assert.ok(Number(await page.getByRole('progressbar').getAttribute('aria-valuenow'))<100);
+      if(skill==='writing') {
+        await page.getByRole('button',{name:'Gemini · Kết quả chính',exact:true}).click();
+        await page.evaluate(()=>{window.referenceStatus='QUEUED';window.referenceInfo={errorCode:'GROQ_RATE_WAIT',nextRetryAt:new Date(Date.now()+30000).toISOString(),stage:'part_2',completedParts:[1]};});
+        await page.getByRole('button',{name:'Groq · Tham khảo',exact:true}).click();
+        await page.getByText('Groq · Bài viết đang được chấm bởi AI',{exact:true}).waitFor();
+        assert.equal(await page.getByRole('progressbar').getAttribute('aria-valuenow'),'25');
+        assert.equal(await page.getByText('Đã lưu kết quả Part: 1',{exact:true}).count(),0);
+        assert.equal(await page.getByText('Bước đang chờ: Part 2',{exact:true}).count(),0);
+        assert.equal(await page.getByText('GROQ_RATE_WAIT',{exact:true}).count(),0);
+        const panel=page.locator('section[aria-label^="Groq"]');
+        assert.equal(await panel.locator('p, small').count(),0);
+        await page.getByRole('button',{name:'Gemini · Kết quả chính',exact:true}).click();
+        await page.evaluate(()=>{window.referenceStatus='FAILED';window.referenceInfo={errorCode:'GROQ_JSON_GENERATION_FAILED',completedParts:[1,2,3]};});
+        await page.getByRole('button',{name:'Groq · Tham khảo',exact:true}).click();
+        await page.getByText('Groq · Bài viết không thể chấm xong do AI trả về kết quả chưa hợp lệ sau các lần thử lại.',{exact:true}).waitFor();
+        assert.equal(await page.getByRole('progressbar').getAttribute('aria-valuenow'),'67');
+        assert.equal(await panel.getByText('GROQ_JSON_GENERATION_FAILED',{exact:true}).count(),0);
+        await page.evaluate(()=>{window.referenceInfo={};});
+      }
       await page.getByRole('button',{name:'Gemini · Kết quả chính',exact:true}).click();
       assert.equal(await page.getByRole('progressbar').getAttribute('aria-valuenow'),'100');
       await page.evaluate(()=>{window.referenceStatus='COMPLETED';});
@@ -129,6 +149,8 @@ test('Gemini and Groq share result layouts with independent progress on desktop 
         await page.getByRole('button',{name:'Phần 2',exact:true}).click();
         await page.getByText('Nhận xét Groq cho Part 2.',{exact:true}).waitFor();
         assert.equal(await page.getByRole('heading',{name:'AI feedback',exact:true}).count(),1);
+        await page.getByRole('button',{name:'Bản sửa gợi ý',exact:true}).click();
+        await page.getByText('Yesterday I went to the club.',{exact:true}).waitFor();
       } else {
         await page.getByText('What do you enjoy?',{exact:true}).waitFor();
         assert.equal(await page.getByRole('button',{name:/^(Part|Phần) 4$/}).count(),1);

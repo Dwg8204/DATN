@@ -15,6 +15,7 @@ import { GroqReferenceProvider } from './groq-reference.provider';
 import { REFERENCE_SPEAKING_PROMPT, speakingReferenceSchema, validateReferenceSpeaking } from './speaking-reference.policy';
 import { assessWritingByParts, GROQ_PARTS_WRITING_VERSION, WritingPartsCache } from './writing-parts.policy';
 import { firstMutationRow } from '../../common/database/mutation-result';
+import { WritingEvidenceError } from '../writing-assessment/services/writing-evidence.error';
 
 export function referenceInputHash(snapshot:unknown,answers:unknown,config:WritingJobConfig):string {
   // Retry counters and lastFailure are mutable job metadata, not assessment input.
@@ -57,6 +58,8 @@ export class ReferenceAssessmentService implements OnModuleInit, OnModuleDestroy
       enabled:this.active,eligible,status:job?.status ?? 'NOT_REQUESTED',model:job?.model ?? 'openai/gpt-oss-120b',
       result:job?.result ?? null,errorCode:job?.error_code ?? null,revision:job?.updated_at ?? null,
       nextRetryAt:job?.status==='QUEUED'?job.available_at:null,validationRule:job?.config?.lastFailure?.rule ?? null,
+      stage:job?.config?.writingStage ?? null,
+      completedParts:Object.keys(job?.config?.writingParts?.parts ?? {}).map(Number).filter(Number.isInteger).sort((a,b)=>a-b),
       retryable:this.active && job?.status==='FAILED' && Number(job?.config?.manualRetries ?? 0)<3};
   }
   async retry(attemptId:string,userId:string) {
@@ -113,6 +116,11 @@ export class ReferenceAssessmentService implements OnModuleInit, OnModuleDestroy
               WHERE id=$1 AND lease=$2 AND status='PROCESSING' AND lease_until>now() RETURNING id`, [job.id, job.lease, JSON.stringify(cache)]);
             firstMutationRow(saved);
             this.logger.log(`Groq Writing checkpoint: job=${job.id} parts=${Object.keys(cache.parts).length} final=${!!cache.final}`);
+          }, async (nextStage, event) => {
+            stage=nextStage;
+            if(event==='started') await this.db.query(`UPDATE reference_ai_jobs SET config=jsonb_set(config,'{writingStage}',$3::jsonb),updated_at=now()
+              WHERE id=$1 AND lease=$2 AND status='PROCESSING' AND lease_until>now()`,[job.id,job.lease,JSON.stringify(nextStage)]);
+            this.logger.log(`Groq Writing stage: job=${job.id} stage=${nextStage} event=${event}`);
           });
         writing.metadata={provider:'groq',model:job.model,rubricVersion:job.config.rubricVersion,promptVersion:GROQ_PARTS_WRITING_VERSION,assessedAt:new Date().toISOString(),assessmentRevision:1};
         result={writing};
@@ -146,7 +154,8 @@ export class ReferenceAssessmentService implements OnModuleInit, OnModuleDestroy
     } catch(error) {
       const code=error instanceof AiError ? error.code : error instanceof Error && /^[A-Z][A-Z0-9_]+$/.test(error.message) ? error.message : 'REFERENCE_UNAVAILABLE';
       const rule=error instanceof AiError?error.validationRule?.replace(/[^a-zA-Z0-9_.:[\]-]/g,'').slice(0,180):undefined;
-      const diagnostic = `job=${job?.id ?? 'none'} stage=${stage} code=${code} rule=${rule ?? 'none'} run=${job?.runs ?? 0} elapsedMs=${Date.now()-started}`;
+      const location=error instanceof WritingEvidenceError?error.location:undefined;
+      const diagnostic = `job=${job?.id ?? 'none'} stage=${stage} code=${code} rule=${rule ?? 'none'} path=${location?.path ?? 'none'} questionKey=${location?.questionKey ?? 'none'} criterion=${location?.criterion ?? 'none'} run=${job?.runs ?? 0} elapsedMs=${Date.now()-started}`;
       if (['GROQ_RATE_WAIT','GROQ_DAILY_WAIT'].includes(code)) this.logger.log(`Groq reference waiting: ${diagnostic}`);
       else this.logger.warn(`Groq reference failed: ${diagnostic}`);
       if(!job) return;
@@ -156,8 +165,8 @@ export class ReferenceAssessmentService implements OnModuleInit, OnModuleDestroy
       await this.db.query(`UPDATE reference_ai_jobs SET status=$3,error_code=$4,lease=NULL,lease_until=NULL,
         runs=runs-$6,available_at=now()+($5::integer*interval '1 millisecond'),updated_at=now(),
         config=config || jsonb_build_object('lastFailure',$7::jsonb) || $8::jsonb WHERE id=$1 AND lease=$2`,
-        [job.id,job.lease,retry?'QUEUED':'FAILED',code,delay,waiting?1:0,JSON.stringify({stage,rule:rule ?? null,code}),
-          JSON.stringify(stage === 'writing_assess' ? { groqWritingPrompt: GROQ_PARTS_WRITING_VERSION } : {})]).catch(()=>this.logger.warn('Could not persist Groq reference error.'));
+        [job.id,job.lease,retry?'QUEUED':'FAILED',code,delay,waiting?1:0,JSON.stringify({stage,rule:rule ?? null,code,...location}),
+          JSON.stringify(stage === 'writing_assess' || stage.startsWith('part_') || stage==='synthesis' ? { groqWritingPrompt: GROQ_PARTS_WRITING_VERSION } : {})]).catch(()=>this.logger.warn('Could not persist Groq reference error.'));
     }
   }
 }

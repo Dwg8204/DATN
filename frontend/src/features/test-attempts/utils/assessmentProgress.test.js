@@ -1,6 +1,17 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { estimatedProgress, progressStage, progressStorageKey, readProgress, saveProgress } from './assessmentProgress.js';
+import { estimatedProgress, groqPartProgress, groqFailureReason, progressStage, progressStorageKey, readProgress, saveProgress } from './assessmentProgress.js';
+
+test('Groq progress follows saved parts and only reaches 100 after final completion', () => {
+  for (const [parts,expected] of [[[],0],[[1],25],[[1,2],36],[[1,2,3],67],[[1,2,3,4],90]]) {
+    for (const stage of ['PROCESSING','RATE_WAIT','RETRY_WAIT','FAILED']) assert.equal(groqPartProgress(stage,parts),expected);
+  }
+  assert.equal(groqPartProgress('PROCESSING',[1,1,7]),25);
+  assert.equal(groqPartProgress('COMPLETED',[1,2,3,4]),100);
+  assert.equal(groqFailureReason('GROQ_JSON_GENERATION_FAILED'),'invalidOutput');
+  assert.equal(groqFailureReason('GROQ_HTTP_503'),'unavailable');
+  assert.equal(groqFailureReason('GROQ_HTTP_429'),'quota');
+});
 
 test('only persisted usable results finish progress; errors and partial failures never do', () => {
   for (const component of ['GRAMMAR_VOCAB', 'READING', 'LISTENING']) {
@@ -43,6 +54,15 @@ test('retry wait freezes the estimate, not a failure or a completed result', () 
   assert.equal(estimatedProgress('RETRY_WAIT', 50, 51), 51);
   data.assessment.nextRetryAt = new Date(0).toISOString();
   assert.equal(progressStage({ data }), 'QUEUED');
+});
+
+test('Groq quota waits differ from invalid-output retries and do not increase progress',()=>{
+  const assessment={errorCode:'GROQ_RATE_WAIT',nextRetryAt:new Date(Date.now()+30000).toISOString()};
+  assert.equal(progressStage({data:{gradingStatus:'QUEUED',assessment}}),'RATE_WAIT');
+  assert.equal(estimatedProgress('RATE_WAIT',99,45),45);
+  assessment.errorCode='AI_WRITING_EVIDENCE_INVALID';
+  assert.equal(progressStage({data:{gradingStatus:'QUEUED',assessment}}),'RETRY_WAIT');
+  assert.equal(progressStage({data:{gradingStatus:'FAILED',assessment}}),'FAILED');
 });
 
 test('estimated progress is bounded, monotonic during automatic retry and stops on failure', () => {

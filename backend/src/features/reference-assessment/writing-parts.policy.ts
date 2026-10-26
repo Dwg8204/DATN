@@ -8,8 +8,9 @@ import { WritingAssessmentValidator } from '../writing-assessment/services/writi
 import { WRITING_CEFR_DESCRIPTORS } from '../writing-assessment/rubrics/writing-cefr-descriptors-v1';
 import { compactWritingInput, compactWritingSchema, expandCompactWriting, GROQ_COMPACT_WRITING_PROMPT } from './writing-compact.policy';
 import { restoreBlankWriting } from './writing-reference.policy';
+import { groqEvidenceSchema, groqEvidenceCatalog, GROQ_EVIDENCE_INSTRUCTION, resolveGroqEvidence } from './writing-evidence.policy';
 
-export const GROQ_PARTS_WRITING_VERSION = 'groq-writing-parts-v1';
+export const GROQ_PARTS_WRITING_VERSION = 'groq-writing-parts-v2';
 export type WritingPartsCache = { version: 1; inputHash: string; parts: Record<string, WritingAssessment>; final?: WritingAssessment };
 
 export const GROQ_WRITING_SUMMARY_PROMPT = `Summarise English Writing practice assessments, not official certification.
@@ -23,7 +24,8 @@ ${WRITING_CEFR_DESCRIPTORS}`;
 
 /** One provider call at a time; the caller checkpoints before any rate-limit wait. */
 export async function assessWritingByParts(provider: AiProvider, input: WritingInput, model: string, inputHash: string,
-  previous: WritingPartsCache | undefined, save: (cache: WritingPartsCache) => Promise<void>): Promise<WritingAssessment> {
+  previous: WritingPartsCache | undefined, save: (cache: WritingPartsCache) => Promise<void>,
+  onStage: (stage: string, event: string) => Promise<void> = async () => undefined): Promise<WritingAssessment> {
   const validator = new WritingAssessmentValidator();
   const service = new WritingAssessmentService(provider, validator);
   const blank = service.blank(input);
@@ -37,13 +39,16 @@ export async function assessWritingByParts(provider: AiProvider, input: WritingI
     if (part.questions.every(question => !question.response.trim())) assessed = service.blank(partInput);
     else if (cache.parts[String(part.partNumber)]) assessed = validator.validate(structuredClone(cache.parts[String(part.partNumber)]), partInput);
     else {
+      await onStage(`part_${part.partNumber}`, 'started');
+      const catalog = groqEvidenceCatalog(partInput);
       const raw = await provider.generateStructured({ model, systemInstruction: GROQ_COMPACT_WRITING_PROMPT +
-        '\nThis request assesses ONE PART ONLY. Always use cefr.status="NOT_APPLICABLE", reason="PART_SCOPE", level=null, rationale=null, evidence=[], limitations=[]. Never use ESTIMATED or INSUFFICIENT_EVIDENCE for this request. Each criterion quote must be at most 160 characters; choose a shorter exact substring or null, never a long sentence.',
-        input: compactWritingInput(partInput), outputSchema: compactWritingSchema('PART'),
-        maxOutputTokens: part.partNumber === 2 ? 1800 : 3000, signal: AbortSignal.timeout(90000) });
-      assessed = validator.validate(restoreBlankWriting(expandCompactWriting(raw, partInput), partInput, service.blank(partInput)), partInput);
+        '\nThis request assesses ONE PART ONLY. Always use cefr.status="NOT_APPLICABLE", reason="PART_SCOPE", level=null, rationale=null, evidence=[], limitations=[]. Never use ESTIMATED or INSUFFICIENT_EVIDENCE for this request.' + GROQ_EVIDENCE_INSTRUCTION,
+        input: { ...compactWritingInput(partInput), evidenceCatalog: catalog }, outputSchema: groqEvidenceSchema(compactWritingSchema('PART'), catalog),
+        maxOutputTokens: part.partNumber === 4 ? 4500 : 3000, signal: AbortSignal.timeout(90000) });
+      assessed = validator.validate(restoreBlankWriting(expandCompactWriting(resolveGroqEvidence(raw, compactWritingSchema('PART'), catalog), partInput), partInput, service.blank(partInput)), partInput);
       cache.parts[String(part.partNumber)] = assessed;
       await save(structuredClone(cache));
+      await onStage(`part_${part.partNumber}`, 'completed');
     }
     parts.push(...assessed.details.parts);
   }
@@ -54,19 +59,24 @@ export async function assessWritingByParts(provider: AiProvider, input: WritingI
   const combined: WritingAssessment = { ...blank, details: { parts } };
   if (input.parts.every(part => part.questions.every(question => !question.response.trim()))) return blank;
   const schema = writingOutputSchema('FULL_SKILL');
-  const raw = await provider.generateStructured({ model, systemInstruction: GROQ_WRITING_SUMMARY_PROMPT,
-    input: { scope: input.scope, parts: input.parts.map(part => ({
+  const summarySchema = { type: 'object' as const, properties: { cefr: schema.properties!.cefr, summary: schema.properties!.summary }, required: ['cefr', 'summary'] };
+  const catalog = groqEvidenceCatalog(input);
+  await onStage('synthesis', 'started');
+  const raw = await provider.generateStructured({ model, systemInstruction: GROQ_WRITING_SUMMARY_PROMPT + GROQ_EVIDENCE_INSTRUCTION,
+    input: { scope: input.scope, evidenceCatalog: catalog, parts: input.parts.map(part => ({
       partNumber: part.partNumber, overview: parts.find(p => p.partNumber === part.partNumber)!.overview,
       questions: part.questions.map(question => ({ questionKey: question.questionKey, response: question.response,
         judgments: parts.find(p => p.partNumber === part.partNumber)!.questions.find(q => q.questionKey === question.questionKey)!.criteria
           .map(c => ({ criterion: c.criterion, judgment: c.judgment })) })),
     })) },
-    outputSchema: { type: 'object', properties: { cefr: schema.properties!.cefr, summary: schema.properties!.summary }, required: ['cefr', 'summary'] },
+    outputSchema: groqEvidenceSchema(summarySchema, catalog),
     maxOutputTokens: 1800, signal: AbortSignal.timeout(90000) });
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)
     || Object.keys(raw).some(key => !['cefr', 'summary'].includes(key))) throw new AiError('GROQ_WRITING_SUMMARY_INVALID', true);
-  const result = validator.validate({ ...combined, cefr: (raw as any).cefr, summary: (raw as any).summary }, input);
+  const resolved = resolveGroqEvidence(raw, summarySchema, catalog) as any;
+  const result = validator.validate({ ...combined, cefr: resolved.cefr, summary: resolved.summary }, input);
   cache.final = result;
   await save(structuredClone(cache));
+  await onStage('synthesis', 'completed');
   return result;
 }

@@ -303,6 +303,28 @@
       "REQUEST_FAILED": "Unable to log in. Please try again."
     }
   },
+  "assessmentFlow": {
+    "gradingWriting": "Your writing is being assessed by AI",
+    "failedWriting": "Your writing could not be assessed because {{reason}}.",
+    "grading": "Your submission is being assessed by AI",
+    "failed": "Assessment could not be completed because {{reason}}.",
+    "reasons": {
+      "invalidOutput": "AI returned an invalid result after retries",
+      "quota": "the AI service reached its usage limit",
+      "unavailable": "the AI service did not respond or encountered a connection error",
+      "unknown": "an error occurred during assessment"
+    },
+    "retryWait": "Retrying in about {{seconds}} seconds. You can leave and return through history.",
+    "part": "Part {{number}}",
+    "synthesis": "overall assessment",
+    "processing": "Assessing {{stage}}",
+    "queueWait": "Waiting for the next assessment slot",
+    "quotaWait": "Waiting for the daily assessment quota",
+    "retryOutput": "The previous assessment could not be validated. Waiting to retry.",
+    "saved": "Saved results for Part: {{parts}}",
+    "pending": "Pending step: {{stage}}",
+    "wait": "The next check is in about {{seconds}} seconds. You can leave and return through history."
+  },
   "history": {
     "subtitle": "Your completed activities, results and learning progress in one place.",
     "summary": "Completed activity totals",

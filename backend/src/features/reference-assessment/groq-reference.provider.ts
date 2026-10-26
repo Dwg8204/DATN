@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { AiProvider, JsonSchema } from '../../common/ai/ai-provider.interface';
 import { AiError } from '../../common/ai/ai-error';
-import { diagnoseGroqJson } from './groq-json-diagnostic';
+import { diagnoseGroqJson, recoverMissingWritingPartSuggestions } from './groq-json-diagnostic';
 
 export function groqSchema(schema: JsonSchema): object {
   const { nullable, properties, items, enum: values, ...rest } = schema;
@@ -18,6 +18,23 @@ export function groqSchema(schema: JsonSchema): object {
 
 export function groundedGroqSchema(schema:JsonSchema,input:unknown):object {
   const result=groqSchema(schema) as Record<string,any>;
+  const evidence=(input as {evidenceCatalog?:Array<{id?:unknown}>})?.evidenceCatalog;
+  if(Array.isArray(evidence) && evidence.length) {
+    const ids=[...new Set(evidence.map(entry=>entry.id).filter((id):id is string=>typeof id==='string'))];
+    if(ids.length) {
+      const visitIds=(node:Record<string,any>)=>{
+        for(const [field,child] of Object.entries(node.properties ?? {}) as [string,any][]) {
+          if(field==='evidenceId') node.properties[field]={$ref:Array.isArray(child.type) && child.type.includes('null')
+            ? '#/$defs/optionalEvidenceId' : '#/$defs/evidenceId'};
+          else visitIds(child);
+        }
+        if(node.items) visitIds(node.items);
+      };
+      visitIds(result);
+      // Reuse the ID enum instead of repeating it for every criterion, to bound input tokens.
+      return {...result,$defs:{evidenceId:{type:'string',enum:ids},optionalEvidenceId:{type:['string','null'],enum:[...ids,null]}}};
+    }
+  }
   const catalog=(input as {verbatimEvidence?:Array<{exactSentenceCandidates?:unknown[]}>})?.verbatimEvidence;
   if(!Array.isArray(catalog)) return result;
   const quotes=new Set<string>();
@@ -92,8 +109,15 @@ export class GroqReferenceProvider implements AiProvider {
         json: diagnoseGroqJson(body.error?.failed_generation, request.outputSchema),
         elapsedMs:Date.now()-started};
       await this.db.query('UPDATE reference_ai_calls SET usage=$2::jsonb WHERE id=$1',[id,JSON.stringify({diagnostic})]);
-      this.logger.warn(`Groq request failed: model=${request.model} http=${response.status} upstream=${upstreamCode} generatedCharacters=${diagnostic.generatedCharacters} tokens=${diagnostic.tokenCounts ?? 'unknown'} json=${diagnostic.json.kind} issue=${diagnostic.json.issues[0]?.path ?? 'none'} maxOutput=${request.maxOutputTokens} elapsedMs=${diagnostic.elapsedMs}`);
       const invalidJson=response.status===400 && upstreamCode==='json_validate_failed';
+      if (invalidJson) {
+        const recovered = recoverMissingWritingPartSuggestions(body.error?.failed_generation, request.outputSchema);
+        if (recovered !== undefined) {
+          this.logger.warn(`Groq response normalized: model=${request.model} http=400 rule=MISSING_PART_SUGGESTIONS action=EMPTY_LIST domainValidation=pending elapsedMs=${diagnostic.elapsedMs}`);
+          return recovered;
+        }
+      }
+      this.logger.warn(`Groq request failed: model=${request.model} http=${response.status} upstream=${upstreamCode} generatedCharacters=${diagnostic.generatedCharacters} tokens=${diagnostic.tokenCounts ?? 'unknown'} json=${diagnostic.json.kind} issue=${diagnostic.json.issues[0]?.path ?? 'none'} issueRule=${diagnostic.json.issues[0]?.rule ?? 'none'} maxOutput=${request.maxOutputTokens} elapsedMs=${diagnostic.elapsedMs}`);
       const message = typeof body.error?.message === 'string' ? body.error.message : '';
       const limit = Number(message.match(/limit\s*[:=]?\s*(\d+)/i)?.[1]);
       const requested = Number(message.match(/requested\s*[:=]?\s*(\d+)/i)?.[1]);
