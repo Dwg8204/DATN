@@ -67,12 +67,14 @@ export function AuthProvider({ children }) {
       retryAuth: () => setAuthCheckRevision(revision => revision + 1),
       isAuthenticated: isAuthReady && Boolean(user),
       login: ({ profile }) => {
-        authMutation.current += 1;
+        const revision = ++authMutation.current;
         setUser(normalizeProfile(profile));
         setAuthConnectionError(false);
         setIsAuthReady(true);
         if (profile) {
-          profileApi.getProfile().then(fullProfile => setUser(fullProfile)).catch(() => {});
+          profileApi.getProfile().then(fullProfile => {
+            if (authMutation.current === revision) setUser(normalizeProfile(fullProfile));
+          }).catch(() => {});
         }
       },
       logout: async ({ remote = true } = {}) => {
