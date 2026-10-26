@@ -4,12 +4,14 @@ import { WritingAssessmentValidator } from '../writing-assessment/services/writi
 import { WritingAssessmentService } from '../writing-assessment/services/writing-assessment.service';
 import { compactWritingInput, compactWritingSchema, expandCompactWriting } from './writing-compact.policy';
 import { groqWritingInput, restoreBlankWriting } from './writing-reference.policy';
-import { groundedGroqSchema } from './groq-reference.provider';
+import { groundedGroqSchema, GroqReferenceProvider } from './groq-reference.provider';
+import { recoverMissingWritingPartSuggestions } from './groq-json-diagnostic';
 import { writingOutputSchema } from '../writing-assessment/contracts/writing-assessment.schema';
 import { ReferenceAssessmentService } from './reference-assessment.service';
 import { ConfigService } from '@nestjs/config';
 import { GROQ_COMPACT_WRITING_VERSION } from './writing-compact.policy';
 import { GROQ_PARTS_WRITING_VERSION } from './writing-parts.policy';
+import { groqEvidenceCatalog } from './writing-evidence.policy';
 
 export function compactFixture(partNumber?: number) {
   const fixture = writingFixture(partNumber);
@@ -18,7 +20,7 @@ export function compactFixture(partNumber?: number) {
     parts: fixture.result.details.parts.map(part => ({
       partNumber: part.partNumber, comment: 'Bạn nêu được ý chính nhưng cần sửa thì.', suggestions: ['Luyện thì quá khứ.'],
       questions: part.questions.map(question => ({
-        questionKey: question.questionKey, comment: 'Bạn nêu được ý chính.', suggestions: ['Sửa thì quá khứ.'],
+        questionKey: question.questionKey, comment: 'Bạn nêu được ý chính.', suggestions: ['Sửa thì quá khứ.'], suggestedRevision: 'Yesterday I went to the club.',
         criteria: Object.fromEntries(question.criteria.map(entry => [entry.criterion, {
           judgment: entry.judgment, comment: 'Cần luyện thêm để diễn đạt chính xác.', quote: 'Yesterday',
         }])),
@@ -29,8 +31,43 @@ export function compactFixture(partNumber?: number) {
 }
 
 describe('Groq per-Part production flow and compact contract', () => {
+  it('recovers only an omitted part suggestion list, preserving all actual assessment content', () => {
+    const {raw}=compactFixture(4);
+    const missing=structuredClone(raw) as any;
+    delete missing.parts[0].suggestions;
+    const recovered=recoverMissingWritingPartSuggestions(JSON.stringify(missing),compactWritingSchema('PART')) as any;
+    expect(recovered).toEqual({...missing,parts:missing.parts.map((part:any)=>({...part,suggestions:[]}))});
+    missing.parts[0].questions[0].suggestedRevision=null;
+    expect(recoverMissingWritingPartSuggestions(JSON.stringify(missing),compactWritingSchema('PART'))).toBeUndefined();
+    expect(recoverMissingWritingPartSuggestions('{',compactWritingSchema('PART'))).toBeUndefined();
+    const wrongType=structuredClone(raw) as any;
+    wrongType.parts[0].suggestions='not an array';
+    expect(recoverMissingWritingPartSuggestions(JSON.stringify(wrongType),compactWritingSchema('PART'))).toBeUndefined();
+  });
+  it('handles HTTP 400 missing part suggestions without a second API call, then passes normal validation', async () => {
+    const {raw,input}=compactFixture(4);
+    const missing=structuredClone(raw) as any;
+    delete missing.parts[0].suggestions;
+    const previous=global.fetch;
+    const fetchMock=jest.fn(async()=>new Response(JSON.stringify({error:{code:'json_validate_failed',failed_generation:JSON.stringify(missing)}}),{status:400}));
+    global.fetch=fetchMock as any;
+    try {
+      const query=jest.fn(async(sql:string)=>sql.startsWith('SELECT count')?[{minute:0,day:0}]:sql.startsWith('INSERT')?[{id:'call'}]:[]);
+      const db={transaction:async(fn:any)=>fn({query}),query};
+      const provider=new GroqReferenceProvider(new ConfigService({GROQ_FREE_TIER_CONFIRMED:'true'}),db as any);
+      const result=await provider.generateStructured({model:'test',systemInstruction:'test',input:{},outputSchema:compactWritingSchema('PART'),maxOutputTokens:4500,signal:AbortSignal.timeout(1000)});
+      const expanded=expandCompactWriting(result,input);
+      expect(()=>new WritingAssessmentValidator().validate(expanded,input)).not.toThrow();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    } finally {global.fetch=previous;}
+  });
   function workerFixture(error?: AiError) {
     const fixture = compactFixture(2);
+    const catalog=groqEvidenceCatalog(fixture.input);
+    for(const part of fixture.raw.parts) for(const question of part.questions) for(const entry of Object.values(question.criteria) as any[]) {
+      entry.evidenceId=catalog.find(e=>e.questionKey===question.questionKey && e.text===entry.quote)!.id;
+      delete entry.quote;
+    }
     const job: any = { id: 'job', attempt_id: 'attempt', model: 'openai/gpt-oss-120b', runs: 0,
       config: { provider: 'groq', model: 'openai/gpt-oss-120b', feedbackLocale: 'vi', inputVersion: 2,
         promptVersion: 'writing-prompt-v3', maxOutputTokens: 6000, timeoutMs: 1000, rubricVersion: 'writing-rubric-v2' } };
@@ -70,7 +107,7 @@ describe('Groq per-Part production flow and compact contract', () => {
     await h.service.runOnce();
     expect(h.provider.generateStructured).toHaveBeenCalledTimes(2);
     const request = (h.provider.generateStructured.mock.calls as any)[1][0];
-    expect(request.maxOutputTokens).toBe(1800);
+    expect(request.maxOutputTokens).toBe(3000);
     expect(request.input).not.toHaveProperty('verbatimEvidence');
     expect(h.saved.writing.metadata.promptVersion).toBe(GROQ_PARTS_WRITING_VERSION);
     expect(h.query.mock.calls.some(([sql]) => /UPDATE\s+test_attempts/i.test(sql))).toBe(false);
@@ -95,7 +132,7 @@ describe('Groq per-Part production flow and compact contract', () => {
     expect(result.details.parts).toHaveLength(input.parts.length);
     for (const row of result.details.parts.flatMap(part => part.questions)) {
       expect(row.criteria).toHaveLength(6);
-      expect(row.suggestedRevision).toBeNull();
+      expect(row.suggestedRevision).toBe('Yesterday I went to the club.');
       expect(row.corrections).toEqual([]);
     }
     expect(result.cefr.level).toBe(part ? null : 'B1');

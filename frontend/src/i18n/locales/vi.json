@@ -303,6 +303,28 @@
       "REQUEST_FAILED": "Không thể đăng nhập. Vui lòng thử lại."
     }
   },
+  "assessmentFlow": {
+    "gradingWriting": "Bài viết đang được chấm bởi AI",
+    "failedWriting": "Bài viết không thể chấm xong do {{reason}}.",
+    "grading": "Bài làm đang được chấm bởi AI",
+    "failed": "Bài làm không thể chấm xong do {{reason}}.",
+    "reasons": {
+      "invalidOutput": "AI trả về kết quả chưa hợp lệ sau các lần thử lại",
+      "quota": "dịch vụ AI đã đạt giới hạn lượt sử dụng",
+      "unavailable": "dịch vụ AI tạm thời không phản hồi hoặc gặp lỗi kết nối",
+      "unknown": "hệ thống gặp lỗi trong quá trình chấm"
+    },
+    "retryWait": "Thử lại sau khoảng {{seconds}} giây. Bạn có thể rời trang và xem lại trong lịch sử.",
+    "part": "Part {{number}}",
+    "synthesis": "tổng hợp kết quả",
+    "processing": "Đang chấm {{stage}}",
+    "queueWait": "Đang chờ lượt chấm tiếp theo",
+    "quotaWait": "Đang chờ hạn mức chấm trong ngày",
+    "retryOutput": "Kết quả lần trước chưa hợp lệ. Đang chờ chấm lại.",
+    "saved": "Đã lưu kết quả Part: {{parts}}",
+    "pending": "Bước đang chờ: {{stage}}",
+    "wait": "Kiểm tra tiếp sau khoảng {{seconds}} giây. Bạn có thể rời trang và xem lại trong lịch sử."
+  },
   "history": {
     "subtitle": "Theo dõi các bài đã hoàn thành, kết quả và hành trình học tập của bạn.",
     "summary": "Tổng số hoạt động đã hoàn thành",
