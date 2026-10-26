@@ -1,5 +1,20 @@
 import { JsonSchema } from '../../common/ai/ai-provider.interface';
 
+/** Recover only omitted optional-content lists in the compact Writing contract.
+ * All schema and domain/evidence validation still applies; never synthesize assessment content.
+ */
+export function recoverMissingWritingPartSuggestions(generated: unknown, schema: JsonSchema): unknown | undefined {
+  const partSchema = schema.properties?.parts?.items;
+  if (!schema.properties?.schemaVersion || !partSchema?.properties?.questions?.items?.properties?.suggestedRevision
+    || partSchema.properties.suggestions?.type !== 'array') return undefined;
+  const before = diagnoseGroqJson(generated, schema);
+  if (before.kind !== 'SCHEMA_MISMATCH' || !before.issues.length
+    || before.issues.some(issue => issue.rule !== 'MISSING' || !/^root\.parts\[\d+\]\.suggestions$/.test(issue.path))) return undefined;
+  const parsed = JSON.parse(generated as string);
+  for (const part of parsed.parts) if (!Object.prototype.hasOwnProperty.call(part, 'suggestions')) part.suggestions = [];
+  return diagnoseGroqJson(JSON.stringify(parsed), schema).kind === 'SCHEMA_VALID' ? parsed : undefined;
+}
+
 /** Inspect rejected text in memory. Never return values, quotations, parse messages or untrusted keys. */
 export function diagnoseGroqJson(generated: unknown, schema: JsonSchema) {
   const issues: Array<{ path: string; rule: string }> = [];

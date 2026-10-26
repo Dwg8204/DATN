@@ -8,21 +8,44 @@ function fixture() {
   const { input, result } = writingFixture();
   const validator = new WritingAssessmentValidator();
   const provider = { generateStructured: jest.fn(async (request: any) => {
-    if (request.input.scope === 'FULL_SKILL') return { cefr: structuredClone(result.cefr), summary: structuredClone(result.summary) };
+    if (request.input.scope === 'FULL_SKILL') {
+      const cefr:any=structuredClone(result.cefr);
+      cefr.evidence=cefr.evidence.map(({quote,...entry}:any)=>({...entry,evidenceId:request.input.evidenceCatalog.find((e:any)=>e.questionKey===entry.questionKey && e.text===quote)?.id ?? 'invalid'}));
+      return { cefr, summary: structuredClone(result.summary) };
+    }
     const part = request.input.parts[0];
     const blank = new WritingAssessmentService({} as any, validator).blank({ ...input, scope: 'PART', parts: [part] });
     return {
       schemaVersion: 1, cefr: blank.cefr, overallComment: 'Bạn diễn đạt được ý chính.', priorities: ['Luyện thêm thì.'],
       parts: [{ partNumber: part.partNumber, comment: 'Bạn nêu được ý chính.', suggestions: [],
-        questions: part.questions.map((q: any) => ({ questionKey: q.questionKey, comment: 'Bạn nêu được ý chính.', suggestions: [],
+        questions: part.questions.map((q: any) => ({ questionKey: q.questionKey, comment: 'Bạn nêu được ý chính.', suggestions: [], suggestedRevision:'Yesterday I went to the club.',
           criteria: Object.fromEntries(result.details.parts[0].questions[0].criteria.map(c => [c.criterion,
-            { judgment: 'ADEQUATE', comment: 'Cần sửa thì.', quote: 'Yesterday' }])) })) }],
+            { judgment: 'ADEQUATE', comment: 'Cần sửa thì.', evidenceId: request.input.evidenceCatalog.find((e:any)=>e.questionKey===q.questionKey && e.text==='Yesterday')!.id }])) })) }],
     };
   }) };
   return { input, result, provider, validator };
 }
 
 describe('Groq per-Part resumable Writing', () => {
+  it('retains Part 1 after invalid Part 2 evidence and resumes Part 2 with stage logs and revisions',async()=>{
+    const h=fixture(); let checkpoint:WritingPartsCache|undefined;
+    const real=h.provider.generateStructured.getMockImplementation()!;
+    h.provider.generateStructured.mockImplementation(async request=>{
+      const raw=await real(request);
+      if(request.input.scope==='PART' && request.input.parts[0].partNumber===2)
+        raw.parts![0].questions[0].criteria.GRAMMAR.evidenceId='invented';
+      return raw;
+    });
+    await expect(assessWritingByParts(h.provider,h.input,'model','hash',undefined,async cache=>{checkpoint=cache;})).rejects.toThrow('AI_WRITING_EVIDENCE_INVALID');
+    expect(Object.keys(checkpoint!.parts)).toEqual(['1']);
+    h.provider.generateStructured.mockReset().mockImplementation(real);
+    const stages:string[]=[];
+    const result=await assessWritingByParts(h.provider,h.input,'model','hash',checkpoint,async()=>{},async(stage,event)=>{stages.push(stage+':'+event);});
+    expect(stages[0]).toBe('part_2:started');
+    expect(stages.at(-1)).toBe('synthesis:completed');
+    expect(h.provider.generateStructured).toHaveBeenCalledTimes(4);
+    expect(result.details.parts[1].questions[0].suggestedRevision).toBe('Yesterday I went to the club.');
+  });
   it('uses four independent Parts and one synthesis, preserving all six criteria and full CEFR', async () => {
     const h = fixture(), saves: WritingPartsCache[] = [];
     const result = await assessWritingByParts(h.provider, h.input, 'model', 'hash', undefined, async cache => { saves.push(cache); });
@@ -57,7 +80,7 @@ describe('Groq per-Part resumable Writing', () => {
     h.provider.generateStructured.mockImplementation(async request => {
       if (request.input.scope === 'FULL_SKILL') {
         const raw = await real(request);
-        raw.cefr.evidence[0].quote = 'invented'; return raw;
+        raw.cefr.evidence[0].evidenceId = 'invented'; return raw;
       }
       return real(request);
     });

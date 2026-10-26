@@ -41,7 +41,7 @@ export function applyReferenceSummary(primary,reference) {
   const speaking=referenceSpeakingPresentation(reference);
   const writing=completed?reference.result?.writing:undefined;
   const status=reference.status==='NOT_REQUESTED'?(reference.eligible?'QUEUED':'NOT_STARTED'):reference.status;
-  const notice=reference.errorCode?`Groq: ${reference.errorCode}${reference.validationRule?` (${reference.validationRule})`:''}`:
+  const notice=reference.errorCode && reference.status==='FAILED'?`Groq: ${reference.errorCode}${reference.validationRule?` (${reference.validationRule})`:''}`:
     reference.status==='NOT_REQUESTED' && !reference.eligible?'Lượt làm này chưa có kết quả Groq.':undefined;
   const previous=primary.result ?? {};
   const {speaking:_speaking,writing:_writing,gradingNotice:_notice,...base}=previous;
@@ -50,7 +50,8 @@ export function applyReferenceSummary(primary,reference) {
   const neutralParts=(previous.parts ?? []).map(part=>({...part,score:null,maxScore:null}));
   return {...primary,assessmentProvider:'groq',assessmentRevision:`groq:${reference.revision ?? 'none'}`,
     gradingStatus:status,score:null,maxScore:null,estimatedCefr:writing?.scope==='FULL_SKILL'?writing.cefr?.level ?? null:null,
-    assessment:{enabled:reference.enabled || completed,retryable:reference.retryable,errorCode:reference.errorCode,nextRetryAt:reference.nextRetryAt},
+    assessment:{enabled:reference.enabled || completed,retryable:reference.retryable,errorCode:reference.errorCode,nextRetryAt:reference.nextRetryAt,
+      stage:reference.stage,completedParts:reference.completedParts},
     result:{...base,method:completed?'AI':status==='NOT_STARTED'?'UNASSESSED':'PENDING_AI',score:null,maxScore:null,
       parts:neutralParts,items:speaking?.items.map(item=>({...neutralItems.find(original=>original.key===item.key),...item})) ?? neutralItems,
       gradingNotice:notice ?? speaking?.gradingNotice,...(writing?{writing}:{}),...(speaking?{speaking:speaking.speaking}:{})}};

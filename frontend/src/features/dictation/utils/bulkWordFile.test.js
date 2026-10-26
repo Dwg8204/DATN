@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { readFile } from 'node:fs/promises';
 import XLSX from 'xlsx';
 import { BULK_WORD_HEADERS, buildBulkWordCsvTemplate, parseBulkWordFile } from './bulkWordFile.js';
 
@@ -23,6 +24,25 @@ test('downloaded CSV template opens as six separate Excel columns and is accepte
   const rows = await parseBulkWordFile(file('filled-template.csv', `${template}make,/meɪk/,verb,làm,,Daily life\r\n`));
   assert.equal(rows[0].word, 'make');
   assert.equal(rows[0].topic, 'Daily life');
+});
+
+test('served Excel template is a real xlsx workbook with six separate columns', async () => {
+  const bytes = await readFile(new URL('../../../../public/templates/vocabulary-import-template.xlsx', import.meta.url));
+  const workbook = XLSX.read(bytes, { type: 'buffer' });
+  assert.deepEqual(workbook.SheetNames, ['Words']);
+  assert.deepEqual(XLSX.utils.sheet_to_json(workbook.Sheets.Words, { header: 1 })[0], BULK_WORD_HEADERS);
+});
+
+test('filled Excel template is accepted with Vietnamese text and an optional example', async () => {
+  const bytes = await readFile(new URL('../../../../public/templates/vocabulary-import-template.xlsx', import.meta.url));
+  const workbook = XLSX.read(bytes, { type: 'buffer' });
+  XLSX.utils.sheet_add_aoa(workbook.Sheets.Words, [['meticulous', '/məˈtɪk.jə.ləs/', 'Adjective', 'Tỉ mỉ, kỹ lưỡng', '', 'Work']], { origin: 'A2' });
+  const filled = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  const rows = await parseBulkWordFile(file('vocabulary-import-template (1).xlsx', filled));
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].word, 'meticulous');
+  assert.equal(rows[0].vietnamese_meaning, 'Tỉ mỉ, kỹ lưỡng');
+  assert.equal(rows[0].example_sentence, '');
 });
 
 test('CSV row with a comma in Vietnamese meaning and capitalized type parses into six fields', async () => {

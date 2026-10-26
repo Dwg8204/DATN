@@ -84,7 +84,7 @@ export default function VocabularyBulkImport({ onClose, mutate, onComplete }) {
       </header>
       <p>{t('dictation.bulkRules')}</p>
       <div className={styles.templates}>
-        <button type="button" onClick={() => downloadBulkWordTemplate('xlsx')}>{t('dictation.bulkTemplateXlsx')}</button>
+        <a href={`${import.meta.env.BASE_URL}templates/vocabulary-import-template.xlsx`} download="vocabulary-import-template.xlsx">{t('dictation.bulkTemplateXlsx')}</a>
         <button type="button" onClick={() => downloadBulkWordTemplate('csv')}>{t('dictation.bulkTemplateCsv')}</button>
       </div>
       <p className={styles.columns}><code>word, pronunciation, word_type, vietnamese_meaning, example_sentence, topic</code></p>

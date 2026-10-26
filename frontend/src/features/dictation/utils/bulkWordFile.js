@@ -59,7 +59,7 @@ export async function parseBulkWordFile(file) {
     catch { throw new BulkWordFileError('encoding'); }
     values = readCsv(value);
   } else {
-    ({ default: XLSX } = await import('xlsx'));
+    XLSX = await import('xlsx');
     const workbook = XLSX.read(await file.arrayBuffer(), { type: 'array', cellFormula: true });
     if (workbook.SheetNames.length !== 1 || workbook.SheetNames[0] !== 'Words')
       throw new BulkWordFileError('sheet');
@@ -93,21 +93,15 @@ export async function parseBulkWordFile(file) {
   return rows;
 }
 
-export async function downloadBulkWordTemplate(format) {
-  const { default: XLSX } = await import('xlsx');
-  if (format === 'xlsx') {
-    const workbook = XLSX.utils.book_new();
-    const sheet = XLSX.utils.aoa_to_sheet([BULK_WORD_HEADERS]);
-    sheet['!cols'] = [24, 20, 18, 28, 48, 24].map(wch => ({ wch }));
-    XLSX.utils.book_append_sheet(workbook, sheet, 'Words');
-    XLSX.writeFile(workbook, 'vocabulary-import-template.xlsx');
-    return;
-  }
+export function downloadBulkWordTemplate(format) {
+  if (format !== 'csv') throw new BulkWordFileError('fileType');
   const blob = new Blob([buildBulkWordCsvTemplate()], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'vocabulary-import-template.csv';
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  link.download = `vocabulary-import-template.${format}`;
+  document.body.appendChild(link);
+  try { link.click(); }
+  finally { link.remove(); }
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
