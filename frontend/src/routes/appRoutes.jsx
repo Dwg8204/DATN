@@ -66,7 +66,7 @@ export const appRoutes = [
       },
       {
         path: 'profile/notifications',
-        element: <NotificationsPage />,
+        element: <RoleGuard allowedRoles={['ADMIN', 'STUDENT']}><NotificationsPage /></RoleGuard>,
       },
       {
         path: 'profile/mistakes',

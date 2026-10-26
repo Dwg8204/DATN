@@ -168,7 +168,7 @@ export default function Header() {
       <div className={styles.headerActions}>
         <ThemeToggle />
         <LanguageSelector />
-        <UserNotifications />
+        {isAuthenticated && <UserNotifications />}
         {isAuthenticated ? (
           <div className={styles.userMenuContainer} ref={userMenuRef}>
             <div
