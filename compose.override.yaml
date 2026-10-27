@@ -1,0 +1,27 @@
+# Docker Compose loads this automatically when run from the repository root.
+# Source mounts keep code live; dependencies and build output stay in Linux.
+services:
+  backend:
+    build:
+      target: development
+    volumes:
+      - ./backend/src:/app/src:ro
+      - ./backend/resources:/app/resources:ro
+      - ./backend/nest-cli.json:/app/nest-cli.json:ro
+      - ./backend/tsconfig.json:/app/tsconfig.json:ro
+      - ./backend/tsconfig.build.json:/app/tsconfig.build.json:ro
+    healthcheck:
+      start_period: 60s
+
+  frontend:
+    build:
+      target: development
+    init: true
+    volumes:
+      - ./frontend/src:/app/src:ro
+      - ./frontend/public:/app/public:ro
+      - ./frontend/index.html:/app/index.html:ro
+      - ./frontend/vite.config.js:/app/vite.config.js:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      start_period: 30s

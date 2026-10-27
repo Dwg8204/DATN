@@ -1,7 +1,15 @@
-FROM node:22-bookworm-slim AS build
+FROM node:22-bookworm-slim AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
+
+FROM dependencies AS development
+COPY . .
+ENV DOCKER_DEV=true VITE_API_BASE_URL=/api/v1
+EXPOSE 80
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "80", "--strictPort"]
+
+FROM dependencies AS build
 COPY . .
 # Browser requests go through Nginx, including Socket.IO.
 ENV VITE_API_BASE_URL=/api/v1
