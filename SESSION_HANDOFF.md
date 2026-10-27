@@ -6,6 +6,11 @@
 - Chạy start-docker.cmd hoặc Docker Compose từ thư mục gốc để dùng development. Chạy với -f backend/compose.yaml dùng bản build cố định NestJS/Nginx. Thay thư viện, Dockerfile/Compose hoặc .env cần cập nhật container; không tự migrate/seed.
 - Đã kiểm tra cấu hình Compose development và bản build cố định hợp lệ; xác nhận cả hai service chọn target development cùng source mounts khi chạy từ gốc. Không chạy lại build/container trong thao tác commit này. Cập nhật README gốc và backend; commit riêng Docker, không gồm Dashboard hay kế hoạch production. Chưa push.
 
+## Liên kết Dashboard theo tài khoản — 27/10/2026
+
+- Mục Dashboard trong menu tài khoản trên Header và trong ProfileSidebar (desktop/mobile) dùng quyền từ AuthContext: ADMIN tới `/admin/dashboard`, user tới `/profile/dashboard`. Tái sử dụng hàm kiểm tra role hiện có.
+- Đã kiểm tra trực tiếp handler của cả ba nút với ADMIN, STUDENT, USER và role được chuẩn hóa; điều hướng đúng và vẫn đóng menu sau khi chọn. Oxlint và diff check đạt. Commit riêng phần điều hướng và bàn giao; chưa push. Với Docker bản build cố định cần build lại frontend; chế độ development mới tự nhận source sau khi cập nhật container.
+
 ## Bố cục AI feedback Writing — 26/10/2026
 
 - Trang kết quả Writing hiển thị Test summary trước Estimated Writing CEFR; mỗi khối chiếm toàn chiều rộng, bỏ bố cục hai cột và chiều cao kéo giãn theo nhau.
