@@ -1,3 +1,4 @@
+import { MistakeSourceService } from '../../src/features/personalization/services/mistake-source.service';
 import { AddPlanProgressFinalizedAt1760000023000 } from '../../src/database/migrations/1760000023000-AddPlanProgressFinalizedAt';
 import * as assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
@@ -188,7 +189,11 @@ withPersonalizationDatabase(async (db, alice, bob) => {
         db.query = query;
       }
     };
+    const mistakeService = module.get(MistakeSourceService);
+    const recent = mistakeService.recent.bind(mistakeService);
+    mistakeService.recent = async () => { throw new Error('Overview must not read full mistake details'); };
     const initialQueryCount = await overviewQueryCount();
+    mistakeService.recent = recent;
     // Simulate a learner arriving at week 20, with prior weeks already sealed.
     const repo = new LearningGoalsRepository(db),
       goal = (await repo.findById(alice, created.goal.id))!;

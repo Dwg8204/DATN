@@ -49,6 +49,7 @@ test(
     );
     let needed = false,
       pending = false, commentStatus = 'READY';
+    let failOverview = false, failSync = false, syncGate = null;
     const calls = [];
     await context.route('**/*', (route) =>
       route.request().url().startsWith(origin) ||
@@ -56,7 +57,7 @@ test(
         ? route.continue()
         : route.abort(),
     );
-    await context.route('**/api/v1/**', (route) => {
+    await context.route('**/api/v1/**', async (route) => {
       const req = route.request(),
         path = new URL(req.url()).pathname.replace('/api/v1', '');
       if (req.method() !== 'OPTIONS' && path.startsWith('/me/'))
@@ -69,7 +70,10 @@ test(
           firstName: 'Test',
           lastName: 'Learner',
         };
+      if (path === '/me/personalization/overview' && failOverview) return route.abort('failed');
+      if (path === '/me/personalization/sync' && failSync) return route.abort('failed');
       if (path === '/me/personalization/sync') {
+        if (syncGate) await syncGate;
         needed = false;
         json = { synced: true };
       }
@@ -125,9 +129,15 @@ test(
       await page.getByText('Your progress is ready.').waitFor();
       assert.deepEqual(calls, ['/me/personalization/overview']);
       needed = true;
+      let releaseSync;
+      syncGate = new Promise(resolve => { releaseSync = resolve; });
       calls.length = 0;
       await page.reload({ waitUntil: 'domcontentloaded' });
       await page.getByText('Your progress is ready.').waitFor();
+      assert.ok(!calls.includes('/me/personalization/overview', 1), 'read data renders before sync finishes');
+      const synced = page.waitForResponse(r => r.url().includes('/me/personalization/overview'));
+      releaseSync(); syncGate = null;
+      await synced;
       assert.deepEqual(calls, [
         '/me/personalization/overview',
         '/me/personalization/sync',
@@ -186,6 +196,20 @@ test(
           () => document.documentElement.scrollWidth <= innerWidth + 1,
         ),
       );
+      commentStatus = 'READY';
+      failOverview = true;
+      await page.reload({waitUntil:'domcontentloaded'});
+      await page.getByRole('button', {name:'Try again', exact:true}).waitFor();
+      failOverview = false;
+      await page.clock.runFor(5100);
+      await page.getByText('Your progress is ready.').waitFor();
+      needed = true; failSync = true;
+      await page.reload({waitUntil:'domcontentloaded'});
+      await page.getByRole('button', {name:'Try again', exact:true}).waitFor();
+      assert.ok(await page.getByText('Your progress is ready.').isVisible(), 'sync error preserves read data');
+      failSync = false;
+      await page.getByRole('button', {name:'Try again', exact:true}).click();
+      await page.getByText('Your progress is ready.').waitFor();
       assert.deepEqual(errors, []);
     } finally {
       await context.close();

@@ -1,5 +1,7 @@
 {
   "personalization": {
+    "refreshFailed": "Chưa cập nhật được dữ liệu học tập. Dữ liệu đang hiển thị có thể chưa mới nhất. Vui lòng thử lại.",
+    "retryLoad": "Thử lại",
     "placement": {
       "assessedWithoutBand": "Đã đánh giá · Chưa có band ước lượng","title":"Đánh giá năng lực đầu vào","help":"Hoàn thành ba kỹ năng bắt buộc để AptiMate xây dựng lộ trình phù hợp. Viết và Nói là tùy chọn.","required":"Bắt buộc","optional":"Tùy chọn","start":"Đánh giá {{skill}}","unavailable":"Chưa có đề đánh giá","goalWarning":"Bạn chưa đánh giá đủ ba kỹ năng. Vẫn có thể đặt mục tiêu; tuần đầu sẽ ưu tiên các bài đánh giá còn thiếu.","adminLabel":"Đề đánh giá đầu vào","adminMissing":"Chưa có đề đánh giá đã xuất bản: {{skills}}","saveFailed":"Không thể cập nhật. Hãy tải lại danh sách để lấy phiên bản mới."},
     "ability": {"missing":"Thiếu: {{skills}}","status":{"NONE":"Chưa có dữ liệu","PRELIMINARY":"Sơ bộ","ESTIMATE":"Ước lượng"},"skills":{"GRAMMAR_VOCAB":"Ngữ pháp & Từ vựng","READING":"Đọc","LISTENING":"Nghe","WRITING":"Viết","SPEAKING":"Nói"},"changeTitle":"Thay đổi band theo kỹ năng","skill":"Kỹ năng","baseline":"Đầu kỳ","current":"Hiện tại","noBaseline":"Mục tiêu này chưa lưu hồ sơ đầu kỳ."},

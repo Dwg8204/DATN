@@ -1,19 +1,20 @@
-import { readAbilityProfile } from '../../ai-shared/ability-profile.repository';
-import { Injectable } from '@nestjs/common';
-import { readWeakTopics } from '../../topics/topic-evidence';
-import { DataSource, EntityManager } from 'typeorm';
-import { AuthUser } from '../../auth/types/auth-user.type';
-import { LearningGoalsRepository } from '../repositories/learning-goals.repository';
+import { AbilityProfile } from "../../ai-shared/ability-profile";
+import { readAbilityProfile } from "../../ai-shared/ability-profile.repository";
+import { Injectable } from "@nestjs/common";
+import { readWeakTopics } from "../../topics/topic-evidence";
+import { DataSource, EntityManager } from "typeorm";
+import { AuthUser } from "../../auth/types/auth-user.type";
+import { LearningGoalsRepository } from "../repositories/learning-goals.repository";
 import {
   buildLearnerSnapshot,
   snapshotHash,
-} from '../policies/learner-snapshot';
-import { SnapshotAttempt, SnapshotWindow } from '../types/snapshot.type';
-import { LearningGoalRow } from '../types/personalization.type';
-import { GoalsService } from './goals.service';
-import { MistakeSourceService } from './mistake-source.service';
-import { PersonalizationClock } from './personalization-clock';
-import { addDays, localDay } from '../policies/calendar';
+} from "../policies/learner-snapshot";
+import { SnapshotAttempt, SnapshotWindow } from "../types/snapshot.type";
+import { LearningGoalRow } from "../types/personalization.type";
+import { GoalsService } from "./goals.service";
+import { MistakeSourceService } from "./mistake-source.service";
+import { PersonalizationClock } from "./personalization-clock";
+import { addDays, localDay } from "../policies/calendar";
 
 @Injectable()
 export class SnapshotService {
@@ -25,14 +26,23 @@ export class SnapshotService {
     private readonly clock: PersonalizationClock,
   ) {}
 
-  async current(actor: AuthUser) {
+  async current(actor: AuthUser, overviewProfile?: AbilityProfile) {
     const current = await this.goals.current(actor.id);
     const goal = current.goal
       ? await this.repository.findById(actor.id, current.goal.id)
       : null;
     return {
       ...current,
-      snapshot: goal ? await this.build(actor, goal, { kind: 'GOAL' }) : null,
+      snapshot: goal
+        ? await this.build(
+            actor,
+            goal,
+            { kind: "GOAL" },
+            this.clock.now(),
+            this.db.manager,
+            overviewProfile,
+          )
+        : null,
     };
   }
 
@@ -42,16 +52,17 @@ export class SnapshotService {
     window: SnapshotWindow,
     asOf = this.clock.now(),
     manager: EntityManager = this.db.manager,
+    overviewProfile?: AbilityProfile,
   ) {
     const [user] = await manager.query<Array<{ timezone: string }>>(
-      'SELECT timezone FROM users WHERE id=$1',
+      "SELECT timezone FROM users WHERE id=$1",
       [actor.id],
     );
     if (goal && goal.user_id !== actor.id)
-      throw new Error('Snapshot owner mismatch');
+      throw new Error("Snapshot owner mismatch");
     const timezone = goal?.timezone ?? user.timezone;
     const end = goal?.ended_at && goal.ended_at < asOf ? goal.ended_at : asOf;
-    const from = goal?.start_date ?? '1970-01-01';
+    const from = goal?.start_date ?? "1970-01-01";
     const until = goal
       ? addDays(goal.start_date, goal.duration_days)
       : addDays(localDay(end, timezone), 1);
@@ -59,15 +70,15 @@ export class SnapshotService {
     const where = `student_id=$1 AND status='SUBMITTED' AND submitted_at >= ($2::date::timestamp AT TIME ZONE $4)
       AND submitted_at < ($3::date::timestamp AT TIME ZONE $4) AND submitted_at <= $5`;
     const scoreFields =
-      'id,student_id,component,purpose,scope,part_number,status,submitted_at,score,max_score,estimated_cefr,result';
+      "id,student_id,component,purpose,scope,part_number,status,submitted_at,score,max_score,estimated_cefr,result";
     const period =
-      window.kind === 'WEEKLY' || window.kind === 'MIDTERM' ? window : null;
+      window.kind === "WEEKLY" || window.kind === "MIDTERM" ? window : null;
     const scoreQuery = period
       ? `WITH cumulative AS (SELECT ${scoreFields} FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id DESC LIMIT 200),
       period AS (SELECT ${scoreFields} FROM test_attempts WHERE ${where} AND submitted_at >= ($6::date::timestamp AT TIME ZONE $4)
         AND submitted_at < (($7::date+1)::timestamp AT TIME ZONE $4) ORDER BY submitted_at DESC,id DESC LIMIT 200)
       SELECT * FROM cumulative UNION SELECT * FROM period`
-      : window.kind === 'COMMENT'
+      : window.kind === "COMMENT"
         ? `SELECT ${scoreFields} FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id ASC LIMIT 20`
         : `SELECT ${scoreFields} FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id DESC LIMIT 200`;
     const [attempts, scoredAttempts, reviews, [vocab], planItems, mistakes] =
@@ -77,10 +88,12 @@ export class SnapshotService {
             `SELECT id,student_id,component,purpose,scope,part_number,status,submitted_at FROM test_attempts WHERE ${where} ORDER BY submitted_at DESC,id DESC`,
             params,
           ),
-          await manager.query<SnapshotAttempt[]>(
-            scoreQuery,
-            period ? [...params, period.from, period.to] : params,
-          ),
+          overviewProfile
+            ? []
+            : await manager.query<SnapshotAttempt[]>(
+                scoreQuery,
+                period ? [...params, period.from, period.to] : params,
+              ),
           await manager.query<Array<{ reviewed_at: Date }>>(
             `SELECT e.reviewed_at FROM vocabulary_review_events e JOIN user_notebook_items n ON n.id=e.notebook_item_id
         WHERE n.user_id=$1 AND e.reviewed_at >= ($2::date::timestamp AT TIME ZONE $4) AND e.reviewed_at < ($3::date::timestamp AT TIME ZONE $4) AND e.reviewed_at <= $5 ORDER BY e.reviewed_at`,
@@ -103,19 +116,19 @@ export class SnapshotService {
                 [actor.id, goal.id],
               )
             : [],
-          await this.mistakes.recent(actor, end, timezone, manager),
+          overviewProfile
+            ? []
+            : await this.mistakes.recent(actor, end, timezone, manager),
         ] as const)();
     const [bounds] = await manager.query(
-      'SELECT $1::date::timestamp AT TIME ZONE $2 AS start',
+      "SELECT $1::date::timestamp AT TIME ZONE $2 AS start",
       [period?.from ?? from, timezone],
     );
-    const weakTopics = await readWeakTopics(
-      manager,
-      actor.id,
-      bounds.start,
-      end,
-    );
-    const abilityProfile = await readAbilityProfile(manager, actor.id, end);
+    const weakTopics = overviewProfile
+      ? []
+      : await readWeakTopics(manager, actor.id, bounds.start, end);
+    const abilityProfile =
+      overviewProfile ?? (await readAbilityProfile(manager, actor.id, end));
     const snapshot = buildLearnerSnapshot(
       actor.id,
       goal,

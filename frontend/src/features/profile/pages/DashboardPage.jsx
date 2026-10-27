@@ -33,17 +33,21 @@ export default function DashboardPage() {
   const ui = useUiTranslation();
   const { t } = useTranslation();
   const overviewRequest = useRef(null);
+  const [reloadOverview, setReloadOverview] = useState(0);
   const [overview, setOverview] = useState(null);
   const [personalizationError, setPersonalizationError] = useState(false);
   useEffect(() => {
     let active = true,
-      timer, pollAttempt = 0;
+      timer, pollAttempt = 0, failures = 0;
     const load = async () => {
       try {
         let value = await (overviewRequest.current ??=
           personalizationApi.overview());
         overviewRequest.current = null;
         if (!active) return;
+        // Render the read result immediately; background sync must not block these cards.
+        setOverview(value);
+        setPersonalizationError(false);
         if (value.needsSync) {
           await personalizationApi.sync();
           if (!active) return;
@@ -52,11 +56,15 @@ export default function DashboardPage() {
         if (!active) return;
         setOverview(value);
         setPersonalizationError(false);
+        failures = 0;
         const delay=commentPollDelay(value.comment?.status,pollAttempt++);
         if(delay!==null)timer=setTimeout(load,delay);
       } catch {
         overviewRequest.current = null;
-        if (active) setPersonalizationError(true);
+        if (active) {
+          setPersonalizationError(true);
+          if (failures++ < 3) timer = setTimeout(load, Math.min(30000, 5000 * 2 ** (failures - 1)));
+        }
       }
     };
     void load();
@@ -64,7 +72,7 @@ export default function DashboardPage() {
       active = false;
       clearTimeout(timer);
     };
-  }, []);
+  }, [reloadOverview]);
   const [dashboard, setDashboard] = useState(null);
   const [loadError, setLoadError] = useState('');
   const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
@@ -111,10 +119,11 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <AbilityAssessmentCard profile={overview?.profile} loadError={personalizationError} />
-          <GoalProgressCard data={overview ? {goal:overview.goal,snapshot:overview.progress} : null} error={personalizationError} />
+          {personalizationError && <p role="status">{t('personalization.refreshFailed')} <button type="button" onClick={() => setReloadOverview(value => value + 1)}>{t('personalization.retryLoad')}</button></p>}
+          <AbilityAssessmentCard profile={overview?.profile} loadError={personalizationError && !overview} />
+          <GoalProgressCard data={overview ? {goal:overview.goal,snapshot:overview.progress} : null} error={personalizationError && !overview} />
           <PersonalCommentCard result={overview?.comment} />
-          <StudyPlanCard data={overview ? {plan:overview.plan,today:overview.today} : null} loadError={personalizationError} />
+          <StudyPlanCard data={overview ? {plan:overview.plan,today:overview.today} : null} loadError={personalizationError && !overview} />
           <WeeklyReportsCard reports={overview?.recentReports} />
           <div className={styles.kpiGrid}>
             <div className={styles.kpiCard} style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #e0f2fe', boxShadow: '0 4px 12px rgba(2, 132, 199, 0.15)' }}>
