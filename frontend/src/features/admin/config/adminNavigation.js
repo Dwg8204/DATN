@@ -1,4 +1,4 @@
-import { Bell, ClipboardList, LayoutDashboard, LogOut, MessageSquareText, Users } from 'lucide-react';
+import { Bell, ClipboardList, LayoutDashboard, LogOut, Users } from 'lucide-react';
 
 export const ADMIN_NAVIGATION = [
   { label: 'Dashboard', to: '/admin/dashboard', icon: LayoutDashboard, roles: ['ADMIN'] },
@@ -8,7 +8,6 @@ export const ADMIN_NAVIGATION = [
   ] },
   { label: 'User Management', to: '/admin/users', icon: Users, roles: ['ADMIN'] },
   { label: 'Topic management', to: '/admin/learning-topics', activePaths: ['/admin/learning-topics', '/admin/topic-labels'], icon: ClipboardList, roles: ['ADMIN'] },
-  { label: 'Feedback', to: '/admin/feedback', icon: MessageSquareText, roles: ['ADMIN'] },
   { label: 'Notification', to: '/admin/notifications', icon: Bell, roles: ['ADMIN'] },
 ];
 

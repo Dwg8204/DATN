@@ -1,24 +1,5 @@
-import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import styles from './HeroBanner.module.css';
 
-export default function HeroBanner({
-  title = 'Learn Smarter, Score Higher',
-  description = 'Practice APTIS Listening, Reading, Writing, and Speaking — powered by AI. Get instant answers, detailed feedback, and personalized improvement tips.',
-  buttonText = 'aptis Test',
-  onButtonClick,
-}) {
-  const ui = useUiTranslation();
-  return (
-    <div className={styles.heroBanner}>
-      <div className={styles.inner}>
-        <span className={styles.title}>{ui(title)}</span>
-        <span className={styles.description}>{ui(description)}</span>
-        {buttonText && (
-          <button className={styles.ctaBtn} onClick={onButtonClick}>
-            <span className={styles.ctaBtnText}>{buttonText}</span>
-          </button>
-        )}
-      </div>
-    </div>
-  );
+export default function HeroBanner() {
+  return <div className={styles.heroBanner} aria-hidden="true" />;
 }

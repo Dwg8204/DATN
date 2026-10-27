@@ -1,13 +1,13 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import ResultBackButton from '../../../components/common/ResultBackButton.jsx';
-import AssessmentProgress from './AssessmentProgress.jsx';
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import styles from './AttemptPageState.module.css';
 import { useTestAttempt } from '../context/testAttemptContextStore';
 
 export function AttemptPageState({ loading, error, backHref = '/grammar-vocab/tests' }) {
   const ui = useUiTranslation();
   if (!loading && !error) return null;
-  if (loading && !error) return <main className={styles.state}><AssessmentProgress loading /></main>;
+  if (loading && !error) return <main className={styles.state}><PageLoader /></main>;
   return (
     <main className={styles.state} role={error ? 'alert' : 'status'}>
       <span className={loading ? styles.spinner : styles.errorIcon} aria-hidden="true">{error ? '!' : ''}</span>

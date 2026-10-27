@@ -4,7 +4,7 @@ Modular monolith backend for the AptiMate learning platform. The application use
 
 ## Chạy cả frontend và backend bằng Docker
 
-Xem [hướng dẫn Docker tại thư mục gốc](../README.md). Nhấp đúp `start-docker.cmd` ở thư mục gốc hoặc chạy `docker compose up -d --build --wait` để khởi động toàn bộ hệ thống. Sau lần đầu có thể bật/tắt nhóm `backend` trong Docker Desktop. Cấu hình dùng lại volume PostgreSQL và thư mục uploads hiện tại; không tự migrate/seed. Các hướng dẫn bên dưới dành cho phát triển bằng Node.js trên máy.
+Xem [hướng dẫn Docker tại thư mục gốc](../README.md). Nhấp đúp `start-docker.cmd` hoặc chạy `docker compose up -d --build --wait` **từ thư mục gốc** để khởi động toàn bộ hệ thống với NestJS watch mode và Vite hot reload: lưu code là tự cập nhật. Sau lần đầu có thể bật/tắt nhóm `backend` trong Docker Desktop. Cấu hình dùng lại volume PostgreSQL và thư mục uploads hiện tại; không tự migrate/seed. Chạy Compose từ thư mục `backend` dùng bản build cố định. Các hướng dẫn bên dưới dành cho phát triển bằng Node.js trên máy.
 
 ## Requirements
 

@@ -1,3 +1,4 @@
+import PageLoader from '../../common/PageLoader.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -102,10 +103,10 @@ function SkillComments({ skill, user, isAuthReady }) {
 
   return <section className={styles.container} aria-label={t('comments.title')}>
     <h2 className={styles.replyCount}>{t('comments.count', { count: total })}</h2>
-    {!isAuthReady ? <p role="status">{t('comments.loading')}</p> : user ? composer(false) :
+    {!isAuthReady ? <PageLoader compact /> : user ? composer(false) :
       <Link to="/login" state={{ from: location.pathname + location.search }}>{t('comments.login')}</Link>}
     {error && <p className={styles.error} role="alert">{t(error)}</p>}
-    {loading && <p role="status">{t('comments.loading')}</p>}
+    {loading && <PageLoader compact />}
     {loadError && <div role="alert"><p>{t('comments.loadError')}</p>
       <button type="button" disabled={busy} onClick={() => setRevision(value => value + 1)}>{t('comments.retry')}</button></div>}
     {!loading && !loadError && !comments.length && <p>{t('comments.empty')}</p>}

@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import {PlacementControl,PlacementCoverage} from '../shared-test-builder/PlacementControl';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useState } from 'react';
@@ -208,15 +209,15 @@ export default function TestManagerPage() {
       </header>
       <div className={styles.scroll}><table><thead><tr><th><input type="checkbox" /></th><th>{ui("Name")}</th><th>{ui("Status")}</th><th>{ui("Date Added")}</th><th>{ui("Attempt")}</th><th>{ui("Questions Type")}</th><th /></tr></thead><tbody>{visibleTests.map((test) => <tr key={test.id}><td><input type="checkbox" /></td><td>{test.name}<PlacementControl test={test} onSaved={()=>({ 'Grammar & Vocab':grammar,Writing:writing,Reading:reading,Listening:listening,Speaking:speaking }[test.component]?.reload())}/></td><td><StatusBadge status={test.status} /></td><td>{formatAdminDate(test.dateAdded)}</td><td>{test.attempts}</td><td><span className={styles.type}>{test.questionType}</span></td><td>{actions(test)}</td></tr>)}</tbody></table></div>
       <div className="mobileTestList">{visibleTests.map((test) => <article className="mobileTestCard" key={test.id}><header><div><small>{test.section}</small><h3>{test.name}</h3><PlacementControl test={test} onSaved={()=>({ 'Grammar & Vocab':grammar,Writing:writing,Reading:reading,Listening:listening,Speaking:speaking }[test.component]?.reload())}/></div><StatusBadge status={test.status} /></header><dl><div><dt>{ui("Date Added")}</dt><dd>{formatAdminDate(test.dateAdded)}</dd></div><div><dt>{ui("Attempts")}</dt><dd>{test.attempts}</dd></div><div><dt>{ui("Type")}</dt><dd>{test.questionType}</dd></div></dl>{actions(test)}</article>)}</div>
-      {grammarActive && grammar.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {grammarActive && grammar.loading && <PageLoader />}
       {grammarActive && grammar.error && <p className="mobileEmptyTests">{ui.error(grammar.error)}</p>}
-      {writingActive && writing.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {writingActive && writing.loading && <PageLoader />}
       {writingActive && writing.error && <p className="mobileEmptyTests">{ui.error(writing.error)}</p>}
-      {listeningActive && listening.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {listeningActive && listening.loading && <PageLoader />}
       {listeningActive && listening.error && <p className="mobileEmptyTests">{ui.error(listening.error)}</p>}
-      {readingActive && reading.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {readingActive && reading.loading && <PageLoader />}
       {readingActive && reading.error && <p className="mobileEmptyTests">{ui.error(reading.error)}</p>}
-      {speakingActive && speaking.loading && <p className="mobileEmptyTests">{ui("Loading tests…")}</p>}
+      {speakingActive && speaking.loading && <PageLoader />}
       {speakingActive && speaking.error && <p className="mobileEmptyTests">{ui.error(speaking.error)}</p>}
       {!grammar.loading && !writing.loading && !listening.loading && !reading.loading && !speaking.loading
         && !visibleTests.length && <p className="mobileEmptyTests">{ui("No tests found.")}</p>}

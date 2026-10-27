@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import styles from './BuilderDraftStatus.module.css';
 import { useParams } from 'react-router-dom';
@@ -21,7 +22,7 @@ export default function BuilderDraftStatus({ builder, children }) {
       blocker.reset();
     } finally { setLeaving(false); }
   };
-  if (loading) return <p role="status">{ui("Loading test draft…")}</p>;
+  if (loading) return <PageLoader />;
   if (error) return <p role="alert">{ui.error(error)}</p>;
   return <>
     <AdminConfirmDialog open={blocker?.state === 'blocked'} title={ui("Leave test editor?")}

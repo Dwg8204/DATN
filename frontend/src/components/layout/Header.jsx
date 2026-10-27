@@ -5,6 +5,7 @@ import { AudioLines, BookOpen, ChevronDown, Headphones, Home, Languages, Mic, Pe
 import { useTranslation } from 'react-i18next';
 import styles from './Header.module.css';
 import { useAuth } from '../../context/AuthContext';
+import { canAccessAdminPath } from '../../features/auth/utils/authorization';
 import UserNotifications from './UserNotifications';
 import LanguageSelector from './LanguageSelector';
 import ThemeToggle from './ThemeToggle';
@@ -111,6 +112,7 @@ export default function Header() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
+  const dashboardPath = canAccessAdminPath(user?.role) ? '/admin/dashboard' : '/profile/dashboard';
   const { theme } = useTheme();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef(null);
@@ -195,7 +197,7 @@ export default function Header() {
                   <Bell size={16} style={{ marginRight: '8px' }} />
                   {t('profile.notifications')}
                 </button>
-                <button className={styles.dropdownItem} onClick={() => { navigate('/profile/dashboard'); setIsUserMenuOpen(false); }}>
+                <button className={styles.dropdownItem} onClick={() => { navigate(dashboardPath); setIsUserMenuOpen(false); }}>
                   <LayoutDashboard size={16} style={{ marginRight: '8px' }} />
                   {t('profile.dashboard')}
                 </button>

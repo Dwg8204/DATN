@@ -1,6 +1,6 @@
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useToast } from '../../../context/ToastContext';
@@ -22,7 +22,7 @@ export default function RoleGuard({ allowedRoles, children }) {
   }, [authenticated, authorized, isAuthReady, authConnectionError, showError]);
 
   if (!isAuthReady) {
-    return <div className={styles.loading} role="status"><LoaderCircle aria-hidden="true" /><span>{ui("Checking access...")}</span></div>;
+    return <PageLoader />;
   }
   if (authConnectionError) {
     return <div className={styles.loading} role="alert"><span>{ui("Unable to verify access. Reconnect and retry. Your local test draft is preserved.")}</span><button type="button" onClick={retryAuth}>{ui("Retry")}</button></div>;

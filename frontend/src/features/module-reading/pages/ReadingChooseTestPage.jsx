@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import Pagination from '../../../components/common/Pagination';
 import React, { useState, useEffect } from 'react';
@@ -132,7 +133,7 @@ export default function ReadingChooseTestPage() {
           <div className={styles.gridContainer}>
             <div className={styles.gridRow}>
               {loading ? (
-                <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>{ui("Loading tests…")}</div>
+                <PageLoader />
               ) : filteredTests.length === 0 && !loadError ? (
                 <div style={{ padding: '20px', fontSize: '16px', color: '#666' }}>{ui("No tests available for this search/part yet.")}</div>
               ) : (

@@ -1,5 +1,25 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Dọn giao diện trang chủ, admin và tổng quan kỹ năng — 27/10/2026
+
+- HeroBanner chỉ còn ảnh nền; bỏ toàn bộ tiêu đề, mô tả và khung nội dung phủ lên ảnh. Admin bỏ mục/route placeholder Feedback; Test Management dùng cùng padding và khoảng cách icon với menu khác, chevron thu gọn vẫn tách riêng.
+- PageLoader dùng chung: vòng xoay đỏ ở giữa vùng trang, nhãn trạng thái cho trình đọc màn hình, giảm tốc khi bật reduced motion. Áp dụng cho Suspense admin/Writing/Dashboard, kiểm tra quyền, tải đề/preview/editor, danh sách đề, lịch sử, Dictation và các vùng dữ liệu liên quan. Vùng nhỏ dùng compact; giữ nguyên tiến trình chấm AI và trạng thái thao tác lưu/nộp bài.
+- Cả Reading, Listening, Speaking, Writing, Grammar & Vocabulary có nguồn British Council ngay dưới overview. Tài liệu và Phổ biến nhất dùng liên kết thật đến trang cấu trúc/mẹo đúng kỹ năng, bộ đề PDF, hướng dẫn thí sinh/điểm số và trang chuẩn bị Aptis General; thay thẻ mẫu lặp lại, thêm hover pointer/focus và bản dịch Anh–Việt. Link ngoài mở tab mới với noopener/noreferrer. Các trang nguồn đã mở xác minh qua British Council trong phiên này.
+- Kiểm chứng: harness trình duyệt desktop 1280/mobile 390 cho 5 overview, banner và spinner đạt; không tràn ngang, đủ 9 link ngoài/trang, pointer và spinner đỏ căn giữa. Oxlint không lỗi (còn cảnh báo có sẵn), diff check đạt. Frontend unit 100/101: test Dashboard changes skill and resets part in one URL update lỗi mock thiếu useRef; DashboardPage và test này không được sửa trong task. Cập nhật mock PageLoader cho test Dictation và bỏ route Feedback đã gỡ khỏi danh sách kiểm thử responsive admin.
+- Build frontend thành công, còn cảnh báo chunk lớn. Không thay backend/database; chưa commit/push. Giữ nguyên docs/PRODUCTION_SELF_HOSTED_IMPLEMENTATION_PLAN.md ngoài phạm vi.
+
+
+## Docker development tự cập nhật — 27/10/2026
+
+- Bổ sung stage development cho frontend/backend và compose.override.yaml tại thư mục gốc: mount source, NestJS watch với --no-shell, Vite hot reload/polling trên Docker Desktop Windows; proxy /api và WebSocket tới backend.
+- Chạy start-docker.cmd hoặc Docker Compose từ thư mục gốc để dùng development. Chạy với -f backend/compose.yaml dùng bản build cố định NestJS/Nginx. Thay thư viện, Dockerfile/Compose hoặc .env cần cập nhật container; không tự migrate/seed.
+- Đã kiểm tra cấu hình Compose development và bản build cố định hợp lệ; xác nhận cả hai service chọn target development cùng source mounts khi chạy từ gốc. Không chạy lại build/container trong thao tác commit này. Cập nhật README gốc và backend; commit riêng Docker, không gồm Dashboard hay kế hoạch production. Chưa push.
+
+## Liên kết Dashboard theo tài khoản — 27/10/2026
+
+- Mục Dashboard trong menu tài khoản trên Header và trong ProfileSidebar (desktop/mobile) dùng quyền từ AuthContext: ADMIN tới `/admin/dashboard`, user tới `/profile/dashboard`. Tái sử dụng hàm kiểm tra role hiện có.
+- Đã kiểm tra trực tiếp handler của cả ba nút với ADMIN, STUDENT, USER và role được chuẩn hóa; điều hướng đúng và vẫn đóng menu sau khi chọn. Oxlint và diff check đạt. Commit riêng phần điều hướng và bàn giao; chưa push. Với Docker bản build cố định cần build lại frontend; chế độ development mới tự nhận source sau khi cập nhật container.
+
 ## Bố cục AI feedback Writing — 26/10/2026
 
 - Trang kết quả Writing hiển thị Test summary trước Estimated Writing CEFR; mỗi khối chiếm toàn chiều rộng, bỏ bố cục hai cột và chiều cao kéo giãn theo nhau.

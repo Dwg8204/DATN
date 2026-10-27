@@ -2213,5 +2213,15 @@
     "countHelp": "Distinct questions with current-version labels in non-archived tests, including drafts. Rejected and outdated labels are excluded. Hidden topics retain these links.",
     "coverageScope": "Published tests · 80% threshold",
     "coverageCount": "{{approved}} / {{total}} questions approved"
+  },
+  "skillResources": {
+    "source": "Source",
+    "documents": "{{skill}} documents",
+    "popular": "MOST POPULAR",
+    "format": "{{skill}}: test format and tips",
+    "practice": "Aptis ESOL General practice tests (PDF)",
+    "guide": "Aptis candidate guide and scores (PDF)",
+    "preparation": "Prepare for Aptis ESOL General",
+    "open": "View resource"
   }
 }

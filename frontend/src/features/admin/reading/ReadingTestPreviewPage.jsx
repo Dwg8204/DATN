@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -28,7 +29,7 @@ export default function ReadingTestPreviewPage() {
   const activePart = parts.some(part => part.number === urlState.activePart) ? urlState.activePart : parts[0]?.number || 1;
   const setActivePart = value => setUrlState({ activePart: value });
   if (error) return <p>{ui.error(error)}</p>;
-  if (!test) return <p>{ui("Loading Reading test…")}</p>;
+  if (!test) return <PageLoader />;
 
   return <main className={styles.page}>
     <AdminToast message={location.state?.toast} onClose={() => navigate(location.pathname, { replace: true, state: {} })} />

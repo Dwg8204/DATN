@@ -18,5 +18,6 @@ if errorlevel 1 (
     pause
     exit /b 1
 )
-echo AptiMate is ready at http://localhost:5173
+echo AptiMate development mode is ready at http://localhost:5173
+echo Source changes now reload automatically. Keep Docker Desktop running.
 start "" "http://localhost:5173"

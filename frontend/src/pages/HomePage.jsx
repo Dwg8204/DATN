@@ -154,7 +154,7 @@ export default function HomePage() {
   return (
     <div className={styles.page}>
       {/* Hero Banner */}
-      <HeroBanner title={t('home.heroTitle')} description={t('home.heroDescription')} buttonText={null} />
+      <HeroBanner />
 
       {/* Choose a Skill to Practice */}
       <div className={styles.skillsSection}>

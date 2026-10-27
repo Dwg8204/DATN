@@ -1,11 +1,11 @@
-import { UiText } from "../../i18n/useUiTranslation.jsx";
+import PageLoader from '../../components/common/PageLoader.jsx';
 import { createElement, lazy, Suspense } from 'react';
 import { Navigate } from 'react-router-dom';
 import TestLayout from '../../components/layout/TestLayout';
 import AttemptRoleGuard from '../test-attempts/components/AttemptRoleGuard.jsx';
 import AssessmentModelView from '../test-attempts/components/AssessmentModelView.jsx';
 
-const load = element => <Suspense fallback={<div role="status"><UiText text={"Loading…"} /></div>}>{element}</Suspense>;
+const load = element => <Suspense fallback={<PageLoader />}>{element}</Suspense>;
 const lazyElement = importer => load(createElement(lazy(importer)));
 
 const writingAttemptLayout = lazyElement(() => import('./components/WritingAttemptLayout'));

@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -105,7 +106,7 @@ export default function StudyPlanCard({ data, loadError = false }) {
           {t('personalization.planFailed')}
         </p>
       )}
-      {!data && !error && !loadError && <p>{t('personalization.loading')}</p>}
+      {!data && !error && !loadError && <PageLoader compact />}
       {data && !data.plan && <p>{t('personalization.noGoal')}</p>}
       {data?.plan && (
         <>

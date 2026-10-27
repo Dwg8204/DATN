@@ -32,6 +32,7 @@ function harness(tab = 'words', topicMode = null) {
     'react-i18next': { useTranslation: () => ({ t: (key, values) => `${key}${values?.name ? `:${values.name}` : ''}` }) },
     'lucide-react': new Proxy({}, { get: () => () => null }),
     '../../../components/common/Pagination': component,
+    '../../../components/common/PageLoader.jsx': component,
     '../../../components/common/AnswerSelect': component,
     '../../../components/common/ConfirmModal': { __esModule: true, default: ConfirmModal },
     '../../../context/AuthContext': { useAuth: () => ({ user: { id: owner }, isAuthReady: true }) },

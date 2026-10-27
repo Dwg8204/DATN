@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -56,7 +57,7 @@ export default function ListeningTestPreviewPage() {
     }
   };
 
-  if (loading) return <p className={styles.page}>{ui("Loading test...")}</p>;
+  if (loading) return <PageLoader />;
   if (!test) return <p className={styles.page}>{ui("Test not found.")}</p>;
 
   const parts = LISTENING_PARTS.filter(part => test.mode === 'full' || test.mode === `part${part.number}`);

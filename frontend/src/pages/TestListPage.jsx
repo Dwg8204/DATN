@@ -1,3 +1,4 @@
+import PageLoader from '../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../i18n/useUiTranslation.jsx";
 import { useAuth } from '../context/AuthContext';
 import Pagination from '../components/common/Pagination';
@@ -414,7 +415,7 @@ export default function TestListPage({ purpose = 'EXAM' }) {
             </div>
           </div>
 
-          {managedState?.loading && <p>{t('common.loading')}</p>}
+          {managedState?.loading && <PageLoader />}
           {managedState?.error && <p>{ui.error(managedState.error)}</p>}
           <Pagination page={page} totalItems={managedState?.totalItems ?? filteredTests.length} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
           <div className={styles.commentSectionWrapper}>

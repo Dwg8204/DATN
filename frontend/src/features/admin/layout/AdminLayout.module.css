@@ -2,8 +2,8 @@
 .sidebar { z-index: 20; }
 .navItem svg { flex-shrink: 0; }
 .navGroup { position: relative; display: grid; }
-.navGroupButton { position: relative; width: 100%; padding-inline: 8px; gap: 8px; border: 0; background: transparent; text-align: left; cursor: pointer; }
-.navGroupButton span { flex: 1; min-width: 0; white-space: nowrap; }
+.navGroupButton { position: relative; width: 100%; padding-inline: 12px; gap: 12px; border: 0; background: transparent; text-align: left; cursor: pointer; }
+.navGroupButton span { flex: 1; font-size: 13px; min-width: 0; white-space: nowrap; }
 .navGroupButton svg:last-child { width: 16px; height: 16px; transition: transform .2s ease; }
 .navGroupButton .chevronOpen { transform: rotate(180deg); }
 .navSubmenu { margin: -2px 8px 7px 43px; display: grid; gap: 3px; }

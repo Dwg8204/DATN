@@ -2,6 +2,7 @@ import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
+import { canAccessAdminPath } from '../../auth/utils/authorization';
 import { UserCircle, Bell, History, LogOut, LayoutDashboard, Menu } from 'lucide-react';
 import styles from './ProfileSidebar.module.css';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +11,7 @@ export default function ProfileSidebar({ activeTab }) {
   const ui = useUiTranslation();
   const { t } = useTranslation();
   const { user, logout } = useAuth();
+  const dashboardPath = canAccessAdminPath(user?.role) ? '/admin/dashboard' : '/profile/dashboard';
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
@@ -73,7 +75,7 @@ export default function ProfileSidebar({ activeTab }) {
 
             <button
               className={`${styles.dropdownItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
-              onClick={() => { navigate('/profile/dashboard'); setIsMobileMenuOpen(false); }}
+              onClick={() => { navigate(dashboardPath); setIsMobileMenuOpen(false); }}
             >
               <LayoutDashboard size={16} style={{ marginRight: '8px' }} />
               {t('profile.dashboard')}
@@ -136,7 +138,7 @@ export default function ProfileSidebar({ activeTab }) {
 
         <button
           className={`${styles.navItem} ${activeTab === 'dashboard' ? styles.active : ''}`}
-          onClick={() => navigate('/profile/dashboard')}
+          onClick={() => navigate(dashboardPath)}
           title={t('profile.dashboard')}
         >
           <LayoutDashboard size={20} className={styles.navIcon} />

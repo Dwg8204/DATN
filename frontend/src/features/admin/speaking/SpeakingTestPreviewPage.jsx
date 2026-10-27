@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -45,7 +46,7 @@ export default function SpeakingTestPreviewPage(){
     }
   };
 
-  if(loading)return <div style={{padding: '2rem', textAlign: 'center'}}>{ui("Loading test preview...")}</div>;
+  if(loading)return <PageLoader />;
   if(!test)return<p>{ui("Test not found.")}</p>;
 
   return <main className={styles.page}>

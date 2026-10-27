@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import Pagination from '../../../components/common/Pagination';
 import AnswerSelect from '../../../components/common/AnswerSelect';
@@ -473,7 +474,7 @@ export default function DictationPage() {
     </header>
   ) : null;
 
-  if (!isAuthReady || loading) return <main className={styles.practiceCard}>{t('common.loading')}</main>;
+  if (!isAuthReady || loading) return <PageLoader />;
   if (authConnectionError || error) return <main className={styles.practiceCard}><p>{t('dictation.loadError')}</p><button className={styles.secondaryButton} onClick={() => authConnectionError ? retryAuth() : refresh().catch(() => {})}>{t('common.tryAgain')}</button></main>;
   if (!user) return <main className={styles.practiceCard}><p>{t('dictation.signInRequired')}</p><Link to="/login">{t('profile.signIn')}</Link></main>;
   if (selectedTopic && mode !== 'notebook' && !(mode === 'dictation' ? activeExercises.length : activeFlashcards.length)) return <div className={styles.page}>{topicStudyHeader}<main className={styles.practiceCard}><p>{t('dictation.noContent')}</p><button className={styles.secondaryButton} onClick={() => setMode('notebook')}>{t('dictation.notebook')}</button></main></div>;

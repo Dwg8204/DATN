@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { uiLocale } from '../../../i18n/translateUi.js';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -335,7 +336,7 @@ export default function NotificationPage() {
 
               <div className={styles.userEmailList}>
                 {loadingUsers ? (
-                  <div style={{ padding: '12px', textAlign: 'center', color: '#888', fontSize: '12px' }}>{ui("Loading recipients…")}</div>
+                  <PageLoader compact />
                 ) : filteredUsers.length > 0 ? (
                   filteredUsers.map((user) => {
                     const isSelected = selectedUserIds.includes(user.id);
@@ -410,7 +411,7 @@ export default function NotificationPage() {
                 <col className={styles.actionsColumn} />
               </colgroup>
               <thead><tr><th scope="col">{ui("Date & time")}</th><th scope="col">{ui("Content")}</th><th scope="col">{ui("recipients")}</th><th scope="col">{ui("Type")}</th><th scope="col">{ui("Status")}</th><th scope="col"><span className={styles.visuallyHidden}>{ui("Actions")}</span></th></tr></thead>
-              <tbody>{loadingHistory ? <tr><td colSpan={6} className={styles.historyEmpty}>{ui("Loading notifications…")}</td></tr>
+              <tbody>{loadingHistory ? <tr><td colSpan={6} className={styles.historyEmpty}><PageLoader compact /></td></tr>
                 : !historyError && notifications.length === 0 ? <tr><td colSpan={6} className={styles.historyEmpty}>{search.trim() ? ui("No notifications match your search.") : ui("No notifications yet.")}</td></tr>
                 : notifications.map((item) => <tr key={item.id}>
                 <td>{formatDate(item.date)}</td>
