@@ -157,7 +157,7 @@ export class PlanCandidatesService {
       const available = await placementTests(manager);
       const missing = PLACEMENT_REQUIRED.filter(
         (skill) =>
-          !snapshot.band.bySkill.some((s) => s.skill === skill && s.band),
+          !snapshot.band.bySkill.some((s) => s.skill === skill && (s.assessmentComplete ?? !!s.band)),
       );
       candidates.unshift(
         ...missing.flatMap((skill) => {

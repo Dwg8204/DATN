@@ -60,7 +60,8 @@ export default function AbilityAssessmentCard({ profile, loadError = false }) {
       <ul className={styles.history}>
         {profile?.bySkill.map((s) => {
           const test = profile.placement.tests.find((x) => x.skill === s.skill),
-            required = profile.placement.required.includes(s.skill);
+            required = profile.placement.required.includes(s.skill),
+            complete = s.assessmentComplete ?? s.status !== 'NONE';
           return (
             <li key={s.skill}>
               <strong>{t('personalization.ability.skills.' + s.skill)}</strong>{' '}
@@ -70,8 +71,8 @@ export default function AbilityAssessmentCard({ profile, loadError = false }) {
                   ? 'personalization.placement.required'
                   : 'personalization.placement.optional',
               )}{' '}
-              · {s.band ?? t('personalization.ability.status.NONE')}
-              {s.status === 'NONE' &&
+              · {s.band ?? t(complete ? 'personalization.placement.assessedWithoutBand' : 'personalization.ability.status.NONE')}
+              {!complete &&
                 (test ? (
                   <button disabled={busy} onClick={() => open(test)}>
                     {t('personalization.placement.start', {

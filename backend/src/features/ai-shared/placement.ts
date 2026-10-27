@@ -9,7 +9,7 @@ export const PLACEMENT_REQUIRED = [
 export const missingPlacement = (profile: AbilityProfile) =>
   PLACEMENT_REQUIRED.filter(
     (skill) =>
-      !profile.bySkill.some((s) => s.skill === skill && s.status !== 'NONE'),
+      !profile.bySkill.some((s) => s.skill === skill && (s.assessmentComplete ?? s.status !== 'NONE')),
   );
 export const REGULAR_TEST_SQL = `NOT t.is_placement AND NOT EXISTS(SELECT 1 FROM tests placement WHERE placement.placement_family_id=t.placement_family_id AND placement.is_placement)`;
 export async function placementTests(manager: EntityManager) {

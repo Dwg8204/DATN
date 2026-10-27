@@ -143,3 +143,29 @@ it("old full evidence still supplies band but not recent weaknesses", () => {
   expect(reading(rows).band).toBe("B1");
   expect(profile(rows).weak.parts).toEqual([]);
 });
+
+it("recognizes scored full grammar placement without inventing a CEFR band", () => {
+  const grammar = row("GRAMMAR_VOCAB", "B1", {
+    estimated_cefr: null,
+    score: 0,
+    max_score: 50,
+  });
+  expect(profile([grammar]).bySkill[0]).toMatchObject({
+    assessmentComplete: true,
+    band: null,
+    status: "NONE",
+  });
+  for (const patch of [
+    { scope: "PART" },
+    { status: "IN_PROGRESS" },
+    { score: null },
+    { max_score: 0 },
+    { score: 51 },
+    { result: { method: "PENDING_AI" } },
+    { result: { method: "SIMULATED" } },
+  ]) {
+    expect(
+      profile([{ ...grammar, ...patch }]).bySkill[0].assessmentComplete,
+    ).toBe(false);
+  }
+});

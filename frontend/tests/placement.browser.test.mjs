@@ -93,6 +93,7 @@ test(
             'SPEAKING',
           ].map((skill) => ({
             skill,
+            assessmentComplete: complete || skill === 'GRAMMAR_VOCAB',
             status: complete ? 'ESTIMATE' : 'NONE',
             band: complete ? 'B1' : null,
           })),
@@ -151,6 +152,8 @@ test(
       });
       await card.waitFor();
       assert.equal(await card.locator('..').getByRole('listitem').count(), 5);
+      await page.getByText('Assessment completed · Band unavailable').waitFor();
+      assert.equal(await page.getByRole('button', {name:'Assess Grammar & Vocabulary', exact:true}).count(),0);
       await page.goto(origin + '/profile', { waitUntil: 'domcontentloaded' });
       await page.getByLabel('Target band').waitFor();
       await page.waitForFunction(
