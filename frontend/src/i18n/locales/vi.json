@@ -2213,5 +2213,15 @@
     "countHelp": "Đếm các câu khác nhau có nhãn đúng phiên bản hiện tại trong đề chưa lưu trữ (gồm đề nháp). Không tính nhãn bị từ chối hoặc đã lỗi thời. Chủ đề ẩn vẫn giữ liên kết này.",
     "coverageScope": "Đề đã xuất bản · Ngưỡng áp dụng 80%",
     "coverageCount": "{{approved}} / {{total}} câu đã duyệt"
+  },
+  "skillResources": {
+    "source": "Nguồn bài viết",
+    "documents": "Tài liệu {{skill}}",
+    "popular": "PHỔ BIẾN NHẤT",
+    "format": "{{skill}}: cấu trúc bài thi và mẹo làm bài",
+    "practice": "Bộ đề luyện Aptis ESOL General (PDF)",
+    "guide": "Hướng dẫn thí sinh và điểm số Aptis (PDF)",
+    "preparation": "Chuẩn bị cho kỳ thi Aptis ESOL General",
+    "open": "Xem tài liệu"
   }
 }

@@ -1,11 +1,10 @@
-import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { lazy, Suspense } from 'react';
 
 const DashboardPage = lazy(() => import('../pages/DashboardPage'));
 
 export default function DashboardRoute() {
-  const ui = useUiTranslation();
-  return <Suspense fallback={<div role="status">{ui("Loading dashboard…")}</div>}>
+  return <Suspense fallback={<PageLoader />}>
     <DashboardPage />
   </Suspense>;
 }

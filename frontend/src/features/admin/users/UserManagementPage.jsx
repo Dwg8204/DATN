@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useEffect, useState } from 'react';
 import { Eye, LoaderCircle, Search, Trash2 } from 'lucide-react';
@@ -128,7 +129,7 @@ export default function UserManagementPage() {
         {users.map(user => <tr key={user.id}><td><div className={styles.person}><Avatar name={user.fullName} /><span><b>{user.fullName}</b><small>{user.email}</small></span></div></td><td className={styles.alignRight}><span className={`${styles.status} ${user.status === 'ACTIVE' ? styles.activeStatus : ''}`}>{statusLabel(user.status)}</span></td><td className={styles.alignRight}>{displayDate(user.createdAt)}</td><td className={styles.actionColumn}>{actions(user)}</td></tr>)}
       </tbody></table></div>
       <div className={styles.mobileList}>{users.map(user => <article key={user.id}><header><div className={styles.person}><Avatar name={user.fullName} /><span><b>{user.fullName}</b><small>{user.email}</small></span></div><span className={`${styles.status} ${user.status === 'ACTIVE' ? styles.activeStatus : ''}`}>{statusLabel(user.status)}</span></header><dl><div><dt>{ui("Date Added")}</dt><dd>{displayDate(user.createdAt)}</dd></div><div><dt>{ui("Role")}</dt><dd>{roleLabel(user.role)}</dd></div></dl>{actions(user)}</article>)}</div>
-      {loading && <div className={styles.loading} role="status"><LoaderCircle className={styles.spin} />{ui("Loading accounts…")}</div>}
+      {loading && <PageLoader />}
       {!loading && !users.length && <div className={styles.empty}><p>{loadError ? ui("Accounts could not be loaded.") : ui("No accounts found.")}</p>{loadError && <button type="button" onClick={reload}>{ui("Try again")}</button>}</div>}
       <Pagination page={page} totalItems={pagination.totalItems} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
     </section>

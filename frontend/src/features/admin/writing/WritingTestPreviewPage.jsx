@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { ArrowLeft, Edit3 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -35,7 +36,7 @@ export default function WritingTestPreviewPage() {
   }, [testId]);
   const { test, loading, error } = state;
   const dismissToast = () => navigate(location.pathname, { replace: true, state: {} });
-  if (loading) return <p className={styles.empty}>{ui("Loading Writing test…")}</p>;
+  if (loading) return <PageLoader />;
   if (error) return <section className={styles.empty}><h2>{ui("Unable to load test")}</h2><p>{ui.error(error)}</p><button onClick={() => navigate('/admin/tests')}>{ui("Back to Test Management")}</button></section>;
   if (!test) return <section className={styles.empty}><h2>{ui("Test not found")}</h2><button onClick={() => navigate('/admin/tests')}>{ui("Back to Test Management")}</button></section>;
   const visibleParts = test.mode === 'full' ? [1, 2, 3, 4] : [Number(test.mode.replace('part', ''))];

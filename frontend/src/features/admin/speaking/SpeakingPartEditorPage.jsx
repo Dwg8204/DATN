@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { lazy, Suspense, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -34,7 +35,7 @@ export default function SpeakingPartEditorPage() {
     <AdminValidationToast errors={errors} onClose={() => setErrors([])}/>
     <EditorBackButton onClick={() => goTo()}/>
     <header className={styles.summary}><h2>{ ui("Part") + ' ' }{number} · {ui(SPEAKING_PARTS[number - 1].title)}</h2><p>{SPEAKING_PARTS[number - 1].summary}</p></header>
-    <Suspense fallback={<p>{ui("Loading editor…")}</p>}><Editor value={test.parts[number]} onChange={value => updatePart(number, value)}/></Suspense>
+    <Suspense fallback={<PageLoader />}><Editor value={test.parts[number]} onChange={value => updatePart(number, value)}/></Suspense>
     <div className={styles.actions}><button onClick={save}>{ui("Save change")}</button></div>
   </main>;
 }

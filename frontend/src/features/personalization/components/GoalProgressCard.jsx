@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styles from './Personalization.module.css';
@@ -7,7 +8,7 @@ export default function GoalProgressCard({ data, error = false }) {
   const progress = data?.snapshot?.goal;
   return <section className={styles.card}>
     <h2>{t('personalization.progressTitle')}</h2>
-    {error ? <p role="alert" className={styles.error}>{t('personalization.loadFailed')}</p> : !data ? <p role="status">{t('personalization.loading')}</p> : !progress ? <p>{t('personalization.noGoal')}</p> : <>
+    {error ? <p role="alert" className={styles.error}>{t('personalization.loadFailed')}</p> : !data ? <PageLoader compact /> : !progress ? <p>{t('personalization.noGoal')}</p> : <>
       <p>{t('personalization.goalSummary', data.goal)}</p>
       <progress className={styles.progress} aria-label={t('personalization.progressTitle')} value={Math.min(progress.completed, progress.targetTests)} max={progress.targetTests} />
       <p><strong>{t(`personalization.pace.${progress.status}`)}</strong> · {t('personalization.expected', { expected: progress.expected, pace: progress.requiredPace, days: progress.remainingDays })}</p>

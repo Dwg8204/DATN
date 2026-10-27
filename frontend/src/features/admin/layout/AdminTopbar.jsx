@@ -10,7 +10,7 @@ export default function AdminTopbar({ collapsed, onToggleSidebar }) {
   const isNotifications = pathname === '/admin/notifications';
   const isDashboard = pathname === '/admin/dashboard';
   const isTopics = ['/admin/learning-topics', '/admin/topic-labels'].includes(pathname);
-  const title = isTopics ? 'Topic management' : pathname.includes('/tests') ? 'Test Management' : pathname.includes('/users') ? 'User Management' : pathname.includes('/feedback') ? 'Feedback' : pathname.includes('/notifications') ? 'Notification' : 'Dashboard';
+  const title = isTopics ? 'Topic management' : pathname.includes('/tests') ? 'Test Management' : pathname.includes('/users') ? 'User Management' : pathname.includes('/notifications') ? 'Notification' : 'Dashboard';
   return (
     <header className={styles.topbar}>
       <div className="adminTopbarTitle"><button className="adminMenuToggle" onClick={onToggleSidebar} aria-label={collapsed ? ui("Expand sidebar") : ui("Collapse sidebar")}>{collapsed ? <Menu /> : <PanelLeftClose />}</button><h1>{ui(title)}</h1></div>

@@ -1,0 +1,6 @@
+.page, .compact { display: grid; place-items: center; width: 100%; }
+.page { min-height: 60vh; }
+.compact { min-height: 100px; }
+.spinner { display: block; width: 40px; height: 40px; box-sizing: border-box; border: 4px solid rgba(229,29,42,.18); border-top-color: #e51d2a; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2s; } }

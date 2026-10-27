@@ -1,14 +1,8 @@
+import SkillResources, { SkillSource } from '../../../components/common/SkillResources.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useNavigate } from 'react-router-dom';
 import styles from './SpeakingOverviewPage.module.css';
 
-const popularDocs = Array.from({ length: 5 }, (_, index) => ({
-  id: index + 1,
-  title: 'APTIS SPEAKING PRACTICE',
-  subTitle: 'Practice questions with detailed explanations',
-  badge: 'LATEST 2026',
-  desc: 'Improve your speaking skills with regularly updated Aptis practice materials.',
-}));
 
 export default function SpeakingOverviewPage() {
   const ui = useUiTranslation();
@@ -41,40 +35,8 @@ export default function SpeakingOverviewPage() {
         </div>
       </div>
 
-      <div className={styles.section}>
-        <div className={styles.titleContainer}>
-          <div className={styles.title}>{ui("SPEAKING DOCUMENTS")}</div>
-          <div className={styles.divider}></div>
-        </div>
-        <div className={styles.contentBlock}>
-          <div className={styles.documentLink}>{ui("Some tips for taking the APTIS Speaking test")}</div>
-          <div className={styles.documentLink}>{ui("APTIS Speaking practice test")}</div>
-          <div className={styles.documentLink}>{ui("Question types in the APTIS Speaking test")}</div>
-          <div className={styles.documentLink}>{ui("APTIS Speaking band scores")}</div>
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <div className={styles.popularTitle}>{ui("MOST POPULAR")}</div>
-        <div className={styles.popularGrid}>
-          {popularDocs.map((doc) => (
-            <div key={doc.id} className={styles.popularCard}>
-              <div className={styles.cardHeader}>
-                <div className={styles.cardHeaderTop}>
-                  <div className={styles.cardTitle}>{ui(doc.title)}</div>
-                  <div className={styles.cardSubTitle}>{doc.subTitle}</div>
-                </div>
-                <div className={styles.cardBadge}>
-                  <span className={styles.cardBadgeText}>{doc.badge}</span>
-                </div>
-              </div>
-              <div className={styles.cardBody}>
-                <div className={styles.cardBodyText}>{doc.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <SkillSource skill="speaking" />
+      <SkillResources skill="speaking" />
 
       <button className={styles.goToTestBtn} onClick={() => navigate('/speaking/tests')}>{ui("View Test List")}</button>
     </div>

@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import Pagination from '../../../components/common/Pagination';
 import { useState, useEffect } from 'react';
@@ -251,8 +252,8 @@ export default function LearningHistoryPage() {
           </div>
 
           <section className={styles.results} aria-label={t('history.results')} aria-busy={remoteLoading}>
-          <div className={styles.resultsHeader}><h2>{t(purpose === 'EXAM' ? 'history.mockTests' : 'common.practice')}</h2><span className={styles.secondary} role="status">{remoteLoading ? t('history.loading') : t('history.resultCount', { count: remote.total })}</span></div>
-          {remoteLoading ? <div className={styles.emptyState}><p>{t('history.loading')}</p></div> : remote.error ? (
+          <div className={styles.resultsHeader}><h2>{t(purpose === 'EXAM' ? 'history.mockTests' : 'common.practice')}</h2><span className={styles.secondary} role="status">{remoteLoading ? '' : t('history.resultCount', { count: remote.total })}</span></div>
+          {remoteLoading ? <PageLoader /> : remote.error ? (
             <div className={styles.emptyState}><h3>{t('history.loadError')}</h3><p>{ui.error(remote.error)}</p></div>
           ) : remote.entries.length === 0 ? (
             <div className={styles.emptyState}>

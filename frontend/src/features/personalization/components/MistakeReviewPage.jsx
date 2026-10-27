@@ -1,3 +1,4 @@
+import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -75,7 +76,7 @@ export default function MistakeReviewPage() {
             )}
             {!itemId && <p>{t('personalization.chooseReview')}</p>}
             {itemId && !current && !error && (
-              <p>{t('personalization.loading')}</p>
+              <PageLoader />
             )}
             {current?.details.map((detail) => (
               <section key={detail.partNumber}>

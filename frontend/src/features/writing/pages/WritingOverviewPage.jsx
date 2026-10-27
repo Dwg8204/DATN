@@ -1,3 +1,4 @@
+import SkillResources, { SkillSource } from '../../../components/common/SkillResources.jsx';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useNavigate } from 'react-router-dom';
 import styles from './WritingOverviewPage.module.css';
@@ -40,18 +41,8 @@ export default function WritingOverviewPage() {
         </div>
       </section>
 
-      <section className={styles.section}>
-        <div className={styles.titleContainer}>
-          <h1>{ui("WRITING DOCUMENTS")}</h1>
-          <div className={styles.divider} />
-        </div>
-        <div className={styles.documents}>
-          <span>{ui("Tips for taking the Aptis Writing test")}</span>
-          <span>{ui("Aptis Writing practice test")}</span>
-          <span>{ui("Question types in the Aptis Writing test")}</span>
-          <span>{ui("Aptis Writing scores")}</span>
-        </div>
-      </section>
+      <SkillSource skill="writing" />
+      <SkillResources skill="writing" />
 
       <button className={styles.testButton} onClick={() => navigate('/writing/tests')}>{ui("View Writing Tests")}</button>
     </div>

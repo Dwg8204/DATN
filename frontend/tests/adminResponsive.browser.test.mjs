@@ -28,7 +28,7 @@ after(async () => { await browser?.close(); server?.kill(); });
 
 const metric = { value: 1234, changePercent: 12, changeLabel: '+12%', trend: [{ label: 'Oct', value: 1234 }] };
 const routes = [
-  '/admin/dashboard', '/admin/tests', '/admin/users', '/admin/notifications', '/admin/feedback',
+  '/admin/dashboard', '/admin/tests', '/admin/users', '/admin/notifications',
   ...['reading', 'listening', 'speaking', 'writing', 'grammar'].map(skill => `/admin/tests/new/${skill}?purpose=PRACTICE&mode=part1`),
   ...['reading', 'listening', 'speaking', 'writing', 'grammar'].map(skill => `/admin/tests/new/${skill}/part/1?purpose=PRACTICE&mode=part1`),
 ];
