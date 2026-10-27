@@ -37,6 +37,7 @@ export type WritingTestAggregate = {
   id?: string;
   mode: WritingTestMode;
   purpose: TestPurpose;
+  isPlacement?: boolean;
   details: { title: string; pictureUrl?: string };
   parts: {
     1?: WritingPart1;
@@ -56,6 +57,7 @@ export type WritingTestSummary = {
   name: string;
   mode: WritingTestMode;
   purpose: TestPurpose;
+  isPlacement?: boolean;
   section: string;
   component: 'Writing';
   status: WritingTestStatus;

@@ -27,7 +27,9 @@
     "test:chatbot": "node --test src/features/ai-chatbot/services/chatPolicy.test.js tests/chatbot.browser.test.mjs",
     "test:personalization": "node --test src/features/personalization/services/legacyGoal.test.js src/features/personalization/services/mistakePresentation.test.js",
     "test:personalization:ui": "node --test tests/personalization.browser.test.mjs",
-    "test:topics:ui": "node --test tests/topics.browser.test.mjs"
+    "test:topics:ui": "node --test tests/topics.browser.test.mjs",
+    "test:placement:ui": "node --test tests/placement.browser.test.mjs",
+    "test:personalization:s4:ui": "node --test tests/personalizationOverview.browser.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

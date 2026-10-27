@@ -1,3 +1,4 @@
+import {PlacementControl,PlacementCoverage} from '../shared-test-builder/PlacementControl';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -79,7 +80,8 @@ export default function ReadingTestDetailsPage() {
         <div className={styles.infoGrid}>
           <div className={styles.fields}>
             <Field label={ui("Title")} value={test.details.title} onChange={value => detail('title', value)} />
-            <ImageField label={ui("Test cover")} value={test.details.pictureUrl} onChange={value => detail('pictureUrl', value)} />
+            <PlacementCoverage /><PlacementControl test={test} onChange={value=>setTest(current=>({...current,isPlacement:value}))} />
+          <ImageField label={ui("Test cover")} value={test.details.pictureUrl} onChange={value => detail('pictureUrl', value)} />
             <button className={styles.saveInfo} disabled={saving} onClick={saveInformation}>{ui("Save draft")}</button>
           </div>
           <aside>

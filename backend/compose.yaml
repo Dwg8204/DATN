@@ -1,3 +1,5 @@
+name: backend
+
 services:
   postgres:
     image: pgvector/pgvector:pg17
@@ -24,6 +26,58 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  backend:
+    build:
+      context: .
+    container_name: aptimate-backend
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      # This stack runs locally over HTTP; auth cookies must support HTTP.
+      NODE_ENV: development
+      PORT: 3000
+      API_PREFIX: api/v1
+      FRONTEND_ORIGIN: http://localhost:5173
+      DATABASE_URL: postgresql://aptimate:aptimate@postgres:5432/aptimate
+      DB_SSL: "false"
+      # Always use the Linux binaries installed inside the image.
+      SPEAKING_FFMPEG_PATH: ffmpeg
+      SPEAKING_FFPROBE_PATH: ffprobe
+    ports:
+      - "3000:3000"
+    volumes:
+      # Reuse existing notification attachments and retain new uploads.
+      - ./uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/v1/health/ready').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      start_period: 30s
+      retries: 6
+
+  frontend:
+    build:
+      context: ../frontend
+    container_name: aptimate-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
 volumes:
   aptimate_postgres_data:

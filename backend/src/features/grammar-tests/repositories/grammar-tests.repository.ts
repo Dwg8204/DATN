@@ -14,6 +14,7 @@ import {
 } from '../types/grammar-test.type';
 
 type TestRow = {
+  is_placement: boolean;
   id: string;
   created_by: string;
   title: string;
@@ -29,7 +30,7 @@ type TestRow = {
   updated_at: Date;
 };
 
-type SummaryRow = Pick<TestRow, 'id' | 'created_by' | 'title' | 'purpose' | 'scope' | 'part_number' | 'cover' | 'version' | 'status' | 'created_at' | 'updated_at'>;
+type SummaryRow = Pick<TestRow, 'is_placement' | 'id' | 'created_by' | 'title' | 'purpose' | 'scope' | 'part_number' | 'cover' | 'version' | 'status' | 'created_at' | 'updated_at'>;
 
 type StoredSet = {
   setId: number;
@@ -90,7 +91,7 @@ export class GrammarTestsRepository {
     const [rows, countRows] = await Promise.all([
       this.dataSource.query<Array<SummaryRow & { attempts: string }>>(
       `WITH page AS MATERIALIZED (
-         SELECT t.id,t.created_by,t.title,t.purpose,t.scope,t.part_number,t.cover,t.version,t.status,t.created_at,t.updated_at
+         SELECT t.id,t.is_placement,t.created_by,t.title,t.purpose,t.scope,t.part_number,t.cover,t.version,t.status,t.created_at,t.updated_at
          FROM tests t WHERE ${whereSql}
          ORDER BY t.updated_at DESC, t.id DESC
          LIMIT $${limitIndex} OFFSET $${offsetIndex}
@@ -203,14 +204,14 @@ export class GrammarTestsRepository {
       const mapping = this.modeColumns(test.mode);
       const storage = this.toStorage(test);
       const rows = await manager.query<TestRow[]>(
-        `INSERT INTO tests(id,created_by, updated_by, title, component, purpose, scope, part_number, cover, part_contents, status)
-         VALUES($8,$1, $1, $2, 'GRAMMAR_VOCAB', $3, $4, $5, $6::jsonb, $7::jsonb, 'DRAFT') RETURNING *`,
+        `INSERT INTO tests(id,created_by, updated_by, title, component, purpose, scope, part_number, cover, part_contents, status, is_placement)
+         VALUES($8,$1, $1, $2, 'GRAMMAR_VOCAB', $3, $4, $5, $6::jsonb, $7::jsonb, 'DRAFT',$9) RETURNING *`,
         [actor.id, test.details.title || 'Untitled test', test.purpose, mapping.scope, mapping.partNumber,
-          JSON.stringify(test.details.cover ?? null), JSON.stringify(storage.partContents), id],
+          JSON.stringify(test.details.cover ?? null), JSON.stringify(storage.partContents), id, test.isPlacement ?? false],
       );
       const row = firstMutationRow<TestRow>(rows);
       await this.upsertQuestions(manager, row.id, storage.questions);
-      await this.audit(manager, actor.id, 'GRAMMAR_TEST_CREATED', row.id, { mode: test.mode }, audit);
+      await this.audit(manager, actor.id, 'GRAMMAR_TEST_CREATED', row.id, { mode: test.mode, isPlacement: test.isPlacement ?? false }, audit);
       return this.hydrate(row, await this.activeQuestions(manager, row.id));
     });
   }
@@ -223,13 +224,13 @@ export class GrammarTestsRepository {
       const mapping = this.modeColumns(test.mode);
       const storage = this.toStorage(test);
       const rows = await manager.query<TestRow[]>(
-        `UPDATE tests SET title=$2, scope=$3, part_number=$4, cover=$5::jsonb,
+        `UPDATE tests SET is_placement=COALESCE($8,CASE WHEN $3::test_scope='FULL_SKILL' THEN is_placement ELSE false END),title=$2, scope=$3, part_number=$4, cover=$5::jsonb,
            part_contents=$6::jsonb,
            status=CASE WHEN published_snapshot_id IS NULL THEN 'DRAFT'::publication_status ELSE status END,
            version=version+1, updated_by=$7, updated_at=now()
          WHERE id=$1 RETURNING *`,
         [id, test.details.title || 'Untitled test', mapping.scope, mapping.partNumber,
-          JSON.stringify(test.details.cover ?? null), JSON.stringify(storage.partContents), actor.id],
+          JSON.stringify(test.details.cover ?? null), JSON.stringify(storage.partContents), actor.id, test.isPlacement ?? null],
       );
       const row = firstMutationRow<TestRow>(rows);
       await manager.query(
@@ -238,7 +239,7 @@ export class GrammarTestsRepository {
         [id, this.partNumbers(test.mode)],
       );
       await this.upsertQuestions(manager, id, storage.questions);
-      await this.audit(manager, actor.id, 'GRAMMAR_TEST_UPDATED', id, { fromVersion: expectedVersion, toVersion: expectedVersion + 1 }, audit);
+      await this.audit(manager, actor.id, 'GRAMMAR_TEST_UPDATED', id, { fromVersion: expectedVersion, toVersion: expectedVersion + 1, isPlacement: row.is_placement }, audit);
       return { outcome: 'SUCCESS', value: this.hydrate(row, await this.activeQuestions(manager, id)) };
     });
   }
@@ -367,7 +368,7 @@ export class GrammarTestsRepository {
     const aggregate: GrammarTestAggregate = {
       id: row.id,
       mode,
-      purpose: row.purpose,
+      purpose: row.purpose, isPlacement: row.is_placement,
       details: { title: row.title, pictureUrl: row.cover?.url ?? '', cover: row.cover ?? null },
       parts: {}, status: row.status, version: row.version, createdAt: row.created_at, updatedAt: row.updated_at,
     };
@@ -406,7 +407,7 @@ export class GrammarTestsRepository {
     const mode = this.rowMode(row);
     const canManage = Boolean(actor && (actor.role === 'ADMIN' || row.created_by === actor.id));
     return {
-      id: row.id, title: row.title, name: row.title, mode, purpose: row.purpose,
+      id: row.id, title: row.title, name: row.title, mode, purpose: row.purpose, isPlacement: row.is_placement,
       section: mode === 'full' ? 'Full Test' : mode === 'part1' ? 'Part 1' : 'Part 2',
       component: 'Grammar & Vocab', status: row.status, attempts,
       questionType: mode === 'part1' ? 'Multiple Choice' : mode === 'part2' ? 'Word Matching' : 'Mixed',

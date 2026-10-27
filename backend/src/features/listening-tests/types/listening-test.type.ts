@@ -50,6 +50,7 @@ export type ListeningTestAggregate = {
   id?: string;
   mode: ListeningTestMode;
   purpose: TestPurpose;
+  isPlacement?: boolean;
   details: { title: string; pictureUrl?: string };
   parts: {
     1?: ListeningPart1;
@@ -69,6 +70,7 @@ export type ListeningTestSummary = {
   name: string;
   mode: ListeningTestMode;
   purpose: TestPurpose;
+  isPlacement?: boolean;
   section: string;
   component: 'Listening';
   status: ListeningTestStatus;

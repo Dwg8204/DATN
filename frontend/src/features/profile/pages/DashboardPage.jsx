@@ -1,5 +1,8 @@
+import {commentPollDelay} from '../../personalization/services/commentPolling';
+import { personalizationApi } from '../../personalization/services/personalizationApi';
+import AbilityAssessmentCard from '../../personalization/components/AbilityAssessmentCard';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ProfileSidebar from '../components/ProfileSidebar';
 import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -29,6 +32,47 @@ const SKILL_COLORS = {
 export default function DashboardPage() {
   const ui = useUiTranslation();
   const { t } = useTranslation();
+  const overviewRequest = useRef(null);
+  const [reloadOverview, setReloadOverview] = useState(0);
+  const [overview, setOverview] = useState(null);
+  const [personalizationError, setPersonalizationError] = useState(false);
+  useEffect(() => {
+    let active = true,
+      timer, pollAttempt = 0, failures = 0;
+    const load = async () => {
+      try {
+        let value = await (overviewRequest.current ??=
+          personalizationApi.overview());
+        overviewRequest.current = null;
+        if (!active) return;
+        // Render the read result immediately; background sync must not block these cards.
+        setOverview(value);
+        setPersonalizationError(false);
+        if (value.needsSync) {
+          await personalizationApi.sync();
+          if (!active) return;
+          value = await personalizationApi.overview();
+        }
+        if (!active) return;
+        setOverview(value);
+        setPersonalizationError(false);
+        failures = 0;
+        const delay=commentPollDelay(value.comment?.status,pollAttempt++);
+        if(delay!==null)timer=setTimeout(load,delay);
+      } catch {
+        overviewRequest.current = null;
+        if (active) {
+          setPersonalizationError(true);
+          if (failures++ < 3) timer = setTimeout(load, Math.min(30000, 5000 * 2 ** (failures - 1)));
+        }
+      }
+    };
+    void load();
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [reloadOverview]);
   const [dashboard, setDashboard] = useState(null);
   const [loadError, setLoadError] = useState('');
   const [urlState, setUrlState] = useUrlQueryState(DASHBOARD_QUERY_SCHEMA);
@@ -75,10 +119,12 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <GoalProgressCard />
-          <PersonalCommentCard />
-          <StudyPlanCard />
-          <WeeklyReportsCard />
+          {personalizationError && <p role="status">{t('personalization.refreshFailed')} <button type="button" onClick={() => setReloadOverview(value => value + 1)}>{t('personalization.retryLoad')}</button></p>}
+          <AbilityAssessmentCard profile={overview?.profile} loadError={personalizationError && !overview} />
+          <GoalProgressCard data={overview ? {goal:overview.goal,snapshot:overview.progress} : null} error={personalizationError && !overview} />
+          <PersonalCommentCard result={overview?.comment} />
+          <StudyPlanCard data={overview ? {plan:overview.plan,today:overview.today} : null} loadError={personalizationError && !overview} />
+          <WeeklyReportsCard reports={overview?.recentReports} />
           <div className={styles.kpiGrid}>
             <div className={styles.kpiCard} style={{ background: '#f0f9ff', color: '#0284c7', border: '1px solid #e0f2fe', boxShadow: '0 4px 12px rgba(2, 132, 199, 0.15)' }}>
               <div className={styles.kpiIcon} style={{ background: 'rgba(2, 132, 199, 0.15)' }}>

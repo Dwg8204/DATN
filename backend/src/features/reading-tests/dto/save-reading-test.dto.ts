@@ -1,8 +1,10 @@
+import { IsBoolean } from 'class-validator';
 import { IsIn, IsInt, IsObject, IsOptional, IsUUID, Max, Min } from 'class-validator';
 import { TestPurpose } from '../../../common/tests/test-purpose';
 import { ReadingTestAggregate, ReadingTestMode } from '../types/reading-test.type';
 
 export class CreateReadingTestDto {
+  @IsOptional() @IsBoolean() isPlacement?: boolean;
   @IsOptional() @IsUUID() creationRequestId?: string;
 
   @IsOptional() @IsIn(['EXAM', 'PRACTICE']) purpose?: TestPurpose;

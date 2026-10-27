@@ -1,3 +1,4 @@
+import { assertPlacement } from '../../../common/tests/test-placement';
 import { Injectable } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { CreateSpeakingTestDto } from '../dto/save-speaking-test.dto';
@@ -10,7 +11,7 @@ export class SpeakingTestContentService {
   normalize(dto: CreateSpeakingTestDto): SpeakingTestAggregate {
     return {
       mode: dto.mode,
-      purpose: dto.purpose ?? defaultTestPurpose(dto.mode),
+      isPlacement: assertPlacement(dto.isPlacement, dto.mode), purpose: dto.purpose ?? defaultTestPurpose(dto.mode),
       details: { title: dto.details?.title?.trim() || 'Untitled Speaking Test', pictureUrl: dto.details?.pictureUrl },
       parts: dto.parts || {},
     };

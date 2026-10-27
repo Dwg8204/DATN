@@ -10,11 +10,12 @@ import {
 } from '../types/writing-test.type';
 
 type TestRow = {
+  is_placement: boolean;
   id: string; created_by: string; title: string; purpose: WritingTestAggregate['purpose']; scope: 'PART' | 'FULL_SKILL'; part_number: number | null;
   cover: { url?: string } | null; part_contents: { schemaVersion?: number; parts?: Record<string, { context?: string; instruction?: string; wordLimits?: Array<WritingWordLimit | null> }> };
   version: number; status: WritingTestStatus; published_snapshot_id: string | null; created_at: Date; updated_at: Date;
 };
-type SummaryRow = Pick<TestRow, 'id' | 'created_by' | 'title' | 'purpose' | 'scope' | 'part_number' | 'cover' | 'version' | 'status' | 'created_at' | 'updated_at'>;
+type SummaryRow = Pick<TestRow, 'is_placement' | 'id' | 'created_by' | 'title' | 'purpose' | 'scope' | 'part_number' | 'cover' | 'version' | 'status' | 'created_at' | 'updated_at'>;
 type QuestionRow = {
   id: string; part_number: number; position: number; content: { prompt?: string; kind?: string };
   sample_answer: { text?: string } | null;
@@ -63,7 +64,7 @@ export class WritingTestsRepository {
     const [rows, counts] = await Promise.all([
       this.dataSource.query<Array<SummaryRow & { attempts: string }>>(
         `WITH page AS MATERIALIZED (
-           SELECT t.id,t.created_by,t.title,t.purpose,t.scope,t.part_number,t.cover,t.version,t.status,t.created_at,t.updated_at
+           SELECT t.id,t.is_placement,t.created_by,t.title,t.purpose,t.scope,t.part_number,t.cover,t.version,t.status,t.created_at,t.updated_at
            FROM tests t WHERE ${whereSql}
            ORDER BY t.updated_at DESC,t.id DESC LIMIT $${limitIndex} OFFSET $${offsetIndex}
          )
@@ -155,15 +156,15 @@ export class WritingTestsRepository {
       if (existing) return { ...await this.hydrate(existing, await this.loadQuestions(manager, existing.id)), creationReplayed: true };
       const mapping = this.modeColumns(test.mode);
       const rows = await manager.query<TestRow[]>(
-        `INSERT INTO tests(id,created_by,updated_by,title,component,purpose,scope,part_number,cover,part_contents,status)
-         VALUES($8,$1,$1,$2,'WRITING',$3,$4,$5,$6::jsonb,$7::jsonb,'DRAFT') RETURNING *`,
+        `INSERT INTO tests(id,created_by,updated_by,title,component,purpose,scope,part_number,cover,part_contents,status,is_placement)
+         VALUES($8,$1,$1,$2,'WRITING',$3,$4,$5,$6::jsonb,$7::jsonb,'DRAFT',$9) RETURNING *`,
         [actor.id, test.details.title || 'Untitled Writing Test', test.purpose, mapping.scope, mapping.partNumber,
           JSON.stringify(test.details.pictureUrl ? { url: test.details.pictureUrl } : null),
-          JSON.stringify(this.partContents(test)), id],
+          JSON.stringify(this.partContents(test)), id, test.isPlacement ?? false],
       );
       const row = firstMutationRow<TestRow>(rows);
       await this.upsertQuestions(manager, row.id, this.toQuestions(test));
-      await this.writeAudit(manager, actor.id, 'WRITING_TEST_CREATED', row.id, { mode: test.mode }, audit);
+      await this.writeAudit(manager, actor.id, 'WRITING_TEST_CREATED', row.id, { mode: test.mode, isPlacement: test.isPlacement ?? false }, audit);
       return this.hydrate(row, await this.loadQuestions(manager, row.id));
     });
   }
@@ -175,18 +176,18 @@ export class WritingTestsRepository {
       if (current.version !== expectedVersion) return { outcome: 'VERSION_CONFLICT' };
       const mapping = this.modeColumns(test.mode);
       const rows = await manager.query<TestRow[]>(
-        `UPDATE tests SET title=$2,scope=$3,part_number=$4,cover=$5::jsonb,part_contents=$6::jsonb,
+        `UPDATE tests SET is_placement=COALESCE($8,CASE WHEN $3::test_scope='FULL_SKILL' THEN is_placement ELSE false END),title=$2,scope=$3,part_number=$4,cover=$5::jsonb,part_contents=$6::jsonb,
            status=CASE WHEN published_snapshot_id IS NULL THEN 'DRAFT'::publication_status ELSE status END,
            version=version+1,updated_by=$7,updated_at=now() WHERE id=$1 RETURNING *`,
         [id, test.details.title || 'Untitled Writing Test', mapping.scope, mapping.partNumber,
           JSON.stringify(test.details.pictureUrl ? { url: test.details.pictureUrl } : null),
-          JSON.stringify(this.partContents(test)), actor.id],
+          JSON.stringify(this.partContents(test)), actor.id, test.isPlacement ?? null],
       );
       const row = firstMutationRow<TestRow>(rows);
       const questionParts = this.partNumbers(test.mode);
       await manager.query(`UPDATE questions SET deleted_at=now(),updated_at=now() WHERE test_id=$1 AND NOT(part_number=ANY($2::smallint[])) AND deleted_at IS NULL`, [id, questionParts]);
       await this.upsertQuestions(manager, id, this.toQuestions(test));
-      await this.writeAudit(manager, actor.id, 'WRITING_TEST_UPDATED', id, { fromVersion: expectedVersion, toVersion: expectedVersion + 1 }, audit);
+      await this.writeAudit(manager, actor.id, 'WRITING_TEST_UPDATED', id, { fromVersion: expectedVersion, toVersion: expectedVersion + 1, isPlacement: row.is_placement }, audit);
       return { outcome: 'SUCCESS', value: this.hydrate(row, await this.loadQuestions(manager, id)) };
     });
   }
@@ -286,7 +287,7 @@ export class WritingTestsRepository {
     const metadata = row.part_contents?.parts ?? {};
     const forPart = (number: number) => questions.filter(question => question.part_number === number).sort((a, b) => a.position - b.position);
     const aggregate: WritingTestAggregate = {
-      id: row.id, mode, purpose: row.purpose, details: { title: row.title, pictureUrl: row.cover?.url ?? '' }, parts: {},
+      id: row.id, mode, purpose: row.purpose, isPlacement: row.is_placement, details: { title: row.title, pictureUrl: row.cover?.url ?? '' }, parts: {},
       status: row.status, version: row.version, createdAt: row.created_at, updatedAt: row.updated_at,
     };
     if (mode === 'part1' || mode === 'full') {
@@ -318,7 +319,7 @@ export class WritingTestsRepository {
     const mode = this.rowMode(row);
     const canManage = Boolean(actor && (actor.role === 'ADMIN' || row.created_by === actor.id));
     return {
-      id: row.id, title: row.title, name: row.title, mode, purpose: row.purpose, section: this.section(mode), component: 'Writing', status: row.status,
+      id: row.id, title: row.title, name: row.title, mode, purpose: row.purpose, isPlacement: row.is_placement, section: this.section(mode), component: 'Writing', status: row.status,
       attempts, questionType: 'Writing responses', pictureUrl: row.cover?.url ?? '', version: row.version,
       createdAt: row.created_at, updatedAt: row.updated_at, dateAdded: row.created_at,
       canEdit: canManage && row.status !== 'ARCHIVED', canDelete: canManage && row.status !== 'ARCHIVED',

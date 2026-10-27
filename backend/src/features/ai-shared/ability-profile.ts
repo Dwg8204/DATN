@@ -57,6 +57,22 @@ export function buildAbilityProfile(
       .slice(0, 3);
     return {
       skill,
+      assessmentComplete:
+        full.length > 0 ||
+        (skill === "GRAMMAR_VOCAB" &&
+          real.some(
+            (r) =>
+              r.component === skill &&
+              r.scope === "FULL_SKILL" &&
+              r.result?.method === "OBJECTIVE" &&
+              r.score != null &&
+              r.max_score != null &&
+              Number.isFinite(Number(r.score)) &&
+              Number.isFinite(Number(r.max_score)) &&
+              Number(r.max_score) > 0 &&
+              Number(r.score) >= 0 &&
+              Number(r.score) <= Number(r.max_score),
+          )),
       band: full.length
         ? CEFR_LABELS[
             Math.round(average(full.map((r) => CEFR_LEVELS[r.band!]))!)

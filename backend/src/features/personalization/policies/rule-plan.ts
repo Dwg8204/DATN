@@ -45,7 +45,11 @@ export function buildRulePlan(
 ): CreatePlanItemInput[] {
   const tests = candidates.filter(
     (item): item is Extract<PlanCandidate, { activityType: "TEST" }> =>
-      item.activityType === "TEST",
+      item.activityType === "TEST" && item.purpose !== "PLACEMENT",
+  );
+  const placements = candidates.filter(
+    (c): c is Extract<PlanCandidate, { activityType: "TEST" }> =>
+      c.activityType === "TEST" && c.purpose === "PLACEMENT",
   );
   const mistakes = candidates.filter(
     (
@@ -79,7 +83,20 @@ export function buildRulePlan(
       remainingTests === 0
         ? 1
         : Math.min(3, Math.max(0, Math.ceil(requiredPace)), left);
-    for (let slot = 0; slot < pace; slot++) {
+    const placement = placements[day];
+    if (placement) {
+      daily.push({
+        activityType: "TEST",
+        scheduledOn,
+        sortOrder: 0,
+        targetCount: 1,
+        component: placement.component,
+        testId: placement.testId,
+        reason: "PLACEMENT",
+      });
+      left = Math.max(0, left - 1);
+    }
+    for (let slot = daily.length; slot < pace; slot++) {
       if (tests.every((t) => used.has(t.testId))) used.clear();
       let test: Extract<PlanCandidate, { activityType: "TEST" }> | undefined;
       for (let offset = 0; offset < skills.length; offset++) {

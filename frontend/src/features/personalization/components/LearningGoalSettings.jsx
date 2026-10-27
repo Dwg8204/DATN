@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
 import ConfirmModal from '../../../components/common/ConfirmModal';
@@ -20,6 +20,8 @@ export default function LearningGoalSettings() {
   const [legacy, setLegacy] = useState(() => readLegacyGoal(window.localStorage));
   const [confirmation, setConfirmation] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [ability,setAbility]=useState(null);
+  const targetEdited=useRef(false);
   const [error, setError] = useState('');
   useEffect(() => {
     if (preferences && (disableEmailRequested || disableReportRequested)) document.getElementById('learning-preferences')?.scrollIntoView();
@@ -52,6 +54,7 @@ export default function LearningGoalSettings() {
     }
     finally { setBusy(false); }
   };
+  useEffect(()=>{if(!state)return;let active=true;api.ability().then(profile=>{if(!active)return;setAbility(profile);if(!state.goal && !targetEdited.current && profile.suggestedTargetCefr)setForm(form=>({...form,targetCefr:profile.suggestedTargetCefr}));}).catch(()=>{});return()=>{active=false};},[state]);
   const goal = state?.goal;
   const saveGoal = event => {
     event.preventDefault();
@@ -71,9 +74,10 @@ export default function LearningGoalSettings() {
     {!state ? <button onClick={() => run(load)} disabled={busy}>{t('personalization.reload')}</button> : <>
       {goal && <p>{t('personalization.goalSummary', { ...goal })} <span className={styles.muted}>({goal.timezone})</span></p>}
       {!goal && legacy && <div><p>{t('personalization.legacy')}</p><button onClick={importGoal} disabled={busy}>{t('personalization.import')}</button></div>}
+      {ability && <><p>{t('personalization.bandEstimate')}: {ability.overall.band ?? t('personalization.insufficient')}</p>{!ability.placement.complete && <p role="status">{t('personalization.placement.goalWarning')}</p>}</>}
       <form onSubmit={saveGoal}>
         <div className={styles.fields}>
-          <label className={styles.field}>{t('goal.targetBand')}<select value={form.targetCefr} onChange={e => setForm({ ...form, targetCefr: e.target.value })}>{['A1', 'A2', 'B1', 'B2', 'C'].map(band => <option key={band}>{band}</option>)}</select></label>
+          <label className={styles.field}>{t('goal.targetBand')}<select value={form.targetCefr} onChange={e => { targetEdited.current=true; setForm({ ...form, targetCefr: e.target.value }); }}>{['A1', 'A2', 'B1', 'B2', 'C'].map(band => <option key={band}>{band}</option>)}</select></label>
           <label className={styles.field}>{t('goal.totalTests')}<input type="number" required min="1" max="500" value={form.targetTests} onChange={e => setForm({ ...form, targetTests: Number(e.target.value) })} /></label>
           <label className={styles.field}>{t('personalization.days')}<input type="number" required min="3" max="180" value={form.durationDays} onChange={e => setForm({ ...form, durationDays: Number(e.target.value) })} /></label>
         </div>

@@ -13,6 +13,7 @@ import {
 } from '../types/speaking-test.type';
 
 type TestRow = {
+  is_placement: boolean;
   id: string;
   created_by: string;
   title: string;
@@ -92,7 +93,7 @@ export class SpeakingTestsRepository {
     const rows = await this.dataSource.query(
       `
       SELECT
-        t.id, t.title, t.purpose, t.scope, t.part_number, t.status, t.cover, t.version,
+        t.id, t.is_placement, t.title, t.purpose, t.scope, t.part_number, t.status, t.cover, t.version,
         t.created_at, t.updated_at, t.created_by,
         u.first_name, u.last_name,
         (SELECT count(*) FROM test_attempts a WHERE a.component = 'SPEAKING' AND (a.snapshot_id = t.published_snapshot_id OR (a.scope = t.scope AND a.part_number = t.part_number))) as attempts_count
@@ -113,7 +114,7 @@ export class SpeakingTestsRepository {
           title: row.title,
           name: row.title,
           mode: mode as SpeakingTestMode,
-          purpose: row.purpose,
+          purpose: row.purpose, isPlacement: row.is_placement,
           section: mode === 'full' ? 'Full Test' : `Part ${row.part_number}`,
           component: 'Speaking',
           status: row.status,
@@ -173,9 +174,9 @@ export class SpeakingTestsRepository {
     await this.dataSource.transaction(async manager => {
       if (await findCreatedTest(manager, id, creationRequestId)) { replayed = true; return; }
       await manager.query(
-        `INSERT INTO tests (id, created_by, title, component, purpose, scope, part_number, cover, part_contents, version, status, updated_by)
-         VALUES ($1, $2, $3, 'SPEAKING', $4, $5, $6, $7, $8, 1, 'DRAFT', $2)`,
-        [id, actor.id, aggregate.details.title, aggregate.purpose, scope, partNumber, cover, contents],
+        `INSERT INTO tests (id, created_by, title, component, purpose, scope, part_number, cover, part_contents, version, status, updated_by, is_placement)
+         VALUES ($1, $2, $3, 'SPEAKING', $4, $5, $6, $7, $8, 1, 'DRAFT', $2, $9)`,
+        [id, actor.id, aggregate.details.title, aggregate.purpose, scope, partNumber, cover, contents, aggregate.isPlacement ?? false],
       );
       await this.syncQuestions(manager, id, aggregate);
       await this.audit(manager, actor.id, 'CREATE_SPEAKING_TEST', id, aggregate, audit);
@@ -199,9 +200,9 @@ export class SpeakingTestsRepository {
 
       await manager.query(
         `UPDATE tests
-         SET title = $1, scope = $2, part_number = $3, cover = $4, part_contents = $5, version = version + 1, updated_by = $6, status = 'DRAFT', updated_at = now()
+         SET is_placement=COALESCE($8,CASE WHEN $2::test_scope='FULL_SKILL' THEN is_placement ELSE false END), title = $1, scope = $2, part_number = $3, cover = $4, part_contents = $5, version = version + 1, updated_by = $6, status = 'DRAFT', updated_at = now()
          WHERE id = $7`,
-        [aggregate.details.title, scope, partNumber, cover, contents, actor.id, id],
+        [aggregate.details.title, scope, partNumber, cover, contents, actor.id, id, aggregate.isPlacement ?? null],
       );
       await this.syncQuestions(manager, id, aggregate);
       await this.audit(manager, actor.id, 'UPDATE_SPEAKING_TEST', id, aggregate, audit);
@@ -273,7 +274,7 @@ export class SpeakingTestsRepository {
     const aggregate: SpeakingTestAggregate = {
       id: test.id,
       mode: mode as SpeakingTestMode,
-      purpose: test.purpose,
+      purpose: test.purpose, isPlacement: test.is_placement,
       details: { title: test.title, pictureUrl: test.cover?.pictureUrl },
       parts: {},
       status: test.status,

@@ -1,5 +1,40 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Bố cục AI feedback Writing — 26/10/2026
+
+- Trang kết quả Writing hiển thị Test summary trước Estimated Writing CEFR; mỗi khối chiếm toàn chiều rộng, bỏ bố cục hai cột và chiều cao kéo giãn theo nhau.
+- Thông tin summary dàn thành 4 cột desktop, 2 cột tablet và 1 cột mobile. Nhận xét CEFR dài dùng toàn chiều rộng khối; giữ nguyên nội dung và luồng chấm Gemini/Groq.
+- Đã xem ảnh render ở 1280px và 390px, kiểm tra thứ tự/vị trí, chiều rộng bằng nhau và không tràn ngang. Thay đổi tại WritingResultPage.jsx và WritingResultPage.module.css; không sửa các thay đổi đánh giá đầu vào đang có trong workspace.
+- Kiểm chứng: 5/5 browser test Writing/Speaking đạt, build frontend đạt (còn cảnh báo chunk lớn có sẵn), Oxlint file JSX và diff check đạt. Đã đồng bộ origin/develop tại fa9e03d bằng merge 4bb2b66 và chạy lại browser test/build thành công. Commit riêng bố cục Writing và bàn giao; giữ các thay đổi cá nhân hóa ngoài commit, không push.
+
+## Cá nhân hóa S5 — 23/10/2026
+
+- Hoàn thành trên fix/personalization-s5 từ S4 1e4907a. Chưa push/merge; không làm GĐ11.
+- COMMENT/WEEKLY/MIDTERM/FINAL bắt buộc statusEcho, bandClaim; validator dùng chung kiểm tra metadata, cụm từ trái trạng thái và band đích chưa đạt. Không có goal dùng ON_TRACK quy ước nhưng cấm kết luận tiến độ.
+- FAILED còn lượt trả RETRYING + nextRetryAt. Dashboard poll overview 15/30/60 giây, tự hiện READY, dừng FALLBACK/HIDDEN. PersonalCommentCard có thông báo Việt/Anh.
+- COMMENT v2, WEEKLY v5, FINAL v3; snapshot vẫn 4. Cache COMMENT có prompt version. Không migration, không đổi .env, không viết lại READY cũ.
+- 174 unit/13 suite; PostgreSQL GĐ6/GĐ7/GĐ8/S4; browser retry → READY không reload và dừng polling; typecheck/lint/build đạt. Build còn cảnh báo chunk lớn. Chi tiết docs/PERSONALIZATION_S5_REPORT.md.
+
+
+## Cá nhân hóa S4 — 23/10/2026
+
+- Hoàn thành trên fix/personalization-s4 kế thừa S3 bf4c584, không có codex trong tên nhánh. Chưa push/merge S3/S4 trong phiên này.
+- GET overview và ba GET cũ chỉ đọc. POST sync giữ khóa user, reconcile/ensure/queue comment. Dashboard truyền dữ liệu chung xuống năm thẻ, polling qua overview; StrictMode không nhân đôi request. effectiveStatus ENDING cho mục tiêu quá hạn chưa reconcile.
+- Migration AddPlanProgressFinalizedAt1760000023000 đã áp dụng riêng local; index tuần chưa chốt. Tuần đã chốt không đổi; lần sync đầu sau migration chốt backlog một lần. Các migration ngoài S4 đang chờ được giữ nguyên, không sửa .env.
+- Snapshot nhận manager từ plan/report; truy vấn tuần tự cùng connection. Worker chỉ chọn mục tiêu cần xử lý (kể cả tuần cũ chưa chốt), giữ scheduler báo cáo/comment/delivery.
+- Kiểm thử: 133 unit/12 suite, DB S4 + S1/GĐ4/GĐ6/GĐ7; browser một overview, conditional sync, polling/mobile và hồi quy; typecheck/lint/build. Chi tiết docs/PERSONALIZATION_S4_REPORT.md.
+- Không thay snapshot/prompt version vì không đổi dữ liệu/hợp đồng AI: SNAPSHOT_VERSION=4, WEEKLY v4, FINAL v2. Chưa làm S5/GĐ11. Khởi động lại app sau checkout để nhận code.
+
+## Cá nhân hóa S3 — 22/10/2026
+
+- Nhánh fix/personalization-s3 từ origin/develop 9362a8f (S1/S2 đã có trên develop). Không thêm codex vào tên nhánh.
+- Đánh giá đầu vào G&V/Reading/Listening từ lịch sử full; Writing/Speaking tùy chọn. GET hồ sơ chỉ đọc, create/replace trả placementComplete nhưng không chặn, tuần 1 xếp bài thiếu ngày 1–3 và AI phải giữ lịch.
+- Người dùng chốt giữ CHECK FULL_SKILL; Music full để đánh giá, Part cùng nội dung loại khỏi gợi ý bằng placement_family_id. Đã apply riêng migration S3 local và liên kết 10 full + 18 Part; không áp dụng migration Writing/Vocabulary khác, không sửa .env. API ưu tiên EXAM.
+- Công tắc admin ở danh sách/sửa đề năm kỹ năng, version/audit/validation; Dashboard có thẻ đánh giá, Profile hiện band/gợi ý và cảnh báo; chuỗi vi/en.
+- SNAPSHOT_VERSION=4, REPORT_PROMPT_VERSION=personal-weekly-v4, FINAL vẫn v2. Mục tiêu/lộ trình đã có không tự viết lại. Script cấu hình Music chỉ chạy khi chủ động yêu cầu --apply, không chạy trong worker.
+- Kiểm thử: 165 unit test thuộc 17 suite (chạy suite chính và bổ sung sau sửa), PostgreSQL S3 + hồi quy S1/GĐ4/GĐ7; browser cá nhân hóa và S3 desktop/mobile; TypeScript, lint file thay đổi và build frontend. Lint frontend toàn repo còn cảnh báo có sẵn, build còn cảnh báo chunk lớn.
+- Chi tiết và lệnh vận hành: docs/PERSONALIZATION_S3_REPORT.md. Commit tiếng Việt theo task, chưa push/merge S3. Dừng nghiệm thu trước S4/S5/GĐ11; khởi động lại app để nhận code mới.
+
 ## Cá nhân hóa S2 — 22/10/2026
 
 - Đã triển khai trên fix/personalization-s2 từ origin/develop 4623efe, hợp nhất S1 đã nghiệm thu. Không có codex trong tên nhánh.

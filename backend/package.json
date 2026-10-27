@@ -47,7 +47,10 @@
     "ai:personalization:smoke": "ts-node scripts/personalization-smoke.ts",
     "topics:backfill": "ts-node scripts/topic-backfill.ts",
     "test:topics:db": "ts-node test/integration/personalization-topics.ts",
-    "personalization:replan-current": "ts-node scripts/personalization-replan-current.ts"
+    "personalization:replan-current": "ts-node scripts/personalization-replan-current.ts",
+    "personalization:placement-music": "ts-node scripts/personalization-placement-music.ts",
+    "test:placement:db": "ts-node test/integration/personalization-placement.ts",
+    "test:personalization:s4:db": "ts-node test/integration/personalization-overview.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",

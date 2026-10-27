@@ -40,6 +40,7 @@ export type GrammarTestAggregate = {
   id?: string;
   mode: GrammarTestMode;
   purpose: TestPurpose;
+  isPlacement?: boolean;
   details: { title: string; pictureUrl?: string; cover?: GrammarCover | null };
   parts: {
     1?: { instruction: string; questions: GrammarQuestion[] };
@@ -57,6 +58,7 @@ export type GrammarTestSummary = {
   name: string;
   mode: GrammarTestMode;
   purpose: TestPurpose;
+  isPlacement?: boolean;
   section: string;
   component: 'Grammar & Vocab';
   status: GrammarTestStatus;

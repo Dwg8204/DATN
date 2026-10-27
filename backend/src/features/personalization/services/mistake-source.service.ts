@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { TestAttemptsService } from '../../test-attempts/services/test-attempts.service';
 import { PracticeAttemptsService } from '../../test-attempts/services/practice-attempts.service';
@@ -28,8 +28,9 @@ export class MistakeSourceService {
     actor: AuthUser,
     asOf: Date,
     timezone: string,
+    manager: EntityManager = this.db.manager,
   ): Promise<MistakeReference[]> {
-    const rows = await this.db.query<
+    const rows = await manager.query<
       Array<{
         id: string;
         purpose: string;

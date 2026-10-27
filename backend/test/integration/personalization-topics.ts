@@ -273,7 +273,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
   const candidates = await new PlanCandidatesService().build(
     db.manager,
     alice,
-    { weak: { topics: weak, parts: [] }, mistakes: { references: [] } } as any,
+    { weak: { topics: weak, parts: [] }, mistakes: { references: [] }, vocab: {activeCount: 0}, band: {bySkill: []} } as any,
   );
   assert.equal(
     candidates.filter((c) => c.activityType === "TOPIC_REVIEW").length,

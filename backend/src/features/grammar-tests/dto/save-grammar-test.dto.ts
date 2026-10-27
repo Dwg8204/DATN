@@ -1,8 +1,10 @@
+import { IsBoolean } from 'class-validator';
 import { IsIn, IsInt, IsObject, IsOptional, IsUUID, Max, Min } from 'class-validator';
 import { TestPurpose } from '../../../common/tests/test-purpose';
 import { GrammarTestAggregate, GrammarTestMode } from '../types/grammar-test.type';
 
 export class CreateGrammarTestDto {
+  @IsOptional() @IsBoolean() isPlacement?: boolean;
   @IsOptional() @IsUUID() creationRequestId?: string;
 
   @IsOptional()

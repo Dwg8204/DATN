@@ -38,6 +38,7 @@ export type SpeakingTestAggregate = {
   id?: string;
   mode: SpeakingTestMode;
   purpose: TestPurpose;
+  isPlacement?: boolean;
   details: { title: string; pictureUrl?: string };
   parts: {
     1?: SpeakingPart1;
@@ -57,6 +58,7 @@ export type SpeakingTestSummary = {
   name: string;
   mode: SpeakingTestMode;
   purpose: TestPurpose;
+  isPlacement?: boolean;
   section: string;
   component: 'Speaking';
   status: SpeakingTestStatus;

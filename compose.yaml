@@ -1,0 +1,5 @@
+# Keep the existing Compose project and PostgreSQL volume.
+name: backend
+
+include:
+  - backend/compose.yaml

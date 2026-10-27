@@ -9,7 +9,7 @@ import {
 } from '../types/snapshot.type';
 import { addDays, dayNumber, localDay } from './calendar';
 
-export const SNAPSHOT_VERSION = 3;
+export const SNAPSHOT_VERSION = 5;
 export const SNAPSHOT_SKILLS = ABILITY_SKILLS;
 
 export function goalProgress(

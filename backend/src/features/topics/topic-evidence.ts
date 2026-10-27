@@ -21,10 +21,11 @@ export async function readWeakTopics(
     }>
   >(
     `
-    WITH coverage AS (${TOPIC_COVERAGE_SQL}), eligible AS (
+    WITH catalog AS MATERIALIZED (SELECT * FROM topic_question_catalog),
+    coverage AS (${TOPIC_COVERAGE_SQL.replaceAll('topic_question_catalog', 'catalog')}), eligible AS (
       SELECT e.*,a.snapshot_id FROM learning_evidence e JOIN test_attempts a ON a.id=e.attempt_id
       JOIN question_topics l ON l.question_id=e.question_id AND l.topic_id=e.topic_id AND l.status='APPROVED'
-      JOIN topic_question_catalog q ON q.id=e.question_id AND q.question_hash=l.question_hash
+      JOIN catalog q ON q.id=e.question_id AND q.question_hash=l.question_hash
       JOIN topic_snapshot_questions sq ON sq.snapshot_id=a.snapshot_id AND sq.question_id=q.id AND sq.question_hash=l.question_hash
       WHERE e.user_id=$1 AND a.assessment_revision=e.assessment_revision AND a.status='SUBMITTED'
         AND e.observed_at >= $2 AND e.observed_at <= $3 AND e.evidence_quality='OBJECTIVE'

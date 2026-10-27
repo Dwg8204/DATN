@@ -1,5 +1,9 @@
 {
   "personalization": {
+    "refreshFailed": "Learning data could not be refreshed. Displayed data may be out of date. Please try again.",
+    "retryLoad": "Try again",
+    "placement": {
+      "assessedWithoutBand": "Assessment completed · Band unavailable","title":"Initial ability assessment","help":"Complete the three required skills for a suitable learning plan. Writing and Speaking are optional.","required":"Required","optional":"Optional","start":"Assess {{skill}}","unavailable":"No assessment available yet","goalWarning":"Your three required assessments are incomplete. You can still set a goal; the first week will prioritize missing assessments.","adminLabel":"Placement assessment","adminMissing":"No published placement assessment: {{skills}}","saveFailed":"Unable to update. Reload the list to get the latest version."},
     "ability": {"missing":"Missing: {{skills}}","status":{"NONE":"No data","PRELIMINARY":"Preliminary","ESTIMATE":"Estimate"},"skills":{"GRAMMAR_VOCAB":"Grammar & Vocabulary","READING":"Reading","LISTENING":"Listening","WRITING":"Writing","SPEAKING":"Speaking"},"changeTitle":"Band changes by skill","skill":"Skill","baseline":"At the start","current":"Current","noBaseline":"No baseline profile was saved for this goal."},
     "recentReports": "Recent learning reports",
     "weeklyReport": "Week {{week}} report",
@@ -22,6 +26,7 @@
     "disableReportEmail": "Turn off report emails",
     "reportEmailDisabled": "Report emails are off. You will still receive reports on the website.",
     "commentTitle": "AptiMate’s feedback",
+    "commentRetrying": "Retrying your feedback. It will appear automatically when ready.",
     "commentPending": "Preparing your feedback… Your progress and study plan are ready below.",
     "commentStrengths": "Strengths",
     "commentFocus": "What to focus on",

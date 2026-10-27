@@ -1,17 +1,9 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { personalizationApi } from '../services/personalizationApi';
 import styles from './Personalization.module.css';
 
-export default function WeeklyReportsCard() {
+export default function WeeklyReportsCard({reports = []}) {
   const { t } = useTranslation();
-  const [reports, setReports] = useState([]);
-  useEffect(() => {
-    let active = true;
-    personalizationApi.reports().then(data => { if (active) setReports(data.items.slice(0, 3)); }).catch(() => {});
-    return () => { active = false; };
-  }, []);
   if (!reports.length) return null;
   return <section className={styles.card}>
     <h2>{t('personalization.recentReports')}</h2>

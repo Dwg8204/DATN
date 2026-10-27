@@ -8,6 +8,7 @@ import { PlanProgressRepository } from "../repositories/plan-progress.repository
 import {
   LearningGoalRow,
   StudyPlanItemRow,
+  StudyPlanRow,
 } from "../types/personalization.type";
 import { addDays, dayNumber, localDay } from "../policies/calendar";
 import { buildRulePlan } from "../policies/rule-plan";
@@ -82,6 +83,7 @@ export class PlanService {
           goal,
           { kind: "GOAL" },
           this.clock.now(),
+        manager,
         );
         const original = await this.plans.findItems(
           row.user_id,
@@ -148,21 +150,26 @@ export class PlanService {
   }
 
   async current(actor: AuthUser) {
-    return this.db.transaction(async (manager) => {
-      await this.goals.lockUser(manager, actor.id);
-      const active = await this.goals.reconcile(
-        manager,
-        actor.id,
-        this.clock.now(),
-      );
-      if (!active) return { plan: null, today: null };
-      return this.ensureLocked(manager, actor, active.goal);
+    const [goal] = await this.db.query<LearningGoalRow[]>("SELECT *,start_date::text start_date FROM learning_goals WHERE user_id=$1 AND status='ACTIVE'",[actor.id]);
+    if (!goal) return {plan:null,today:null};
+    const today=localDay(this.clock.now(),goal.timezone);
+    if(today>=addDays(goal.start_date,goal.duration_days))return {plan:null,today};
+    const week=Math.floor((dayNumber(today)-dayNumber(goal.start_date))/7)+1;
+    const plan=await this.plans.findWeek(actor.id,goal.id,week);
+    return plan ? this.presentPlan(this.db.manager,actor,goal,plan,today) : {plan:null,today};
+  }
+
+  async sync(actor: AuthUser) {
+    return this.db.transaction(async manager=>{
+      await this.goals.lockUser(manager,actor.id);
+      const active=await this.goals.reconcile(manager,actor.id,this.clock.now());
+      return active ? this.ensureLocked(manager,actor,active.goal) : {plan:null,today:null};
     });
   }
 
   async afterGoalCreated(actor: AuthUser) {
     try {
-      await this.current(actor);
+      await this.sync(actor);
       if (this.reports)
         await this.db.transaction(async (manager) => {
           await this.goals.lockUser(manager, actor.id);
@@ -201,6 +208,7 @@ export class PlanService {
         goal,
         { kind: "GOAL" },
         this.clock.now(),
+        manager,
       );
       const candidates = await this.candidates.build(
         manager,
@@ -227,6 +235,10 @@ export class PlanService {
       );
       await this.progress.syncPlan(manager, goal, plan, this.clock.now());
     }
+    return this.presentPlan(manager,actor,goal,plan,today);
+  }
+
+  private async presentPlan(manager: EntityManager,actor: AuthUser,goal: LearningGoalRow,plan: StudyPlanRow,today: string) {
     const items = await this.plans.findItems(actor.id, plan.id, manager);
     const tests = await manager.query<
       Array<{ id: string; title: string; purpose: string; available: boolean }>
@@ -235,13 +247,13 @@ export class PlanService {
       FROM tests WHERE id=ANY($1::uuid[])`,
       [items.flatMap((item) => (item.test_id ? [item.test_id] : []))],
     );
-    const eligibleTopics = await manager.query<
+    const eligibleTopics = items.some(item => item.activity_type === "TOPIC_REVIEW") ? await manager.query<
       Array<{ id: string; name: string; test_id: string }>
     >(
-      `WITH coverage AS (${TOPIC_COVERAGE_SQL})
+      `WITH catalog AS MATERIALIZED (SELECT * FROM topic_question_catalog), coverage AS (${TOPIC_COVERAGE_SQL.replaceAll('topic_question_catalog', 'catalog')})
       SELECT DISTINCT p.id,p.name,t.id test_id FROM learning_topics p JOIN coverage c ON c.component=p.component
       JOIN question_topics l ON l.topic_id=p.id AND l.status='APPROVED'
-      JOIN topic_question_catalog q ON q.id=l.question_id AND q.question_hash=l.question_hash
+      JOIN catalog q ON q.id=l.question_id AND q.question_hash=l.question_hash
       JOIN tests t ON t.id=q.test_id AND t.status='PUBLISHED' AND t.archived_at IS NULL
       JOIN topic_snapshot_questions sq ON sq.snapshot_id=t.published_snapshot_id AND sq.question_id=q.id AND sq.question_hash=q.question_hash
       WHERE p.is_active AND c.total>0 AND c.approved::numeric/c.total>=0.8 AND t.id=ANY($1::uuid[])`,
@@ -252,7 +264,7 @@ export class PlanService {
             : [],
         ),
       ],
-    );
+    ) : [];
     return {
       today,
       timezone: goal.timezone,

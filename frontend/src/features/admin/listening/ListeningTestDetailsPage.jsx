@@ -1,3 +1,4 @@
+import {PlacementControl,PlacementCoverage} from '../shared-test-builder/PlacementControl';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +15,7 @@ import styles from '../writing/WritingTestDetailsPage.module.css';
 
 export default function ListeningTestDetailsPage() {
   const ui = useUiTranslation();
-  const { test, updateDetails, goTo, saveDraft, publishTest } = useListeningBuilder();
+  const { test, setTest, updateDetails, goTo, saveDraft, publishTest } = useListeningBuilder();
   const navigate = useNavigate();
   const [errors, setErrors] = useState([]);
   const [confirm, setConfirm] = useState(false);
@@ -56,6 +57,7 @@ export default function ListeningTestDetailsPage() {
       <div className={styles.infoGrid}>
         <div className={styles.fields}>
           <Field label={ui("Title")} value={test.details.title} onChange={value => updateDetails('title', value)} />
+          <PlacementCoverage /><PlacementControl test={test} onChange={value=>setTest(current=>({...current,isPlacement:value}))} />
           <ImageField label={ui("Test cover")} value={test.details.pictureUrl} onChange={value => updateDetails('pictureUrl', value)} />
           <button className={styles.saveInfo} disabled={saving} onClick={saveInformation}>{ui("Save draft")}</button>
         </div>
