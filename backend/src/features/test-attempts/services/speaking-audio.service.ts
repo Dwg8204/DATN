@@ -12,6 +12,19 @@ export class SpeakingAudioService {
   constructor(private readonly config: SpeakingAiConfig) {}
 
   async download(url: string, image = false): Promise<Buffer> {
+    const max = image ? 2 * 1024 * 1024 : 10 * 1024 * 1024;
+    // Published Speaking prompts may contain inline JPEG/PNG/WebP images. Accept these
+    // only on the image path; candidate audio must always remain a verified Cloudinary URL.
+    if (image && /^data:image\/(?:jpeg|png|webp);base64,/i.test(url)) {
+      const comma = url.indexOf(',');
+      const encoded = url.slice(comma + 1);
+      if (!encoded || encoded.length > Math.ceil(max / 3) * 4 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded)) {
+        throw new Error('AUDIO_TOO_LARGE');
+      }
+      const bytes = Buffer.from(encoded, 'base64');
+      if (!bytes.length || bytes.length > max || bytes.toString('base64') !== encoded) throw new Error('AUDIO_TOO_LARGE');
+      return bytes;
+    }
     let parsed: URL;
     try { parsed = new URL(url); } catch { throw new Error('AUDIO_SOURCE_NOT_ALLOWED'); }
     const prefix = `/${this.config.cloud}/${image ? 'image' : 'video'}/upload/`;
@@ -20,7 +33,6 @@ export class SpeakingAudioService {
       parsed.search || parsed.hash) throw new Error('AUDIO_SOURCE_NOT_ALLOWED');
     const response = await fetch(parsed, { redirect: 'error', signal: AbortSignal.timeout(30_000) });
     if (!response.ok || !response.body) throw new Error('AUDIO_DOWNLOAD_FAILED');
-    const max = image ? 2 * 1024 * 1024 : 10 * 1024 * 1024;
     const chunks: Buffer[] = [];
     let bytes = 0;
     const reader = response.body.getReader();
