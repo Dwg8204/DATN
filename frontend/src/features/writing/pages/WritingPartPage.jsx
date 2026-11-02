@@ -84,7 +84,7 @@ export default function WritingPartPage() {
   return <div className={styles.page}>
     <div className={styles.content}>
       <div className={styles.heading}>
-        <div><strong>{ui(task.title)}</strong><span>{ui(paper.title)}</span></div>
+        <div><strong>{ui(task.title)}</strong><span>{paper.title}</span></div>
         <SaveIndicator status={saveStatus} />
       </div>
       <InstructionBlock title={ui("Part {{value0}}", {value0:(partNumber)})}><RichTextContent value={task.instruction} /></InstructionBlock>

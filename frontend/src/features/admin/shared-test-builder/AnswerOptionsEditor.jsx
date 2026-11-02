@@ -6,12 +6,12 @@ import styles from './AnswerOptionsEditor.module.css';
 export function AnswerRadioGroup({ options, value, onChange, ariaLabel = 'Correct answer' }) {
   const ui = useUiTranslation();
   const groupId = useId();
-  return <div className={styles.picker} role="radiogroup" aria-label={ariaLabel}>
+  return <div className={styles.picker} role="radiogroup" aria-label={ui(ariaLabel)}>
     {options.map((option, index) => {
       const item = typeof option === 'object' ? option : { value: option, label: option };
       return <label key={`${item.value}-${index}`}>
         <input type="radio" name={groupId} checked={String(value) === String(item.value)} onChange={() => onChange(item.value)}/>
-        <b>{String.fromCharCode(65 + index)}</b><span>{ui(item.label)}</span>
+        <b>{String.fromCharCode(65 + index)}</b><span>{item.label}</span>
       </label>;
     })}
   </div>;

@@ -76,7 +76,7 @@ const ReadingPopularSection = () => {
             {/* Content */}
             <div className="p-5 flex-1 flex flex-col">
               <h3 className="text-lg font-bold text-gray-900 mb-3 group-hover:text-red-600 transition-colors line-clamp-2">
-                {ui(test.title)}
+                {test.title}
               </h3>
 
               <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-50 text-sm text-gray-500 font-medium">

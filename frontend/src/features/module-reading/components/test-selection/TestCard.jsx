@@ -61,7 +61,7 @@ const TestCard = ({ test, layoutMode, mode = 'full', index }) => {
         </div>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-bold text-gray-900 mb-1 truncate" title={test.title}>
-            {ui(test.title)}
+            {test.title}
           </h3>
           <div className="flex items-start text-xs text-gray-500 mb-2">
             <Folder className="w-3 h-3 mr-1 mt-0.5 flex-shrink-0" />

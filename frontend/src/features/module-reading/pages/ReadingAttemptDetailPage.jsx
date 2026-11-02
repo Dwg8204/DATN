@@ -53,7 +53,7 @@ function PassageReview({ paper, partNumber, page, outcomes }) {
       return <span key={index} className={styles.gapAnswer}>({chunk.gap}) {readingAnswerText(selected?.text) || '___'}</span>;
     })}
   </div></section>;
-  if (partNumber === 2) return <section className={styles.scriptBox}><h2>{ui(page.title)}</h2>
+  if (partNumber === 2) return <section className={styles.scriptBox}><h2>{page.title}</h2>
     <div className={styles.openingSentence}><strong>{ui("Sentence 1 — given example")}</strong><RichTextContent value={page.openingSentence} /></div>
     <h3>{ui("Correct reading order")}</h3>
     <ol start={2} className={styles.orderedText}>{page.rows.map(row => {

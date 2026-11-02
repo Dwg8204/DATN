@@ -1,5 +1,12 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Sửa dịch nhầm nội dung đề — 02/11/2026
+
+- MultipleChoice không dịch label đáp án nữa (Grammar Part 1, Listening Part 1/4); sửa tương tự radio chọn đáp án trong admin. Rà soát cả 5 kỹ năng và bỏ các ui() nhận tiêu đề/nội dung đề ở danh sách, làm bài, Reading review và admin preview. Giữ bản dịch UI và dữ liệu snapshot/answer ID; không sửa JSON để né va chạm từ.
+- Kiểm chứng: 14/14 unit test i18n/Reading/Writing đạt; ca browser i18n hiện có và ca regression nội dung đề đều đạt (ca mới chạy lại sau khi sửa thao tác test để click nhãn radio). Build frontend đạt; Oxlint file sửa không lỗi, còn cảnh báo có sẵn; diff check đạt.
+- Bổ sung regression đổi ngôn ngữ với từ trùng khóa dịch, giữ nguyên đáp án đã chọn và bài đang nhập; chi tiết tại docs/I18N_AUDIT.md. Đã đồng bộ origin/develop tới 61db072 bằng fast-forward ngày 02/11/2026, khôi phục task nguyên vẹn không conflict. Commit riêng task sửa dịch và tài liệu; không đưa các file production/ops có sẵn vào commit, chưa push.
+
+
 ## Dọn giao diện trang chủ, admin và tổng quan kỹ năng — 27/10/2026
 
 - HeroBanner chỉ còn ảnh nền; bỏ toàn bộ tiêu đề, mô tả và khung nội dung phủ lên ảnh. Admin bỏ mục/route placeholder Feedback; Test Management dùng cùng padding và khoảng cách icon với menu khác, chevron thu gọn vẫn tách riêng.

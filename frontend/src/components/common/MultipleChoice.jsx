@@ -1,4 +1,3 @@
-import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import styles from './MultipleChoice.module.css';
 
 export default function MultipleChoice({
@@ -9,7 +8,6 @@ export default function MultipleChoice({
   className = '',
   disabled = false,
 }) {
-  const ui = useUiTranslation();
   return (
     <div className={`${styles.optionsList} ${className}`}>
       {options.map((option, index) => {
@@ -32,7 +30,7 @@ export default function MultipleChoice({
             <span className={`${styles.radioOuter} ${isSelected ? styles.radioOuterSelected : ''}`}>
               {isSelected && <span className={styles.radioInner} />}
             </span>
-            <span className={styles.optionText}>{ui(normalized.label)}</span>
+            <span className={styles.optionText}>{normalized.label}</span>
           </label>
         );
       })}

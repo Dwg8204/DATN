@@ -143,7 +143,7 @@ export default function ListeningTestListPage() {
                 testsToRender.map((test) => (
                   <div key={test.id} className={styles.testCard}>
                     <div className={styles.cardTop}>
-                      <div className={styles.cardTitle}>{ui(test.title)}</div>
+                      <div className={styles.cardTitle}>{test.title}</div>
                       <div className={styles.cardInfoRow}>
                         <div className={styles.cardImageWrapper}>
                           <img className={styles.cardImage} src={test.thumbnail || "https://placehold.co/157x79"} alt={ui("Thumbnail")} />

@@ -41,3 +41,12 @@
 ## Cập nhật phân quyền 19/10/2026
 
 Đã bỏ khóa dịch dành cho tạo/nâng quyền Teacher và nhãn role đó; lỗi đề chưa hoàn chỉnh chỉ hướng dẫn liên hệ quản trị viên. Giữ tên bài thi Aptis for Teachers vì đây là nội dung học, không phải role của ứng dụng. Bổ sung cặp dịch Result view phát hiện qua kiểm thử toàn bộ nhãn UI. Ba kiểm thử i18n (đồng bộ khóa/interpolation, lookup, phủ chuỗi UI) đều đạt.
+
+
+## Giữ nguyên nội dung đề khi đổi ngôn ngữ — 02/11/2026
+
+- Nguyên nhân: MultipleChoice truyền normalized.label vào ui(), nên đáp án trùng từ điển UI bị dịch riêng lẻ. Sửa hiển thị trực tiếp label; áp dụng chung cho Grammar Part 1 và Listening Part 1/4, cả Exam và Practice. AnswerRadioGroup ở admin cũng giữ nguyên lựa chọn đáp án. Không xóa khóa JSON vì các khóa này vẫn cần cho giao diện.
+- Rà soát đủ Grammar & Vocabulary, Reading, Listening, Writing, Speaking: câu hỏi, passage, hướng dẫn từ snapshot, lựa chọn, transcript, đáp án mẫu/bài làm và phần giải thích giữ dữ liệu gốc qua text/RichTextContent. AnswerSelect không bật translateLabels trong đề; cờ này chỉ dùng cho bộ lọc UI.
+- Bỏ dịch tự động tiêu đề đề trong danh sách/giới thiệu/làm bài/xem trước admin, tiêu đề đoạn đọc và nhãn đoạn trong ReadingAnswerPreview, nội dung câu hỏi ở Reading review. Nhãn Part/các nút và hướng dẫn thao tác cố định vẫn dịch; không đổi chính sách ngôn ngữ feedback AI đã lưu.
+- Bổ sung browser regression bằng đáp án Close/Next/Reading trùng khóa UI: vào trực tiếp tiếng Việt, đổi vi → en → vi; kiểm tra lựa chọn trắc nghiệm, dropdown, radio soạn đề, tiêu đề/nhãn Reading preview, rich text và bài đang nhập.
+- Kiểm chứng: 14/14 unit test i18n/Reading/Writing đạt; ca browser i18n hiện có và ca regression nội dung đề đều đạt (ca mới chạy lại sau khi sửa thao tác test để click nhãn radio). Build frontend đạt; Oxlint file sửa không lỗi, còn cảnh báo có sẵn; diff check đạt.

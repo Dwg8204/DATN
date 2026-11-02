@@ -33,7 +33,7 @@ export default function GrammarTestPreviewPage() {
     <AdminToast message={location.state?.toast} onClose={() => navigate(location.pathname, { replace: true, state: {} })} />
     <header>
       <button onClick={() => navigate(`/admin/tests?purpose=${test.purpose ?? 'EXAM'}`)}><ArrowLeft />{ui("Back")}</button>
-      <div><span>{ui("GRAMMAR & VOCABULARY PREVIEW")}</span><h1>{ui(test.details.title)}</h1><p>{modeLabel}</p></div>
+      <div><span>{ui("GRAMMAR & VOCABULARY PREVIEW")}</span><h1>{test.details.title}</h1><p>{modeLabel}</p></div>
       <button className={styles.edit} onClick={() => navigate(`/admin/tests/grammar/${test.id}/edit`)}><Edit3 />{ui("Edit test")}</button>
     </header>
     {parts.includes(1) && <section><h2>{ui("Part 1 · Grammar")}</h2><RichTextContent value={test.parts[1].instruction}/><div className={styles.questions}>{test.parts[1].questions.map((question, index) => <article key={question.id}><div><b>{index + 1}. </b><RichTextContent value={question.text}/></div>{question.options.map((option, optionIndex) => <span className={optionIndex === question.correctAnswer ? styles.correct : ''} key={optionIndex}>{String.fromCharCode(65 + optionIndex)}. {option}</span>)}<AnswerExplanation text={question.explanation} /></article>)}</div></section>}

@@ -10,7 +10,7 @@ const TestInfoCard = ({ test }) => {
     <div className="bg-white p-6 md:p-8 rounded-xl border border-gray-100 shadow-sm">
       <div className="flex flex-col md:flex-row gap-6 md:items-center justify-between mb-8 pb-6 border-b border-gray-100">
         <div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">{ui(test.title)}</h1>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-2">{test.title}</h1>
           <div className="flex flex-wrap items-center gap-3">
             <span className="px-3 py-1 bg-red-50 text-red-700 font-bold text-sm rounded-md uppercase tracking-wide">
               {test.type}
