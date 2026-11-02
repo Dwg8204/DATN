@@ -38,7 +38,7 @@ export default function ReadingTestPreviewPage() {
       <button onClick={() => navigate(`/admin/tests/reading/${test.id}/edit`)}>{ui("Edit test")}</button>
     </div>
     <header className={styles.summary}>
-      <h2>{ui(test.title)}</h2>
+      <h2>{test.title}</h2>
       <p>{ui("Reading · Answer preview · Correct answers are highlighted in green.")}</p>
     </header>
     <nav className={styles.previewTabs} aria-label={ui("Preview parts")}>

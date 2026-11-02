@@ -132,7 +132,7 @@ const ReviewFeedbackPage = () => {
             {number}
           </span>
           {title && (
-            <p className="m-0 break-words text-sm sm:text-base leading-6 sm:leading-7 text-black">{ui(title)}</p>
+            <p className="m-0 break-words text-sm sm:text-base leading-6 sm:leading-7 text-black">{title}</p>
           )}
           <span className={`col-start-2 w-fit rounded-full px-3 py-1 text-[13px] font-bold md:col-start-auto ${statusClass}`}>
             {statusLabel}
@@ -153,7 +153,7 @@ const ReviewFeedbackPage = () => {
                       : 'border-transparent'
                 }`}
               >
-                {!option.hideLabel && <span className="font-bold">{ui(option.label)}</span>}
+                {!option.hideLabel && <span className="font-bold">{option.label}</span>}
                 <span>{option.text}</span>
 
 

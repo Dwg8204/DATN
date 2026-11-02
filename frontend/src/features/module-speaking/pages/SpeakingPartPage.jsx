@@ -165,7 +165,7 @@ export default function SpeakingPartPage({ partNumber }) {
   return <div className={styles.page}>
     <main className={styles.content}>
       <header className={styles.heading}>
-        <div><strong>{ ui("Speaking · Part") + ' ' }{partNumber}</strong><span>{ui(paper.title)}</span></div>
+        <div><strong>{ ui("Speaking · Part") + ' ' }{partNumber}</strong><span>{paper.title}</span></div>
         <SaveIndicator status={saveStatus} />
       </header>
       <InstructionBlock title={ui("Question {{value0}} of {{value1}}", {value0:(currentIndex + 1),value1:(questions.length)})}>

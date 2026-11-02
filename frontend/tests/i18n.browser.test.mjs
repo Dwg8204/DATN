@@ -49,3 +49,52 @@ function App(){const ui=useUiTranslation(),[answer,setAnswer]=useState('I close 
     assert.deepEqual(errors, []);
   } finally { await browser.close(); }
 });
+
+test('exam options and reading content that collide with UI translations stay unchanged across languages', async () => {
+  const result = await build({ stdin: { resolveDir: fileURLToPath(new URL('..', import.meta.url)), loader: 'jsx', contents: `
+import React,{useState} from 'react';import {createRoot} from 'react-dom/client';
+import i18n from './src/i18n/index.js';import {useUiTranslation} from './src/i18n/useUiTranslation.jsx';
+import MultipleChoice from './src/components/common/MultipleChoice.jsx';
+import AnswerSelect from './src/components/common/AnswerSelect.jsx';
+import RichTextContent from './src/components/common/RichTextContent.jsx';
+import {AnswerRadioGroup} from './src/features/admin/shared-test-builder/AnswerOptionsEditor.jsx';
+import ReadingAnswerPreview from './src/features/module-reading/components/ReadingAnswerPreview.jsx';
+i18n.changeLanguage('vi');window.changeExamLanguage=lang=>i18n.changeLanguage(lang);
+const options=['Close','Next','Reading'];
+const reading={part4:{title:'Reading',headings:[{id:'h1',text:'Next',correctParagraph:'p1'}],paragraphs:[{id:'p1',label:'Close',content:'<p>Next</p>'}]}};
+function App(){const ui=useUiTranslation(),[choice,setChoice]=useState(0),[select,setSelect]=useState('Close'),[admin,setAdmin]=useState('Next'),[answer,setAnswer]=useState('');return <main>
+<button data-testid='ui-label'>{ui('Next')}</button>
+<section data-testid='radio'><MultipleChoice name='answer' options={options} value={choice} onChange={setChoice}/></section>
+<section data-testid='select'><AnswerSelect options={options} value={select} onChange={e=>setSelect(e.target.value)}/></section>
+<section data-testid='admin'><AnswerRadioGroup options={options} value={admin} onChange={setAdmin}/></section>
+<section data-testid='reading'><ReadingAnswerPreview test={reading} part={4}/></section>
+<section data-testid='prompt'><RichTextContent value='<p>Close</p><p>Next</p>'/></section>
+<textarea aria-label='Written answer' value={answer} onChange={e=>setAnswer(e.target.value)}/>
+</main>};createRoot(document.getElementById('root')).render(<App/>);` }, bundle: true, write: false, outfile: 'exam-i18n.js', jsx: 'automatic', define: { 'process.env.NODE_ENV': '"production"' } });
+  const browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
+  try {
+    const page = await browser.newPage();
+    await page.route('**/*', route => route.fulfill({contentType:'text/html',body:'<html><body><div id="root"></div></body></html>'}));
+    await page.goto('http://exam-i18n.test/');
+    await page.addStyleTag({content:result.outputFiles.find(file=>file.path.endsWith('.css')).text});
+    await page.addScriptTag({content:result.outputFiles.find(file=>file.path.endsWith('.js')).text});
+    await page.getByTestId('radio').getByRole('radio',{name:'Close',exact:true}).check();
+    await page.getByTestId('radio').getByText('Next',{exact:true}).click();
+    await page.getByLabel('Written answer').fill('Close the door.');
+    for (const language of ['vi','en','vi']) {
+      await page.evaluate(lang=>window.changeExamLanguage(lang),language);
+      await page.getByTestId('ui-label').getByText(language==='vi'?'Tiếp':'Next',{exact:true}).waitFor();
+      assert.deepEqual(await page.getByTestId('radio').locator('label').allTextContents(),['Close','Next','Reading']);
+      assert.equal(await page.getByTestId('radio').getByRole('radio',{name:'Next',exact:true}).isChecked(),true);
+      assert.equal(await page.getByTestId('admin').getByRole('radio').nth(1).isChecked(),true);
+      assert.equal(await page.getByTestId('reading').getByRole('heading',{name:'Reading',exact:true}).count(),1);
+      assert.equal(await page.getByTestId('reading').getByRole('heading',{name:'23. Close',exact:true}).count(),1);
+      assert.equal(await page.getByTestId('prompt').textContent(),'CloseNext');
+      assert.equal(await page.getByLabel('Written answer').inputValue(),'Close the door.');
+      await page.getByTestId('select').getByRole('button').click();
+      assert.deepEqual(await page.getByRole('option').allTextContents(),['Close','Next','Reading']);
+      await page.getByRole('option',{name:'Reading',exact:true}).click();
+      assert.equal(await page.getByTestId('select').getByRole('button').textContent(),'Reading');
+    }
+  } finally { await browser.close(); }
+});

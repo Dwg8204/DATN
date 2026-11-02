@@ -35,7 +35,7 @@ export default function ReadingAnswerPreview({ test, part }) {
     {part === 2 && <>
       <div className={styles.instruction}>{ui("Questions 6–15 · Put the sentences in order in both texts. The first sentence of each text is given.")}</div>
       {getPart2Texts(data).map((text, textIndex) => <section key={text.id || textIndex}>
-        <h2>{ ui("Text") + ' ' }{textIndex + 1}: {ui(text.title)}</h2>
+        <h2>{ ui("Text") + ' ' }{textIndex + 1}: {text.title}</h2>
         <p className={styles.note}>{ui("Correct reading order. Candidates receive sentences 2–6 in a shuffled list.")}</p>
         {[...text.sentences].sort((a, b) => a.correctPosition - b.correctPosition).map(s => <section className={styles.sentence} key={s.id}>
           <b className={styles.number}>{s.correctPosition}</b><div><RichTextContent value={s.content}/><small>{s.correctPosition === 1 ? ui("Given example") : ui("Correct position")}</small><AnswerExplanation text={s.explanation} /></div>
@@ -51,11 +51,11 @@ export default function ReadingAnswerPreview({ test, part }) {
     </>}
     {part === 4 && <>
       <div className={styles.instruction}>{ui("Questions 23–29 · Match each paragraph to its heading.")}</div>
-      <h2>{ui(data.title)}</h2>
+      <h2>{data.title}</h2>
       <div className={styles.headingLayout}>
         <aside className={styles.card}><h3>{ui("Available headings")}</h3>{data.headings.map((heading, i) => <div className={styles.heading} key={heading.id}><b>{String.fromCharCode(65 + i)}. </b>{heading.text}</div>)}</aside>
         <div>{data.paragraphs.map((paragraph, i) => <article className={styles.card} key={paragraph.id}>
-          <h3>{i + 23}. {ui(paragraph.label)}</h3>
+          <h3>{i + 23}. {paragraph.label}</h3>
           <Answer>{data.headings.find(h => h.correctParagraph === paragraph.id)?.text}</Answer>
           <RichTextContent value={paragraph.content}/><AnswerExplanation text={data.headings.find(h => h.correctParagraph === paragraph.id)?.explanation} />
         </article>)}</div>
