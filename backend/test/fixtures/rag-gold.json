@@ -1,0 +1,2205 @@
+{
+  "version": 1,
+  "status": "DRAFT_NOT_FOR_FINAL_METRICS",
+  "source": "Local published question bank, 2026-11-10; no learner records",
+  "labelPolicy": "Synthetic wrong answers; human review required. Same type alone is not proof of semantic relevance. Split near-duplicate families before threshold tuning and final evaluation.",
+  "samples": [
+    {
+      "id": "grammar_vocab-1",
+      "reviewStatus": "DRAFT",
+      "questionId": "011e2a0b-5fb6-4739-be8b-96799e52c559",
+      "testId": "7c7c3616-06ef-5729-96cc-5f41158f13db",
+      "questionHash": "250fa0d15bcba9591cb11653f4b36aaa",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q3",
+      "content": {
+        "text": "I have lived here ___ 2020.",
+        "options": [
+          "for",
+          "since",
+          "during"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "Since đi với mốc thời gian."
+      },
+      "documentKey": "english-present-perfect-past",
+      "similarQuestionIds": [
+        "042f01c9-328f-4934-b737-c051626122d0",
+        "0e9279f4-7a57-4c37-bbf1-55fe11f532f1",
+        "0ee8c974-9269-4e5b-9001-ec022111091e",
+        "10b3ec03-4d9a-4262-a7d7-ea45e6e6097d",
+        "1e14276c-5395-4836-9f7c-a011d8c2624e"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "250fa0d15bcba9591cb11653f4b36aaa"
+    },
+    {
+      "id": "grammar_vocab-2",
+      "reviewStatus": "DRAFT",
+      "questionId": "0167c005-b3a5-417b-92ae-2c47b2b71532",
+      "testId": "3c279f1e-2e8e-53da-b95f-d97a61990288",
+      "questionHash": "fe87f9490caedd219d67827e8ebc729d",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q4",
+      "content": {
+        "text": "There is ___ useful guide to the library on the desk.",
+        "options": [
+          "a",
+          "an",
+          "some"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 0
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 1
+      },
+      "explanation": {
+        "text": "Useful bắt đầu bằng phụ âm /j/."
+      },
+      "documentKey": "english-countability",
+      "similarQuestionIds": [
+        "04dd15a0-49c3-4bde-986f-fd8724d52dd4",
+        "05ba1a08-f406-4ab8-8b25-47f37d4c189d",
+        "2f5f7773-0db8-4984-9a71-b8a7e24746b3",
+        "4e1bf215-484a-4d95-9471-bce00251262e",
+        "63411981-48c0-4a24-a525-0bd83b2da671"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "fe87f9490caedd219d67827e8ebc729d"
+    },
+    {
+      "id": "grammar_vocab-3",
+      "reviewStatus": "DRAFT",
+      "questionId": "042f01c9-328f-4934-b737-c051626122d0",
+      "testId": "5148c89d-e37e-416b-a257-2acb05b9812e",
+      "questionHash": "a4934526f16c04fd6f1e341e8a3a4aec",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q8",
+      "content": {
+        "text": "<p>You ________ have booked tickets in advance; the entry is completely free.</p>",
+        "options": [
+          "shouldn't",
+          "needn't",
+          "mustn't"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "<p>Cấu trúc phối thì tương lai hoàn thành: <em>By the time + S + V(hiện tại đơn), S + will have + V3/ed</em>.</p>"
+      },
+      "documentKey": "english-present-perfect-past",
+      "similarQuestionIds": [
+        "011e2a0b-5fb6-4739-be8b-96799e52c559",
+        "0e9279f4-7a57-4c37-bbf1-55fe11f532f1",
+        "0ee8c974-9269-4e5b-9001-ec022111091e",
+        "1e14276c-5395-4836-9f7c-a011d8c2624e",
+        "361ba95f-59a5-41cd-979c-455c0040428c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "a4934526f16c04fd6f1e341e8a3a4aec"
+    },
+    {
+      "id": "grammar_vocab-4",
+      "reviewStatus": "DRAFT",
+      "questionId": "04dd15a0-49c3-4bde-986f-fd8724d52dd4",
+      "testId": "77689cb9-14cb-52ca-a3eb-9f5c591a693c",
+      "questionHash": "5ef3dfaf6dec047434355ce2d6a7c037",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q4",
+      "content": {
+        "text": "There is ___ useful guide to the library on the desk.",
+        "options": [
+          "a",
+          "an",
+          "some"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 0
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 1
+      },
+      "explanation": {
+        "text": "Useful bắt đầu bằng phụ âm /j/."
+      },
+      "documentKey": "english-countability",
+      "similarQuestionIds": [
+        "0167c005-b3a5-417b-92ae-2c47b2b71532",
+        "05ba1a08-f406-4ab8-8b25-47f37d4c189d",
+        "2f5f7773-0db8-4984-9a71-b8a7e24746b3",
+        "4e1bf215-484a-4d95-9471-bce00251262e",
+        "63411981-48c0-4a24-a525-0bd83b2da671"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "5ef3dfaf6dec047434355ce2d6a7c037"
+    },
+    {
+      "id": "grammar_vocab-5",
+      "reviewStatus": "DRAFT",
+      "questionId": "05ba1a08-f406-4ab8-8b25-47f37d4c189d",
+      "testId": "b6fcac59-83d1-524c-bfe8-490ecd7d4d28",
+      "questionHash": "d5e5a0514ffb43b07151c65d6c7a51ac",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q4",
+      "content": {
+        "text": "There is ___ useful guide to the theatre on the desk.",
+        "options": [
+          "an",
+          "some",
+          "a"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "Useful bắt đầu bằng phụ âm /j/."
+      },
+      "documentKey": "english-countability",
+      "similarQuestionIds": [
+        "0167c005-b3a5-417b-92ae-2c47b2b71532",
+        "04dd15a0-49c3-4bde-986f-fd8724d52dd4",
+        "2f5f7773-0db8-4984-9a71-b8a7e24746b3",
+        "4e1bf215-484a-4d95-9471-bce00251262e",
+        "63411981-48c0-4a24-a525-0bd83b2da671"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "d5e5a0514ffb43b07151c65d6c7a51ac"
+    },
+    {
+      "id": "grammar_vocab-6",
+      "reviewStatus": "DRAFT",
+      "questionId": "08f2eac0-e454-49b7-bd04-5d222d32b6fa",
+      "testId": "8d02e41b-f426-429f-9e48-377a576c45a7",
+      "questionHash": "8549ca2242d62435bf432c111264443c",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q25",
+      "content": {
+        "text": "<div>You should see my puppy. She's so cute that now I can't imagine life ______ her.</div><div><br></div>",
+        "options": [
+          "with",
+          "apart",
+          "without"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "<p>Ý nghĩa ngữ cảnh:</p><ul><li><p>Người nói yêu quý chú cún đến mức không thể tưởng tượng cuộc sống <b>thiếu/không có</b> nó (<i>life without her</i>).</p></li><li><p><i>apart</i> thường đi với giới từ <i>from</i> (<i>apart from</i> = ngoại trừ).</p></li></ul>"
+      },
+      "documentKey": "lesson-prepositions",
+      "similarQuestionIds": [
+        "25de4845-d8ef-4739-95b8-082c97a54866",
+        "8c1ef495-a4fe-4b57-9884-89e9fde4ddce",
+        "af034262-bbbb-44fe-b902-bf03364b71d8",
+        "af25eca4-9bc3-4e98-bec8-1e1c67bf381c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "8549ca2242d62435bf432c111264443c"
+    },
+    {
+      "id": "grammar_vocab-7",
+      "reviewStatus": "DRAFT",
+      "questionId": "09a9767b-51fa-4ba9-9736-615954097059",
+      "testId": "678e8c20-b811-59ce-80e4-5e3f7aa27ecb",
+      "questionHash": "cf082f9106fa0b8f1bb40ebcf01ee1ec",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q1",
+      "content": {
+        "text": "Clara usually ___ the park on Saturdays.",
+        "options": [
+          "visiting",
+          "visits",
+          "visit"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "Hiện tại đơn, chủ ngữ số ít."
+      },
+      "documentKey": "english-present-simple-continuous",
+      "similarQuestionIds": [
+        "10c8de03-3653-4c4a-afd0-8f42e50b3ce9",
+        "1297c75f-b062-401c-8088-20e3c60357db",
+        "14b9f694-af02-4bd3-a462-a0e90f514123",
+        "331accce-88ab-4144-990d-9de81d09af46",
+        "340cab81-1a37-4720-be89-4b7352d55a69"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "cf082f9106fa0b8f1bb40ebcf01ee1ec"
+    },
+    {
+      "id": "grammar_vocab-8",
+      "reviewStatus": "DRAFT",
+      "questionId": "0a70ff55-cd74-4aac-a926-a3ab66648b1c",
+      "testId": "5148c89d-e37e-416b-a257-2acb05b9812e",
+      "questionHash": "f141c7259d4063473e23b8972fb7dd4a",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q6",
+      "content": {
+        "text": "<p>She suggested ________ a short break before continuing the discussion.</p>",
+        "options": [
+          "taking",
+          "to take",
+          "take"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 0
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 1
+      },
+      "explanation": {
+        "text": "<p>Cấu trúc <em>suggest + V-ing</em> (gợi ý làm việc gì).</p>"
+      },
+      "documentKey": "lesson-verb-patterns",
+      "similarQuestionIds": [
+        "0e3403ff-3e7c-4737-937b-794f8f6792df",
+        "0e7b4f97-d47c-46ef-8e3d-84e911899cf0",
+        "108b5e51-2578-476d-93f0-29e5bee88bfc",
+        "13404fbe-3972-411e-ade7-78c4d3bad793",
+        "1bd7167a-93bc-45e3-8b15-b613dbe22768"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "f141c7259d4063473e23b8972fb7dd4a"
+    },
+    {
+      "id": "grammar_vocab-9",
+      "reviewStatus": "DRAFT",
+      "questionId": "0a9f3aee-c0df-4e8d-814e-ca45a8aed0ac",
+      "testId": "77689cb9-14cb-52ca-a3eb-9f5c591a693c",
+      "questionHash": "4d2b17ee55fd4eeef62bfd09e5f66b98",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q9",
+      "content": {
+        "text": "The new notebook ___ yesterday.",
+        "options": [
+          "is delivering",
+          "was delivered",
+          "delivers"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "Bị động quá khứ đơn."
+      },
+      "documentKey": "english-passive",
+      "similarQuestionIds": [
+        "0d7aa111-f46b-4fad-bc63-384c7b62c011",
+        "2cab63a3-5fe1-4ae0-978d-d87d0088d8b8",
+        "439a630a-fdbe-454c-bf4f-18d121b6c63a",
+        "4da5b678-9bf5-4422-8f1b-5420d0921c9e",
+        "4f758581-66be-4803-a476-706a00a7d982"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "4d2b17ee55fd4eeef62bfd09e5f66b98"
+    },
+    {
+      "id": "grammar_vocab-10",
+      "reviewStatus": "DRAFT",
+      "questionId": "0d7aa111-f46b-4fad-bc63-384c7b62c011",
+      "testId": "7c7c3616-06ef-5729-96cc-5f41158f13db",
+      "questionHash": "17d0e99d3050a10ce0e0a57f96fc60d8",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q9",
+      "content": {
+        "text": "The letter ___ yesterday.",
+        "options": [
+          "was sent",
+          "sends",
+          "is sending"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 0
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 1
+      },
+      "explanation": {
+        "text": "Bị động quá khứ đơn: was/were + quá khứ phân từ."
+      },
+      "documentKey": "english-passive",
+      "similarQuestionIds": [
+        "0a9f3aee-c0df-4e8d-814e-ca45a8aed0ac",
+        "2cab63a3-5fe1-4ae0-978d-d87d0088d8b8",
+        "439a630a-fdbe-454c-bf4f-18d121b6c63a",
+        "4da5b678-9bf5-4422-8f1b-5420d0921c9e",
+        "4f758581-66be-4803-a476-706a00a7d982"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "17d0e99d3050a10ce0e0a57f96fc60d8"
+    },
+    {
+      "id": "grammar_vocab-11",
+      "reviewStatus": "DRAFT",
+      "questionId": "0e3403ff-3e7c-4737-937b-794f8f6792df",
+      "testId": "4c0fadfe-5389-5685-98f3-a420cb40a05e",
+      "questionHash": "088d283fdf6b17da3e9596acfaecfd7f",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q21",
+      "content": {
+        "text": "We look forward to ___ you at the museum.",
+        "options": [
+          "met",
+          "meeting",
+          "meet"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "Look forward to + V-ing."
+      },
+      "documentKey": "lesson-verb-patterns",
+      "similarQuestionIds": [
+        "0a70ff55-cd74-4aac-a926-a3ab66648b1c",
+        "0e7b4f97-d47c-46ef-8e3d-84e911899cf0",
+        "108b5e51-2578-476d-93f0-29e5bee88bfc",
+        "13404fbe-3972-411e-ade7-78c4d3bad793",
+        "1bd7167a-93bc-45e3-8b15-b613dbe22768"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "088d283fdf6b17da3e9596acfaecfd7f"
+    },
+    {
+      "id": "grammar_vocab-12",
+      "reviewStatus": "DRAFT",
+      "questionId": "0e7179d4-59b8-4bd0-b6a8-f3c5035d6f5b",
+      "testId": "f2379101-13c4-5d0d-a89f-b5020a5d091c",
+      "questionHash": "a1dc04b17977470e81f2cd46a1249ea9",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q15",
+      "content": {
+        "text": "We ___ a new camera last week.",
+        "options": [
+          "have buy",
+          "bought",
+          "buy"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "Last week đi với quá khứ đơn."
+      },
+      "documentKey": "lesson-past-simple",
+      "similarQuestionIds": [
+        "100060a8-8965-42dd-aa2f-443fad04bcd9",
+        "4c508c2d-41c7-48ea-8bdc-9a4029c8363c",
+        "4cb286a1-30ce-436e-a963-b1f65f26e111",
+        "533c3ad5-79fe-45b4-9ba4-4610ec25d518",
+        "68c53f68-ddf1-4c82-bcb0-84528c4a857e"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "a1dc04b17977470e81f2cd46a1249ea9"
+    },
+    {
+      "id": "grammar_vocab-13",
+      "reviewStatus": "DRAFT",
+      "questionId": "0e7b4f97-d47c-46ef-8e3d-84e911899cf0",
+      "testId": "f2379101-13c4-5d0d-a89f-b5020a5d091c",
+      "questionHash": "abdd301bbecc067e30d0063cfe60d7bb",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q8",
+      "content": {
+        "text": "My friends enjoy ___ about taking photographs.",
+        "options": [
+          "learn",
+          "to learn",
+          "learning"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "Enjoy + V-ing."
+      },
+      "documentKey": "lesson-verb-patterns",
+      "similarQuestionIds": [
+        "0a70ff55-cd74-4aac-a926-a3ab66648b1c",
+        "0e3403ff-3e7c-4737-937b-794f8f6792df",
+        "108b5e51-2578-476d-93f0-29e5bee88bfc",
+        "13404fbe-3972-411e-ade7-78c4d3bad793",
+        "1bd7167a-93bc-45e3-8b15-b613dbe22768"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "abdd301bbecc067e30d0063cfe60d7bb"
+    },
+    {
+      "id": "grammar_vocab-14",
+      "reviewStatus": "DRAFT",
+      "questionId": "0e9279f4-7a57-4c37-bbf1-55fe11f532f1",
+      "testId": "c77c3ded-b4fb-5cdd-86e5-a30e2d7261a9",
+      "questionHash": "12a308757102dd897fae3a4324636c84",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q11",
+      "content": {
+        "text": "They ___ visited London before.",
+        "options": [
+          "has",
+          "having",
+          "have"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "They đi với have trong hiện tại hoàn thành."
+      },
+      "documentKey": "english-present-perfect-past",
+      "similarQuestionIds": [
+        "011e2a0b-5fb6-4739-be8b-96799e52c559",
+        "042f01c9-328f-4934-b737-c051626122d0",
+        "0ee8c974-9269-4e5b-9001-ec022111091e",
+        "10b3ec03-4d9a-4262-a7d7-ea45e6e6097d",
+        "1e14276c-5395-4836-9f7c-a011d8c2624e"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "12a308757102dd897fae3a4324636c84"
+    },
+    {
+      "id": "grammar_vocab-15",
+      "reviewStatus": "DRAFT",
+      "questionId": "0ecd5add-3593-4fdb-bf93-b280fb5dc13f",
+      "testId": "235bb766-44dc-4c27-b4c1-90172d54ce79",
+      "questionHash": "d5daecf870c69f5db6e7d32f6e3105cc",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q3",
+      "content": {
+        "text": "They have lived here ___ 2020.",
+        "options": [
+          "for",
+          "since",
+          "from"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "<p>Câu điều kiện loại 2 diễn tả điều trái với thực tế ở hiện tại:</p><ul><li><p>Cấu trúc mệnh đề If: If + S + V-ed / were (hoặc weren't).</p></li><li><p>Cụm từ cố định: If it weren't for + N (Nếu không vì/Nếu không có...).</p></li></ul>"
+      },
+      "documentKey": "english-conditionals",
+      "similarQuestionIds": [
+        "102d2878-1978-4ec2-9726-ce7281c5f512",
+        "18703620-0f44-40ad-8bec-a1a56749d1fa",
+        "1a5dc92a-2715-4b7f-9fbe-44a339cfab9e",
+        "1dd11645-29b1-4a86-85f8-d37b469eba67",
+        "21df4006-5784-4088-8e0a-82c32bb7609b"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "d5daecf870c69f5db6e7d32f6e3105cc"
+    },
+    {
+      "id": "grammar_vocab-16",
+      "reviewStatus": "DRAFT",
+      "questionId": "0ee8c974-9269-4e5b-9001-ec022111091e",
+      "testId": "6f0258b6-7710-5f64-9a83-93e3d938876b",
+      "questionHash": "85daa6bdef3ebce313dfbc16137f466f",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q25",
+      "content": {
+        "text": "By the time we reached the park, the visitors ___ left.",
+        "options": [
+          "are",
+          "had",
+          "have"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "Quá khứ hoàn thành diễn tả hành động trước một mốc quá khứ."
+      },
+      "documentKey": "english-present-perfect-past",
+      "similarQuestionIds": [
+        "011e2a0b-5fb6-4739-be8b-96799e52c559",
+        "042f01c9-328f-4934-b737-c051626122d0",
+        "0e9279f4-7a57-4c37-bbf1-55fe11f532f1",
+        "10b3ec03-4d9a-4262-a7d7-ea45e6e6097d",
+        "1e14276c-5395-4836-9f7c-a011d8c2624e"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "85daa6bdef3ebce313dfbc16137f466f"
+    },
+    {
+      "id": "grammar_vocab-17",
+      "reviewStatus": "DRAFT",
+      "questionId": "100060a8-8965-42dd-aa2f-443fad04bcd9",
+      "testId": "8d02e41b-f426-429f-9e48-377a576c45a7",
+      "questionHash": "07c458ff74f7275bb8c1a60bbff69535",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q8",
+      "content": {
+        "text": "A. That film we saw yesterday was hilarious, ______?<br>B. Yes, it was really funny!",
+        "options": [
+          "was it",
+          "wasn't it",
+          "didn't it"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "<p>Câu hỏi đuôi (Tag question):</p><ul><li><p>Mệnh đề chính dùng thì quá khứ đơn với động từ to be ở dạng khẳng định (<i>\"That film... was hilarious\"</i>).</p></li><li><p>Phần hỏi đuôi phải đảo ngược thành phủ định: wasn't it?.</p></li></ul>"
+      },
+      "documentKey": "lesson-past-simple",
+      "similarQuestionIds": [
+        "0e7179d4-59b8-4bd0-b6a8-f3c5035d6f5b",
+        "4c508c2d-41c7-48ea-8bdc-9a4029c8363c",
+        "4cb286a1-30ce-436e-a963-b1f65f26e111",
+        "68c53f68-ddf1-4c82-bcb0-84528c4a857e",
+        "6995569a-984e-4540-8b59-574c742bf29a"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "07c458ff74f7275bb8c1a60bbff69535"
+    },
+    {
+      "id": "grammar_vocab-18",
+      "reviewStatus": "DRAFT",
+      "questionId": "102d2878-1978-4ec2-9726-ce7281c5f512",
+      "testId": "c77c3ded-b4fb-5cdd-86e5-a30e2d7261a9",
+      "questionHash": "1e88f66eccaaea466c3c2f718b832cd3",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q17",
+      "content": {
+        "text": "I would travel more if I ___ more money.",
+        "options": [
+          "have",
+          "will have",
+          "had"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "Điều kiện loại hai dùng quá khứ đơn trong mệnh đề if."
+      },
+      "documentKey": "english-conditionals",
+      "similarQuestionIds": [
+        "0ecd5add-3593-4fdb-bf93-b280fb5dc13f",
+        "18703620-0f44-40ad-8bec-a1a56749d1fa",
+        "1a5dc92a-2715-4b7f-9fbe-44a339cfab9e",
+        "1dd11645-29b1-4a86-85f8-d37b469eba67",
+        "21df4006-5784-4088-8e0a-82c32bb7609b"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "1e88f66eccaaea466c3c2f718b832cd3"
+    },
+    {
+      "id": "grammar_vocab-19",
+      "reviewStatus": "DRAFT",
+      "questionId": "108b5e51-2578-476d-93f0-29e5bee88bfc",
+      "testId": "8d02e41b-f426-429f-9e48-377a576c45a7",
+      "questionHash": "e1ac91e77d63f701ab429aa1c6ba4bcc",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q12",
+      "content": {
+        "text": "<div>Would you mind ______ the door, please?</div><div><br></div>",
+        "options": [
+          "closing",
+          "close",
+          "to close"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 0
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 1
+      },
+      "explanation": {
+        "text": "<p>Cấu trúc yêu cầu lịch sự:</p><ul><li><p>Would you mind + V-ing...? (Bạn có phiền làm việc gì đó không?).</p></li></ul>"
+      },
+      "documentKey": "lesson-verb-patterns",
+      "similarQuestionIds": [
+        "0a70ff55-cd74-4aac-a926-a3ab66648b1c",
+        "0e3403ff-3e7c-4737-937b-794f8f6792df",
+        "0e7b4f97-d47c-46ef-8e3d-84e911899cf0",
+        "13404fbe-3972-411e-ade7-78c4d3bad793",
+        "1bd7167a-93bc-45e3-8b15-b613dbe22768"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "e1ac91e77d63f701ab429aa1c6ba4bcc"
+    },
+    {
+      "id": "grammar_vocab-20",
+      "reviewStatus": "DRAFT",
+      "questionId": "10b3ec03-4d9a-4262-a7d7-ea45e6e6097d",
+      "testId": "5148c89d-e37e-416b-a257-2acb05b9812e",
+      "questionHash": "d45f87ce94e3471f6333a9cea7ecc12b",
+      "component": "GRAMMAR_VOCAB",
+      "part": 1,
+      "questionType": "GRAMMAR_MULTIPLE_CHOICE",
+      "questionKey": "p1:q11",
+      "content": {
+        "text": "<p>She looked tired because she ________ on the computer all morning.</p>",
+        "options": [
+          "had been working",
+          "has worked",
+          "was worked"
+        ]
+      },
+      "correctAnswer": {
+        "optionIndex": 0
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 1
+      },
+      "explanation": {
+        "text": "<p>Thì quá khứ hoàn thành tiếp diễn diễn tả hành động xảy ra liên tục trước một thời điểm/hành động khác trong quá khứ và để lại kết quả (<em>looked tired</em>).</p>"
+      },
+      "documentKey": "english-present-perfect-past",
+      "similarQuestionIds": [
+        "011e2a0b-5fb6-4739-be8b-96799e52c559",
+        "0e9279f4-7a57-4c37-bbf1-55fe11f532f1",
+        "0ee8c974-9269-4e5b-9001-ec022111091e",
+        "1e14276c-5395-4836-9f7c-a011d8c2624e",
+        "361ba95f-59a5-41cd-979c-455c0040428c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "d45f87ce94e3471f6333a9cea7ecc12b"
+    },
+    {
+      "id": "reading-1",
+      "reviewStatus": "DRAFT",
+      "questionId": "0035f058-6a74-4621-a0c3-56f0bb0f1047",
+      "testId": "82d0759b-1945-5833-8390-8d84d9f34e34",
+      "questionHash": "31f232330a53442075774c90afe94b31",
+      "component": "READING",
+      "part": 4,
+      "questionType": "READING_HEADING_MATCH",
+      "questionKey": "p4:q1",
+      "content": {
+        "text": "The music club started with just four neighbours. They met informally each month to share their interest in playing music. As more people asked to join, they decided to establish an organised group open to the whole town.",
+        "paragraphId": "para1"
+      },
+      "correctAnswer": {
+        "headingId": "h1"
+      },
+      "syntheticWrongAnswer": {
+        "headingId": "h2"
+      },
+      "explanation": {
+        "text": "Đoạn A tập trung vào chủ đề: how the group began."
+      },
+      "documentKey": "lesson-reading-main-idea",
+      "similarQuestionIds": [
+        "0248b7f5-6eba-4762-b5ba-285d4903b5a4",
+        "04128989-9a18-4235-8b23-db4b3b8cbe08",
+        "0670be4d-897f-4948-80c0-f30874674f0e",
+        "06ea7e9e-7b8e-4233-bcb2-2d2db8c3742f",
+        "094e0467-94a7-4c4f-ad58-5f62ea6f565f"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "31f232330a53442075774c90afe94b31"
+    },
+    {
+      "id": "reading-2",
+      "reviewStatus": "DRAFT",
+      "questionId": "007b57a3-f656-4085-ad72-20156cfd300f",
+      "testId": "1ef04783-35b2-5380-bc24-dc67b90abc9f",
+      "questionHash": "bd4e6bc1072b757267c46078617f73a0",
+      "component": "READING",
+      "part": 1,
+      "questionType": "READING_GAP_CHOICE",
+      "questionKey": "p1:q2",
+      "content": {
+        "options": [
+          "at",
+          "on",
+          "in"
+        ]
+      },
+      "correctAnswer": {
+        "answer": "on"
+      },
+      "syntheticWrongAnswer": {
+        "answer": "at"
+      },
+      "explanation": {
+        "text": "On đứng trước ngày trong tuần."
+      },
+      "documentKey": "lesson-reading-detail",
+      "similarQuestionIds": [
+        "073e3478-24f2-49e6-ba45-2349be919182",
+        "0e775e90-c4da-4e30-a69c-4a9c90779dbd",
+        "1220e813-a47f-4ade-8eac-b6086486bb52",
+        "160acb76-9d2a-4423-8b07-b2eee95d9203",
+        "16add4f0-28d7-449e-85ad-d6276a0e7dec"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "bd4e6bc1072b757267c46078617f73a0"
+    },
+    {
+      "id": "reading-3",
+      "reviewStatus": "DRAFT",
+      "questionId": "011fdf56-1080-4756-a0b2-1204639adfbf",
+      "testId": "068a4b5b-2251-5f2f-870b-bfdb99e564cd",
+      "questionHash": "679ed55994cfe762e870a8075a40e63d",
+      "component": "READING",
+      "part": 2,
+      "questionType": "READING_ORDER",
+      "questionKey": "p2:q1",
+      "content": {
+        "text": "Yesterday I decided to book a place at the evening concert.",
+        "textId": "p2-t1",
+        "textTitle": "Booking a place at the evening concert",
+        "sentenceId": "p2-t1-s1"
+      },
+      "correctAnswer": {
+        "position": 1
+      },
+      "syntheticWrongAnswer": {
+        "position": 2
+      },
+      "explanation": {
+        "text": "Các mốc thời gian và từ nối chỉ rõ trình tự của câu chuyện."
+      },
+      "documentKey": "lesson-reading-cohesion",
+      "similarQuestionIds": [
+        "022c8775-3aa8-49dc-9101-a1880a6ea4f0",
+        "032bbbb8-8474-4456-b3d5-140661c1e39d",
+        "041b6d44-76fa-40bc-b638-6394fa5e0f8b",
+        "0b4c5829-ffe5-4830-bc1b-50d036d6357c",
+        "0c34f7f9-5e5c-4eef-a983-cc1b843871b6"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "679ed55994cfe762e870a8075a40e63d"
+    },
+    {
+      "id": "reading-4",
+      "reviewStatus": "DRAFT",
+      "questionId": "034b8c85-058c-4474-8653-62791f94851f",
+      "testId": "068a4b5b-2251-5f2f-870b-bfdb99e564cd",
+      "questionHash": "f032f9631e687bdf08c4baab0d90f559",
+      "component": "READING",
+      "part": 3,
+      "questionType": "READING_OPINION_MATCH",
+      "questionKey": "p3:q4",
+      "content": {
+        "statement": "Who wants to improve the online reservation process?"
+      },
+      "correctAnswer": {
+        "speaker": "D"
+      },
+      "syntheticWrongAnswer": {
+        "speaker": "A"
+      },
+      "explanation": {
+        "text": "Xem thông tin trực tiếp trong lời của người D."
+      },
+      "documentKey": "lesson-reading-opinion",
+      "similarQuestionIds": [
+        "0c33d3f8-064c-4529-a907-e26645a6fa00",
+        "125d39f4-7137-4e4c-a62f-5eb2766646f5",
+        "153b5b24-d120-4694-9c80-a47a4986eb09",
+        "164581ee-83e2-4423-91de-d57b437e6dc5",
+        "18cc9495-b22d-4f9b-8216-808a6e652bb7"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "f032f9631e687bdf08c4baab0d90f559"
+    },
+    {
+      "id": "reading-5",
+      "reviewStatus": "DRAFT",
+      "questionId": "0248b7f5-6eba-4762-b5ba-285d4903b5a4",
+      "testId": "71805ba7-5dde-56f8-a009-92333ffba2c1",
+      "questionHash": "589040279091bdc27f75b0039a6916c8",
+      "component": "READING",
+      "part": 4,
+      "questionType": "READING_HEADING_MATCH",
+      "questionKey": "p4:q2",
+      "content": {
+        "text": "At first, members met in their homes, but space soon became a problem. After comparing several buildings, the group rented a room near the market. It had good public transport connections and enough space for practical activities.",
+        "paragraphId": "para2"
+      },
+      "correctAnswer": {
+        "headingId": "h2"
+      },
+      "syntheticWrongAnswer": {
+        "headingId": "h1"
+      },
+      "explanation": {
+        "text": "Đoạn B tập trung vào chủ đề: finding a meeting place."
+      },
+      "documentKey": "lesson-reading-main-idea",
+      "similarQuestionIds": [
+        "0035f058-6a74-4621-a0c3-56f0bb0f1047",
+        "0670be4d-897f-4948-80c0-f30874674f0e",
+        "06ea7e9e-7b8e-4233-bcb2-2d2db8c3742f",
+        "094e0467-94a7-4c4f-ad58-5f62ea6f565f",
+        "0e811a3b-5552-486d-9e1a-c003df9096d6"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "589040279091bdc27f75b0039a6916c8"
+    },
+    {
+      "id": "reading-6",
+      "reviewStatus": "DRAFT",
+      "questionId": "073e3478-24f2-49e6-ba45-2349be919182",
+      "testId": "4c6151e5-4dcb-579a-a7ca-201d76bbe065",
+      "questionHash": "26db5e52cbde2911c2d059958a187ea9",
+      "component": "READING",
+      "part": 1,
+      "questionType": "READING_GAP_CHOICE",
+      "questionKey": "p1:q3",
+      "content": {
+        "options": [
+          "brings",
+          "bringing",
+          "bring"
+        ]
+      },
+      "correctAnswer": {
+        "answer": "bring"
+      },
+      "syntheticWrongAnswer": {
+        "answer": "brings"
+      },
+      "explanation": {
+        "text": "Please + động từ nguyên mẫu."
+      },
+      "documentKey": "lesson-reading-detail",
+      "similarQuestionIds": [
+        "007b57a3-f656-4085-ad72-20156cfd300f",
+        "0e775e90-c4da-4e30-a69c-4a9c90779dbd",
+        "1220e813-a47f-4ade-8eac-b6086486bb52",
+        "160acb76-9d2a-4423-8b07-b2eee95d9203",
+        "16add4f0-28d7-449e-85ad-d6276a0e7dec"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "26db5e52cbde2911c2d059958a187ea9"
+    },
+    {
+      "id": "reading-7",
+      "reviewStatus": "DRAFT",
+      "questionId": "022c8775-3aa8-49dc-9101-a1880a6ea4f0",
+      "testId": "4ff288a8-5bad-5106-8cfc-3d6a62e7e071",
+      "questionHash": "ed6e94973ad0c1ef611436bb825d6380",
+      "component": "READING",
+      "part": 2,
+      "questionType": "READING_ORDER",
+      "questionKey": "p2:q7",
+      "content": {
+        "text": "Next, I cut them into small pieces.",
+        "textId": "p2-text2",
+        "textTitle": "Making vegetable soup",
+        "sentenceId": "p2-t2-s3"
+      },
+      "correctAnswer": {
+        "position": 3
+      },
+      "syntheticWrongAnswer": {
+        "position": 1
+      },
+      "explanation": {
+        "text": "Các từ chỉ trình tự và mối liên kết nội dung xác định vị trí của câu."
+      },
+      "documentKey": "lesson-reading-cohesion",
+      "similarQuestionIds": [
+        "011fdf56-1080-4756-a0b2-1204639adfbf",
+        "032bbbb8-8474-4456-b3d5-140661c1e39d",
+        "041b6d44-76fa-40bc-b638-6394fa5e0f8b",
+        "0b4c5829-ffe5-4830-bc1b-50d036d6357c",
+        "0c34f7f9-5e5c-4eef-a983-cc1b843871b6"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "ed6e94973ad0c1ef611436bb825d6380"
+    },
+    {
+      "id": "reading-8",
+      "reviewStatus": "DRAFT",
+      "questionId": "0c33d3f8-064c-4529-a907-e26645a6fa00",
+      "testId": "ca9070be-afb1-53cf-9548-2ce03e875fe5",
+      "questionHash": "5f65992cfe3f148d13b9ebdcc923e33c",
+      "component": "READING",
+      "part": 3,
+      "questionType": "READING_OPINION_MATCH",
+      "questionKey": "p3:q7",
+      "content": {
+        "statement": "Who is planning an event for newcomers?"
+      },
+      "correctAnswer": {
+        "speaker": "C"
+      },
+      "syntheticWrongAnswer": {
+        "speaker": "A"
+      },
+      "explanation": {
+        "text": "Xem thông tin trực tiếp trong lời của người C."
+      },
+      "documentKey": "lesson-reading-opinion",
+      "similarQuestionIds": [
+        "034b8c85-058c-4474-8653-62791f94851f",
+        "125d39f4-7137-4e4c-a62f-5eb2766646f5",
+        "153b5b24-d120-4694-9c80-a47a4986eb09",
+        "164581ee-83e2-4423-91de-d57b437e6dc5",
+        "16a340a9-3941-4b73-a362-f329afe6f73c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "5f65992cfe3f148d13b9ebdcc923e33c"
+    },
+    {
+      "id": "reading-9",
+      "reviewStatus": "DRAFT",
+      "questionId": "04128989-9a18-4235-8b23-db4b3b8cbe08",
+      "testId": "71805ba7-5dde-56f8-a009-92333ffba2c1",
+      "questionHash": "bd32eb2e079f5083ca4c7ce2e90fe572",
+      "component": "READING",
+      "part": 4,
+      "questionType": "READING_HEADING_MATCH",
+      "questionKey": "p4:q1",
+      "content": {
+        "text": "The cooking club started with just four neighbours. They met informally each month to share their interest in preparing meals. As more people asked to join, they decided to establish an organised group open to the whole town.",
+        "paragraphId": "para1"
+      },
+      "correctAnswer": {
+        "headingId": "h1"
+      },
+      "syntheticWrongAnswer": {
+        "headingId": "h2"
+      },
+      "explanation": {
+        "text": "Đoạn A tập trung vào chủ đề: how the group began."
+      },
+      "documentKey": "lesson-reading-main-idea",
+      "similarQuestionIds": [
+        "0035f058-6a74-4621-a0c3-56f0bb0f1047",
+        "0670be4d-897f-4948-80c0-f30874674f0e",
+        "06ea7e9e-7b8e-4233-bcb2-2d2db8c3742f",
+        "094e0467-94a7-4c4f-ad58-5f62ea6f565f",
+        "0e811a3b-5552-486d-9e1a-c003df9096d6"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "bd32eb2e079f5083ca4c7ce2e90fe572"
+    },
+    {
+      "id": "reading-10",
+      "reviewStatus": "DRAFT",
+      "questionId": "0e775e90-c4da-4e30-a69c-4a9c90779dbd",
+      "testId": "c32babea-decc-532a-8ed9-44fbb57a8014",
+      "questionHash": "ac17b301ddc035e2e75ceca488143c76",
+      "component": "READING",
+      "part": 1,
+      "questionType": "READING_GAP_CHOICE",
+      "questionKey": "p1:q2",
+      "content": {
+        "options": [
+          "on",
+          "at",
+          "in"
+        ]
+      },
+      "correctAnswer": {
+        "answer": "on"
+      },
+      "syntheticWrongAnswer": {
+        "answer": "at"
+      },
+      "explanation": {
+        "text": "Chọn từ phù hợp với ngữ pháp và ý nghĩa của câu."
+      },
+      "documentKey": "lesson-reading-detail",
+      "similarQuestionIds": [
+        "007b57a3-f656-4085-ad72-20156cfd300f",
+        "073e3478-24f2-49e6-ba45-2349be919182",
+        "1220e813-a47f-4ade-8eac-b6086486bb52",
+        "160acb76-9d2a-4423-8b07-b2eee95d9203",
+        "16add4f0-28d7-449e-85ad-d6276a0e7dec"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "ac17b301ddc035e2e75ceca488143c76"
+    },
+    {
+      "id": "reading-11",
+      "reviewStatus": "DRAFT",
+      "questionId": "032bbbb8-8474-4456-b3d5-140661c1e39d",
+      "testId": "916bce74-1345-57c5-b498-4887025a4e54",
+      "questionHash": "10c54c4698126a4657f3f184dcff35ed",
+      "component": "READING",
+      "part": 2,
+      "questionType": "READING_ORDER",
+      "questionKey": "p2:q9",
+      "content": {
+        "text": "I cooked the soup for twenty minutes.",
+        "textId": "p2-text2",
+        "textTitle": "Making vegetable soup",
+        "sentenceId": "p2-t2-s5"
+      },
+      "correctAnswer": {
+        "position": 5
+      },
+      "syntheticWrongAnswer": {
+        "position": 1
+      },
+      "explanation": {
+        "text": "Các từ chỉ trình tự và mối liên kết nội dung xác định vị trí của câu."
+      },
+      "documentKey": "lesson-reading-cohesion",
+      "similarQuestionIds": [
+        "011fdf56-1080-4756-a0b2-1204639adfbf",
+        "022c8775-3aa8-49dc-9101-a1880a6ea4f0",
+        "041b6d44-76fa-40bc-b638-6394fa5e0f8b",
+        "0c34f7f9-5e5c-4eef-a983-cc1b843871b6",
+        "0d51e31f-835a-4864-8978-2b17f67356d9"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "10c54c4698126a4657f3f184dcff35ed"
+    },
+    {
+      "id": "reading-12",
+      "reviewStatus": "DRAFT",
+      "questionId": "125d39f4-7137-4e4c-a62f-5eb2766646f5",
+      "testId": "00de5e63-1c44-53a1-b267-1245adc90f82",
+      "questionHash": "f8e1303a8d50f7e664d3287070ba48fd",
+      "component": "READING",
+      "part": 3,
+      "questionType": "READING_OPINION_MATCH",
+      "questionKey": "p3:q1",
+      "content": {
+        "statement": "Who chose the club partly because it is inexpensive?"
+      },
+      "correctAnswer": {
+        "speaker": "A"
+      },
+      "syntheticWrongAnswer": {
+        "speaker": "B"
+      },
+      "explanation": {
+        "text": "Xem thông tin trực tiếp trong lời của người A."
+      },
+      "documentKey": "lesson-reading-opinion",
+      "similarQuestionIds": [
+        "034b8c85-058c-4474-8653-62791f94851f",
+        "0c33d3f8-064c-4529-a907-e26645a6fa00",
+        "153b5b24-d120-4694-9c80-a47a4986eb09",
+        "164581ee-83e2-4423-91de-d57b437e6dc5",
+        "16a340a9-3941-4b73-a362-f329afe6f73c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "f8e1303a8d50f7e664d3287070ba48fd"
+    },
+    {
+      "id": "reading-13",
+      "reviewStatus": "DRAFT",
+      "questionId": "0670be4d-897f-4948-80c0-f30874674f0e",
+      "testId": "d2958c37-ec70-5bbb-a940-46a5664fd3a0",
+      "questionHash": "da67d2cc75b53dd4ddf11994562e3d9a",
+      "component": "READING",
+      "part": 4,
+      "questionType": "READING_HEADING_MATCH",
+      "questionKey": "p4:q2",
+      "content": {
+        "text": "At first, members met in their homes, but space soon became a problem. After comparing several buildings, the group rented a room near the museum. It had good public transport connections and enough space for practical activities.",
+        "paragraphId": "para2"
+      },
+      "correctAnswer": {
+        "headingId": "h2"
+      },
+      "syntheticWrongAnswer": {
+        "headingId": "h1"
+      },
+      "explanation": {
+        "text": "Đoạn B tập trung vào chủ đề: finding a meeting place."
+      },
+      "documentKey": "lesson-reading-main-idea",
+      "similarQuestionIds": [
+        "0035f058-6a74-4621-a0c3-56f0bb0f1047",
+        "0248b7f5-6eba-4762-b5ba-285d4903b5a4",
+        "04128989-9a18-4235-8b23-db4b3b8cbe08",
+        "06ea7e9e-7b8e-4233-bcb2-2d2db8c3742f",
+        "094e0467-94a7-4c4f-ad58-5f62ea6f565f"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "da67d2cc75b53dd4ddf11994562e3d9a"
+    },
+    {
+      "id": "reading-14",
+      "reviewStatus": "DRAFT",
+      "questionId": "1220e813-a47f-4ade-8eac-b6086486bb52",
+      "testId": "068a4b5b-2251-5f2f-870b-bfdb99e564cd",
+      "questionHash": "9b0a007d2f12c644965ceab5f0126614",
+      "component": "READING",
+      "part": 1,
+      "questionType": "READING_GAP_CHOICE",
+      "questionKey": "p1:q4",
+      "content": {
+        "options": [
+          "us",
+          "we",
+          "our"
+        ]
+      },
+      "correctAnswer": {
+        "answer": "our"
+      },
+      "syntheticWrongAnswer": {
+        "answer": "us"
+      },
+      "explanation": {
+        "text": "Our là tính từ sở hữu trước schedule."
+      },
+      "documentKey": "lesson-reading-detail",
+      "similarQuestionIds": [
+        "007b57a3-f656-4085-ad72-20156cfd300f",
+        "073e3478-24f2-49e6-ba45-2349be919182",
+        "0e775e90-c4da-4e30-a69c-4a9c90779dbd",
+        "160acb76-9d2a-4423-8b07-b2eee95d9203",
+        "16add4f0-28d7-449e-85ad-d6276a0e7dec"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "9b0a007d2f12c644965ceab5f0126614"
+    },
+    {
+      "id": "reading-15",
+      "reviewStatus": "DRAFT",
+      "questionId": "041b6d44-76fa-40bc-b638-6394fa5e0f8b",
+      "testId": "22a26bb0-450f-5159-9357-5b85a96afd15",
+      "questionHash": "114a89245ec7903e0fe7328c3b98d15e",
+      "component": "READING",
+      "part": 2,
+      "questionType": "READING_ORDER",
+      "questionKey": "p2:q8",
+      "content": {
+        "text": "Then I followed the directions and arrived at the entrance.",
+        "textId": "p2-t2",
+        "textTitle": "A first visit to the theatre",
+        "sentenceId": "p2-t2-s3"
+      },
+      "correctAnswer": {
+        "position": 3
+      },
+      "syntheticWrongAnswer": {
+        "position": 1
+      },
+      "explanation": {
+        "text": "Các mốc thời gian và từ nối chỉ rõ trình tự của câu chuyện."
+      },
+      "documentKey": "lesson-reading-cohesion",
+      "similarQuestionIds": [
+        "011fdf56-1080-4756-a0b2-1204639adfbf",
+        "022c8775-3aa8-49dc-9101-a1880a6ea4f0",
+        "032bbbb8-8474-4456-b3d5-140661c1e39d",
+        "0b4c5829-ffe5-4830-bc1b-50d036d6357c",
+        "0c34f7f9-5e5c-4eef-a983-cc1b843871b6"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "114a89245ec7903e0fe7328c3b98d15e"
+    },
+    {
+      "id": "reading-16",
+      "reviewStatus": "DRAFT",
+      "questionId": "153b5b24-d120-4694-9c80-a47a4986eb09",
+      "testId": "83a8eff6-6c3c-5363-a2da-4779a1acc30d",
+      "questionHash": "dad9102f594601fd50da03f6471e64c5",
+      "component": "READING",
+      "part": 3,
+      "questionType": "READING_OPINION_MATCH",
+      "questionKey": "p3:q3",
+      "content": {
+        "statement": "Who shares their experience with beginners?"
+      },
+      "correctAnswer": {
+        "speaker": "C"
+      },
+      "syntheticWrongAnswer": {
+        "speaker": "A"
+      },
+      "explanation": {
+        "text": "Xem thông tin trực tiếp trong lời của người C."
+      },
+      "documentKey": "lesson-reading-opinion",
+      "similarQuestionIds": [
+        "034b8c85-058c-4474-8653-62791f94851f",
+        "0c33d3f8-064c-4529-a907-e26645a6fa00",
+        "125d39f4-7137-4e4c-a62f-5eb2766646f5",
+        "164581ee-83e2-4423-91de-d57b437e6dc5",
+        "16a340a9-3941-4b73-a362-f329afe6f73c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "dad9102f594601fd50da03f6471e64c5"
+    },
+    {
+      "id": "reading-17",
+      "reviewStatus": "DRAFT",
+      "questionId": "06ea7e9e-7b8e-4233-bcb2-2d2db8c3742f",
+      "testId": "068a4b5b-2251-5f2f-870b-bfdb99e564cd",
+      "questionHash": "c8da142aaa200cff45b782dc37ef4bfd",
+      "component": "READING",
+      "part": 4,
+      "questionType": "READING_HEADING_MATCH",
+      "questionKey": "p4:q2",
+      "content": {
+        "text": "At first, members met in their homes, but space soon became a problem. After comparing several buildings, the group rented a room near the theatre. It had good public transport connections and enough space for practical activities.",
+        "paragraphId": "para2"
+      },
+      "correctAnswer": {
+        "headingId": "h2"
+      },
+      "syntheticWrongAnswer": {
+        "headingId": "h1"
+      },
+      "explanation": {
+        "text": "Đoạn B tập trung vào chủ đề: finding a meeting place."
+      },
+      "documentKey": "lesson-reading-main-idea",
+      "similarQuestionIds": [
+        "0035f058-6a74-4621-a0c3-56f0bb0f1047",
+        "0248b7f5-6eba-4762-b5ba-285d4903b5a4",
+        "04128989-9a18-4235-8b23-db4b3b8cbe08",
+        "0670be4d-897f-4948-80c0-f30874674f0e",
+        "094e0467-94a7-4c4f-ad58-5f62ea6f565f"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "c8da142aaa200cff45b782dc37ef4bfd"
+    },
+    {
+      "id": "reading-18",
+      "reviewStatus": "DRAFT",
+      "questionId": "160acb76-9d2a-4423-8b07-b2eee95d9203",
+      "testId": "bc83de58-01f0-50d2-8c00-d449c5e1fc14",
+      "questionHash": "3374bec1d34943a72c6604a2566b98cb",
+      "component": "READING",
+      "part": 1,
+      "questionType": "READING_GAP_CHOICE",
+      "questionKey": "p1:q5",
+      "content": {
+        "options": [
+          "until",
+          "unless",
+          "if"
+        ]
+      },
+      "correctAnswer": {
+        "answer": "if"
+      },
+      "syntheticWrongAnswer": {
+        "answer": "until"
+      },
+      "explanation": {
+        "text": "If diễn tả điều kiện cần giúp đỡ."
+      },
+      "documentKey": "lesson-reading-detail",
+      "similarQuestionIds": [
+        "007b57a3-f656-4085-ad72-20156cfd300f",
+        "073e3478-24f2-49e6-ba45-2349be919182",
+        "0e775e90-c4da-4e30-a69c-4a9c90779dbd",
+        "1220e813-a47f-4ade-8eac-b6086486bb52",
+        "16add4f0-28d7-449e-85ad-d6276a0e7dec"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "3374bec1d34943a72c6604a2566b98cb"
+    },
+    {
+      "id": "reading-19",
+      "reviewStatus": "DRAFT",
+      "questionId": "0b4c5829-ffe5-4830-bc1b-50d036d6357c",
+      "testId": "916bce74-1345-57c5-b498-4887025a4e54",
+      "questionHash": "26017ab10a0381272742edae8378f37d",
+      "component": "READING",
+      "part": 2,
+      "questionType": "READING_ORDER",
+      "questionKey": "p2:q5",
+      "content": {
+        "text": "Finally, I went home and started reading it.",
+        "textId": "p2-text1",
+        "textTitle": "A visit to the library",
+        "sentenceId": "p2-t1-s6"
+      },
+      "correctAnswer": {
+        "position": 6
+      },
+      "syntheticWrongAnswer": {
+        "position": 1
+      },
+      "explanation": {
+        "text": "Các từ chỉ trình tự và mối liên kết nội dung xác định vị trí của câu."
+      },
+      "documentKey": "lesson-reading-cohesion",
+      "similarQuestionIds": [
+        "011fdf56-1080-4756-a0b2-1204639adfbf",
+        "022c8775-3aa8-49dc-9101-a1880a6ea4f0",
+        "041b6d44-76fa-40bc-b638-6394fa5e0f8b",
+        "0c34f7f9-5e5c-4eef-a983-cc1b843871b6",
+        "0d51e31f-835a-4864-8978-2b17f67356d9"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "26017ab10a0381272742edae8378f37d"
+    },
+    {
+      "id": "reading-20",
+      "reviewStatus": "DRAFT",
+      "questionId": "164581ee-83e2-4423-91de-d57b437e6dc5",
+      "testId": "339b4399-b786-55e4-aecc-4c49c7a97e30",
+      "questionHash": "7913e7e74483ce70ad213b31c2dd7e03",
+      "component": "READING",
+      "part": 3,
+      "questionType": "READING_OPINION_MATCH",
+      "questionKey": "p3:q3",
+      "content": {
+        "statement": "Who shares their experience with beginners?"
+      },
+      "correctAnswer": {
+        "speaker": "C"
+      },
+      "syntheticWrongAnswer": {
+        "speaker": "A"
+      },
+      "explanation": {
+        "text": "Xem thông tin trực tiếp trong lời của người C."
+      },
+      "documentKey": "lesson-reading-opinion",
+      "similarQuestionIds": [
+        "034b8c85-058c-4474-8653-62791f94851f",
+        "0c33d3f8-064c-4529-a907-e26645a6fa00",
+        "125d39f4-7137-4e4c-a62f-5eb2766646f5",
+        "153b5b24-d120-4694-9c80-a47a4986eb09",
+        "16a340a9-3941-4b73-a362-f329afe6f73c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "7913e7e74483ce70ad213b31c2dd7e03"
+    },
+    {
+      "id": "listening-1",
+      "reviewStatus": "DRAFT",
+      "questionId": "0011d201-f549-4a43-acd7-b616117ad1f2",
+      "testId": "849c8e45-8db4-5b1e-b369-aa5b55e0e01a",
+      "questionHash": "85236bcf779fef87ef97621395ae8803",
+      "component": "LISTENING",
+      "part": 3,
+      "questionType": "OPINION_LISTENING_P3",
+      "questionKey": "p3:s4",
+      "content": {
+        "statement": "More equipment should be available to borrow."
+      },
+      "correctAnswer": {
+        "opinion": "Both"
+      },
+      "syntheticWrongAnswer": {
+        "opinion": "Man"
+      },
+      "explanation": {
+        "text": "Người nữ đề xuất và người nam đồng ý trực tiếp."
+      },
+      "documentKey": "lesson-listening-opinion",
+      "similarQuestionIds": [
+        "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+        "033739e2-8229-42af-90da-b64c5ad2cb5a",
+        "0910999d-2cc9-47df-94be-a0d1a7181b44",
+        "1c7162ec-85de-4142-8047-903143c02af3",
+        "1cc86e07-60bb-4596-b4f4-db7e49499269"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "85236bcf779fef87ef97621395ae8803"
+    },
+    {
+      "id": "listening-2",
+      "reviewStatus": "DRAFT",
+      "questionId": "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+      "testId": "dd1f7731-2a54-5ee5-85dc-0528b8dce115",
+      "questionHash": "a25688a5ab4df1bb9de0ed2aaa459803",
+      "component": "LISTENING",
+      "part": 4,
+      "questionType": "MCQ_LISTENING_P4",
+      "questionKey": "p4:q1",
+      "content": {
+        "text": "What is the main purpose of the event?",
+        "options": [
+          "To raise money for a building",
+          "To attract international visitors",
+          "To introduce an activity to local people"
+        ],
+        "recordingIndex": 0
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "Our main aim is to introduce local residents to the activity."
+      },
+      "documentKey": "lesson-listening-inference",
+      "similarQuestionIds": [
+        "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+        "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+        "15d697de-272c-41f3-ab39-1ea45f42a95d",
+        "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+        "20614047-2b92-461f-9c94-490cdd201c1c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "a25688a5ab4df1bb9de0ed2aaa459803"
+    },
+    {
+      "id": "listening-3",
+      "reviewStatus": "DRAFT",
+      "questionId": "02edf133-c8be-483c-a379-7a170ac9e6df",
+      "testId": "a468a615-76cb-54b7-af66-aeeb053399c0",
+      "questionHash": "6e55123843fd09d1bd5424e17d5bd120",
+      "component": "LISTENING",
+      "part": 1,
+      "questionType": "MCQ_LISTENING_P1",
+      "questionKey": "p1:q3",
+      "content": {
+        "text": "What does the speaker need to buy?",
+        "options": [
+          "a water bottle",
+          "a travel bag",
+          "a raincoat"
+        ],
+        "audioUrl": "https://res.cloudinary.com/dkrisyrlh/video/upload/v1792577310/aptimate/seed-expansion-v1/form-2-p1-3-c6a66c9c93d5cf7b.mp3"
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "I am nearly ready for the trip. I found a water bottle in my cupboard, so I do not need another one. The only thing still missing is a raincoat. I will get one this afternoon."
+      },
+      "documentKey": "lesson-listening-detail",
+      "similarQuestionIds": [
+        "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+        "0663d564-da26-4268-ae14-f9a0e31d520e",
+        "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+        "08baed34-d8e5-4357-ae45-6380456b20eb",
+        "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "6e55123843fd09d1bd5424e17d5bd120"
+    },
+    {
+      "id": "listening-4",
+      "reviewStatus": "DRAFT",
+      "questionId": "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+      "testId": "40ca4fe4-02a1-5db5-87de-7a8c4b1db38a",
+      "questionHash": "1f82e543b9e2d67a7883c01351dcc0df",
+      "component": "LISTENING",
+      "part": 3,
+      "questionType": "OPINION_LISTENING_P3",
+      "questionKey": "p3:s1",
+      "content": {
+        "statement": "The membership fee is good value."
+      },
+      "correctAnswer": {
+        "opinion": "Man"
+      },
+      "syntheticWrongAnswer": {
+        "opinion": "Woman"
+      },
+      "explanation": {
+        "text": "Người nam nói phí hợp lý; người nữ nói đắt."
+      },
+      "documentKey": "lesson-listening-opinion",
+      "similarQuestionIds": [
+        "0011d201-f549-4a43-acd7-b616117ad1f2",
+        "033739e2-8229-42af-90da-b64c5ad2cb5a",
+        "0910999d-2cc9-47df-94be-a0d1a7181b44",
+        "1c7162ec-85de-4142-8047-903143c02af3",
+        "1cc86e07-60bb-4596-b4f4-db7e49499269"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "1f82e543b9e2d67a7883c01351dcc0df"
+    },
+    {
+      "id": "listening-5",
+      "reviewStatus": "DRAFT",
+      "questionId": "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+      "testId": "3fb7a496-1c18-5ac9-9215-312171edf62a",
+      "questionHash": "a25688a5ab4df1bb9de0ed2aaa459803",
+      "component": "LISTENING",
+      "part": 4,
+      "questionType": "MCQ_LISTENING_P4",
+      "questionKey": "p4:q1",
+      "content": {
+        "text": "What is the main purpose of the event?",
+        "options": [
+          "To raise money for a building",
+          "To attract international visitors",
+          "To introduce an activity to local people"
+        ],
+        "recordingIndex": 0
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "Our main aim is to introduce local residents to the activity."
+      },
+      "documentKey": "lesson-listening-inference",
+      "similarQuestionIds": [
+        "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+        "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+        "15d697de-272c-41f3-ab39-1ea45f42a95d",
+        "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+        "20614047-2b92-461f-9c94-490cdd201c1c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "a25688a5ab4df1bb9de0ed2aaa459803"
+    },
+    {
+      "id": "listening-6",
+      "reviewStatus": "DRAFT",
+      "questionId": "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+      "testId": "7a2cbec2-6af0-5441-84b0-b48ff156f0e6",
+      "questionHash": "dc74a312538730c3e6605758ff1f41e5",
+      "component": "LISTENING",
+      "part": 1,
+      "questionType": "MCQ_LISTENING_P1",
+      "questionKey": "p1:q7",
+      "content": {
+        "text": "How much is the ticket after the discount?",
+        "options": [
+          "sixteen pounds",
+          "twenty pounds",
+          "twenty-four pounds"
+        ],
+        "audioUrl": "https://res.cloudinary.com/dkrisyrlh/video/upload/v1792577336/aptimate/seed-expansion-v1/form-3-p1-7-31c75aac25bd8515.mp3"
+      },
+      "correctAnswer": {
+        "optionIndex": 0
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 1
+      },
+      "explanation": {
+        "text": "You may have seen a price of twenty pounds on the old leaflet. That offer has finished. With your membership discount, the ticket now costs sixteen pounds. The price includes entry to all the activities."
+      },
+      "documentKey": "lesson-listening-detail",
+      "similarQuestionIds": [
+        "02edf133-c8be-483c-a379-7a170ac9e6df",
+        "0663d564-da26-4268-ae14-f9a0e31d520e",
+        "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+        "08baed34-d8e5-4357-ae45-6380456b20eb",
+        "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "dc74a312538730c3e6605758ff1f41e5"
+    },
+    {
+      "id": "listening-7",
+      "reviewStatus": "DRAFT",
+      "questionId": "033739e2-8229-42af-90da-b64c5ad2cb5a",
+      "testId": "4f970d94-053f-5874-a7ff-624ac4c173c1",
+      "questionHash": "3d309ef3f22d3f3622d80e5141f4b534",
+      "component": "LISTENING",
+      "part": 3,
+      "questionType": "OPINION_LISTENING_P3",
+      "questionKey": "p3:s1",
+      "content": {
+        "statement": "The membership fee is good value."
+      },
+      "correctAnswer": {
+        "opinion": "Man"
+      },
+      "syntheticWrongAnswer": {
+        "opinion": "Woman"
+      },
+      "explanation": {
+        "text": "Người nam nói phí hợp lý; người nữ nói đắt."
+      },
+      "documentKey": "lesson-listening-opinion",
+      "similarQuestionIds": [
+        "0011d201-f549-4a43-acd7-b616117ad1f2",
+        "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+        "0910999d-2cc9-47df-94be-a0d1a7181b44",
+        "1c7162ec-85de-4142-8047-903143c02af3",
+        "1cc86e07-60bb-4596-b4f4-db7e49499269"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "3d309ef3f22d3f3622d80e5141f4b534"
+    },
+    {
+      "id": "listening-8",
+      "reviewStatus": "DRAFT",
+      "questionId": "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+      "testId": "71f02380-945e-5b6d-b705-e5468735c5c4",
+      "questionHash": "4ccaa069e2c728740eed5fd0fdafb9ea",
+      "component": "LISTENING",
+      "part": 4,
+      "questionType": "MCQ_LISTENING_P4",
+      "questionKey": "p4:q3",
+      "content": {
+        "text": "What improved after the speaker changed the practice routine?",
+        "options": [
+          "Remembering techniques",
+          "Working immediately faster",
+          "Spending less on equipment"
+        ],
+        "recordingIndex": 1
+      },
+      "correctAnswer": {
+        "optionIndex": 0
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 1
+      },
+      "explanation": {
+        "text": "The main benefit was remembering techniques from one session to the next."
+      },
+      "documentKey": "lesson-listening-inference",
+      "similarQuestionIds": [
+        "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+        "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+        "15d697de-272c-41f3-ab39-1ea45f42a95d",
+        "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+        "20614047-2b92-461f-9c94-490cdd201c1c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "4ccaa069e2c728740eed5fd0fdafb9ea"
+    },
+    {
+      "id": "listening-9",
+      "reviewStatus": "DRAFT",
+      "questionId": "0663d564-da26-4268-ae14-f9a0e31d520e",
+      "testId": "3fb7a496-1c18-5ac9-9215-312171edf62a",
+      "questionHash": "3a111d661cbad2d6861b517d6f38c7ed",
+      "component": "LISTENING",
+      "part": 1,
+      "questionType": "MCQ_LISTENING_P1",
+      "questionKey": "p1:q11",
+      "content": {
+        "text": "What does the customer ask for?",
+        "options": [
+          "a delivery update",
+          "a refund",
+          "a repair"
+        ],
+        "audioUrl": "https://res.cloudinary.com/dkrisyrlh/video/upload/v1792577363/aptimate/seed-expansion-v1/form-4-p1-11-9daf2106cf4dc533.mp3"
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "Thank you for your reply. I am not asking for a delivery update at this stage. What I need is a repair. Please tell me how to arrange that and whether you need my order number again."
+      },
+      "documentKey": "lesson-listening-detail",
+      "similarQuestionIds": [
+        "02edf133-c8be-483c-a379-7a170ac9e6df",
+        "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+        "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+        "08baed34-d8e5-4357-ae45-6380456b20eb",
+        "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "3a111d661cbad2d6861b517d6f38c7ed"
+    },
+    {
+      "id": "listening-10",
+      "reviewStatus": "DRAFT",
+      "questionId": "0910999d-2cc9-47df-94be-a0d1a7181b44",
+      "testId": "86be3087-893e-5057-8090-ee1ee8b61c1f",
+      "questionHash": "f086e213d9f2d96a8036a5337adae73f",
+      "component": "LISTENING",
+      "part": 3,
+      "questionType": "OPINION_LISTENING_P3",
+      "questionKey": "p3:s1",
+      "content": {
+        "statement": "The membership fee is good value."
+      },
+      "correctAnswer": {
+        "opinion": "Man"
+      },
+      "syntheticWrongAnswer": {
+        "opinion": "Woman"
+      },
+      "explanation": {
+        "text": "Người nam nói phí hợp lý; người nữ nói đắt."
+      },
+      "documentKey": "lesson-listening-opinion",
+      "similarQuestionIds": [
+        "0011d201-f549-4a43-acd7-b616117ad1f2",
+        "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+        "033739e2-8229-42af-90da-b64c5ad2cb5a",
+        "1c7162ec-85de-4142-8047-903143c02af3",
+        "1cc86e07-60bb-4596-b4f4-db7e49499269"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "f086e213d9f2d96a8036a5337adae73f"
+    },
+    {
+      "id": "listening-11",
+      "reviewStatus": "DRAFT",
+      "questionId": "15d697de-272c-41f3-ab39-1ea45f42a95d",
+      "testId": "46f34635-9d82-5eab-b643-9e07d4a28dc2",
+      "questionHash": "d8f304669822575d4b952863b02b15d1",
+      "component": "LISTENING",
+      "part": 4,
+      "questionType": "MCQ_LISTENING_P4",
+      "questionKey": "p4:q3",
+      "content": {
+        "text": "What improved after the speaker changed the practice routine?",
+        "options": [
+          "Working immediately faster",
+          "Spending less on equipment",
+          "Remembering techniques"
+        ],
+        "recordingIndex": 1
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "The main benefit was remembering techniques from one session to the next."
+      },
+      "documentKey": "lesson-listening-inference",
+      "similarQuestionIds": [
+        "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+        "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+        "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+        "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+        "20614047-2b92-461f-9c94-490cdd201c1c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "d8f304669822575d4b952863b02b15d1"
+    },
+    {
+      "id": "listening-12",
+      "reviewStatus": "DRAFT",
+      "questionId": "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+      "testId": "1b035990-5475-52aa-9f4f-0c363af20df9",
+      "questionHash": "e4f8147552b25ce06c586d4a331ebf91",
+      "component": "LISTENING",
+      "part": 1,
+      "questionType": "MCQ_LISTENING_P1",
+      "questionKey": "p1:q1",
+      "content": {
+        "text": "When will the meeting start?",
+        "options": [
+          "ten fifteen",
+          "four fifteen",
+          "nine thirty"
+        ],
+        "audioUrl": "https://res.cloudinary.com/dkrisyrlh/video/upload/v1792577372/aptimate/seed-expansion-v1/form-5-p1-1-3caf7abb0ee3cff5.mp3"
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "Hello everyone. The time printed on your invitation was nine thirty, but we have changed it. The meeting will now begin at four fifteen. Please arrive ten minutes early so we can start promptly."
+      },
+      "documentKey": "lesson-listening-detail",
+      "similarQuestionIds": [
+        "02edf133-c8be-483c-a379-7a170ac9e6df",
+        "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+        "0663d564-da26-4268-ae14-f9a0e31d520e",
+        "08baed34-d8e5-4357-ae45-6380456b20eb",
+        "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "e4f8147552b25ce06c586d4a331ebf91"
+    },
+    {
+      "id": "listening-13",
+      "reviewStatus": "DRAFT",
+      "questionId": "1c7162ec-85de-4142-8047-903143c02af3",
+      "testId": "ac0efd06-267a-51b1-a6dc-6d8d8aa8dd8a",
+      "questionHash": "a4c5a5c4201108bed36e9fd0dba6ab95",
+      "component": "LISTENING",
+      "part": 3,
+      "questionType": "OPINION_LISTENING_P3",
+      "questionKey": "p3:s4",
+      "content": {
+        "statement": "More equipment should be available to borrow."
+      },
+      "correctAnswer": {
+        "opinion": "Both"
+      },
+      "syntheticWrongAnswer": {
+        "opinion": "Man"
+      },
+      "explanation": {
+        "text": "Người nữ đề xuất và người nam đồng ý trực tiếp."
+      },
+      "documentKey": "lesson-listening-opinion",
+      "similarQuestionIds": [
+        "0011d201-f549-4a43-acd7-b616117ad1f2",
+        "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+        "033739e2-8229-42af-90da-b64c5ad2cb5a",
+        "0910999d-2cc9-47df-94be-a0d1a7181b44",
+        "1cc86e07-60bb-4596-b4f4-db7e49499269"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "a4c5a5c4201108bed36e9fd0dba6ab95"
+    },
+    {
+      "id": "listening-14",
+      "reviewStatus": "DRAFT",
+      "questionId": "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+      "testId": "044cf429-e920-5b22-858e-5d7e27837ea7",
+      "questionHash": "8fe732da3f4f5e778d1962d6ff0c02a0",
+      "component": "LISTENING",
+      "part": 4,
+      "questionType": "MCQ_LISTENING_P4",
+      "questionKey": "p4:q2",
+      "content": {
+        "text": "What is the main difficulty for the organiser?",
+        "options": [
+          "Finding enough helpers",
+          "Paying for the venue",
+          "Getting people to book"
+        ],
+        "recordingIndex": 0
+      },
+      "correctAnswer": {
+        "optionIndex": 0
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 1
+      },
+      "explanation": {
+        "text": "Our biggest difficulty has been finding enough volunteers."
+      },
+      "documentKey": "lesson-listening-inference",
+      "similarQuestionIds": [
+        "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+        "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+        "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+        "15d697de-272c-41f3-ab39-1ea45f42a95d",
+        "20614047-2b92-461f-9c94-490cdd201c1c"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "8fe732da3f4f5e778d1962d6ff0c02a0"
+    },
+    {
+      "id": "listening-15",
+      "reviewStatus": "DRAFT",
+      "questionId": "08baed34-d8e5-4357-ae45-6380456b20eb",
+      "testId": "849c8e45-8db4-5b1e-b369-aa5b55e0e01a",
+      "questionHash": "e094c623a24f85941654b8a4bb317a50",
+      "component": "LISTENING",
+      "part": 1,
+      "questionType": "MCQ_LISTENING_P1",
+      "questionKey": "p1:q9",
+      "content": {
+        "text": "Which subject does the student want to study next term?",
+        "options": [
+          "literature",
+          "geography",
+          "economics"
+        ],
+        "audioUrl": "https://res.cloudinary.com/dkrisyrlh/video/upload/v1792577338/aptimate/seed-expansion-v1/form-3-p1-9-9eb2394d096fea87.mp3"
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "I enjoyed studying economics this year, but I would like a change. Next term I want to take geography, because the course looks interesting and the project work sounds useful. I have already spoken to the tutor."
+      },
+      "documentKey": "lesson-listening-detail",
+      "similarQuestionIds": [
+        "02edf133-c8be-483c-a379-7a170ac9e6df",
+        "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+        "0663d564-da26-4268-ae14-f9a0e31d520e",
+        "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+        "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "e094c623a24f85941654b8a4bb317a50"
+    },
+    {
+      "id": "listening-16",
+      "reviewStatus": "DRAFT",
+      "questionId": "1cc86e07-60bb-4596-b4f4-db7e49499269",
+      "testId": "3fb7a496-1c18-5ac9-9215-312171edf62a",
+      "questionHash": "87d98d52a4f52cf6a795c18587f5fd06",
+      "component": "LISTENING",
+      "part": 3,
+      "questionType": "OPINION_LISTENING_P3",
+      "questionKey": "p3:s4",
+      "content": {
+        "statement": "More equipment should be available to borrow."
+      },
+      "correctAnswer": {
+        "opinion": "Both"
+      },
+      "syntheticWrongAnswer": {
+        "opinion": "Man"
+      },
+      "explanation": {
+        "text": "Người nữ đề xuất và người nam đồng ý trực tiếp."
+      },
+      "documentKey": "lesson-listening-opinion",
+      "similarQuestionIds": [
+        "0011d201-f549-4a43-acd7-b616117ad1f2",
+        "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+        "033739e2-8229-42af-90da-b64c5ad2cb5a",
+        "0910999d-2cc9-47df-94be-a0d1a7181b44",
+        "1c7162ec-85de-4142-8047-903143c02af3"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "87d98d52a4f52cf6a795c18587f5fd06"
+    },
+    {
+      "id": "listening-17",
+      "reviewStatus": "DRAFT",
+      "questionId": "20614047-2b92-461f-9c94-490cdd201c1c",
+      "testId": "40ca4fe4-02a1-5db5-87de-7a8c4b1db38a",
+      "questionHash": "7182cb1f6322feae44cddd1cf781b6f9",
+      "component": "LISTENING",
+      "part": 4,
+      "questionType": "MCQ_LISTENING_P4",
+      "questionKey": "p4:q4",
+      "content": {
+        "text": "What does the speaker advise beginners to do?",
+        "options": [
+          "Compare their work with experts",
+          "Buy expensive equipment first",
+          "Choose a small goal for each session"
+        ],
+        "recordingIndex": 1
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "Set a small, achievable goal for every practice session."
+      },
+      "documentKey": "lesson-listening-inference",
+      "similarQuestionIds": [
+        "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+        "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+        "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+        "15d697de-272c-41f3-ab39-1ea45f42a95d",
+        "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "7182cb1f6322feae44cddd1cf781b6f9"
+    },
+    {
+      "id": "listening-18",
+      "reviewStatus": "DRAFT",
+      "questionId": "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a",
+      "testId": "dd1f7731-2a54-5ee5-85dc-0528b8dce115",
+      "questionHash": "70024a80a99102207403e1af83d901ed",
+      "component": "LISTENING",
+      "part": 1,
+      "questionType": "MCQ_LISTENING_P1",
+      "questionKey": "p1:q4",
+      "content": {
+        "text": "How will the speaker travel tomorrow?",
+        "options": [
+          "on foot",
+          "by train",
+          "by taxi"
+        ],
+        "audioUrl": "https://res.cloudinary.com/dkrisyrlh/video/upload/v1792577354/aptimate/seed-expansion-v1/form-4-p1-4-49e9c65d31802bbe.mp3"
+      },
+      "correctAnswer": {
+        "optionIndex": 2
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 0
+      },
+      "explanation": {
+        "text": "I normally travel on foot, but that will not work tomorrow because of the road restrictions. I have checked the alternatives and decided to go by taxi. I will leave home a little earlier than usual."
+      },
+      "documentKey": "lesson-listening-detail",
+      "similarQuestionIds": [
+        "02edf133-c8be-483c-a379-7a170ac9e6df",
+        "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+        "0663d564-da26-4268-ae14-f9a0e31d520e",
+        "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+        "08baed34-d8e5-4357-ae45-6380456b20eb"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "70024a80a99102207403e1af83d901ed"
+    },
+    {
+      "id": "listening-19",
+      "reviewStatus": "DRAFT",
+      "questionId": "1fd16fef-9ad5-486f-bc8a-4b3122c17278",
+      "testId": "e2453330-fc58-55d5-8200-23a41f78a734",
+      "questionHash": "119c5e880e7f4cbc9f180b4a09d42588",
+      "component": "LISTENING",
+      "part": 3,
+      "questionType": "OPINION_LISTENING_P3",
+      "questionKey": "p3:s2",
+      "content": {
+        "statement": "The members make newcomers feel welcome."
+      },
+      "correctAnswer": {
+        "opinion": "Both"
+      },
+      "syntheticWrongAnswer": {
+        "opinion": "Man"
+      },
+      "explanation": {
+        "text": "Cả hai nói các thành viên thân thiện, chào đón người mới."
+      },
+      "documentKey": "lesson-listening-opinion",
+      "similarQuestionIds": [
+        "0011d201-f549-4a43-acd7-b616117ad1f2",
+        "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+        "033739e2-8229-42af-90da-b64c5ad2cb5a",
+        "0910999d-2cc9-47df-94be-a0d1a7181b44",
+        "1c7162ec-85de-4142-8047-903143c02af3"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "119c5e880e7f4cbc9f180b4a09d42588"
+    },
+    {
+      "id": "listening-20",
+      "reviewStatus": "DRAFT",
+      "questionId": "21abd568-9673-4197-bef2-78d1ea239eab",
+      "testId": "522a9095-9e0c-51dd-b58b-ea4e7136be5f",
+      "questionHash": "340e2b6b1af580032e5b73fba7d19dfb",
+      "component": "LISTENING",
+      "part": 4,
+      "questionType": "MCQ_LISTENING_P4",
+      "questionKey": "p4:q2",
+      "content": {
+        "text": "What is the main difficulty for the organiser?",
+        "options": [
+          "Getting people to book",
+          "Finding enough helpers",
+          "Paying for the venue"
+        ],
+        "recordingIndex": 0
+      },
+      "correctAnswer": {
+        "optionIndex": 1
+      },
+      "syntheticWrongAnswer": {
+        "optionIndex": 2
+      },
+      "explanation": {
+        "text": "Our biggest difficulty has been finding enough volunteers."
+      },
+      "documentKey": "lesson-listening-inference",
+      "similarQuestionIds": [
+        "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+        "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+        "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+        "15d697de-272c-41f3-ab39-1ea45f42a95d",
+        "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5"
+      ],
+      "labelRationale": "Nhãn đề xuất theo dạng câu và kiến thức/chiến lược; cần người duyệt xác nhận độ tương tự từng cặp.",
+      "duplicateGroup": "340e2b6b1af580032e5b73fba7d19dfb"
+    }
+  ]
+}

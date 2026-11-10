@@ -1,64 +1,2473 @@
 [
   {
-    "key": "aptis-general-overview", "title": "Aptis ESOL General — phạm vi", "variant": "APTIS_ESOL_GENERAL",
-    "source": "https://www.britishcouncil.org/exam/english/aptis/prepare-general", "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Các thành phần", "text": "Aptis ESOL General gồm Grammar and Vocabulary, Listening, Reading, Speaking và Writing. Tài liệu ở đây dành cho General; không áp dụng nguyên xi cho Advanced, Teachers hoặc Teens. Bài luyện của British Council giúp làm quen dạng đề. Điểm luyện trên AptiMate không phải chứng chỉ hay kết quả thi chính thức. Kho này chưa xác minh lệ phí, lịch thi, thời hạn trả kết quả hoặc yêu cầu công nhận của từng trường."}]
+    "key": "aptis-general-overview",
+    "title": "Aptis ESOL General — phạm vi",
+    "variant": "APTIS_ESOL_GENERAL",
+    "source": "https://www.britishcouncil.org/exam/english/aptis/prepare-general",
+    "verifiedAt": "2026-10-15",
+    "sections": [
+      {
+        "heading": "Các thành phần",
+        "text": "Aptis ESOL General gồm Grammar and Vocabulary, Listening, Reading, Speaking và Writing. Tài liệu ở đây dành cho General; không áp dụng nguyên xi cho Advanced, Teachers hoặc Teens. Bài luyện của British Council giúp làm quen dạng đề. Điểm luyện trên AptiMate không phải chứng chỉ hay kết quả thi chính thức. Kho này chưa xác minh lệ phí, lịch thi, thời hạn trả kết quả hoặc yêu cầu công nhận của từng trường."
+      }
+    ],
+    "usage": "GENERAL",
+    "topicCodes": [],
+    "component": null,
+    "part": null,
+    "criterion": null
   },
   {
-    "key": "aptis-general-core", "title": "Aptis General — Grammar and Vocabulary", "variant": "APTIS_ESOL_GENERAL", "component": "GRAMMAR_VOCAB",
-    "source": "https://www.britishcouncil.org/exam/aptis/practice-materials/grammar-vocabulary", "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Cấu trúc và điểm Core", "text": "Grammar and Vocabulary có 50 câu trong 25 phút: 25 câu ngữ pháp và 25 câu từ vựng. Ngữ pháp yêu cầu chọn phương án hoàn thành câu. Từ vựng kiểm tra định nghĩa, từ gần nghĩa, dùng từ trong ngữ cảnh và kết hợp từ. Điểm thành phần này từ 0 đến 50, không có mức CEFR riêng. Không quy đổi một điểm Core thành trình độ CEFR tổng thể."}]
+    "key": "aptis-general-core",
+    "title": "Aptis General — Grammar and Vocabulary",
+    "variant": "APTIS_ESOL_GENERAL",
+    "component": "GRAMMAR_VOCAB",
+    "source": "https://www.britishcouncil.org/exam/aptis/practice-materials/grammar-vocabulary",
+    "verifiedAt": "2026-10-15",
+    "sections": [
+      {
+        "heading": "Cấu trúc và điểm Core",
+        "text": "Grammar and Vocabulary có 50 câu trong 25 phút: 25 câu ngữ pháp và 25 câu từ vựng. Ngữ pháp yêu cầu chọn phương án hoàn thành câu. Từ vựng kiểm tra định nghĩa, từ gần nghĩa, dùng từ trong ngữ cảnh và kết hợp từ. Điểm thành phần này từ 0 đến 50, không có mức CEFR riêng. Không quy đổi một điểm Core thành trình độ CEFR tổng thể."
+      }
+    ],
+    "usage": "GENERAL",
+    "topicCodes": [],
+    "part": null,
+    "criterion": null
   },
   {
-    "key": "aptis-general-reading", "title": "Aptis General — Reading", "variant": "APTIS_ESOL_GENERAL", "component": "READING",
-    "source": "https://www.britishcouncil.org/exam/aptis/practice-material/reading-test", "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Bốn phần Reading", "text": "Reading General kéo dài tối đa 35 phút. Part 1 chọn từ hoàn thành câu trong văn bản ngắn. Part 2 sắp xếp câu để tạo hai văn bản mạch lạc; mỗi văn bản có câu đầu cố định và năm câu cần xếp. Part 3 ghép bảy nhận định với quan điểm của bốn người. Part 4 ghép tiêu đề với đoạn văn trong bài dài; có tiêu đề thừa. Thời lượng và dạng bài của Advanced khác General."}]
+    "key": "aptis-general-reading",
+    "title": "Aptis General — Reading",
+    "variant": "APTIS_ESOL_GENERAL",
+    "component": "READING",
+    "source": "https://www.britishcouncil.org/exam/aptis/practice-material/reading-test",
+    "verifiedAt": "2026-10-15",
+    "sections": [
+      {
+        "heading": "Bốn phần Reading",
+        "text": "Reading General kéo dài tối đa 35 phút. Part 1 chọn từ hoàn thành câu trong văn bản ngắn. Part 2 sắp xếp câu để tạo hai văn bản mạch lạc; mỗi văn bản có câu đầu cố định và năm câu cần xếp. Part 3 ghép bảy nhận định với quan điểm của bốn người. Part 4 ghép tiêu đề với đoạn văn trong bài dài; có tiêu đề thừa. Thời lượng và dạng bài của Advanced khác General."
+      }
+    ],
+    "usage": "GENERAL",
+    "topicCodes": [],
+    "part": null,
+    "criterion": null
   },
   {
-    "key": "aptis-general-listening", "title": "Aptis General — Listening", "variant": "APTIS_ESOL_GENERAL", "component": "LISTENING",
-    "source": "https://www.britishcouncil.org/exam/aptis/practice-materials/listening-aptis-test", "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Cấu trúc Listening", "text": "Listening có 17 nhiệm vụ, tổng cộng 20 bản ghi âm, thời gian khoảng 40 phút. Part 1 nhận biết thông tin cụ thể. Part 2 ghép thông tin với bốn người nói. Part 3 nhận diện quan điểm trong hội thoại hai người. Part 4 suy luận ý kiến qua hai bài độc thoại dài. Mỗi bản ghi được nghe hai lần. Chú ý từ đồng nghĩa; không chọn đáp án chỉ vì nghe trùng một từ."}]
+    "key": "aptis-general-listening",
+    "title": "Aptis General — Listening",
+    "variant": "APTIS_ESOL_GENERAL",
+    "component": "LISTENING",
+    "source": "https://www.britishcouncil.org/exam/aptis/practice-materials/listening-aptis-test",
+    "verifiedAt": "2026-10-15",
+    "sections": [
+      {
+        "heading": "Cấu trúc Listening",
+        "text": "Listening có 17 nhiệm vụ, tổng cộng 20 bản ghi âm, thời gian khoảng 40 phút. Part 1 nhận biết thông tin cụ thể. Part 2 ghép thông tin với bốn người nói. Part 3 nhận diện quan điểm trong hội thoại hai người. Part 4 suy luận ý kiến qua hai bài độc thoại dài. Mỗi bản ghi được nghe hai lần. Chú ý từ đồng nghĩa; không chọn đáp án chỉ vì nghe trùng một từ."
+      }
+    ],
+    "usage": "GENERAL",
+    "topicCodes": [],
+    "part": null,
+    "criterion": null
   },
   {
-    "key": "aptis-general-writing", "title": "Aptis General — Writing", "variant": "APTIS_ESOL_GENERAL", "component": "WRITING",
-    "source": "https://www.britishcouncil.org/exam/aptis/take-test/writing-video", "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Bốn phần và số từ", "text": "Writing General có bốn phần chung chủ đề, thời gian 50 phút. Part 1 trả lời năm tin nhắn bằng từ hoặc cụm ngắn. Part 2 viết 20–30 từ. Part 3 trả lời ba câu hỏi trong tương tác mạng xã hội, khoảng 40 từ mỗi câu. Part 4 viết email thân mật 40–50 từ và email trang trọng 120–150 từ về cùng một tình huống. Cần đổi cách xưng hô và ngôn ngữ theo người nhận. Đọc đúng giới hạn hiển thị trên đề; đừng trộn yêu cầu General với Advanced."}]
+    "key": "aptis-general-writing",
+    "title": "Aptis General — Writing",
+    "variant": "APTIS_ESOL_GENERAL",
+    "component": "WRITING",
+    "source": "https://www.britishcouncil.org/exam/aptis/take-test/writing-video",
+    "verifiedAt": "2026-10-15",
+    "sections": [
+      {
+        "heading": "Bốn phần và số từ",
+        "text": "Writing General có bốn phần chung chủ đề, thời gian 50 phút. Part 1 trả lời năm tin nhắn bằng từ hoặc cụm ngắn. Part 2 viết 20–30 từ. Part 3 trả lời ba câu hỏi trong tương tác mạng xã hội, khoảng 40 từ mỗi câu. Part 4 viết email thân mật 40–50 từ và email trang trọng 120–150 từ về cùng một tình huống. Cần đổi cách xưng hô và ngôn ngữ theo người nhận. Đọc đúng giới hạn hiển thị trên đề; đừng trộn yêu cầu General với Advanced."
+      }
+    ],
+    "usage": "GENERAL",
+    "topicCodes": [],
+    "part": null,
+    "criterion": null
   },
   {
-    "key": "aptis-general-speaking", "title": "Aptis General — Speaking", "variant": "APTIS_ESOL_GENERAL", "component": "SPEAKING",
-    "source": "https://www.britishcouncil.org/exam/aptis/take-test/speaking-video", "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Thời gian từng phần", "text": "Speaking General khoảng 12 phút, gồm bốn phần, được ghi âm. Part 1 có ba câu về bản thân, mỗi câu 30 giây. Part 2 mô tả một ảnh rồi trả lời hai câu liên quan, mỗi câu 45 giây. Part 3 so sánh hai ảnh và phát triển ý kiến, mỗi câu 45 giây. Part 4 có ba câu cùng chủ đề; chuẩn bị một phút và nói hai phút. Không dùng thời lượng này cho Advanced."}]
+    "key": "aptis-general-speaking",
+    "title": "Aptis General — Speaking",
+    "variant": "APTIS_ESOL_GENERAL",
+    "component": "SPEAKING",
+    "source": "https://www.britishcouncil.org/exam/aptis/take-test/speaking-video",
+    "verifiedAt": "2026-10-15",
+    "sections": [
+      {
+        "heading": "Thời gian từng phần",
+        "text": "Speaking General khoảng 12 phút, gồm bốn phần, được ghi âm. Part 1 có ba câu về bản thân, mỗi câu 30 giây. Part 2 mô tả một ảnh rồi trả lời hai câu liên quan, mỗi câu 45 giây. Part 3 so sánh hai ảnh và phát triển ý kiến, mỗi câu 45 giây. Part 4 có ba câu cùng chủ đề; chuẩn bị một phút và nói hai phút. Không dùng thời lượng này cho Advanced."
+      }
+    ],
+    "usage": "GENERAL",
+    "topicCodes": [],
+    "part": null,
+    "criterion": null
   },
   {
-    "key": "english-present-simple-continuous", "title": "AptiMate biên soạn — hiện tại đơn và tiếp diễn", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Thói quen và việc đang diễn ra", "text": "Hiện tại đơn thường diễn tả thói quen hoặc sự thật: Linh walks to college every morning. Với he, she, it, động từ thường thêm -s hoặc -es. Hiện tại tiếp diễn có dạng am/is/are + V-ing: Linh is walking to the library now. Thì này diễn tả việc đang xảy ra hoặc tình huống tạm thời. Không chọn thì chỉ bằng một từ khóa; xem ý nghĩa cả câu. Các động từ trạng thái như know thường không dùng tiếp diễn trong nghĩa trạng thái."}]
+    "key": "lesson-adjectives-adverbs",
+    "title": "AptiMate — Adjectives, adverbs and comparison",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "adjectives-adverbs"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Tính từ mô tả danh từ hoặc đứng sau động từ nối; trạng từ thường bổ nghĩa động từ. So sánh phải xét dạng từ và đối tượng được so sánh. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: She is a careful driver. She drives carefully. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: She drives careful. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Sau look, feel, seem, không tự động đổi tính từ sang trạng từ. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
   },
   {
-    "key": "english-present-perfect-past", "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Thời điểm đã kết thúc và liên hệ hiện tại", "text": "Quá khứ đơn kể sự việc ở thời gian quá khứ đã kết thúc: I visited Hue last June. Hiện tại hoàn thành dùng have/has + past participle để nói trải nghiệm hoặc việc liên quan hiện tại: I have visited Hue twice. Không dùng hiện tại hoàn thành với last June khi mốc này đã kết thúc. Since chỉ mốc bắt đầu; for chỉ khoảng thời gian: She has lived here since 2020 / for six years. Cần ngữ cảnh để chọn thì, không tự coi mọi câu không có mốc thời gian là hiện tại hoàn thành."}]
+    "key": "english-countability",
+    "title": "AptiMate biên soạn — danh từ đếm được",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-10-15",
+    "usage": "LESSON",
+    "topicCodes": [
+      "articles"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Much, many, advice, information",
+        "text": "Many dùng với danh từ đếm được số nhiều; much dùng với danh từ không đếm được. Advice và information thường không đếm được: some advice, a piece of information. Trong nghĩa thông thường, tránh an advice hoặc informations. A lot of dùng được với cả hai nhóm: a lot of books, a lot of time. Một danh từ có thể đổi tính đếm được theo nghĩa, như chicken là thịt hoặc con gà. Hỏi cả câu để phân tích chính xác."
+      },
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "A/an đi với danh từ đếm được số ít chưa xác định; the chỉ đối tượng xác định trong ngữ cảnh. Chọn a/an theo âm đầu, không theo chữ cái. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: It is a useful guide and an interesting book. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: It is an useful guide. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Useful bắt đầu bằng âm /j/; university cũng vậy. Danh từ số nhiều hoặc không đếm được có thể không cần mạo từ khi nói chung. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
   },
   {
-    "key": "english-conditionals", "title": "AptiMate biên soạn — câu điều kiện", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Điều kiện thực và giả định", "text": "Điều kiện loại một thường dùng if + present simple, will + động từ nguyên mẫu: If the library opens early, I will study there. Loại hai thường dùng if + past simple, would + động từ nguyên mẫu: If I had more time, I would join the club. Loại hai diễn tả giả định ở hiện tại hoặc tương lai, không nhất thiết kể quá khứ. Đây là mẫu cơ bản; mệnh đề chính có thể dùng can, may hoặc câu mệnh lệnh tùy ý nghĩa. Không sửa will trong mệnh đề if một cách máy móc nếu nó mang nghĩa sẵn lòng."}]
+    "key": "lesson-causative",
+    "title": "AptiMate — Causative have and get",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "causative"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Have/get something done diễn tả nhờ hoặc thuê người khác làm; have somebody do và get somebody to do có cấu trúc khác. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I had my bike repaired. I got Nam to help. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: I had my bike repair. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Phân biệt chủ thể thực hiện hành động và vật nhận hành động trước khi chọn dạng động từ. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
   },
   {
-    "key": "english-relative-clauses", "title": "AptiMate biên soạn — mệnh đề quan hệ", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Who, which, that", "text": "Who thường chỉ người, which chỉ vật. That có thể dùng trong mệnh đề quan hệ xác định chỉ người hoặc vật: The book that I borrowed is useful. Mệnh đề không xác định bổ sung thông tin và được tách bằng dấu phẩy: My tutor, who lives nearby, speaks French. Không dùng that thay who hoặc which trong mệnh đề không xác định. Có thể lược đại từ quan hệ làm tân ngữ trong mệnh đề xác định: The book I borrowed. Không lược khi nó là chủ ngữ: The student who called me."}]
+    "key": "lesson-collocations",
+    "title": "AptiMate — Collocations",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "collocations"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Kết hợp từ là cách những từ thường đi cùng nhau. Không dịch từng từ từ tiếng Việt; học cả cụm cùng một tình huống. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: We made a decision and did our homework. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: We did a decision. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Ghi động từ cùng danh từ và giới từ đi kèm; một từ đồng nghĩa chưa chắc thay được trong mọi cụm. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
   },
   {
-    "key": "english-countability", "title": "AptiMate biên soạn — danh từ đếm được", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Much, many, advice, information", "text": "Many dùng với danh từ đếm được số nhiều; much dùng với danh từ không đếm được. Advice và information thường không đếm được: some advice, a piece of information. Trong nghĩa thông thường, tránh an advice hoặc informations. A lot of dùng được với cả hai nhóm: a lot of books, a lot of time. Một danh từ có thể đổi tính đếm được theo nghĩa, như chicken là thịt hoặc con gà. Hỏi cả câu để phân tích chính xác."}]
+    "key": "english-conditionals",
+    "title": "AptiMate biên soạn — câu điều kiện",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-10-15",
+    "usage": "LESSON",
+    "topicCodes": [
+      "conditionals"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Điều kiện thực và giả định",
+        "text": "Điều kiện loại một thường dùng if + present simple, will + động từ nguyên mẫu: If the library opens early, I will study there. Loại hai thường dùng if + past simple, would + động từ nguyên mẫu: If I had more time, I would join the club. Loại hai diễn tả giả định ở hiện tại hoặc tương lai, không nhất thiết kể quá khứ. Đây là mẫu cơ bản; mệnh đề chính có thể dùng can, may hoặc câu mệnh lệnh tùy ý nghĩa. Không sửa will trong mệnh đề if một cách máy móc nếu nó mang nghĩa sẵn lòng."
+      },
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Điều kiện giả định hiện tại thường dùng if + quá khứ, would + nguyên mẫu; điều kiện có thể xảy ra dùng if + hiện tại, will + nguyên mẫu. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: If I were rich, I would travel more. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: If I am rich, I would travel more. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Xác định thời điểm và mức độ giả định; không chọn thì chỉ vì nhìn thấy if. Điều kiện quá khứ dùng had + phân từ và would have + phân từ. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
   },
   {
-    "key": "english-passive", "title": "AptiMate biên soạn — câu bị động", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Be và past participle", "text": "Câu bị động cơ bản có dạng be + past participle; thì nằm ở be. Chủ động: The club published the schedule. Bị động: The schedule was published by the club. Dùng bị động khi chú trọng đối tượng chịu tác động hoặc không cần nêu người thực hiện. Không phải động từ nào cũng chuyển bị động được: arrive không có tân ngữ trong cách dùng thông thường, nên The train was arrived là sai. By nêu tác nhân, không bắt buộc xuất hiện."}]
+    "key": "lesson-conjunctions",
+    "title": "AptiMate — Conjunctions and linking clauses",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "conjunctions"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Because chỉ nguyên nhân, although chỉ nhượng bộ, so chỉ kết quả. Liên từ nối mệnh đề; giới từ như despite cần danh từ hoặc dạng V-ing. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Although it rained, we went out. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Although it rained, but we went out. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Tránh ghép although và but theo mẫu tiếng Việt; kiểm tra thành phần theo sau từ nối. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
   },
   {
-    "key": "english-email-register", "title": "AptiMate biên soạn — giọng văn email", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Trang trọng và thân mật", "text": "Email cho bạn bè có thể mở bằng Hi Mai và dùng cách diễn đạt tự nhiên: Could we meet on Friday? Email cho người phụ trách nên nêu mục đích rõ, lịch sự và đầy đủ thông tin: I am writing to ask whether the workshop can be rescheduled. Trang trọng không có nghĩa dùng từ khó không cần thiết. Giữ cùng một giọng văn, chia đoạn theo mục đích và kiểm tra người nhận, lời chào, yêu cầu, lời kết. Các câu ở đây là ví dụ tự biên soạn, không phải đáp án thi hay bài mẫu bảo đảm một mức điểm."}]
+    "key": "lesson-future-forms",
+    "title": "AptiMate — Future forms",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "future-forms"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Will dùng cho dự đoán hoặc quyết định tại lúc nói; be going to thường diễn tả dự định hay bằng chứng; hiện tại tiếp diễn dùng cho sắp xếp đã có. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Look at those clouds. It is going to rain. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: It going to rain. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Không bỏ động từ be; phân biệt lịch trình, dự định và quyết định mới. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
   },
   {
-    "key": "english-vocabulary-context", "title": "AptiMate biên soạn — học từ trong ngữ cảnh", "variant": "ENGLISH", "source": null, "verifiedAt": "2026-10-15",
-    "sections": [{"heading": "Nghĩa, collocation và ví dụ", "text": "Một từ có thể có nhiều nghĩa: light có thể là ánh sáng hoặc nhẹ. Khi hỏi nghĩa, nên cung cấp câu chứa từ. Học cả cụm kết hợp: make a decision, do homework, interested in. Viết ví dụ gắn với trải nghiệm của bạn rồi ôn lại sau một khoảng thời gian. Không coi hai từ gần nghĩa là thay thế được trong mọi câu. Nếu cần phiên âm hoặc nghĩa từ cụ thể, dùng chức năng tra từ thay vì tự đoán từ cách viết."}]
+    "key": "lesson-indirect-questions",
+    "title": "AptiMate — Indirect questions and noun clauses",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "indirect-questions"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Trong câu hỏi gián tiếp, mệnh đề được hỏi dùng thứ tự chủ ngữ rồi động từ. Câu hỏi yes/no thường được dẫn bằng if hoặc whether. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Could you tell me where the station is? Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Could you tell me where is the station? Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Không đảo chủ ngữ và động từ bên trong mệnh đề gián tiếp dù toàn câu là câu hỏi. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-inversion",
+    "title": "AptiMate — Inversion",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "inversion"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Khi một số trạng ngữ phủ định hoặc hạn định được đưa lên đầu câu, trợ động từ đứng trước chủ ngữ. Cần chọn đúng trợ động từ và giữ thì. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Never have I seen such a view. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Never I have seen such a view. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Chỉ áp dụng đảo ngữ cho cấu trúc phù hợp; không đảo mọi câu có trạng từ đầu câu. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-listening-detail",
+    "title": "AptiMate — Listening for detail",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "listening-detail"
+    ],
+    "component": "LISTENING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Nghe chi tiết tập trung vào thông tin cuối cùng được xác nhận. Người nói có thể sửa giờ, phủ định phương án hoặc đổi kế hoạch. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Not at nine; let's meet at ten. The meeting is at ten. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: The meeting is at nine because nine was heard first. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Ghi quan hệ phủ định và sửa ý thay vì chọn từ đầu tiên nghe thấy; phân biệt số gần âm bằng ngữ cảnh. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-listening-inference",
+    "title": "AptiMate — Listening inference",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "listening-inference"
+    ],
+    "component": "LISTENING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Suy luận khi nghe kết hợp lời nói, ngữ điệu và ngữ cảnh. Không suy đoán thái độ chỉ từ một tính từ tách rời. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I expected more, but it was acceptable suggests qualified approval. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Acceptable always means the speaker is delighted. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Giữ mức độ thái độ: chấp nhận, hài lòng và hào hứng không đồng nghĩa. Cần nghe đầy đủ trước khi kết luận. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-listening-main-idea",
+    "title": "AptiMate — Listening for main ideas",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "listening-main-idea"
+    ],
+    "component": "LISTENING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Ý chính của bài nghe là điều người nói muốn truyền đạt xuyên suốt. Chi tiết minh họa không nhất thiết là mục đích của toàn bài. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Our aim is to introduce residents to the club states the purpose. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Mentioning a building means the purpose is always fundraising. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Nghe mở đầu, các ý được nhắc lại và phần kết; diễn đạt mục đích bằng động từ như giới thiệu, giải thích hoặc thuyết phục. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-listening-matching",
+    "title": "AptiMate — Matching speakers",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "listening-matching"
+    ],
+    "component": "LISTENING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Ghép người nói cần ghi riêng ý nổi bật của từng người. Phương án có thể dùng từ đồng nghĩa với lời nghe; có lựa chọn không dùng. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I like learning alongside others matches enjoying group learning. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: I learn at home alone matches enjoying group learning. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Không chuyển ý của người trước sang người sau; ghi một cụm ngắn cho mỗi giọng nói rồi mới đối chiếu phương án. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-listening-opinion",
+    "title": "AptiMate — Speaker opinions",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "listening-opinion"
+    ],
+    "component": "LISTENING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Trong hội thoại, xác định mỗi người tán thành, phản đối hay không nêu ý kiến. Nghe thấy một chủ đề không có nghĩa cả hai đồng ý. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: A: We need more equipment. B: I agree. Both support the suggestion. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: A mentions equipment, so both automatically support it. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Chú ý lời phản hồi trực tiếp và sự thay đổi quan điểm; phân biệt đồng ý với chỉ xác nhận đã nghe. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-modals",
+    "title": "AptiMate — Modal verbs",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "modals"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Động từ khuyết thiếu như can, should, must đi với nguyên mẫu không to. Must not là cấm; do not have to là không bắt buộc. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: You must not park here. You do not have to pay today. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: You must to park here. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Phân biệt lời khuyên, khả năng, nghĩa vụ và cấm đoán theo tình huống. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-participle-clauses",
+    "title": "AptiMate — Participle clauses",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "participle-clauses"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Mệnh đề phân từ thường chia sẻ chủ ngữ với mệnh đề chính. V-ing thường mang nghĩa chủ động; phân từ quá khứ thường mang nghĩa bị động. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Feeling tired, Mai went home. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Walking home, the rain started. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Kiểm tra ai thực hiện hành động để tránh phân từ bị treo. Nếu hai chủ thể khác nhau, dùng mệnh đề đầy đủ. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "english-passive",
+    "title": "AptiMate biên soạn — câu bị động",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-10-15",
+    "usage": "LESSON",
+    "topicCodes": [
+      "passive-voice"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Be và past participle",
+        "text": "Câu bị động cơ bản có dạng be + past participle; thì nằm ở be. Chủ động: The club published the schedule. Bị động: The schedule was published by the club. Dùng bị động khi chú trọng đối tượng chịu tác động hoặc không cần nêu người thực hiện. Không phải động từ nào cũng chuyển bị động được: arrive không có tân ngữ trong cách dùng thông thường, nên The train was arrived là sai. By nêu tác nhân, không bắt buộc xuất hiện."
+      },
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Bị động cơ bản có be đúng thì và phân từ quá khứ. Tân ngữ của câu chủ động trở thành chủ ngữ bị động; tác nhân có thể lược bỏ. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: The room was cleaned yesterday. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: The room was clean yesterday by Lan. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Phân biệt clean là tính từ với cleaned trong cấu trúc bị động; không quên phân từ bất quy tắc. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-past-continuous",
+    "title": "AptiMate — Past continuous",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "past-continuous"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Quá khứ tiếp diễn diễn tả việc đang diễn ra tại một thời điểm quá khứ; quá khứ đơn thường nêu sự kiện xen vào. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I was reading when the phone rang. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: I were reading when the phone rang. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Was đi với I/he/she/it; were đi với you/we/they. Không dùng tiếp diễn cho mọi động từ trạng thái. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-past-perfect",
+    "title": "AptiMate — Past perfect simple and continuous",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "past-perfect"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Quá khứ hoàn thành dùng had + phân từ cho việc xảy ra trước một mốc quá khứ. Dạng tiếp diễn nhấn mạnh quá trình kéo dài trước mốc đó. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: The train had left when we arrived. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: The train has left when we arrived yesterday. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Dựng hai mốc thời gian trước khi chọn thì; không dùng quá khứ hoàn thành chỉ vì sự việc xảy ra từ lâu. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-past-simple",
+    "title": "AptiMate — Past simple",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "past-simple"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Quá khứ đơn diễn tả sự việc đã kết thúc trong quá khứ. Sau did hoặc did not, động từ trở về nguyên mẫu. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: She went home yesterday. Did she go by bus? Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Did she went by bus? Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Đừng đánh dấu quá khứ hai lần; học động từ bất quy tắc trong câu ngắn. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-prepositions",
+    "title": "AptiMate — Prepositions",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "prepositions"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Giới từ phụ thuộc ý nghĩa và cụm từ. Với thời gian, on thường đi với ngày, in với tháng/năm, at với giờ; có những cụm cố định cần học riêng. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: We meet on Monday at nine. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: We meet in Monday. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Đọc danh từ sau giới từ và cả động từ trước nó; không áp dụng một bản dịch tiếng Việt cho mọi tình huống. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-present-continuous",
+    "title": "AptiMate — Present continuous",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "present-continuous"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Hiện tại tiếp diễn có am/is/are + V-ing, thường chỉ hành động đang diễn ra, tình huống tạm thời hoặc sắp xếp tương lai. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: She is studying now. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: She studying now. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Không bỏ be; phân biệt thói quen với tình huống tạm thời. Động từ trạng thái như know thường không dùng tiếp diễn trong nghĩa trạng thái. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "english-present-perfect-past",
+    "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-10-15",
+    "usage": "LESSON",
+    "topicCodes": [
+      "present-perfect"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Thời điểm đã kết thúc và liên hệ hiện tại",
+        "text": "Quá khứ đơn kể sự việc ở thời gian quá khứ đã kết thúc: I visited Hue last June. Hiện tại hoàn thành dùng have/has + past participle để nói trải nghiệm hoặc việc liên quan hiện tại: I have visited Hue twice. Không dùng hiện tại hoàn thành với last June khi mốc này đã kết thúc. Since chỉ mốc bắt đầu; for chỉ khoảng thời gian: She has lived here since 2020 / for six years. Cần ngữ cảnh để chọn thì, không tự coi mọi câu không có mốc thời gian là hiện tại hoàn thành."
+      },
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Hiện tại hoàn thành có have/has + phân từ, liên hệ quá khứ với hiện tại. Since chỉ mốc bắt đầu; for chỉ khoảng thời gian. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I have lived here since 2020. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: I have lived here for 2020. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Nếu thời điểm đã kết thúc được nêu rõ như yesterday, thường cần quá khứ đơn. Xem ý nghĩa cả câu trước khi dùng từ khóa. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "english-present-simple-continuous",
+    "title": "AptiMate biên soạn — hiện tại đơn và tiếp diễn",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-10-15",
+    "usage": "LESSON",
+    "topicCodes": [
+      "present-simple"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Thói quen và việc đang diễn ra",
+        "text": "Hiện tại đơn thường diễn tả thói quen hoặc sự thật: Linh walks to college every morning. Với he, she, it, động từ thường thêm -s hoặc -es. Hiện tại tiếp diễn có dạng am/is/are + V-ing: Linh is walking to the library now. Thì này diễn tả việc đang xảy ra hoặc tình huống tạm thời. Không chọn thì chỉ bằng một từ khóa; xem ý nghĩa cả câu. Các động từ trạng thái như know thường không dùng tiếp diễn trong nghĩa trạng thái."
+      },
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Hiện tại đơn diễn tả thói quen hoặc sự thật. He/she/it thường thêm s/es ở câu khẳng định; sau does động từ là nguyên mẫu. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: She walks to school. Does she walk every day? Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Does she walks every day? Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Phân biệt động từ be với động từ thường; không thêm do vào câu hỏi đã dùng be. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-pronouns",
+    "title": "AptiMate — Pronouns",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "pronouns"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Đại từ chủ ngữ, tân ngữ và sở hữu có vị trí khác nhau. Đại từ phải có đối tượng quy chiếu rõ ràng, phù hợp số và ngữ cảnh. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: She gave me her book. The book is hers. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Her gave I a book. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Xác định vai trò trong câu trước khi chọn dạng; its là sở hữu còn it is viết tắt thành it's. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-question-tags",
+    "title": "AptiMate — Question tags",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "question-tags"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Câu hỏi đuôi thường đổi cực khẳng định/phủ định và dùng trợ động từ tương ứng. Chủ ngữ ở đuôi thường là đại từ. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: She works here, doesn't she? Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: She works here, isn't she? Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Động từ thường ở hiện tại đơn cần do/does; đừng dùng be chỉ vì câu hỏi đuôi có nghĩa xác nhận. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-reading-cohesion",
+    "title": "AptiMate — Text cohesion and sequencing",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "reading-cohesion"
+    ],
+    "component": "READING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Liên kết văn bản dựa trên thời gian, nguyên nhân, đại từ quy chiếu và thông tin đã biết. Câu giới thiệu thường đứng trước câu dùng it, they hoặc this để nhắc lại. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I bought some vegetables. Then I washed them. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Then I washed them. I bought some vegetables. (khi chưa có đối tượng trước đó) Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Kiểm tra cả chuỗi câu, không chỉ nối hai từ giống nhau; một từ nối có thể hợp với nhiều câu nhưng tham chiếu chỉ hợp với một câu. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-reading-detail",
+    "title": "AptiMate — Reading for detail",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "reading-detail"
+    ],
+    "component": "READING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Đọc chi tiết cần xác định đúng người, hành động, thời điểm và điều kiện. Đáp án thường diễn đạt lại thông tin, không nhất thiết lặp nguyên từ. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: The fee is reduced for students: students pay less. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: The fee is reduced for students: everyone pays nothing. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Đối chiếu phạm vi của all, some, only và phủ định; không suy rộng hơn câu gốc. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-reading-inference",
+    "title": "AptiMate — Reading inference",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "reading-inference"
+    ],
+    "component": "READING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Suy luận phải được hỗ trợ bởi dấu hiệu trong văn bản. Phân biệt điều có thể hợp lý ngoài đời với kết luận có căn cứ từ đoạn đọc. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: The streets are wet and people close their umbrellas: it has probably rained. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: The streets are wet: a storm destroyed the town. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Chọn kết luận ít giả định nhất; giữ mức độ chắc chắn tương ứng với bằng chứng. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-reading-main-idea",
+    "title": "AptiMate — Identifying main ideas",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "reading-main-idea"
+    ],
+    "component": "READING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Ý chính bao quát mục đích chung của đoạn; ví dụ và con số thường hỗ trợ ý đó. Tiêu đề đúng cần phù hợp phần lớn nội dung. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: A paragraph about cheaper fees and shared equipment can focus on affordability. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: A paragraph about affordability is only about one student's age. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Tóm tắt đoạn bằng một câu trước khi nhìn tiêu đề; tránh chọn chỉ vì một từ xuất hiện trùng. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-reading-opinion",
+    "title": "AptiMate — Matching opinions",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "reading-opinion"
+    ],
+    "component": "READING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Ghép quan điểm cần phân biệt người nói và thái độ. Một người có thể mô tả ý kiến người khác mà không đồng tình. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Mai says the room is small, but she likes the location. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Mai dislikes the location because she mentions a small room. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Đọc sau but, however và although; đánh dấu rõ ai muốn thay đổi điều gì. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "english-relative-clauses",
+    "title": "AptiMate biên soạn — mệnh đề quan hệ",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-10-15",
+    "usage": "LESSON",
+    "topicCodes": [
+      "relative-clauses"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Who, which, that",
+        "text": "Who thường chỉ người, which chỉ vật. That có thể dùng trong mệnh đề quan hệ xác định chỉ người hoặc vật: The book that I borrowed is useful. Mệnh đề không xác định bổ sung thông tin và được tách bằng dấu phẩy: My tutor, who lives nearby, speaks French. Không dùng that thay who hoặc which trong mệnh đề không xác định. Có thể lược đại từ quan hệ làm tân ngữ trong mệnh đề xác định: The book I borrowed. Không lược khi nó là chủ ngữ: The student who called me."
+      },
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Who thường chỉ người, which chỉ vật, whose chỉ sở hữu. Mệnh đề quan hệ xác định nhận diện danh từ; mệnh đề không xác định bổ sung thông tin. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: The woman who lives next door is a teacher. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: The woman which lives next door is a teacher. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Không lặp chủ ngữ sau đại từ quan hệ đang làm chủ ngữ. Chú ý dấu phẩy và không dùng that trong mệnh đề không xác định. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-speaking-fluency",
+    "title": "AptiMate — Fluency and coherence",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "speaking-fluency"
+    ],
+    "component": "SPEAKING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Độ trôi chảy là duy trì lời nói có tổ chức và nhịp hợp lý. Có thể ngắt ngắn để lập ý; nói quá nhanh không tự tạo chất lượng. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I prefer buses because they are affordable. For example, I use one daily. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Bus bus bus ... good ... because ... (ý không được phát triển) Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Luyện trả lời bằng ý kiến, lý do và ví dụ; khi quên từ, diễn đạt lại thay vì dừng lâu. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-speaking-grammar",
+    "title": "AptiMate — Grammar range and accuracy",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "speaking-grammar"
+    ],
+    "component": "SPEAKING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Ngữ pháp nói cần truyền đạt rõ thời gian và quan hệ ý. Dùng cấu trúc quen thuộc chính xác rồi mở rộng khi phù hợp. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Last weekend I visited my aunt, who lives nearby. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Last weekend I visit my aunt who live nearby. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Ghi âm để tìm lỗi thì và hòa hợp lặp lại; tự sửa ngắn gọn rồi tiếp tục, không khởi động lại toàn câu liên tục. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-speaking-pronunciation",
+    "title": "AptiMate — Pronunciation",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "speaking-pronunciation"
+    ],
+    "component": "SPEAKING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Phát âm hướng đến khả năng hiểu được, gồm âm, trọng âm từ và nhịp câu. Không bắt buộc bắt chước một giọng bản ngữ duy nhất. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: Contrast thirteen and thirty by stress and listen back to the recording. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Every word should always receive identical stress. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Nghe mẫu, đánh dấu âm cuối và trọng âm; nhờ người nghe xác nhận họ hiểu từ nào trước khi tự kết luận phát âm đúng. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-speaking-vocabulary",
+    "title": "AptiMate — Vocabulary range and accuracy",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "speaking-vocabulary"
+    ],
+    "component": "SPEAKING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Từ vựng nói cần phù hợp chủ đề và dễ sử dụng khi giao tiếp. Diễn giải bằng từ quen thuộc là chiến lược hữu ích khi chưa nhớ từ chính xác. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: A helmet is something you wear to protect your head. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Helmet means any clothes. (nghĩa quá rộng) Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Luyện cụm từ theo tình huống, đặt câu cá nhân và tránh liệt kê từ không thành thông điệp. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-subject-verb-agreement",
+    "title": "AptiMate — Subject–verb agreement",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "subject-verb-agreement"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Động từ chia theo chủ ngữ chính, không nhất thiết theo danh từ gần nhất. Trong hiện tại đơn, chủ ngữ số ít thường cần động từ thêm s/es. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: The list of activities is on the desk. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: The list of activities are on the desk. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Tạm che cụm giới từ để tìm danh từ trung tâm; everyone và each thường đi với động từ số ít. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-subjunctive",
+    "title": "AptiMate — Subjunctive",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "subjunctive"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Sau một số động từ đề nghị hoặc yêu cầu, mệnh đề that có thể dùng động từ nguyên mẫu; tiếng Anh Anh cũng dùng should + nguyên mẫu. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: They suggested that he be present. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: They suggested that he to be present. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Không nhầm suggest doing với suggest that somebody do; xem cấu trúc đầy đủ và biến thể được chấp nhận. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-unreal-past",
+    "title": "AptiMate — Unreal past: wish and would rather",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "unreal-past"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Wish + quá khứ thường diễn tả điều trái hiện tại; wish + had + phân từ diễn tả tiếc nuối quá khứ. Would rather với chủ ngữ khác thường dùng quá khứ cho mong muốn hiện tại/tương lai. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I wish I knew the answer. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: I wish I know the answer. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Dạng quá khứ ở đây có thể biểu thị sự không thực, không phải thời gian quá khứ. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-verb-patterns",
+    "title": "AptiMate — Verb patterns: gerunds and infinitives",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "verb-patterns"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Một số động từ theo sau bằng V-ing, số khác bằng to + nguyên mẫu. Một số chấp nhận cả hai nhưng khác nghĩa, như stop hoặc remember. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I enjoy reading. I decided to leave. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: I enjoy to read. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Học cụm động từ cùng bổ ngữ. Phân biệt stop doing là ngừng việc đang làm với stop to do là dừng để làm việc khác. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "english-vocabulary-context",
+    "title": "AptiMate biên soạn — học từ trong ngữ cảnh",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-10-15",
+    "usage": "LESSON",
+    "topicCodes": [
+      "word-meaning"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Nghĩa, collocation và ví dụ",
+        "text": "Một từ có thể có nhiều nghĩa: light có thể là ánh sáng hoặc nhẹ. Khi hỏi nghĩa, nên cung cấp câu chứa từ. Học cả cụm kết hợp: make a decision, do homework, interested in. Viết ví dụ gắn với trải nghiệm của bạn rồi ôn lại sau một khoảng thời gian. Không coi hai từ gần nghĩa là thay thế được trong mọi câu. Nếu cần phiên âm hoặc nghĩa từ cụ thể, dùng chức năng tra từ thay vì tự đoán từ cách viết."
+      },
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Chọn nghĩa theo ngữ cảnh, từ loại và sắc thái. Hai từ gần nghĩa không luôn thay thế được trong cùng cấu trúc hoặc văn phong. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: The venue is the place where an event happens. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Venue means the people watching a performance. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Tách nghĩa địa điểm khỏi người tham dự; dùng một câu ví dụ để kiểm tra nghĩa thay vì chỉ ghi bản dịch. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-writing-cohesion",
+    "title": "AptiMate — Coherence and cohesion",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "writing-cohesion"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Bài viết mạch lạc có trật tự ý rõ và liên kết phù hợp. Từ nối phải phản ánh quan hệ thật; không tăng chất lượng bằng cách chèn thật nhiều liên từ. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: The room is small. However, it is convenient. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: The room is small. Therefore, it is convenient. (không có quan hệ nguyên nhân) Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Mỗi đoạn giữ một trọng tâm; đại từ cần đối tượng rõ và các ý cần nối theo mục đích người đọc. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-writing-grammar",
+    "title": "AptiMate — Grammar range and accuracy",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "writing-grammar"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Độ chính xác và phạm vi ngữ pháp cần đi cùng nhau. Ưu tiên câu đúng, sau đó mở rộng bằng mệnh đề phù hợp thay vì cấu trúc phức tạp thiếu kiểm soát. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I joined the club because I wanted to practise. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: I join the club yesterday because I wanted practise. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Soát thì, hòa hợp, mạo từ và bổ ngữ động từ thành các lượt riêng; không sửa mọi câu chỉ để làm dài hơn. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "english-email-register",
+    "title": "AptiMate biên soạn — giọng văn email",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-10-15",
+    "usage": "LESSON",
+    "topicCodes": [
+      "writing-task"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trang trọng và thân mật",
+        "text": "Email cho bạn bè có thể mở bằng Hi Mai và dùng cách diễn đạt tự nhiên: Could we meet on Friday? Email cho người phụ trách nên nêu mục đích rõ, lịch sự và đầy đủ thông tin: I am writing to ask whether the workshop can be rescheduled. Trang trọng không có nghĩa dùng từ khó không cần thiết. Giữ cùng một giọng văn, chia đoạn theo mục đích và kiểm tra người nhận, lời chào, yêu cầu, lời kết. Các câu ở đây là ví dụ tự biên soạn, không phải đáp án thi hay bài mẫu bảo đảm một mức điểm."
+      },
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Đáp ứng nhiệm vụ nghĩa là trả lời đầy đủ các yêu cầu và đúng người nhận. Đọc mục đích, nội dung bắt buộc và giới hạn hiển thị trước khi viết. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: If asked to apologise and suggest a date, include both an apology and a new date. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: Only describing the weather answers an apology request. Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Lập danh sách ý bắt buộc, kiểm tra từng ý sau khi viết; một bài đúng ngữ pháp vẫn có thể thiếu nhiệm vụ. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "lesson-writing-vocabulary",
+    "title": "AptiMate — Vocabulary range and accuracy",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "LESSON",
+    "topicCodes": [
+      "writing-vocabulary"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Quy tắc và phạm vi",
+        "text": "Từ vựng tốt là dùng đúng nghĩa, kết hợp và văn phong. Độ đa dạng không đồng nghĩa thay mọi từ đơn giản bằng từ hiếm. Bài học này tập trung vào một kỹ năng cụ thể để bạn hiểu nguyên nhân của lựa chọn, không chỉ ghi nhớ đáp án. Trước khi áp dụng, đọc hoặc nghe đủ ngữ cảnh, xác định người tham gia, thời điểm và mục đích giao tiếp. Nếu dữ kiện chưa đủ, hãy ghi lại điều còn thiếu thay vì kết luận chắc chắn. Một dấu hiệu riêng lẻ có thể xuất hiện trong nhiều tình huống khác nhau."
+      },
+      {
+        "heading": "Ví dụ đúng và ví dụ cần sửa",
+        "text": "Ví dụ đúng: I would like to request further information. Ví dụ sai hoặc cách hiểu không phù hợp trong ngữ cảnh đã nêu: I would like to demand further information. (khi chỉ hỏi lịch sự) Hãy chỉ rõ sự khác nhau về cấu trúc hoặc ý nghĩa giữa hai ví dụ. Sau đó tự sửa ví dụ chưa phù hợp, đọc lại toàn câu và giải thích bằng lời của mình. Khi có nhiều cách diễn đạt đúng, hãy phân biệt phương án không đúng với phương án chỉ khác sắc thái; không coi mọi cách viết khác ví dụ là sai."
+      },
+      {
+        "heading": "Lỗi cần lưu ý với người học Việt Nam",
+        "text": "Kiểm tra sắc thái và collocation; chỉ dùng từ mới khi hiểu cách dùng trong câu. Một lỗi cần kiểm tra là chuyển từng từ hoặc thứ tự ý từ tiếng Việt sang tiếng Anh mà chưa xét quy tắc của ngôn ngữ đích. Đây là gợi ý tự kiểm tra, không phải kết luận rằng mọi người Việt đều mắc lỗi này. Hãy ghi vào sổ học tập câu ban đầu, cách sửa và lý do; lần sau thử giải thích trước khi mở đáp án. Nếu lý do chưa rõ, quay lại ví dụ và tìm bằng chứng cụ thể."
+      },
+      {
+        "heading": "Cách luyện và mẹo làm bài Aptis",
+        "text": "Khi luyện trên AptiMate, hãy đọc yêu cầu của đúng Part và xác định nội dung mà câu hỏi đang kiểm tra. Áp dụng quy tắc ở trên vào từng phương án hoặc từng ý định trình bày, rồi kiểm tra lại cả ngữ cảnh. Sau khi xem kết quả, chọn một câu tương tự để tự làm, đổi người hoặc thời điểm trong ví dụ và giải thích vì sao cách dùng vẫn phù hợp hoặc cần thay đổi. Đừng chọn chỉ vì gặp từ quen thuộc. Với câu nghe, cần đối chiếu âm thanh; với câu đọc, cần dẫn ra ý trong văn bản. Nội dung này là hướng dẫn luyện tập, không phải thang điểm chính thức và không bảo đảm một mức CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-grammar-vocab-p1",
+    "title": "Luyện GRAMMAR_VOCAB Part 1",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "present-simple"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": 1,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Hiện tại đơn diễn tả thói quen hoặc sự thật. He/she/it thường thêm s/es ở câu khẳng định; sau does động từ là nguyên mẫu. Phân biệt động từ be với động từ thường; không thêm do vào câu hỏi đã dùng be."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: She walks to school. Does she walk every day? Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-grammar-vocab-p2",
+    "title": "Luyện GRAMMAR_VOCAB Part 2",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "word-meaning"
+    ],
+    "component": "GRAMMAR_VOCAB",
+    "part": 2,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Chọn nghĩa theo ngữ cảnh, từ loại và sắc thái. Hai từ gần nghĩa không luôn thay thế được trong cùng cấu trúc hoặc văn phong. Tách nghĩa địa điểm khỏi người tham dự; dùng một câu ví dụ để kiểm tra nghĩa thay vì chỉ ghi bản dịch."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: The venue is the place where an event happens. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-reading-p1",
+    "title": "Luyện READING Part 1",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "reading-detail"
+    ],
+    "component": "READING",
+    "part": 1,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Đọc chi tiết cần xác định đúng người, hành động, thời điểm và điều kiện. Đáp án thường diễn đạt lại thông tin, không nhất thiết lặp nguyên từ. Đối chiếu phạm vi của all, some, only và phủ định; không suy rộng hơn câu gốc."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: The fee is reduced for students: students pay less. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-reading-p2",
+    "title": "Luyện READING Part 2",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "reading-cohesion"
+    ],
+    "component": "READING",
+    "part": 2,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Liên kết văn bản dựa trên thời gian, nguyên nhân, đại từ quy chiếu và thông tin đã biết. Câu giới thiệu thường đứng trước câu dùng it, they hoặc this để nhắc lại. Kiểm tra cả chuỗi câu, không chỉ nối hai từ giống nhau; một từ nối có thể hợp với nhiều câu nhưng tham chiếu chỉ hợp với một câu."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: I bought some vegetables. Then I washed them. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-reading-p3",
+    "title": "Luyện READING Part 3",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "reading-opinion"
+    ],
+    "component": "READING",
+    "part": 3,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Ghép quan điểm cần phân biệt người nói và thái độ. Một người có thể mô tả ý kiến người khác mà không đồng tình. Đọc sau but, however và although; đánh dấu rõ ai muốn thay đổi điều gì."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: Mai says the room is small, but she likes the location. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-reading-p4",
+    "title": "Luyện READING Part 4",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "reading-main-idea"
+    ],
+    "component": "READING",
+    "part": 4,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Ý chính bao quát mục đích chung của đoạn; ví dụ và con số thường hỗ trợ ý đó. Tiêu đề đúng cần phù hợp phần lớn nội dung. Tóm tắt đoạn bằng một câu trước khi nhìn tiêu đề; tránh chọn chỉ vì một từ xuất hiện trùng."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: A paragraph about cheaper fees and shared equipment can focus on affordability. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-listening-p1",
+    "title": "Luyện LISTENING Part 1",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "listening-detail"
+    ],
+    "component": "LISTENING",
+    "part": 1,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Nghe chi tiết tập trung vào thông tin cuối cùng được xác nhận. Người nói có thể sửa giờ, phủ định phương án hoặc đổi kế hoạch. Ghi quan hệ phủ định và sửa ý thay vì chọn từ đầu tiên nghe thấy; phân biệt số gần âm bằng ngữ cảnh."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: Not at nine; let's meet at ten. The meeting is at ten. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-listening-p2",
+    "title": "Luyện LISTENING Part 2",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "listening-matching"
+    ],
+    "component": "LISTENING",
+    "part": 2,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Ghép người nói cần ghi riêng ý nổi bật của từng người. Phương án có thể dùng từ đồng nghĩa với lời nghe; có lựa chọn không dùng. Không chuyển ý của người trước sang người sau; ghi một cụm ngắn cho mỗi giọng nói rồi mới đối chiếu phương án."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: I like learning alongside others matches enjoying group learning. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-listening-p3",
+    "title": "Luyện LISTENING Part 3",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "listening-opinion"
+    ],
+    "component": "LISTENING",
+    "part": 3,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Trong hội thoại, xác định mỗi người tán thành, phản đối hay không nêu ý kiến. Nghe thấy một chủ đề không có nghĩa cả hai đồng ý. Chú ý lời phản hồi trực tiếp và sự thay đổi quan điểm; phân biệt đồng ý với chỉ xác nhận đã nghe."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: A: We need more equipment. B: I agree. Both support the suggestion. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-listening-p4",
+    "title": "Luyện LISTENING Part 4",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "listening-inference"
+    ],
+    "component": "LISTENING",
+    "part": 4,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Suy luận khi nghe kết hợp lời nói, ngữ điệu và ngữ cảnh. Không suy đoán thái độ chỉ từ một tính từ tách rời. Giữ mức độ thái độ: chấp nhận, hài lòng và hào hứng không đồng nghĩa. Cần nghe đầy đủ trước khi kết luận."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: I expected more, but it was acceptable suggests qualified approval. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-writing-p1",
+    "title": "Luyện WRITING Part 1",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "writing-task"
+    ],
+    "component": "WRITING",
+    "part": 1,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Đáp ứng nhiệm vụ nghĩa là trả lời đầy đủ các yêu cầu và đúng người nhận. Đọc mục đích, nội dung bắt buộc và giới hạn hiển thị trước khi viết. Lập danh sách ý bắt buộc, kiểm tra từng ý sau khi viết; một bài đúng ngữ pháp vẫn có thể thiếu nhiệm vụ."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: If asked to apologise and suggest a date, include both an apology and a new date. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-writing-p2",
+    "title": "Luyện WRITING Part 2",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "writing-task"
+    ],
+    "component": "WRITING",
+    "part": 2,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Đáp ứng nhiệm vụ nghĩa là trả lời đầy đủ các yêu cầu và đúng người nhận. Đọc mục đích, nội dung bắt buộc và giới hạn hiển thị trước khi viết. Lập danh sách ý bắt buộc, kiểm tra từng ý sau khi viết; một bài đúng ngữ pháp vẫn có thể thiếu nhiệm vụ."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: If asked to apologise and suggest a date, include both an apology and a new date. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-writing-p3",
+    "title": "Luyện WRITING Part 3",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "writing-cohesion"
+    ],
+    "component": "WRITING",
+    "part": 3,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Bài viết mạch lạc có trật tự ý rõ và liên kết phù hợp. Từ nối phải phản ánh quan hệ thật; không tăng chất lượng bằng cách chèn thật nhiều liên từ. Mỗi đoạn giữ một trọng tâm; đại từ cần đối tượng rõ và các ý cần nối theo mục đích người đọc."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: The room is small. However, it is convenient. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-writing-p4",
+    "title": "Luyện WRITING Part 4",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "writing-task"
+    ],
+    "component": "WRITING",
+    "part": 4,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Đáp ứng nhiệm vụ nghĩa là trả lời đầy đủ các yêu cầu và đúng người nhận. Đọc mục đích, nội dung bắt buộc và giới hạn hiển thị trước khi viết. Lập danh sách ý bắt buộc, kiểm tra từng ý sau khi viết; một bài đúng ngữ pháp vẫn có thể thiếu nhiệm vụ."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: If asked to apologise and suggest a date, include both an apology and a new date. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-speaking-p1",
+    "title": "Luyện SPEAKING Part 1",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "speaking-fluency"
+    ],
+    "component": "SPEAKING",
+    "part": 1,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Độ trôi chảy là duy trì lời nói có tổ chức và nhịp hợp lý. Có thể ngắt ngắn để lập ý; nói quá nhanh không tự tạo chất lượng. Luyện trả lời bằng ý kiến, lý do và ví dụ; khi quên từ, diễn đạt lại thay vì dừng lâu."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: I prefer buses because they are affordable. For example, I use one daily. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-speaking-p2",
+    "title": "Luyện SPEAKING Part 2",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "speaking-vocabulary"
+    ],
+    "component": "SPEAKING",
+    "part": 2,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Từ vựng nói cần phù hợp chủ đề và dễ sử dụng khi giao tiếp. Diễn giải bằng từ quen thuộc là chiến lược hữu ích khi chưa nhớ từ chính xác. Luyện cụm từ theo tình huống, đặt câu cá nhân và tránh liệt kê từ không thành thông điệp."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: A helmet is something you wear to protect your head. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-speaking-p3",
+    "title": "Luyện SPEAKING Part 3",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "speaking-grammar"
+    ],
+    "component": "SPEAKING",
+    "part": 3,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Ngữ pháp nói cần truyền đạt rõ thời gian và quan hệ ý. Dùng cấu trúc quen thuộc chính xác rồi mở rộng khi phù hợp. Ghi âm để tìm lỗi thì và hòa hợp lặp lại; tự sửa ngắn gọn rồi tiếp tục, không khởi động lại toàn câu liên tục."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: Last weekend I visited my aunt, who lives nearby. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "strategy-speaking-p4",
+    "title": "Luyện SPEAKING Part 4",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "PART_STRATEGY",
+    "topicCodes": [
+      "speaking-fluency"
+    ],
+    "component": "SPEAKING",
+    "part": 4,
+    "criterion": null,
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Trọng tâm luyện tập",
+        "text": "Độ trôi chảy là duy trì lời nói có tổ chức và nhịp hợp lý. Có thể ngắt ngắn để lập ý; nói quá nhanh không tự tạo chất lượng. Luyện trả lời bằng ý kiến, lý do và ví dụ; khi quên từ, diễn đạt lại thay vì dừng lâu."
+      },
+      {
+        "heading": "Thực hành và tự kiểm tra",
+        "text": "Đọc yêu cầu và giới hạn hiển thị trên bài hiện tại. Ví dụ để luyện kỹ năng: I prefer buses because they are affordable. For example, I use one daily. Sau khi làm, nêu bằng chứng cho đáp án hoặc kiểm tra bạn đã trả lời đủ các ý được hỏi. Ghi lại lỗi cụ thể và luyện lại với ngữ cảnh mới. Hướng dẫn này không thay thế yêu cầu của đề và không quy đổi điểm sang CEFR."
+      }
+    ]
+  },
+  {
+    "key": "criterion-writing-task",
+    "title": "Hướng dẫn WRITING: TASK",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "writing-task"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": "TASK",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Đáp ứng nhiệm vụ nghĩa là trả lời đầy đủ các yêu cầu và đúng người nhận. Đọc mục đích, nội dung bắt buộc và giới hạn hiển thị trước khi viết. Lập danh sách ý bắt buộc, kiểm tra từng ý sau khi viết; một bài đúng ngữ pháp vẫn có thể thiếu nhiệm vụ."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
+  },
+  {
+    "key": "criterion-writing-grammar",
+    "title": "Hướng dẫn WRITING: GRAMMAR",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "writing-grammar"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": "GRAMMAR",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Độ chính xác và phạm vi ngữ pháp cần đi cùng nhau. Ưu tiên câu đúng, sau đó mở rộng bằng mệnh đề phù hợp thay vì cấu trúc phức tạp thiếu kiểm soát. Soát thì, hòa hợp, mạo từ và bổ ngữ động từ thành các lượt riêng; không sửa mọi câu chỉ để làm dài hơn."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
+  },
+  {
+    "key": "criterion-writing-vocabulary",
+    "title": "Hướng dẫn WRITING: VOCABULARY",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "writing-vocabulary"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": "VOCABULARY",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Từ vựng tốt là dùng đúng nghĩa, kết hợp và văn phong. Độ đa dạng không đồng nghĩa thay mọi từ đơn giản bằng từ hiếm. Kiểm tra sắc thái và collocation; chỉ dùng từ mới khi hiểu cách dùng trong câu."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
+  },
+  {
+    "key": "criterion-writing-coherence",
+    "title": "Hướng dẫn WRITING: COHERENCE",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "writing-cohesion"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": "COHERENCE",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Bài viết mạch lạc có trật tự ý rõ và liên kết phù hợp. Từ nối phải phản ánh quan hệ thật; không tăng chất lượng bằng cách chèn thật nhiều liên từ. Mỗi đoạn giữ một trọng tâm; đại từ cần đối tượng rõ và các ý cần nối theo mục đích người đọc."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
+  },
+  {
+    "key": "criterion-writing-register",
+    "title": "Hướng dẫn WRITING: REGISTER",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "writing-task"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": "REGISTER",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Văn phong phụ thuộc người nhận và mục đích. Email thân mật có thể dùng lời chào gần gũi; yêu cầu trang trọng cần diễn đạt lịch sự, rõ ràng. Ví dụ: Could you please send me the details? Tránh dùng mệnh lệnh thiếu lịch sự khi đang yêu cầu thông tin. Kiểm tra lời chào, cách xưng hô, mức độ trực tiếp và câu kết cùng nhau."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
+  },
+  {
+    "key": "criterion-writing-mechanics",
+    "title": "Hướng dẫn WRITING: MECHANICS",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "writing-grammar"
+    ],
+    "component": "WRITING",
+    "part": null,
+    "criterion": "MECHANICS",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Kiểm tra chính tả, viết hoa và dấu câu. Mỗi câu cần ranh giới rõ; không nối hai mệnh đề độc lập chỉ bằng dấu phẩy. Ví dụ: I was tired, so I went home. Viết hoa đầu câu và tên riêng; phân biệt its và it’s. Soát lỗi sau khi hoàn thành nội dung để không bỏ sót yêu cầu đề."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
+  },
+  {
+    "key": "criterion-speaking-grammarvocabulary",
+    "title": "Hướng dẫn SPEAKING: grammarVocabulary",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "speaking-grammar"
+    ],
+    "component": "SPEAKING",
+    "part": null,
+    "criterion": "grammarVocabulary",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Ngữ pháp nói cần truyền đạt rõ thời gian và quan hệ ý. Dùng cấu trúc quen thuộc chính xác rồi mở rộng khi phù hợp. Ghi âm để tìm lỗi thì và hòa hợp lặp lại; tự sửa ngắn gọn rồi tiếp tục, không khởi động lại toàn câu liên tục."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
+  },
+  {
+    "key": "criterion-speaking-pronunciation",
+    "title": "Hướng dẫn SPEAKING: pronunciation",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "speaking-pronunciation"
+    ],
+    "component": "SPEAKING",
+    "part": null,
+    "criterion": "pronunciation",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Phát âm hướng đến khả năng hiểu được, gồm âm, trọng âm từ và nhịp câu. Không bắt buộc bắt chước một giọng bản ngữ duy nhất. Nghe mẫu, đánh dấu âm cuối và trọng âm; nhờ người nghe xác nhận họ hiểu từ nào trước khi tự kết luận phát âm đúng."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
+  },
+  {
+    "key": "criterion-speaking-fluency",
+    "title": "Hướng dẫn SPEAKING: fluency",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "speaking-fluency"
+    ],
+    "component": "SPEAKING",
+    "part": null,
+    "criterion": "fluency",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Độ trôi chảy là duy trì lời nói có tổ chức và nhịp hợp lý. Có thể ngắt ngắn để lập ý; nói quá nhanh không tự tạo chất lượng. Luyện trả lời bằng ý kiến, lý do và ví dụ; khi quên từ, diễn đạt lại thay vì dừng lâu."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
+  },
+  {
+    "key": "criterion-speaking-taskfulfillment",
+    "title": "Hướng dẫn SPEAKING: taskFulfillment",
+    "variant": "ENGLISH",
+    "source": null,
+    "verifiedAt": "2026-11-10",
+    "usage": "CRITERION_GUIDE",
+    "topicCodes": [
+      "writing-task"
+    ],
+    "component": "SPEAKING",
+    "part": null,
+    "criterion": "taskFulfillment",
+    "reviewStatus": "DRAFT",
+    "reviewedBy": null,
+    "reviewedAt": null,
+    "sections": [
+      {
+        "heading": "Cách cải thiện tiêu chí",
+        "text": "Trong câu trả lời nói, xác định đủ các câu hỏi và dành ý cho từng phần. Nêu câu trả lời trực tiếp rồi giải thích hoặc đưa ví dụ phù hợp. Khi mô tả hay so sánh, bám hình và yêu cầu được hiển thị; không chỉ đọc một bài thuộc lòng không liên quan. Tự nghe bản ghi để kiểm tra có ý nào bị bỏ quên."
+      },
+      {
+        "heading": "Giới hạn",
+        "text": "Đây là bài hướng dẫn luyện tập, không phải rubric chấm điểm chính thức. Không tự suy band từ một lỗi hoặc một câu. Sử dụng phản hồi tiêu chí đã được hệ thống tính và kiểm tra lại với toàn bộ bài làm."
+      }
+    ]
   }
 ]

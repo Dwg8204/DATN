@@ -1,5 +1,14 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## RAG R0 — 10/11/2026
+
+- Nhánh chung `feature/personalization-rag` từ `origin/develop` tại `52edbd2`; dùng cho tất cả R0–R7 theo yêu cầu người dùng. Đã xóa 6 file untracked network/production không liên quan, giữ kế hoạch RAG.
+- Chuẩn bị 45 bài LESSON, 18 PART_STRATEGY, 10 CRITERION_GUIDE; giữ 6 tài liệu Aptis và nội dung 8 bài biên soạn cũ. Tất cả nội dung mới DRAFT, người dùng đồng ý commit bản nháp chờ duyệt.
+- Fixture có 60 câu sai giả lập (20 mỗi kỹ năng khách quan), 96 câu nguồn/ứng viên phục vụ duyệt; không có bài làm người học. Nhãn chỉ đề xuất, chưa được dùng làm ground truth hoặc công bố metric.
+- DB local: 18 question_type, 1.987 câu khách quan xuất bản; 450 câu Listening không có trường transcript trong content/part_contents. Một số đáp án mẫu chưa kiểm chứng âm thanh đã loại khỏi fixture.
+- Kiểm tra cấu trúc bằng `node backend/scripts/rag-r0-validate.cjs`; xem `docs/PERSONALIZATION_RAG_R0_REPORT.md`. Chưa import, migrate, embed hay thay code runtime. Importer cũ chưa chặn DRAFT: không import corpus trước khi duyệt và bổ sung kiểm tra R1.
+- Tiếp theo: duyệt học liệu/nhãn rồi triển khai R1; chú ý phiên bản question_hash, truy xuất đủ ngữ cảnh Part và thống nhất matchCount. Không quay lại quy trình mỗi giai đoạn một nhánh trong kế hoạch cũ.
+
 ## Sửa dịch nhầm nội dung đề — 02/11/2026
 
 - MultipleChoice không dịch label đáp án nữa (Grammar Part 1, Listening Part 1/4); sửa tương tự radio chọn đáp án trong admin. Rà soát cả 5 kỹ năng và bỏ các ui() nhận tiêu đề/nội dung đề ở danh sách, làm bài, Reading review và admin preview. Giữ bản dịch UI và dữ liệu snapshot/answer ID; không sửa JSON để né va chạm từ.
