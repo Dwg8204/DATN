@@ -21,6 +21,6 @@ import {
     OpenAiCompatibleJsonProvider,
     JsonGenerationService,
   ],
-  exports: [GeminiClient, GeminiGenerationService, JsonGenerationService],
+  exports: [GeminiClient, GeminiGenerationService, JsonGenerationService, AiRequestRecorder],
 })
 export class AiSharedModule {}

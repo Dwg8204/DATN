@@ -17,6 +17,31 @@ function fixture(overrides = {}) {
 }
 
 describe('Shared Gemini transport and quota', () => {
+  test('honors structured RetryInfo when quota has no Retry-After header', async () => {
+    const { client } = fixture();
+    const fetchMock = jest.spyOn(global, 'fetch').mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: {
+            details: [
+              {
+                '@type': 'type.googleapis.com/google.rpc.RetryInfo',
+                retryDelay: '1576s',
+              },
+            ],
+          },
+        }),
+        { status: 429 },
+      ),
+    );
+    await expect(
+      client.request('model', 'embedContent', {}, signal()),
+    ).rejects.toMatchObject({ reason: 'QUOTA', retryAfterMs: 1576000 });
+    await expect(
+      client.request('model', 'embedContent', {}, signal()),
+    ).rejects.toMatchObject({ reason: 'QUOTA' });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
   beforeEach(() =>
     jest.useFakeTimers({ now: new Date('2026-10-19T00:00:00Z') }),
   );

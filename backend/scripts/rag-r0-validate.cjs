@@ -17,8 +17,9 @@ for(const d of corpus){
  assert.ok(['GENERAL','LESSON','PART_STRATEGY','CRITERION_GUIDE'].includes(d.usage));
  for(const code of d.topicCodes)assert.ok(inventory.topics.some(t=>t.code===code));
  if(d.usage==='GENERAL')continue;
- assert.equal(d.reviewStatus,'DRAFT');
- assert.equal(d.reviewedAt,null);
+ assert.ok(['DRAFT','AI_APPROVED','NEEDS_REVISION'].includes(d.reviewStatus));
+ if(d.reviewStatus==='DRAFT')assert.equal(d.reviewedAt,null);
+ else {assert.equal(d.review.type,'AI');assert.equal(d.review.humanReviewed,false);assert.ok(d.reviewedAt);}
  if(d.usage==='LESSON'){
   const count=d.sections.map(s=>s.text).join(' ').trim().split(/\s+/u).length;
   assert.ok(count>=300&&count<=600,`${d.key}: ${count} words`);
@@ -33,7 +34,13 @@ for(const s of gold.samples){
  assert.ok(s.similarQuestionIds.length>=3&&s.similarQuestionIds.length<=5);
  assert.equal(new Set(s.similarQuestionIds).size,s.similarQuestionIds.length);
  for(const id of s.similarQuestionIds){const r=byId.get(id);assert.ok(r);assert.notEqual(r.test_id,q.test_id);assert.equal(r.component,q.component);}
- assert.equal(s.reviewStatus,'DRAFT');
+ assert.ok(['DRAFT','NEEDS_REVISION'].includes(s.reviewStatus));
+ if(s.review){
+  assert.equal(s.evaluationEligible,false);
+  assert.equal(s.review.pairs.length,s.similarQuestionIds.length);
+  assert.deepEqual(s.review.pairs.map(p=>p.questionId),s.similarQuestionIds);
+  assert.ok(s.review.pairs.every(p=>['REJECTED','NEAR_DUPLICATE','AUDIO_UNVERIFIED','STRATEGY_RELEVANT'].includes(p.status)&&p.reason));
+ }
  assert.ok(!/kiểm tra luồng|chưa đối chiếu/i.test(JSON.stringify(s.explanation)));
 }
-console.log('PASS R0 structural checks: 45 lessons, 18 strategies, 10 criteria, 60 draft labels. Semantic relevance and audio correctness still require human review.');
+console.log('PASS R0 structural checks: 45 lessons, 18 strategies, 10 criteria, 60 samples. Structural PASS does not approve content or make labels eligible for final metrics.');

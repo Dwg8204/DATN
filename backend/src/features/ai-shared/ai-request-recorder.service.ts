@@ -8,7 +8,7 @@ export class AiRequestRecorder {
   constructor(private readonly db: DataSource) {}
 
   async start(
-    input: Pick<GeminiGenerationInput, 'model' | 'context'>,
+    input: { model: string; context: Omit<GeminiGenerationInput['context'], 'userId'> & {userId:string|null} },
     request: unknown,
     provider = 'gemini',
   ): Promise<string> {

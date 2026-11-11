@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
+import { EmbeddingService, normalizeEmbedding } from '../retrieval/embedding.service';
 import { ConfigService } from '@nestjs/config';
 import { AiProviderError } from '../ai-shared/ai-provider.error';
 import { GeminiClient } from '../ai-shared/gemini-client.service';
@@ -33,6 +34,7 @@ export class ChatbotProvider {
     private readonly config: ConfigService,
     private readonly client: GeminiClient,
     private readonly generation: GeminiGenerationService,
+    @Optional() private readonly embeddings?: EmbeddingService,
   ) {}
 
   get model() {
@@ -98,18 +100,8 @@ export class ChatbotProvider {
 
   async embed(text: string, query: boolean, signal: AbortSignal) {
     this.assertReady();
-    const result = await this.request(
-      'gemini-embedding-001',
-      'embedContent',
-      {
-        model: 'models/gemini-embedding-001',
-        content: { parts: [{ text }] },
-        taskType: query ? 'RETRIEVAL_QUERY' : 'RETRIEVAL_DOCUMENT',
-        outputDimensionality: 768,
-      },
-      signal,
-    );
-    return normalizeVector(result.embedding?.values);
+    try{return await (this.embeddings ?? new EmbeddingService(this.client)).embed(text,query,signal);}
+    catch(error){throw toChatError(error);}
   }
 }
 
@@ -120,13 +112,5 @@ function toChatError(error: unknown) {
 }
 
 export function normalizeVector(values: unknown): number[] {
-  if (
-    !Array.isArray(values) ||
-    values.length !== 768 ||
-    values.some((v) => typeof v !== 'number' || !Number.isFinite(v))
-  )
-    throw chatError('CHAT_EMBEDDING_INVALID', 502);
-  const norm = Math.sqrt(values.reduce((s, v) => s + v * v, 0));
-  if (!norm) throw chatError('CHAT_EMBEDDING_INVALID', 502);
-  return values.map((v) => v / norm);
+  try{return normalizeEmbedding(values);}catch{throw chatError('CHAT_EMBEDDING_INVALID',502);}
 }

@@ -22,7 +22,11 @@ export class GeminiRateLimiter {
     if (window.blockedUntil > now) {
       throw new AiProviderError('QUOTA', window.blockedUntil - now);
     }
-    const limit = Number(this.config.get('GEMINI_MAX_RPM', 5));
+    const limit = Number(
+      model === 'gemini-embedding-001'
+        ? this.config.get('RAG_EMBED_MAX_RPM', 60)
+        : this.config.get('GEMINI_MAX_RPM', 5),
+    );
     if (!Number.isInteger(limit) || limit < 1)
       throw new AiProviderError('CONFIG_INVALID');
     if (window.calls.length >= limit) {

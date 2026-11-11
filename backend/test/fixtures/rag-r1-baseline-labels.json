@@ -1,0 +1,379 @@
+{
+  "version": 1,
+  "review": {
+    "type": "AI",
+    "reviewer": "Codex",
+    "date": "2026-11-11",
+    "humanReviewed": false
+  },
+  "scope": "R1 knowledge lesson retrieval from 60 R0 question texts; one target lesson per sample, top 5 chunks. Labels reviewed before measuring. No similarity-pair or answer-accuracy claims.",
+  "limitations": [
+    "Development baseline, not independent human gold or held-out generalization.",
+    "Listening labels evaluate the skill requested by written prompts; audio answers remain unverified.",
+    "Report both sample recall and family-macro recall; repeated templates share a family. No model tuning or train/test split is performed.",
+    "R0 similarQuestionIds remain excluded; question-bank Recall and verified audio evaluation remain R7 work.",
+    "Queries omit explanations and answer labels; corpus language is Vietnamese while many prompts are English."
+  ],
+  "samples": [
+    {
+      "id": "grammar_vocab-1",
+      "documentKey": "english-present-perfect-past",
+      "family": "GRAMMAR_VOCAB:since-time",
+      "reason": "Since + mốc thời gian trong thì hiện tại hoàn thành."
+    },
+    {
+      "id": "grammar_vocab-2",
+      "documentKey": "english-countability",
+      "family": "GRAMMAR_VOCAB:article-sound",
+      "reason": "A useful guide: âm đầu /j/, danh từ đếm được số ít; học liệu countability có phần a/an."
+    },
+    {
+      "id": "grammar_vocab-3",
+      "documentKey": "lesson-modals",
+      "family": "GRAMMAR_VOCAB:modal-perfect",
+      "reason": "Need not have + past participle: đã làm nhưng không cần. Không dùng explanation nguồn bị sai."
+    },
+    {
+      "id": "grammar_vocab-4",
+      "documentKey": "english-countability",
+      "family": "GRAMMAR_VOCAB:article-sound",
+      "reason": "A useful guide: âm đầu /j/, danh từ đếm được số ít; học liệu countability có phần a/an."
+    },
+    {
+      "id": "grammar_vocab-5",
+      "documentKey": "english-countability",
+      "family": "GRAMMAR_VOCAB:article-sound",
+      "reason": "A useful guide: âm đầu /j/, danh từ đếm được số ít; học liệu countability có phần a/an."
+    },
+    {
+      "id": "grammar_vocab-6",
+      "documentKey": "lesson-prepositions",
+      "family": "GRAMMAR_VOCAB:without",
+      "reason": "Without biểu đạt thiếu sự hiện diện; giới từ đi với đại từ tân ngữ."
+    },
+    {
+      "id": "grammar_vocab-7",
+      "documentKey": "english-present-simple-continuous",
+      "family": "GRAMMAR_VOCAB:habit-agreement",
+      "reason": "Usually diễn đạt thói quen; chủ ngữ ngôi ba số ít dùng visits."
+    },
+    {
+      "id": "grammar_vocab-8",
+      "documentKey": "lesson-verb-patterns",
+      "family": "GRAMMAR_VOCAB:suggest-gerund",
+      "reason": "Suggest + V-ing."
+    },
+    {
+      "id": "grammar_vocab-9",
+      "documentKey": "english-passive",
+      "family": "GRAMMAR_VOCAB:passive-past",
+      "reason": "Was + past participle với yesterday."
+    },
+    {
+      "id": "grammar_vocab-10",
+      "documentKey": "english-passive",
+      "family": "GRAMMAR_VOCAB:passive-past",
+      "reason": "Was + past participle với yesterday."
+    },
+    {
+      "id": "grammar_vocab-11",
+      "documentKey": "lesson-verb-patterns",
+      "family": "GRAMMAR_VOCAB:look-forward-gerund",
+      "reason": "Look forward to + V-ing."
+    },
+    {
+      "id": "grammar_vocab-12",
+      "documentKey": "lesson-past-simple",
+      "family": "GRAMMAR_VOCAB:past-simple",
+      "reason": "Last week dùng bought."
+    },
+    {
+      "id": "grammar_vocab-13",
+      "documentKey": "lesson-verb-patterns",
+      "family": "GRAMMAR_VOCAB:enjoy-gerund",
+      "reason": "Enjoy + V-ing."
+    },
+    {
+      "id": "grammar_vocab-14",
+      "documentKey": "english-present-perfect-past",
+      "family": "GRAMMAR_VOCAB:present-perfect-auxiliary",
+      "reason": "They + have + visited."
+    },
+    {
+      "id": "grammar_vocab-15",
+      "documentKey": "english-present-perfect-past",
+      "family": "GRAMMAR_VOCAB:since-time",
+      "reason": "Since + mốc thời gian trong thì hiện tại hoàn thành."
+    },
+    {
+      "id": "grammar_vocab-16",
+      "documentKey": "lesson-past-perfect",
+      "family": "GRAMMAR_VOCAB:past-perfect",
+      "reason": "Had left trước thời điểm reached."
+    },
+    {
+      "id": "grammar_vocab-17",
+      "documentKey": "lesson-question-tags",
+      "family": "GRAMMAR_VOCAB:question-tag",
+      "reason": "Was hilarious → wasn’t it."
+    },
+    {
+      "id": "grammar_vocab-18",
+      "documentKey": "english-conditionals",
+      "family": "GRAMMAR_VOCAB:conditional-two",
+      "reason": "Would travel / if ... had more money."
+    },
+    {
+      "id": "grammar_vocab-19",
+      "documentKey": "lesson-verb-patterns",
+      "family": "GRAMMAR_VOCAB:mind-gerund",
+      "reason": "Would you mind + V-ing."
+    },
+    {
+      "id": "grammar_vocab-20",
+      "documentKey": "lesson-past-perfect",
+      "family": "GRAMMAR_VOCAB:past-perfect-continuous",
+      "reason": "Had been working diễn tả quá trình trước looked tired."
+    },
+    {
+      "id": "reading-1",
+      "documentKey": "lesson-reading-main-idea",
+      "family": "READING:READING_HEADING_MATCH",
+      "reason": "Ghép tiêu đề theo ý chính của đoạn, không theo từ trùng đơn lẻ."
+    },
+    {
+      "id": "reading-2",
+      "documentKey": "lesson-prepositions",
+      "family": "READING:weekday-on",
+      "reason": "We will meet [2] Friday → on Friday."
+    },
+    {
+      "id": "reading-3",
+      "documentKey": "lesson-reading-cohesion",
+      "family": "READING:READING_ORDER",
+      "reason": "Sắp xếp câu theo từ nối, đại từ và trình tự; nhãn là chiến lược liên kết văn bản."
+    },
+    {
+      "id": "reading-4",
+      "documentKey": "lesson-reading-opinion",
+      "family": "READING:READING_OPINION_MATCH",
+      "reason": "Đối chiếu phát biểu với người viết; nhãn là chiến lược đọc quan điểm/thông tin nhiều người."
+    },
+    {
+      "id": "reading-5",
+      "documentKey": "lesson-reading-main-idea",
+      "family": "READING:READING_HEADING_MATCH",
+      "reason": "Ghép tiêu đề theo ý chính của đoạn, không theo từ trùng đơn lẻ."
+    },
+    {
+      "id": "reading-6",
+      "documentKey": "lesson-verb-patterns",
+      "family": "READING:please-infinitive",
+      "reason": "Please [3] your guitar → bring, động từ nguyên mẫu trong lời yêu cầu."
+    },
+    {
+      "id": "reading-7",
+      "documentKey": "lesson-reading-cohesion",
+      "family": "READING:READING_ORDER",
+      "reason": "Sắp xếp câu theo từ nối, đại từ và trình tự; nhãn là chiến lược liên kết văn bản."
+    },
+    {
+      "id": "reading-8",
+      "documentKey": "lesson-reading-opinion",
+      "family": "READING:READING_OPINION_MATCH",
+      "reason": "Đối chiếu phát biểu với người viết; nhãn là chiến lược đọc quan điểm/thông tin nhiều người."
+    },
+    {
+      "id": "reading-9",
+      "documentKey": "lesson-reading-main-idea",
+      "family": "READING:READING_HEADING_MATCH",
+      "reason": "Ghép tiêu đề theo ý chính của đoạn, không theo từ trùng đơn lẻ."
+    },
+    {
+      "id": "reading-10",
+      "documentKey": "lesson-prepositions",
+      "family": "READING:weekday-on",
+      "reason": "On + ngày trong tuần trong passage."
+    },
+    {
+      "id": "reading-11",
+      "documentKey": "lesson-reading-cohesion",
+      "family": "READING:READING_ORDER",
+      "reason": "Sắp xếp câu theo từ nối, đại từ và trình tự; nhãn là chiến lược liên kết văn bản."
+    },
+    {
+      "id": "reading-12",
+      "documentKey": "lesson-reading-opinion",
+      "family": "READING:READING_OPINION_MATCH",
+      "reason": "Đối chiếu phát biểu với người viết; nhãn là chiến lược đọc quan điểm/thông tin nhiều người."
+    },
+    {
+      "id": "reading-13",
+      "documentKey": "lesson-reading-main-idea",
+      "family": "READING:READING_HEADING_MATCH",
+      "reason": "Ghép tiêu đề theo ý chính của đoạn, không theo từ trùng đơn lẻ."
+    },
+    {
+      "id": "reading-14",
+      "documentKey": "lesson-pronouns",
+      "family": "READING:possessive-our",
+      "reason": "Our schedule: tính từ sở hữu trước danh từ."
+    },
+    {
+      "id": "reading-15",
+      "documentKey": "lesson-reading-cohesion",
+      "family": "READING:READING_ORDER",
+      "reason": "Sắp xếp câu theo từ nối, đại từ và trình tự; nhãn là chiến lược liên kết văn bản."
+    },
+    {
+      "id": "reading-16",
+      "documentKey": "lesson-reading-opinion",
+      "family": "READING:READING_OPINION_MATCH",
+      "reason": "Đối chiếu phát biểu với người viết; nhãn là chiến lược đọc quan điểm/thông tin nhiều người."
+    },
+    {
+      "id": "reading-17",
+      "documentKey": "lesson-reading-main-idea",
+      "family": "READING:READING_HEADING_MATCH",
+      "reason": "Ghép tiêu đề theo ý chính của đoạn, không theo từ trùng đơn lẻ."
+    },
+    {
+      "id": "reading-18",
+      "documentKey": "english-conditionals",
+      "family": "READING:if-help",
+      "reason": "Let us know if you need any help: điều kiện."
+    },
+    {
+      "id": "reading-19",
+      "documentKey": "lesson-reading-cohesion",
+      "family": "READING:READING_ORDER",
+      "reason": "Sắp xếp câu theo từ nối, đại từ và trình tự; nhãn là chiến lược liên kết văn bản."
+    },
+    {
+      "id": "reading-20",
+      "documentKey": "lesson-reading-opinion",
+      "family": "READING:READING_OPINION_MATCH",
+      "reason": "Đối chiếu phát biểu với người viết; nhãn là chiến lược đọc quan điểm/thông tin nhiều người."
+    },
+    {
+      "id": "listening-1",
+      "documentKey": "lesson-listening-opinion",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "reason": "Dạng bài yêu cầu phân biệt quan điểm người nói; không xác nhận đáp án Man/Woman/Both."
+    },
+    {
+      "id": "listening-2",
+      "documentKey": "lesson-listening-main-idea",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-main-idea",
+      "reason": "Câu hỏi main purpose yêu cầu mục đích chính; không xác nhận nội dung audio."
+    },
+    {
+      "id": "listening-3",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-4",
+      "documentKey": "lesson-listening-opinion",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "reason": "Dạng bài yêu cầu phân biệt quan điểm người nói; không xác nhận đáp án Man/Woman/Both."
+    },
+    {
+      "id": "listening-5",
+      "documentKey": "lesson-listening-main-idea",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-main-idea",
+      "reason": "Câu hỏi main purpose yêu cầu mục đích chính; không xác nhận nội dung audio."
+    },
+    {
+      "id": "listening-6",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-7",
+      "documentKey": "lesson-listening-opinion",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "reason": "Dạng bài yêu cầu phân biệt quan điểm người nói; không xác nhận đáp án Man/Woman/Both."
+    },
+    {
+      "id": "listening-8",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-9",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-10",
+      "documentKey": "lesson-listening-opinion",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "reason": "Dạng bài yêu cầu phân biệt quan điểm người nói; không xác nhận đáp án Man/Woman/Both."
+    },
+    {
+      "id": "listening-11",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-12",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-13",
+      "documentKey": "lesson-listening-opinion",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "reason": "Dạng bài yêu cầu phân biệt quan điểm người nói; không xác nhận đáp án Man/Woman/Both."
+    },
+    {
+      "id": "listening-14",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-15",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-16",
+      "documentKey": "lesson-listening-opinion",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "reason": "Dạng bài yêu cầu phân biệt quan điểm người nói; không xác nhận đáp án Man/Woman/Both."
+    },
+    {
+      "id": "listening-17",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-18",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    },
+    {
+      "id": "listening-19",
+      "documentKey": "lesson-listening-opinion",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "reason": "Dạng bài yêu cầu phân biệt quan điểm người nói; không xác nhận đáp án Man/Woman/Both."
+    },
+    {
+      "id": "listening-20",
+      "documentKey": "lesson-listening-detail",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "reason": "Câu hỏi yêu cầu chi tiết cụ thể (thời gian, giá, hành động, khó khăn/lời khuyên); không xác nhận đáp án audio."
+    }
+  ]
+}

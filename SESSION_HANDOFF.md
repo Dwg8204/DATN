@@ -1,5 +1,19 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## RAG R1 — 11/11/2026
+
+- Giữ nhánh chung `feature/personalization-rag`. Đã sửa 63 học liệu cần biên tập; 73 tài liệu mới AI_APPROVED với hash, giữ 6 GENERAL có nguồn. Trạng thái mới thay thế vòng duyệt R0 lịch sử bên dưới.
+- DB local đã import 79 tài liệu READY/251 chunk/251 vector, áp dụng migration 1760000024000. Backfill đạt 2.428/2.428 câu snapshot hiện hành, 173 job hoàn thành, không thiếu/cũ/pending/failed.
+- RetrievalModule, embedding chung, query kiến thức vector+keyword+RRF, câu tương tự theo hash/snapshot, worker publish queue, CLI backfill/status/baseline. Có dùng lại vector đầu vào giống hệt để giảm quota. Gemini RetryInfo được tôn trọng; không thay billing/API key. PERSONALIZATION_RAG_ENABLED vẫn mặc định false; CLI backfill đã bật riêng process.
+- Baseline 60 mẫu tìm bài học AI rà soát: keyword 0%, vector/RRF 100% Recall@5; chỉ baseline phát triển, không gold độc lập hoặc xác minh audio/cặp câu. R0 gold cũ vẫn evaluationEligible=false. Báo cáo chi tiết: docs/PERSONALIZATION_RAG_R1_REPORT.md.
+- 282 unit tests/23 suites, PostgreSQL R1 và chatbot, typecheck/build đã kiểm chứng. Không triển khai R2 hoặc đổi frontend.
+
+## Duyệt R0 bằng AI — 10/11/2026
+
+- Người dùng yêu cầu AI duyệt thay. Đã rà soát 73 tài liệu mới và 60 mẫu/299 cặp. 10 hướng dẫn tiêu chí AI_APPROVED; 63 tài liệu NEEDS_REVISION vì nội dung chung/lặp hoặc thiếu đặc thù Part. Không ghi là con người duyệt.
+- Sửa 16 nhãn bài học; loại 109 cặp khác trọng tâm trong review.pairs, giữ IDs gốc phục vụ audit. Tất cả mẫu evaluationEligible=false: chưa đủ chuẩn gold, thiếu đối chiếu audio và phân nhóm gần trùng.
+- Sổ chi tiết: backend/test/fixtures/rag-r0-review-results.json; kết luận: docs/PERSONALIZATION_RAG_R0_REVIEW.md. Trạng thái này thay thế mô tả DRAFT trong báo cáo R0 ban đầu. Chưa import hoặc sửa DB; không được coi R0 đã nghiệm thu chất lượng.
+
 ## RAG R0 — 10/11/2026
 
 - Nhánh chung `feature/personalization-rag` từ `origin/develop` tại `52edbd2`; dùng cho tất cả R0–R7 theo yêu cầu người dùng. Đã xóa 6 file untracked network/production không liên quan, giữ kế hoạch RAG.

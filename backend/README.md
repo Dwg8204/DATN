@@ -342,3 +342,40 @@ Một số migration có cùng timestamp (gồm nhóm `1760000019000`, `17600000
 ### Cá nhân hóa S3: đánh giá đầu vào
 
 Xem [báo cáo S3](../docs/PERSONALIZATION_S3_REPORT.md). Sau migration `1760000022000-AddPlacementTests`, cấu hình bộ Music đã seed bằng `npm run personalization:placement-music -- --dry-run`, rồi `--apply`. Part chỉ liên kết nội dung, không bật `is_placement`. Kiểm thử DB: `npm run test:placement:db` với `TEST_DATABASE_URL` là database riêng kết thúc `_test`.
+
+### Cá nhân hóa R1: nền tảng truy xuất
+
+Module `features/retrieval` dùng chung embedding 768 chiều đã chuẩn hóa, tìm kiến thức bằng vector + từ khóa + RRF, tìm câu hỏi theo snapshot đã xuất bản/hash hiện hành. Chatbot giữ bộ lọc LEARNER, examVariant và phiên bản READY mới nhất. R1 chưa thay giao diện hoặc sinh giải thích lỗi (R2).
+
+Thực hiện từ thư mục backend với DATABASE_URL của môi trường đích:
+
+```sh
+npm run db:migrate:status
+npm run db:migrate
+npm run knowledge:validate
+npm run knowledge:import
+npm run questions:embed
+npm run questions:embed -- --apply
+```
+
+`knowledge:import` chặn DRAFT/NEEDS_REVISION và nội dung AI_APPROVED có hash duyệt không khớp. Sáu tài liệu GENERAL có nguồn chính thức được giữ tương thích; AI_APPROVED không có nghĩa là con người duyệt. Import theo transaction từng tài liệu, giữ phiên bản cũ nếu embed thất bại. Lệnh có gọi Gemini thật.
+
+`questions:embed` mặc định chỉ đếm. `--apply` thêm job còn thiếu, không reset job đang chờ/thất bại. Khi thay model hoặc phiên bản ghép văn bản, dùng `--apply --refresh-completed`: mở lại job đã xong; worker chỉ embed phần có hash/key/text/model/version thay đổi. Job lỗi sau 5 lần cần xử lý nguyên nhân rồi xuất bản lại đề để reset; quota không tiêu hao số lần retry.
+
+`PERSONALIZATION_RAG_ENABLED=false` là mặc định. Bật `true` cho backend sẽ chạy worker mỗi 60 giây; mỗi lượt tối đa 5 job, mỗi transaction tối đa 20 câu. Có thể chạy riêng bằng PowerShell:
+
+```powershell
+$env:PERSONALIZATION_RAG_ENABLED='true'
+npm run questions:worker -- --drain
+npm run rag:status
+```
+
+CLI drain có giới hạn 30 phút, có thể chạy lại; tiến độ lưu trong PostgreSQL. Khi quota hết, tôn trọng Retry-After và RetryInfo của Gemini; tăng RAG_EMBED_MAX_RPM không tăng hạn mức ngày của nhà cung cấp. Rate limiter là theo process, không phải quota phân tán giữa nhiều replica. `rag:status` chỉ đọc DB, không gọi AI; exit 1 nếu thiếu/cũ, còn job hoặc smoke truy xuất không có kết quả.
+
+Các biến trong `.env.example`: `RAG_EMBED_MAX_RPM=60`, `RAG_QUESTION_MIN_SIMILARITY=0.75`, `RAG_KNOWLEDGE_MIN_SIMILARITY=0.70`, `RAG_EXPLAIN_DAILY_LIMIT=50`, `RAG_SIMILAR_PER_MISTAKE=10`, `RAG_MIN_MATCHES_PER_TEST=2`. Các ngưỡng dành cho caller cá nhân hóa ở giai đoạn tiếp theo; chatbot không áp thêm ngưỡng mới. Chưa tạo HNSW cho kho nhỏ này.
+
+Kiểm thử: `npm run test:rag`, `npm run test:chatbot`, `npm run test:rag:db`, `npm run test:chatbot:db`, `npm run typecheck`, `npm run build`. Test DB yêu cầu TEST_DATABASE_URL của database riêng kết thúc `_test`, tạo schema cách ly và dùng provider giả.
+
+Đánh giá: `npm run rag:baseline -- --embed` tạo query vectors thật có checkpoint local, sau đó so sánh keyword/vector/RRF trên 60 nhãn bài học AI rà soát. Chạy lại không `--embed` dùng cache, không gọi AI. Kết quả trong `test/fixtures/rag-r1-baseline-results.json` có coverage và trạng thái INCOMPLETE khi thiếu vectors, không lấy 0 thay cho metric chưa đo. Đây là baseline phát triển tìm bài học, không phải gold độc lập hoặc kiểm chứng audio/cặp câu tương tự; giữ nguyên loại trừ của `rag-gold.json`. Cache vectors không commit. Xem báo cáo `../docs/PERSONALIZATION_RAG_R1_REPORT.md`.
+
+Container development hiện không mount scripts/test: cần copy nội dung `backend/scripts/.`, `backend/test/.` và package.json vào `/app/scripts`, `/app/test`, `/app/package.json` trước khi chạy CLI mới. Không copy lồng thành `scripts/scripts`.

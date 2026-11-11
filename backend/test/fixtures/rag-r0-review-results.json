@@ -1,0 +1,2976 @@
+{
+  "reviewer": {
+    "type": "AI",
+    "name": "Codex",
+    "date": "2026-11-10",
+    "version": "r0-editorial-v1",
+    "humanReviewed": false
+  },
+  "scope": "73 new documents, 60 samples and all proposed pairs; six pre-existing GENERAL documents are not newly approved.",
+  "documents": [
+    {
+      "key": "lesson-adjectives-adverbs",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "e036433019c216bd1ee697a8b1cf1718b2549b42efd0f9cfe02ca0120d16ac9c"
+    },
+    {
+      "key": "english-countability",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "b122c93d2cba82c0aa68b8d429651da5d46edafeb83b3d97ebe92a044d71c40e"
+    },
+    {
+      "key": "lesson-causative",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "e24ca390873ee83927202f4093c776d1f8305cd33cfc292a8e53fc55f8d1d2e7"
+    },
+    {
+      "key": "lesson-collocations",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "0c2cbf514469ca705cc23b7293d9af12fb734c3ad85e9beecbd5040f71eef356"
+    },
+    {
+      "key": "english-conditionals",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "d5a4f4d1c11809da07dff703aa89250823d9b1f9be4f8910197c295e81485144"
+    },
+    {
+      "key": "lesson-conjunctions",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "eae23f80792bf90a4238d23fecbd3f0a3d254b6b2b4196274902639f63964d3f"
+    },
+    {
+      "key": "lesson-future-forms",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "c0a0a6b566c2ac22f1e57198f5e7c8530a6996e65e67b171661e84b4cf6f8c5e"
+    },
+    {
+      "key": "lesson-indirect-questions",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "30a27275bb4867d4a5cb5e9634067aedebf74d9a136d1d2ad603843303686028"
+    },
+    {
+      "key": "lesson-inversion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "c67284c660b747df2fdd9bc8384b1b957d75c726e4bcda7cee06587443e5b4df"
+    },
+    {
+      "key": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "9aec3d8f0dc0e370e87907e71e69ae7af1f8f3d521e52c6c2798d8644254fd43"
+    },
+    {
+      "key": "lesson-listening-inference",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "7a9a904f4d6fb4e77c6c71aba5da0e9289335e4ca421e9a6e41c51e14952ced4"
+    },
+    {
+      "key": "lesson-listening-main-idea",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "dd7b1e38c4497a39077fdc58fb833b92d4b4efec62130548b681f1a37fb38544"
+    },
+    {
+      "key": "lesson-listening-matching",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "307515fdeb7685e64210e7fda7dbd9d246541e40090d5d9da48237c72a841453"
+    },
+    {
+      "key": "lesson-listening-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "ae686a20a7d3f7f9bd1b494986af8dc868355aabba7f350f8ea647985b38f20b"
+    },
+    {
+      "key": "lesson-modals",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "fce64dc92182ed63c129deee4099d61ed1338dbc8d832d2b30f0208e3b3b752e"
+    },
+    {
+      "key": "lesson-participle-clauses",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "d15fc30507620bd642b79a7ccd4b9cd3926cf07b79af5ba16d28b7773a423fdb"
+    },
+    {
+      "key": "english-passive",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "218aec2e39798651171ccf4e9286705a41c9ca47bedd59e369fb770daee203e2"
+    },
+    {
+      "key": "lesson-past-continuous",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "ccbf5fa86f91928a50471de076ababceacbf01656c3082b6a45a19f47321fae0"
+    },
+    {
+      "key": "lesson-past-perfect",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "191ecef557e448b584399d98de85de605a82e83b3476b83827978dbff4be0e1f"
+    },
+    {
+      "key": "lesson-past-simple",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "e915e43d68028e60cadffacbeb904af7c953ffbb00664e2c4ea319bd2a4a3cb9"
+    },
+    {
+      "key": "lesson-prepositions",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "aa265bcf67d456190c42d4661902e21bc625a27f63e9eb767d774de8ef385007"
+    },
+    {
+      "key": "lesson-present-continuous",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "5dc4b87913fbd9a16cb90649615238eb240144f17a362e78579ad1d7d3869e7e"
+    },
+    {
+      "key": "english-present-perfect-past",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "4c6fdef1fc7ababd817422fd282e2b73f771ce3125f450f019556c5ac59d9c37"
+    },
+    {
+      "key": "english-present-simple-continuous",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "c9ec01ae49d9ad6399541600c92d82c8fed7b1a1d04e8ed957371a24d194fd63"
+    },
+    {
+      "key": "lesson-pronouns",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "59581e7d4973de31052136206c461a53630fd326c66a62bcae49bbcdc2781756"
+    },
+    {
+      "key": "lesson-question-tags",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "c594b4647e3234830c6b245f7e7c34791b03b7f7017f0ce1afdc4a84264c8c61"
+    },
+    {
+      "key": "lesson-reading-cohesion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "e38bf6f6b10b1a66d59cddcebf84a4eb7bfa92c3e4dcf996e9c60f357ec6ce42"
+    },
+    {
+      "key": "lesson-reading-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "a29c310fc154ffa013f5005736ff88a6c8a9ff932f8b6f4b84fc77dbd1259701"
+    },
+    {
+      "key": "lesson-reading-inference",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "b27dba049b7a4677def77cedc796004eb089f45fdcf05b0dd5db4c5df4a30414"
+    },
+    {
+      "key": "lesson-reading-main-idea",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "7f7f3013e28dfa00b8684510a32e3bdbc4d75529c16887645ffff3a21bdbdd7e"
+    },
+    {
+      "key": "lesson-reading-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "09b475a7c9881ae0ab1764d0901c766b2e25e71206706fb636d5a9d4e4c3af01"
+    },
+    {
+      "key": "english-relative-clauses",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "d5e10833a063d22687f8f4e1cd5dc8e90f14074bb4c34e3a70e52ab57a981481"
+    },
+    {
+      "key": "lesson-speaking-fluency",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "3d5f66c3a52cf9ddfd50d29f7b0d22f9a25480babd0ad1a7ddcb463841a91329"
+    },
+    {
+      "key": "lesson-speaking-grammar",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "80127ee0af7656a225264d80d7058cd64047db909e2ffe9fb98ec7d864f7cc3d"
+    },
+    {
+      "key": "lesson-speaking-pronunciation",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "38bc320f53a723575f6c9a428e132d53f2e6a36e1822726008987f1bd03b63f2"
+    },
+    {
+      "key": "lesson-speaking-vocabulary",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "edf9763a1dcb5f3aafa744650d7c6d953119127ae7b1ec9b1d32515bb1d1a4f4"
+    },
+    {
+      "key": "lesson-subject-verb-agreement",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "c3f81fb3c811a35c8b4129b38ceecce5c290ed18f5490cc97003904b024de3f2"
+    },
+    {
+      "key": "lesson-subjunctive",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "63afedbe9b5780c7a09e36283c687062bdaec7dfefd72249797a7fe2f7ba2774"
+    },
+    {
+      "key": "lesson-unreal-past",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "3967b10fdf23741bc5465d7e0466ee31edb9f000d1fa2aee0cca41e9a479c605"
+    },
+    {
+      "key": "lesson-verb-patterns",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "442fb320d9734358957224c3a377e37d8d5be4e6a00141161faabbb9a8f92ce0"
+    },
+    {
+      "key": "english-vocabulary-context",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "cc81820208dba3b0a2d52b6ec53bb42350e671793e6f49fcc263fd5a80e562bd"
+    },
+    {
+      "key": "lesson-writing-cohesion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "f16f44d42cf084c0c92e13954408926e08e777a22df748c0feeea8ee59c6a0d8"
+    },
+    {
+      "key": "lesson-writing-grammar",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "2b62b8488e5ddeedd899916f45864a8b62001d7d7d025b30721c7d0c43727a55"
+    },
+    {
+      "key": "english-email-register",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "3b9e7d9fe2e1e5799c97bf8e340f2c8afa25bcb093b3bb4f8f11f7e2231dcb91"
+    },
+    {
+      "key": "lesson-writing-vocabulary",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "GENERIC_PADDING",
+        "INSUFFICIENT_TOPIC_SPECIFIC_PRACTICE"
+      ],
+      "note": "Quy tắc/ví dụ đã được rà soát, nhưng phần lớn độ dài là hướng dẫn chung lặp giữa các bài. Chưa đạt học liệu chuyên biệt 300–600 từ cho truy xuất. Cần giải thích ví dụ và bài tập riêng theo chủ đề.",
+      "contentHash": "91b10d8bdf25075c1008ea59b5b671c457f0f09e82243818b92c58bd8f9106cc"
+    },
+    {
+      "key": "strategy-grammar-vocab-p1",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "d72541c4412d46e6dd64e67dc70098c57b8db26ac952530499661a4014ec6e4d"
+    },
+    {
+      "key": "strategy-grammar-vocab-p2",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "e1539778e0680e55317569f79322f2268c25c0154f678c25c249f0f820c3e9b9"
+    },
+    {
+      "key": "strategy-reading-p1",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "784111c769b9bd3af4b557769191ef6978f3aadf45fa53619b6fff027fefd9da"
+    },
+    {
+      "key": "strategy-reading-p2",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "56fbd34445fa8bd5c6e227a9c8702eb90334b616cb0fdd4e7d6c52f0273a3808"
+    },
+    {
+      "key": "strategy-reading-p3",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "0a5c16f2dc3d104b438ed29522521569b7ef2254b963103226009b3370417b07"
+    },
+    {
+      "key": "strategy-reading-p4",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "bbd2e13d2340f18384396dd4a5d6f6c8d0e693cfbd6e5c2dc6db68450f146e0b"
+    },
+    {
+      "key": "strategy-listening-p1",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "832f75a9d01c95e23c49243d72587cdc90b8b0f3dacada33dd4ea28337b8cc6b"
+    },
+    {
+      "key": "strategy-listening-p2",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "ed65a5d7e12a26a8aba2bb36046befd7207ef525a9fd3deb5c9f77042d1577ec"
+    },
+    {
+      "key": "strategy-listening-p3",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "58f1d06c378902c4e7b066e23aff846bcb2e8303a883e8bc32bb06a90f7ee1bc"
+    },
+    {
+      "key": "strategy-listening-p4",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "c10bb823c2d884ecb291957a5c90a24bdaf70bbdf6e0264164097c6c2456bc39"
+    },
+    {
+      "key": "strategy-writing-p1",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "bb185bdbd89d54e1e4f83d18ebfd9f9aa640c1a2376a246a673387c8a066165a"
+    },
+    {
+      "key": "strategy-writing-p2",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "bb185bdbd89d54e1e4f83d18ebfd9f9aa640c1a2376a246a673387c8a066165a"
+    },
+    {
+      "key": "strategy-writing-p3",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "fe3f92ff39cbaf1a257de99a2a5e1bb99c5f90cd758da8d621db6751a6516c78"
+    },
+    {
+      "key": "strategy-writing-p4",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "bb185bdbd89d54e1e4f83d18ebfd9f9aa640c1a2376a246a673387c8a066165a"
+    },
+    {
+      "key": "strategy-speaking-p1",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "c5c9a2b3bdb810d66db9103cf9fe94149a97228fb30345cd977541321fc51c8a"
+    },
+    {
+      "key": "strategy-speaking-p2",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "7aefd00c98327dea5ecc0cb443830c3859089d2d9924e9362ed436b12350c4cf"
+    },
+    {
+      "key": "strategy-speaking-p3",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "6f6f753d907a93e281cd3f4531af1e1a4846f1511a5005c1edf166ba46ddcb4e"
+    },
+    {
+      "key": "strategy-speaking-p4",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "PART_SPECIFIC_WORKFLOW_MISSING"
+      ],
+      "note": "Nội dung chủ yếu sao chép một chủ đề, chưa mô tả đủ thao tác và bẫy của đúng Part. Cần biên tập theo nhiệm vụ cụ thể trước khi import.",
+      "contentHash": "c5c9a2b3bdb810d66db9103cf9fe94149a97228fb30345cd977541321fc51c8a"
+    },
+    {
+      "key": "criterion-writing-task",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "58d83a26d625dfc9a01c2e620e93f6d3684cc8168cb96f76c59cdd4a7a1cbec7"
+    },
+    {
+      "key": "criterion-writing-grammar",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "3df5e2634f1e16c26f9c27091cbafe9728777c0ffe95368430aff6449fdc55b7"
+    },
+    {
+      "key": "criterion-writing-vocabulary",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "a2de67ae26478cfa987125360936bb88dfc37efb590149d8d367cd4cfd19044e"
+    },
+    {
+      "key": "criterion-writing-coherence",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "066b8b894ef0ff5ad9197b969a7af939e772b0a7dbed2c62a18d0fca241d1ced"
+    },
+    {
+      "key": "criterion-writing-register",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "4464b2e926ffe3cacab8483eb9c2cb76d10c3ae421a061efa46af99ffebf56b0"
+    },
+    {
+      "key": "criterion-writing-mechanics",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "3333f629cbc6bc37637741df6e19334682ca8fa6849df131c51f9ea951545b39"
+    },
+    {
+      "key": "criterion-speaking-grammarvocabulary",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "77cf60b93ae38f52f9cc045548a9c7f5c179b0658ed798fa09dc486de4f61409"
+    },
+    {
+      "key": "criterion-speaking-pronunciation",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "c45824775904f949725ff9798c3bd7297a0a71dbf4cf174640e37cabcd9781b0"
+    },
+    {
+      "key": "criterion-speaking-fluency",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "004dc7d569dc9d224b23a8548a9336fd6f42e37b1a7e1bf01835208676ebdbfc"
+    },
+    {
+      "key": "criterion-speaking-taskfulfillment",
+      "status": "AI_APPROVED",
+      "issues": [],
+      "note": "Đạt ở phạm vi hướng dẫn luyện tập ngắn; không phải rubric chấm điểm chính thức.",
+      "contentHash": "54607727983ed8e294ad866568ef1a0dcd46d29186d0cad610b4b140a5b0bb67"
+    }
+  ],
+  "samples": [
+    {
+      "id": "grammar_vocab-1",
+      "documentKey": "english-present-perfect-past",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "042f01c9-328f-4934-b737-c051626122d0",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / unclassified-042f01c9-328f-4934-b737-c051626122d0."
+        },
+        {
+          "questionId": "0e9279f4-7a57-4c37-bbf1-55fe11f532f1",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / present-perfect-auxiliary."
+        },
+        {
+          "questionId": "0ee8c974-9269-4e5b-9001-ec022111091e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / past-perfect."
+        },
+        {
+          "questionId": "10b3ec03-4d9a-4262-a7d7-ea45e6e6097d",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / past-perfect-continuous."
+        },
+        {
+          "questionId": "1e14276c-5395-4836-9f7c-a011d8c2624e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / past-perfect."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-2",
+      "documentKey": "english-countability",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "04dd15a0-49c3-4bde-986f-fd8724d52dd4",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "05ba1a08-f406-4ab8-8b25-47f37d4c189d",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "2f5f7773-0db8-4984-9a71-b8a7e24746b3",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: article-sound / article-instrument."
+        },
+        {
+          "questionId": "4e1bf215-484a-4d95-9471-bce00251262e",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "63411981-48c0-4a24-a525-0bd83b2da671",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-3",
+      "documentKey": "lesson-modals",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS",
+        "SOURCE_EXPLANATION_MISMATCH"
+      ],
+      "pairs": [
+        {
+          "questionId": "011e2a0b-5fb6-4739-be8b-96799e52c559",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: unclassified-042f01c9-328f-4934-b737-c051626122d0 / since-time."
+        },
+        {
+          "questionId": "0e9279f4-7a57-4c37-bbf1-55fe11f532f1",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: unclassified-042f01c9-328f-4934-b737-c051626122d0 / present-perfect-auxiliary."
+        },
+        {
+          "questionId": "0ee8c974-9269-4e5b-9001-ec022111091e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: unclassified-042f01c9-328f-4934-b737-c051626122d0 / past-perfect."
+        },
+        {
+          "questionId": "1e14276c-5395-4836-9f7c-a011d8c2624e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: unclassified-042f01c9-328f-4934-b737-c051626122d0 / past-perfect."
+        },
+        {
+          "questionId": "361ba95f-59a5-41cd-979c-455c0040428c",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: unclassified-042f01c9-328f-4934-b737-c051626122d0 / since-time."
+        }
+      ],
+      "correction": "Needn’t have + phân từ: việc đã làm nhưng không cần thiết. Explanation nguồn nói tương lai hoàn thành là sai nội dung."
+    },
+    {
+      "id": "grammar_vocab-4",
+      "documentKey": "english-countability",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0167c005-b3a5-417b-92ae-2c47b2b71532",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "05ba1a08-f406-4ab8-8b25-47f37d4c189d",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "2f5f7773-0db8-4984-9a71-b8a7e24746b3",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: article-sound / article-instrument."
+        },
+        {
+          "questionId": "4e1bf215-484a-4d95-9471-bce00251262e",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "63411981-48c0-4a24-a525-0bd83b2da671",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-5",
+      "documentKey": "english-countability",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0167c005-b3a5-417b-92ae-2c47b2b71532",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "04dd15a0-49c3-4bde-986f-fd8724d52dd4",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "2f5f7773-0db8-4984-9a71-b8a7e24746b3",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: article-sound / article-instrument."
+        },
+        {
+          "questionId": "4e1bf215-484a-4d95-9471-bce00251262e",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "63411981-48c0-4a24-a525-0bd83b2da671",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-6",
+      "documentKey": "lesson-prepositions",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "25de4845-d8ef-4739-95b8-082c97a54866",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: preposition-without / verb-ing."
+        },
+        {
+          "questionId": "8c1ef495-a4fe-4b57-9884-89e9fde4ddce",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: preposition-without / verb-ing."
+        },
+        {
+          "questionId": "af034262-bbbb-44fe-b902-bf03364b71d8",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "af25eca4-9bc3-4e98-bec8-1e1c67bf381c",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: preposition-without / verb-ing."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-7",
+      "documentKey": "english-present-simple-continuous",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "10c8de03-3653-4c4a-afd0-8f42e50b3ce9",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "1297c75f-b062-401c-8088-20e3c60357db",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "14b9f694-af02-4bd3-a462-a0e90f514123",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "331accce-88ab-4144-990d-9de81d09af46",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "340cab81-1a37-4720-be89-4b7352d55a69",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-8",
+      "documentKey": "lesson-verb-patterns",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0e3403ff-3e7c-4737-937b-794f8f6792df",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0e7b4f97-d47c-46ef-8e3d-84e911899cf0",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "108b5e51-2578-476d-93f0-29e5bee88bfc",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "13404fbe-3972-411e-ade7-78c4d3bad793",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "1bd7167a-93bc-45e3-8b15-b613dbe22768",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-9",
+      "documentKey": "english-passive",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0d7aa111-f46b-4fad-bc63-384c7b62c011",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "2cab63a3-5fe1-4ae0-978d-d87d0088d8b8",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: passive-past / causative."
+        },
+        {
+          "questionId": "439a630a-fdbe-454c-bf4f-18d121b6c63a",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "4da5b678-9bf5-4422-8f1b-5420d0921c9e",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "4f758581-66be-4803-a476-706a00a7d982",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-10",
+      "documentKey": "english-passive",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0a9f3aee-c0df-4e8d-814e-ca45a8aed0ac",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "2cab63a3-5fe1-4ae0-978d-d87d0088d8b8",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: passive-past / causative."
+        },
+        {
+          "questionId": "439a630a-fdbe-454c-bf4f-18d121b6c63a",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "4da5b678-9bf5-4422-8f1b-5420d0921c9e",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "4f758581-66be-4803-a476-706a00a7d982",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-11",
+      "documentKey": "lesson-verb-patterns",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0a70ff55-cd74-4aac-a926-a3ab66648b1c",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0e7b4f97-d47c-46ef-8e3d-84e911899cf0",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "108b5e51-2578-476d-93f0-29e5bee88bfc",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "13404fbe-3972-411e-ade7-78c4d3bad793",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "1bd7167a-93bc-45e3-8b15-b613dbe22768",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-12",
+      "documentKey": "lesson-past-simple",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "100060a8-8965-42dd-aa2f-443fad04bcd9",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-simple / question-tag."
+        },
+        {
+          "questionId": "4c508c2d-41c7-48ea-8bdc-9a4029c8363c",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "4cb286a1-30ce-436e-a963-b1f65f26e111",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "533c3ad5-79fe-45b4-9ba4-4610ec25d518",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-simple / past-continuous."
+        },
+        {
+          "questionId": "68c53f68-ddf1-4c82-bcb0-84528c4a857e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-simple / past-continuous."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-13",
+      "documentKey": "lesson-verb-patterns",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0a70ff55-cd74-4aac-a926-a3ab66648b1c",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0e3403ff-3e7c-4737-937b-794f8f6792df",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "108b5e51-2578-476d-93f0-29e5bee88bfc",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "13404fbe-3972-411e-ade7-78c4d3bad793",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "1bd7167a-93bc-45e3-8b15-b613dbe22768",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-14",
+      "documentKey": "english-present-perfect-past",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "011e2a0b-5fb6-4739-be8b-96799e52c559",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: present-perfect-auxiliary / since-time."
+        },
+        {
+          "questionId": "042f01c9-328f-4934-b737-c051626122d0",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: present-perfect-auxiliary / unclassified-042f01c9-328f-4934-b737-c051626122d0."
+        },
+        {
+          "questionId": "0ee8c974-9269-4e5b-9001-ec022111091e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: present-perfect-auxiliary / past-perfect."
+        },
+        {
+          "questionId": "10b3ec03-4d9a-4262-a7d7-ea45e6e6097d",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: present-perfect-auxiliary / past-perfect-continuous."
+        },
+        {
+          "questionId": "1e14276c-5395-4836-9f7c-a011d8c2624e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: present-perfect-auxiliary / past-perfect."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-15",
+      "documentKey": "english-present-perfect-past",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS",
+        "SOURCE_EXPLANATION_MISMATCH"
+      ],
+      "pairs": [
+        {
+          "questionId": "102d2878-1978-4ec2-9726-ce7281c5f512",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / conditional-two."
+        },
+        {
+          "questionId": "18703620-0f44-40ad-8bec-a1a56749d1fa",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / conditional-one."
+        },
+        {
+          "questionId": "1a5dc92a-2715-4b7f-9fbe-44a339cfab9e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / conditional-one."
+        },
+        {
+          "questionId": "1dd11645-29b1-4a86-85f8-d37b469eba67",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / conditional-two."
+        },
+        {
+          "questionId": "21df4006-5784-4088-8e0a-82c32bb7609b",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: since-time / conditional-one."
+        }
+      ],
+      "correction": "Since + mốc 2020 trong hiện tại hoàn thành; explanation nguồn nói điều kiện loại hai không khớp câu."
+    },
+    {
+      "id": "grammar_vocab-16",
+      "documentKey": "lesson-past-perfect",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "011e2a0b-5fb6-4739-be8b-96799e52c559",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-perfect / since-time."
+        },
+        {
+          "questionId": "042f01c9-328f-4934-b737-c051626122d0",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-perfect / unclassified-042f01c9-328f-4934-b737-c051626122d0."
+        },
+        {
+          "questionId": "0e9279f4-7a57-4c37-bbf1-55fe11f532f1",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-perfect / present-perfect-auxiliary."
+        },
+        {
+          "questionId": "10b3ec03-4d9a-4262-a7d7-ea45e6e6097d",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-perfect / past-perfect-continuous."
+        },
+        {
+          "questionId": "1e14276c-5395-4836-9f7c-a011d8c2624e",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": "Had left diễn tả việc xảy ra trước reached; không phải hiện tại hoàn thành."
+    },
+    {
+      "id": "grammar_vocab-17",
+      "documentKey": "lesson-question-tags",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0e7179d4-59b8-4bd0-b6a8-f3c5035d6f5b",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: question-tag / past-simple."
+        },
+        {
+          "questionId": "4c508c2d-41c7-48ea-8bdc-9a4029c8363c",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: question-tag / past-simple."
+        },
+        {
+          "questionId": "4cb286a1-30ce-436e-a963-b1f65f26e111",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: question-tag / past-simple."
+        },
+        {
+          "questionId": "68c53f68-ddf1-4c82-bcb0-84528c4a857e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: question-tag / past-continuous."
+        },
+        {
+          "questionId": "6995569a-984e-4540-8b59-574c742bf29a",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        }
+      ],
+      "correction": "Was hilarious là mệnh đề khẳng định, đuôi xác nhận là wasn’t it."
+    },
+    {
+      "id": "grammar_vocab-18",
+      "documentKey": "english-conditionals",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0ecd5add-3593-4fdb-bf93-b280fb5dc13f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: conditional-two / since-time."
+        },
+        {
+          "questionId": "18703620-0f44-40ad-8bec-a1a56749d1fa",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: conditional-two / conditional-one."
+        },
+        {
+          "questionId": "1a5dc92a-2715-4b7f-9fbe-44a339cfab9e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: conditional-two / conditional-one."
+        },
+        {
+          "questionId": "1dd11645-29b1-4a86-85f8-d37b469eba67",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "21df4006-5784-4088-8e0a-82c32bb7609b",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: conditional-two / conditional-one."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-19",
+      "documentKey": "lesson-verb-patterns",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0a70ff55-cd74-4aac-a926-a3ab66648b1c",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0e3403ff-3e7c-4737-937b-794f8f6792df",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0e7b4f97-d47c-46ef-8e3d-84e911899cf0",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "13404fbe-3972-411e-ade7-78c4d3bad793",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "1bd7167a-93bc-45e3-8b15-b613dbe22768",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "grammar_vocab-20",
+      "documentKey": "lesson-past-perfect",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "011e2a0b-5fb6-4739-be8b-96799e52c559",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-perfect-continuous / since-time."
+        },
+        {
+          "questionId": "0e9279f4-7a57-4c37-bbf1-55fe11f532f1",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-perfect-continuous / present-perfect-auxiliary."
+        },
+        {
+          "questionId": "0ee8c974-9269-4e5b-9001-ec022111091e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-perfect-continuous / past-perfect."
+        },
+        {
+          "questionId": "1e14276c-5395-4836-9f7c-a011d8c2624e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-perfect-continuous / past-perfect."
+        },
+        {
+          "questionId": "361ba95f-59a5-41cd-979c-455c0040428c",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: past-perfect-continuous / since-time."
+        }
+      ],
+      "correction": "Had been working diễn tả quá trình trước looked tired; không phải hiện tại hoàn thành."
+    },
+    {
+      "id": "reading-1",
+      "documentKey": "lesson-reading-main-idea",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0248b7f5-6eba-4762-b5ba-285d4903b5a4",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-origin / heading-venue."
+        },
+        {
+          "questionId": "04128989-9a18-4235-8b23-db4b3b8cbe08",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0670be4d-897f-4948-80c0-f30874674f0e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-origin / heading-venue."
+        },
+        {
+          "questionId": "06ea7e9e-7b8e-4233-bcb2-2d2db8c3742f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-origin / heading-venue."
+        },
+        {
+          "questionId": "094e0467-94a7-4c4f-ad58-5f62ea6f565f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-origin / heading-conservation."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-2",
+      "documentKey": "lesson-prepositions",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS",
+        "PROMPT_REQUIRES_PART_CONTEXT"
+      ],
+      "pairs": [
+        {
+          "questionId": "073e3478-24f2-49e6-ba45-2349be919182",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"at\",\"in\",\"on\"] / gap-[\"bring\",\"bringing\",\"brings\"]."
+        },
+        {
+          "questionId": "0e775e90-c4da-4e30-a69c-4a9c90779dbd",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "1220e813-a47f-4ade-8eac-b6086486bb52",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"at\",\"in\",\"on\"] / gap-[\"our\",\"us\",\"we\"]."
+        },
+        {
+          "questionId": "160acb76-9d2a-4423-8b07-b2eee95d9203",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"at\",\"in\",\"on\"] / gap-[\"if\",\"unless\",\"until\"]."
+        },
+        {
+          "questionId": "16add4f0-28d7-449e-85ad-d6276a0e7dec",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"at\",\"in\",\"on\"] / gap-[\"delight\",\"delighted\",\"delighting\"]."
+        }
+      ],
+      "correction": "On trước ngày trong tuần; bài học giới từ phù hợp hơn đọc chi tiết chung."
+    },
+    {
+      "id": "reading-3",
+      "documentKey": "lesson-reading-cohesion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "022c8775-3aa8-49dc-9101-a1880a6ea4f0",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-opening / sequence-next-step."
+        },
+        {
+          "questionId": "032bbbb8-8474-4456-b3d5-140661c1e39d",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-opening / sequence-continuation."
+        },
+        {
+          "questionId": "041b6d44-76fa-40bc-b638-6394fa5e0f8b",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-opening / sequence-continuation."
+        },
+        {
+          "questionId": "0b4c5829-ffe5-4830-bc1b-50d036d6357c",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-opening / sequence-ending."
+        },
+        {
+          "questionId": "0c34f7f9-5e5c-4eef-a983-cc1b843871b6",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-opening / sequence-continuation."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-4",
+      "documentKey": "lesson-reading-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0c33d3f8-064c-4529-a907-e26645a6fa00",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "125d39f4-7137-4e4c-a62f-5eb2766646f5",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "153b5b24-d120-4694-9c80-a47a4986eb09",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "164581ee-83e2-4423-91de-d57b437e6dc5",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "18cc9495-b22d-4f9b-8216-808a6e652bb7",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-5",
+      "documentKey": "lesson-reading-main-idea",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0035f058-6a74-4621-a0c3-56f0bb0f1047",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-venue / heading-origin."
+        },
+        {
+          "questionId": "0670be4d-897f-4948-80c0-f30874674f0e",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "06ea7e9e-7b8e-4233-bcb2-2d2db8c3742f",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "094e0467-94a7-4c4f-ad58-5f62ea6f565f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-venue / heading-conservation."
+        },
+        {
+          "questionId": "0e811a3b-5552-486d-9e1a-c003df9096d6",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-venue / heading-outreach."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-6",
+      "documentKey": "lesson-reading-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS",
+        "PROMPT_REQUIRES_PART_CONTEXT"
+      ],
+      "pairs": [
+        {
+          "questionId": "007b57a3-f656-4085-ad72-20156cfd300f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"bring\",\"bringing\",\"brings\"] / gap-[\"at\",\"in\",\"on\"]."
+        },
+        {
+          "questionId": "0e775e90-c4da-4e30-a69c-4a9c90779dbd",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"bring\",\"bringing\",\"brings\"] / gap-[\"at\",\"in\",\"on\"]."
+        },
+        {
+          "questionId": "1220e813-a47f-4ade-8eac-b6086486bb52",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"bring\",\"bringing\",\"brings\"] / gap-[\"our\",\"us\",\"we\"]."
+        },
+        {
+          "questionId": "160acb76-9d2a-4423-8b07-b2eee95d9203",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"bring\",\"bringing\",\"brings\"] / gap-[\"if\",\"unless\",\"until\"]."
+        },
+        {
+          "questionId": "16add4f0-28d7-449e-85ad-d6276a0e7dec",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"bring\",\"bringing\",\"brings\"] / gap-[\"delight\",\"delighted\",\"delighting\"]."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-7",
+      "documentKey": "lesson-reading-cohesion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "011fdf56-1080-4756-a0b2-1204639adfbf",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-next-step / sequence-opening."
+        },
+        {
+          "questionId": "032bbbb8-8474-4456-b3d5-140661c1e39d",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-next-step / sequence-continuation."
+        },
+        {
+          "questionId": "041b6d44-76fa-40bc-b638-6394fa5e0f8b",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-next-step / sequence-continuation."
+        },
+        {
+          "questionId": "0b4c5829-ffe5-4830-bc1b-50d036d6357c",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-next-step / sequence-ending."
+        },
+        {
+          "questionId": "0c34f7f9-5e5c-4eef-a983-cc1b843871b6",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-next-step / sequence-continuation."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-8",
+      "documentKey": "lesson-reading-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "034b8c85-058c-4474-8653-62791f94851f",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "125d39f4-7137-4e4c-a62f-5eb2766646f5",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "153b5b24-d120-4694-9c80-a47a4986eb09",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "164581ee-83e2-4423-91de-d57b437e6dc5",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "16a340a9-3941-4b73-a362-f329afe6f73c",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-9",
+      "documentKey": "lesson-reading-main-idea",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0035f058-6a74-4621-a0c3-56f0bb0f1047",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0670be4d-897f-4948-80c0-f30874674f0e",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-origin / heading-venue."
+        },
+        {
+          "questionId": "06ea7e9e-7b8e-4233-bcb2-2d2db8c3742f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-origin / heading-venue."
+        },
+        {
+          "questionId": "094e0467-94a7-4c4f-ad58-5f62ea6f565f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-origin / heading-conservation."
+        },
+        {
+          "questionId": "0e811a3b-5552-486d-9e1a-c003df9096d6",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-origin / heading-outreach."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-10",
+      "documentKey": "lesson-prepositions",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS",
+        "PROMPT_REQUIRES_PART_CONTEXT"
+      ],
+      "pairs": [
+        {
+          "questionId": "007b57a3-f656-4085-ad72-20156cfd300f",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "073e3478-24f2-49e6-ba45-2349be919182",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"at\",\"in\",\"on\"] / gap-[\"bring\",\"bringing\",\"brings\"]."
+        },
+        {
+          "questionId": "1220e813-a47f-4ade-8eac-b6086486bb52",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"at\",\"in\",\"on\"] / gap-[\"our\",\"us\",\"we\"]."
+        },
+        {
+          "questionId": "160acb76-9d2a-4423-8b07-b2eee95d9203",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"at\",\"in\",\"on\"] / gap-[\"if\",\"unless\",\"until\"]."
+        },
+        {
+          "questionId": "16add4f0-28d7-449e-85ad-d6276a0e7dec",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"at\",\"in\",\"on\"] / gap-[\"delight\",\"delighted\",\"delighting\"]."
+        }
+      ],
+      "correction": "Các lựa chọn on/at/in cần kiến thức giới từ và câu đầy đủ."
+    },
+    {
+      "id": "reading-11",
+      "documentKey": "lesson-reading-cohesion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "011fdf56-1080-4756-a0b2-1204639adfbf",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-continuation / sequence-opening."
+        },
+        {
+          "questionId": "022c8775-3aa8-49dc-9101-a1880a6ea4f0",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-continuation / sequence-next-step."
+        },
+        {
+          "questionId": "041b6d44-76fa-40bc-b638-6394fa5e0f8b",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0c34f7f9-5e5c-4eef-a983-cc1b843871b6",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0d51e31f-835a-4864-8978-2b17f67356d9",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-continuation / sequence-prerequisite."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-12",
+      "documentKey": "lesson-reading-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "034b8c85-058c-4474-8653-62791f94851f",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0c33d3f8-064c-4529-a907-e26645a6fa00",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "153b5b24-d120-4694-9c80-a47a4986eb09",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "164581ee-83e2-4423-91de-d57b437e6dc5",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "16a340a9-3941-4b73-a362-f329afe6f73c",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-13",
+      "documentKey": "lesson-reading-main-idea",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0035f058-6a74-4621-a0c3-56f0bb0f1047",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-venue / heading-origin."
+        },
+        {
+          "questionId": "0248b7f5-6eba-4762-b5ba-285d4903b5a4",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "04128989-9a18-4235-8b23-db4b3b8cbe08",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-venue / heading-origin."
+        },
+        {
+          "questionId": "06ea7e9e-7b8e-4233-bcb2-2d2db8c3742f",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "094e0467-94a7-4c4f-ad58-5f62ea6f565f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-venue / heading-conservation."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-14",
+      "documentKey": "lesson-pronouns",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS",
+        "PROMPT_REQUIRES_PART_CONTEXT"
+      ],
+      "pairs": [
+        {
+          "questionId": "007b57a3-f656-4085-ad72-20156cfd300f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"our\",\"us\",\"we\"] / gap-[\"at\",\"in\",\"on\"]."
+        },
+        {
+          "questionId": "073e3478-24f2-49e6-ba45-2349be919182",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"our\",\"us\",\"we\"] / gap-[\"bring\",\"bringing\",\"brings\"]."
+        },
+        {
+          "questionId": "0e775e90-c4da-4e30-a69c-4a9c90779dbd",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"our\",\"us\",\"we\"] / gap-[\"at\",\"in\",\"on\"]."
+        },
+        {
+          "questionId": "160acb76-9d2a-4423-8b07-b2eee95d9203",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"our\",\"us\",\"we\"] / gap-[\"if\",\"unless\",\"until\"]."
+        },
+        {
+          "questionId": "16add4f0-28d7-449e-85ad-d6276a0e7dec",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"our\",\"us\",\"we\"] / gap-[\"delight\",\"delighted\",\"delighting\"]."
+        }
+      ],
+      "correction": "Our đứng trước schedule; trọng tâm là dạng sở hữu."
+    },
+    {
+      "id": "reading-15",
+      "documentKey": "lesson-reading-cohesion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "011fdf56-1080-4756-a0b2-1204639adfbf",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-continuation / sequence-opening."
+        },
+        {
+          "questionId": "022c8775-3aa8-49dc-9101-a1880a6ea4f0",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-continuation / sequence-next-step."
+        },
+        {
+          "questionId": "032bbbb8-8474-4456-b3d5-140661c1e39d",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0b4c5829-ffe5-4830-bc1b-50d036d6357c",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-continuation / sequence-ending."
+        },
+        {
+          "questionId": "0c34f7f9-5e5c-4eef-a983-cc1b843871b6",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-16",
+      "documentKey": "lesson-reading-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "034b8c85-058c-4474-8653-62791f94851f",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0c33d3f8-064c-4529-a907-e26645a6fa00",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "125d39f4-7137-4e4c-a62f-5eb2766646f5",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "164581ee-83e2-4423-91de-d57b437e6dc5",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "16a340a9-3941-4b73-a362-f329afe6f73c",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-17",
+      "documentKey": "lesson-reading-main-idea",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "0035f058-6a74-4621-a0c3-56f0bb0f1047",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-venue / heading-origin."
+        },
+        {
+          "questionId": "0248b7f5-6eba-4762-b5ba-285d4903b5a4",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "04128989-9a18-4235-8b23-db4b3b8cbe08",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-venue / heading-origin."
+        },
+        {
+          "questionId": "0670be4d-897f-4948-80c0-f30874674f0e",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "094e0467-94a7-4c4f-ad58-5f62ea6f565f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: heading-venue / heading-conservation."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-18",
+      "documentKey": "english-conditionals",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS",
+        "PROMPT_REQUIRES_PART_CONTEXT"
+      ],
+      "pairs": [
+        {
+          "questionId": "007b57a3-f656-4085-ad72-20156cfd300f",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"if\",\"unless\",\"until\"] / gap-[\"at\",\"in\",\"on\"]."
+        },
+        {
+          "questionId": "073e3478-24f2-49e6-ba45-2349be919182",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"if\",\"unless\",\"until\"] / gap-[\"bring\",\"bringing\",\"brings\"]."
+        },
+        {
+          "questionId": "0e775e90-c4da-4e30-a69c-4a9c90779dbd",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"if\",\"unless\",\"until\"] / gap-[\"at\",\"in\",\"on\"]."
+        },
+        {
+          "questionId": "1220e813-a47f-4ade-8eac-b6086486bb52",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"if\",\"unless\",\"until\"] / gap-[\"our\",\"us\",\"we\"]."
+        },
+        {
+          "questionId": "16add4f0-28d7-449e-85ad-d6276a0e7dec",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: gap-[\"if\",\"unless\",\"until\"] / gap-[\"delight\",\"delighted\",\"delighting\"]."
+        }
+      ],
+      "correction": "If dẫn điều kiện; trọng tâm là mệnh đề điều kiện."
+    },
+    {
+      "id": "reading-19",
+      "documentKey": "lesson-reading-cohesion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "IRRELEVANT_PROPOSED_PAIRS"
+      ],
+      "pairs": [
+        {
+          "questionId": "011fdf56-1080-4756-a0b2-1204639adfbf",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-ending / sequence-opening."
+        },
+        {
+          "questionId": "022c8775-3aa8-49dc-9101-a1880a6ea4f0",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-ending / sequence-next-step."
+        },
+        {
+          "questionId": "041b6d44-76fa-40bc-b638-6394fa5e0f8b",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-ending / sequence-continuation."
+        },
+        {
+          "questionId": "0c34f7f9-5e5c-4eef-a983-cc1b843871b6",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-ending / sequence-continuation."
+        },
+        {
+          "questionId": "0d51e31f-835a-4864-8978-2b17f67356d9",
+          "status": "REJECTED",
+          "reason": "Khác trọng tâm: sequence-ending / sequence-prerequisite."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "reading-20",
+      "documentKey": "lesson-reading-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED"
+      ],
+      "pairs": [
+        {
+          "questionId": "034b8c85-058c-4474-8653-62791f94851f",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "0c33d3f8-064c-4529-a907-e26645a6fa00",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "125d39f4-7137-4e4c-a62f-5eb2766646f5",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        },
+        {
+          "questionId": "153b5b24-d120-4694-9c80-a47a4986eb09",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "16a340a9-3941-4b73-a362-f329afe6f73c",
+          "status": "STRATEGY_RELEVANT",
+          "reason": "Có liên hệ về kỹ năng/quy tắc; cần kiểm tra họ đề gần trùng trước khi dùng làm nhãn đánh giá."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-1",
+      "documentKey": "lesson-listening-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "033739e2-8229-42af-90da-b64c5ad2cb5a",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0910999d-2cc9-47df-94be-a0d1a7181b44",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1c7162ec-85de-4142-8047-903143c02af3",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "1cc86e07-60bb-4596-b4f4-db7e49499269",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-2",
+      "documentKey": "lesson-listening-main-idea",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "15d697de-272c-41f3-ab39-1ea45f42a95d",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "20614047-2b92-461f-9c94-490cdd201c1c",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": "Main purpose là xác định mục đích chính, không mặc định là suy luận."
+    },
+    {
+      "id": "listening-3",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0663d564-da26-4268-ae14-f9a0e31d520e",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08baed34-d8e5-4357-ae45-6380456b20eb",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-4",
+      "documentKey": "lesson-listening-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0011d201-f549-4a43-acd7-b616117ad1f2",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "033739e2-8229-42af-90da-b64c5ad2cb5a",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "0910999d-2cc9-47df-94be-a0d1a7181b44",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "1c7162ec-85de-4142-8047-903143c02af3",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1cc86e07-60bb-4596-b4f4-db7e49499269",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-5",
+      "documentKey": "lesson-listening-main-idea",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "15d697de-272c-41f3-ab39-1ea45f42a95d",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "20614047-2b92-461f-9c94-490cdd201c1c",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": "Main purpose là xác định mục đích chính."
+    },
+    {
+      "id": "listening-6",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "02edf133-c8be-483c-a379-7a170ac9e6df",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0663d564-da26-4268-ae14-f9a0e31d520e",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08baed34-d8e5-4357-ae45-6380456b20eb",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-7",
+      "documentKey": "lesson-listening-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0011d201-f549-4a43-acd7-b616117ad1f2",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "0910999d-2cc9-47df-94be-a0d1a7181b44",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "1c7162ec-85de-4142-8047-903143c02af3",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1cc86e07-60bb-4596-b4f4-db7e49499269",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-8",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "15d697de-272c-41f3-ab39-1ea45f42a95d",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "20614047-2b92-461f-9c94-490cdd201c1c",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": "Lợi ích được nêu trực tiếp trong explanation, chưa có bằng chứng suy luận."
+    },
+    {
+      "id": "listening-9",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "02edf133-c8be-483c-a379-7a170ac9e6df",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08baed34-d8e5-4357-ae45-6380456b20eb",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-10",
+      "documentKey": "lesson-listening-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0011d201-f549-4a43-acd7-b616117ad1f2",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "033739e2-8229-42af-90da-b64c5ad2cb5a",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "1c7162ec-85de-4142-8047-903143c02af3",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1cc86e07-60bb-4596-b4f4-db7e49499269",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-11",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "20614047-2b92-461f-9c94-490cdd201c1c",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": "Lợi ích được nêu trực tiếp."
+    },
+    {
+      "id": "listening-12",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "02edf133-c8be-483c-a379-7a170ac9e6df",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0663d564-da26-4268-ae14-f9a0e31d520e",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08baed34-d8e5-4357-ae45-6380456b20eb",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-13",
+      "documentKey": "lesson-listening-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0011d201-f549-4a43-acd7-b616117ad1f2",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "033739e2-8229-42af-90da-b64c5ad2cb5a",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0910999d-2cc9-47df-94be-a0d1a7181b44",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1cc86e07-60bb-4596-b4f4-db7e49499269",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-14",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "15d697de-272c-41f3-ab39-1ea45f42a95d",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "20614047-2b92-461f-9c94-490cdd201c1c",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": "Khó khăn được nêu trực tiếp."
+    },
+    {
+      "id": "listening-15",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "02edf133-c8be-483c-a379-7a170ac9e6df",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0663d564-da26-4268-ae14-f9a0e31d520e",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0ad55515-4c2d-44f3-bd3c-bcaaff271b7a",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-16",
+      "documentKey": "lesson-listening-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0011d201-f549-4a43-acd7-b616117ad1f2",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        },
+        {
+          "questionId": "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "033739e2-8229-42af-90da-b64c5ad2cb5a",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0910999d-2cc9-47df-94be-a0d1a7181b44",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1c7162ec-85de-4142-8047-903143c02af3",
+          "status": "NEAR_DUPLICATE",
+          "reason": "Nội dung câu giống hệt; không là bằng chứng tổng quát hóa độc lập."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-17",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "15d697de-272c-41f3-ab39-1ea45f42a95d",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": "Lời khuyên được nêu trực tiếp."
+    },
+    {
+      "id": "listening-18",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "02edf133-c8be-483c-a379-7a170ac9e6df",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "06423de8-a8f2-434e-88c6-d8974cf88bf7",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0663d564-da26-4268-ae14-f9a0e31d520e",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08828ade-a0ca-4b48-be3e-91263b5cfcdf",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "08baed34-d8e5-4357-ae45-6380456b20eb",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-19",
+      "documentKey": "lesson-listening-opinion",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "0011d201-f549-4a43-acd7-b616117ad1f2",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0288bdb2-5d85-43f4-b17f-ab920c0e5939",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "033739e2-8229-42af-90da-b64c5ad2cb5a",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0910999d-2cc9-47df-94be-a0d1a7181b44",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1c7162ec-85de-4142-8047-903143c02af3",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": null
+    },
+    {
+      "id": "listening-20",
+      "documentKey": "lesson-listening-detail",
+      "status": "NEEDS_REVISION",
+      "issues": [
+        "NOT_INDEPENDENT_GOLD",
+        "NEAR_DUPLICATE_SPLIT_REQUIRED",
+        "AUDIO_NOT_VERIFIED"
+      ],
+      "pairs": [
+        {
+          "questionId": "027bd4c2-39c1-4045-9da9-66dde30fdf59",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0333b7aa-4c77-4f0e-886b-7781b4bc6ff1",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "0ac3d771-c6d9-43a3-a1fd-fe61de549c11",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "15d697de-272c-41f3-ab39-1ea45f42a95d",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        },
+        {
+          "questionId": "1f34c60d-cbc7-4ff8-8e53-117ddc672ed5",
+          "status": "AUDIO_UNVERIFIED",
+          "reason": "Cùng chiến lược theo văn bản nhưng chưa đối chiếu audio nguồn/đích."
+        }
+      ],
+      "correction": "Khó khăn được nêu trực tiếp."
+    }
+  ],
+  "summary": {
+    "documentsApproved": 10,
+    "documentsNeedRevision": 63,
+    "samplesReviewed": 60,
+    "labelCorrections": 16,
+    "pairsReviewed": 299,
+    "pairsRejected": 109
+  }
+}

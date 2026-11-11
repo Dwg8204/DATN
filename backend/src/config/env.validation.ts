@@ -1,6 +1,13 @@
 import * as Joi from 'joi';
 
 export const environmentSchema = Joi.object({
+  PERSONALIZATION_RAG_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+  RAG_QUESTION_MIN_SIMILARITY: Joi.number().min(0).max(1).default(0.75),
+  RAG_KNOWLEDGE_MIN_SIMILARITY: Joi.number().min(0).max(1).default(0.70),
+  RAG_EMBED_MAX_RPM: Joi.number().integer().min(1).max(1000).default(60),
+  RAG_EXPLAIN_DAILY_LIMIT: Joi.number().integer().min(1).max(500).default(50),
+  RAG_SIMILAR_PER_MISTAKE: Joi.number().integer().min(1).max(50).default(10),
+  RAG_MIN_MATCHES_PER_TEST: Joi.number().integer().min(1).max(30).default(2),
   CHATBOT_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
   CHATBOT_MODEL: Joi.string().pattern(/^[a-zA-Z0-9._-]+$/).default('gemini-3.5-flash-lite'),
   GEMINI_MAX_RPM: Joi.number().integer().min(1).max(1000).default(5),

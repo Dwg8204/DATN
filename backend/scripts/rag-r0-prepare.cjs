@@ -8,6 +8,7 @@ if(!process.argv[2])throw Error('Usage: node scripts/rag-r0-prepare.cjs <local-c
 const catalog = JSON.parse(fs.readFileSync(path.resolve(process.argv[2]),'utf8').replace(/^\uFEFF/,''));
 const notes = read('resources/chatbot-knowledge/r0-lesson-notes.json');
 const corpus = read('resources/chatbot-knowledge/corpus.json');
+if(corpus.some(d=>d.reviewStatus&&d.reviewStatus!=='DRAFT'))throw Error('Reviewed corpus exists. Edit it directly; regeneration would overwrite review decisions.');
 const existing = new Map(corpus.map(d=>[d.key,d]));
 const reuse = {'present-simple':'english-present-simple-continuous','present-perfect':'english-present-perfect-past',conditionals:'english-conditionals','relative-clauses':'english-relative-clauses',articles:'english-countability','passive-voice':'english-passive','writing-task':'english-email-register','word-meaning':'english-vocabulary-context'};
 function sections(code) {

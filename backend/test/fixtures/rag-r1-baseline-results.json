@@ -1,0 +1,567 @@
+{
+  "status": "COMPLETE_AI_REVIEWED_KNOWLEDGE_BASELINE",
+  "generatedAt": "2026-11-11T08:48:42.267Z",
+  "model": "gemini-embedding-001",
+  "corpusHash": "71d3c50993d0615be03c59e02d437409369d386edc94c130f71efba426adc3aa",
+  "labelsHash": "61c4d35a467e31f9053c22cb4f06692e56e705a2b0ca3efecce1a63b940e8102",
+  "scope": "R1 knowledge lesson retrieval from 60 R0 question texts; one target lesson per sample, top 5 chunks. Labels reviewed before measuring. No similarity-pair or answer-accuracy claims.",
+  "limitations": [
+    "Development baseline, not independent human gold or held-out generalization.",
+    "Listening labels evaluate the skill requested by written prompts; audio answers remain unverified.",
+    "Report both sample recall and family-macro recall; repeated templates share a family. No model tuning or train/test split is performed.",
+    "R0 similarQuestionIds remain excluded; question-bank Recall and verified audio evaluation remain R7 work.",
+    "Queries omit explanations and answer labels; corpus language is Vietnamese while many prompts are English."
+  ],
+  "summary": {
+    "keyword": {
+      "evaluated": 60,
+      "recallAt5": 0,
+      "familyMacroRecallAt5": 0
+    },
+    "vector": {
+      "evaluated": 60,
+      "recallAt5": 1,
+      "familyMacroRecallAt5": 1
+    },
+    "hybrid": {
+      "evaluated": 60,
+      "recallAt5": 1,
+      "familyMacroRecallAt5": 1
+    }
+  },
+  "byComponent": {
+    "GRAMMAR_VOCAB": {
+      "keyword": {
+        "evaluated": 20,
+        "recallAt5": 0,
+        "familyMacroRecallAt5": 0
+      },
+      "vector": {
+        "evaluated": 20,
+        "recallAt5": 1,
+        "familyMacroRecallAt5": 1
+      },
+      "hybrid": {
+        "evaluated": 20,
+        "recallAt5": 1,
+        "familyMacroRecallAt5": 1
+      }
+    },
+    "READING": {
+      "keyword": {
+        "evaluated": 20,
+        "recallAt5": 0,
+        "familyMacroRecallAt5": 0
+      },
+      "vector": {
+        "evaluated": 20,
+        "recallAt5": 1,
+        "familyMacroRecallAt5": 1
+      },
+      "hybrid": {
+        "evaluated": 20,
+        "recallAt5": 1,
+        "familyMacroRecallAt5": 1
+      }
+    },
+    "LISTENING": {
+      "keyword": {
+        "evaluated": 20,
+        "recallAt5": 0,
+        "familyMacroRecallAt5": 0
+      },
+      "vector": {
+        "evaluated": 20,
+        "recallAt5": 1,
+        "familyMacroRecallAt5": 1
+      },
+      "hybrid": {
+        "evaluated": 20,
+        "recallAt5": 1,
+        "familyMacroRecallAt5": 1
+      }
+    }
+  },
+  "results": [
+    {
+      "id": "grammar_vocab-1",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:since-time",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-2",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:article-sound",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-3",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:modal-perfect",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-4",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:article-sound",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-5",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:article-sound",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-6",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:without",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-7",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:habit-agreement",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-8",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:suggest-gerund",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-9",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:passive-past",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-10",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:passive-past",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-11",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:look-forward-gerund",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-12",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:past-simple",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-13",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:enjoy-gerund",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-14",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:present-perfect-auxiliary",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-15",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:since-time",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-16",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:past-perfect",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-17",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:question-tag",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-18",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:conditional-two",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-19",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:mind-gerund",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "grammar_vocab-20",
+      "component": "GRAMMAR_VOCAB",
+      "family": "GRAMMAR_VOCAB:past-perfect-continuous",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-1",
+      "component": "READING",
+      "family": "READING:READING_HEADING_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-2",
+      "component": "READING",
+      "family": "READING:weekday-on",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-3",
+      "component": "READING",
+      "family": "READING:READING_ORDER",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-4",
+      "component": "READING",
+      "family": "READING:READING_OPINION_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-5",
+      "component": "READING",
+      "family": "READING:READING_HEADING_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-6",
+      "component": "READING",
+      "family": "READING:please-infinitive",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-7",
+      "component": "READING",
+      "family": "READING:READING_ORDER",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-8",
+      "component": "READING",
+      "family": "READING:READING_OPINION_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-9",
+      "component": "READING",
+      "family": "READING:READING_HEADING_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-10",
+      "component": "READING",
+      "family": "READING:weekday-on",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-11",
+      "component": "READING",
+      "family": "READING:READING_ORDER",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-12",
+      "component": "READING",
+      "family": "READING:READING_OPINION_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-13",
+      "component": "READING",
+      "family": "READING:READING_HEADING_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-14",
+      "component": "READING",
+      "family": "READING:possessive-our",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-15",
+      "component": "READING",
+      "family": "READING:READING_ORDER",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-16",
+      "component": "READING",
+      "family": "READING:READING_OPINION_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-17",
+      "component": "READING",
+      "family": "READING:READING_HEADING_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-18",
+      "component": "READING",
+      "family": "READING:if-help",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-19",
+      "component": "READING",
+      "family": "READING:READING_ORDER",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "reading-20",
+      "component": "READING",
+      "family": "READING:READING_OPINION_MATCH",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-1",
+      "component": "LISTENING",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-2",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-main-idea",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-3",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-4",
+      "component": "LISTENING",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-5",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-main-idea",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-6",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-7",
+      "component": "LISTENING",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-8",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-9",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-10",
+      "component": "LISTENING",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-11",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-12",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-13",
+      "component": "LISTENING",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-14",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-15",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-16",
+      "component": "LISTENING",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-17",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-18",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P1",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-19",
+      "component": "LISTENING",
+      "family": "LISTENING:OPINION_LISTENING_P3",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    },
+    {
+      "id": "listening-20",
+      "component": "LISTENING",
+      "family": "LISTENING:MCQ_LISTENING_P4-lesson-listening-detail",
+      "keyword": 0,
+      "vector": 1,
+      "hybrid": 1
+    }
+  ]
+}

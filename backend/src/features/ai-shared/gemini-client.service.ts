@@ -56,7 +56,10 @@ export class GeminiClient {
         },
       );
       if (response.status === 429) {
-        const delay = retryDelay(response.headers?.get('retry-after'));
+        const delay = Math.max(
+          retryDelay(response.headers?.get('retry-after')),
+          await providerRetryDelay(response),
+        );
         this.limiter.defer(model, delay);
         throw new AiProviderError('QUOTA', delay);
       }
@@ -66,6 +69,25 @@ export class GeminiClient {
     } catch (error) {
       throw toAiProviderError(error, signal);
     }
+  }
+}
+
+// Read only the duration; never log or persist upstream messages/project IDs.
+async function providerRetryDelay(response: Response): Promise<number> {
+  try {
+    const body = await response.json();
+    const details = body?.error?.details;
+    if (!Array.isArray(details)) return 0;
+    const seconds = details
+      .filter(
+        (detail: any) =>
+          detail?.['@type'] === 'type.googleapis.com/google.rpc.RetryInfo',
+      )
+      .map((detail: any) => /^(\d+(?:\.\d+)?)s$/.exec(detail.retryDelay ?? ''))
+      .map((match: RegExpExecArray | null) => (match ? Number(match[1]) : 0));
+    return Math.min(86400000, Math.max(0, ...seconds) * 1000);
+  } catch {
+    return 0;
   }
 }
 
