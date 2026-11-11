@@ -1,5 +1,16 @@
 {
   "personalization": {
+    "explain": {
+      "open": "Why is this wrong?",
+      "error": "Could not load the explanation.",
+      "retry": "Try again",
+      "rule": "Rule",
+      "tip": "Practice tip",
+      "sources": "Sources",
+      "fallback": "A detailed lesson is not available for this question yet.",
+      "limit": "You have reached today's explanation limit. You can still view saved explanations.",
+      "unavailable": "A detailed explanation is temporarily unavailable."
+    },
     "refreshFailed": "Learning data could not be refreshed. Displayed data may be out of date. Please try again.",
     "retryLoad": "Try again",
     "placement": {

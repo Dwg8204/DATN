@@ -1,5 +1,16 @@
 {
   "personalization": {
+    "explain": {
+      "open": "Vì sao sai?",
+      "error": "Chưa tải được giải thích.",
+      "retry": "Thử lại",
+      "rule": "Quy tắc",
+      "tip": "Mẹo luyện tập",
+      "sources": "Nguồn tham khảo",
+      "fallback": "Chưa có bài học chi tiết cho dạng này.",
+      "limit": "Bạn đã dùng hết lượt giải thích hôm nay. Các giải thích đã lưu vẫn xem được.",
+      "unavailable": "Giải thích chi tiết tạm thời chưa sẵn sàng."
+    },
     "refreshFailed": "Chưa cập nhật được dữ liệu học tập. Dữ liệu đang hiển thị có thể chưa mới nhất. Vui lòng thử lại.",
     "retryLoad": "Thử lại",
     "placement": {

@@ -38,7 +38,7 @@ export interface GeminiGenerationInput {
   temperature?: number;
   maxOutputTokens?: number;
   context: {
-    userId: string;
+    userId: string | null;
     purpose: string;
     promptVersion: string;
     chatMessageId?: string;

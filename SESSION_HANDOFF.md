@@ -1,5 +1,13 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## RAG R2 — 11/11/2026
+
+- Đã triển khai API giải thích câu sai/bỏ qua có nguồn, cache theo revision/locale/prompt, retrieval gap, quota nguyên tử 50 lượt/ngày UTC và UI lazy Việt/Anh. Nhánh giữ nguyên `feature/personalization-rag`.
+- Migration 1760000025000 đã áp dụng DB local (33 migrations). Local PERSONALIZATION_RAG_ENABLED=true, backend đã restart healthy; mặc định cấu hình triển khai vẫn false. Không commit file môi trường.
+- 310 tests/25 suites backend đạt (28 test R2), PostgreSQL integration R2 và browser 1280/390 đạt; build/typecheck và lint file frontend sửa đạt.
+- 30 mẫu Grammar/Reading cuối READY, đã AI rà soát kiến thức/nguồn/độ rõ; điểm trung bình 2/2, 2/2, 1.8/2. Một lỗi tên thì bị loại và sửa, lưu audit. Không phải giáo viên duyệt, gold độc lập, đo availability hoặc kiểm chứng audio. Mẫu thu qua các lần tinh chỉnh, đã revalidate contract cuối.
+- Chi tiết: docs/PERSONALIZATION_RAG_R2_REPORT.md; artifact: backend/test/fixtures/rag-r2-explanation-eval.json. Chưa push.
+
 ## RAG R1 — 11/11/2026
 
 - Giữ nhánh chung `feature/personalization-rag`. Đã sửa 63 học liệu cần biên tập; 73 tài liệu mới AI_APPROVED với hash, giữ 6 GENERAL có nguồn. Trạng thái mới thay thế vòng duyệt R0 lịch sử bên dưới.

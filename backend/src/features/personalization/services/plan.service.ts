@@ -1,4 +1,5 @@
 import { Injectable, Logger, Optional } from "@nestjs/common";
+import { ConfigService } from '@nestjs/config';
 import { TOPIC_COVERAGE_SQL } from "../../topics/topics.service";
 import { DataSource, EntityManager } from "typeorm";
 import { ApplicationError } from "../../../common/errors/application.error";
@@ -32,6 +33,7 @@ export class PlanService {
     private readonly clock: PersonalizationClock,
     private readonly mistakes: MistakeSourceService,
     @Optional() private readonly reports?: ReportJobsService,
+    @Optional() private readonly config?: ConfigService,
   ) {}
 
   /** One-time S1 repair; dry run does not lock, sync or write. */
@@ -380,6 +382,7 @@ export class PlanService {
     return {
       itemId,
       attemptId: item.source_attempt_id,
+      ragEnabled: String(this.config?.get('PERSONALIZATION_RAG_ENABLED',false))==='true',
       purpose: attempt.purpose,
       component: item.component,
       done: item.completed_at !== null,

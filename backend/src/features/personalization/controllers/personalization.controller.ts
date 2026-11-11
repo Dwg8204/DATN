@@ -8,6 +8,8 @@ import {
   Put,
   Query,
   UseGuards,
+  Param,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { Roles } from '../../auth/decorators/roles.decorator';
@@ -26,6 +28,8 @@ import { PreferencesService } from '../services/preferences.service';
 import { SnapshotService } from '../services/snapshot.service';
 import { PlanService } from '../services/plan.service';
 import { CommentsService } from '../services/comments.service';
+import { MistakeExplanationService } from '../services/mistake-explanation.service';
+import { MistakeExplanationQueryDto } from '../dto/mistake-explanation.dto';
 
 @Controller('me')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -37,7 +41,14 @@ export class PersonalizationController {
     private readonly snapshots: SnapshotService,
     private readonly plans: PlanService,
     private readonly comments: CommentsService,
+    private readonly explanations: MistakeExplanationService,
   ) {}
+  @Get('mistakes/:attemptId/questions/:questionKey/explanation') explanation(
+    @CurrentUser() actor:AuthUser,
+    @Param('attemptId',new ParseUUIDPipe()) attemptId:string,
+    @Param('questionKey') questionKey:string,
+    @Query() query:MistakeExplanationQueryDto,
+  ) { return this.explanations.explain(actor,attemptId,questionKey,query.locale); }
   @Get('insights/comment') comment(@CurrentUser() actor: AuthUser) {
     return this.comments.current(actor);
   }
