@@ -19,6 +19,7 @@ const ruleReasons = new Set([
   'BAND_PRACTICE',
   'RECENT_MISTAKES',
   'WEAK_TOPIC',
+  'SIMILAR_QUESTIONS',
 ]);
 export default function StudyPlanCard({ data, loadError = false }) {
   const { t } = useTranslation();
@@ -69,6 +70,17 @@ export default function StudyPlanCard({ data, loadError = false }) {
               count: item.questionCount ?? item.targetCount,
             })}
       </span>
+      {item.retrieval?.tier === 1 && item.retrieval.matchCount > 0 && (
+        <span className={styles.muted} data-testid="retrieval-match">
+          {t('personalization.retrieval.matches', { count: item.retrieval.matchCount })}
+          {item.retrieval.matchedTopics?.length > 0 && ` · ${item.retrieval.matchedTopics.join(', ')}`}
+        </span>
+      )}
+      {item.retrieval?.tier === 2 && item.retrieval.matchedTopics?.length > 0 && (
+        <span className={styles.muted} data-testid="retrieval-topic">
+          {t('personalization.retrieval.topic', { topics: item.retrieval.matchedTopics.join(', ') })}
+        </span>
+      )}
       {item.reason === 'PLACEMENT' && (
         <span className={styles.muted}>
           {t('personalization.placement.title')}

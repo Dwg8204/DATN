@@ -58,7 +58,9 @@
     "rag:status": "ts-node scripts/rag-status.ts",
     "rag:baseline": "ts-node scripts/rag-baseline.ts",
     "test:explanation:db": "ts-node test/integration/mistake-explanation.ts",
-    "rag:explanations:eval": "ts-node scripts/rag-explanation-eval.ts"
+    "rag:explanations:eval": "ts-node scripts/rag-explanation-eval.ts",
+    "test:rag:plan:db": "ts-node test/integration/retrieval-plan.ts",
+    "rag:plan:baseline": "ts-node scripts/rag-plan-baseline.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",

@@ -9,6 +9,7 @@ import { PersonalizationController } from './controllers/personalization.control
 import { SnapshotService } from './services/snapshot.service';
 import { MistakeSourceService } from './services/mistake-source.service';
 import { MistakeExplanationService } from './services/mistake-explanation.service';
+import { RetrievalCandidatesService } from './services/retrieval-candidates.service';
 import { PlanCandidatesService } from './services/plan-candidates.service';
 import { PlanService } from './services/plan.service';
 import { StudyPlanController } from './controllers/study-plan.controller';
@@ -32,6 +33,7 @@ import { InsightContextService } from './services/insight-context.service';
     MistakeSourceService,
     MistakeExplanationService,
     PlanCandidatesService,
+    RetrievalCandidatesService,
     PlanService,
     PersonalizationWorker,
     RemindersService,

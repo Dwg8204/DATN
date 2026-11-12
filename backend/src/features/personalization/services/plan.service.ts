@@ -287,6 +287,7 @@ export class PlanService {
             partNumber: item.part_number,
             testId: item.test_id,
             title: test?.title ?? null,
+            retrieval: item.retrieval ? { tier: item.retrieval.tier, matchCount: item.retrieval.matchCount, matchedTopics: item.retrieval.matchedTopics } : null,
             purpose: test?.purpose ?? null,
             available:
               (!["TEST", "TOPIC_REVIEW"].includes(item.activity_type) ||

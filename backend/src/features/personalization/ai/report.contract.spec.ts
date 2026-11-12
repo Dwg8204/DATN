@@ -3,6 +3,7 @@ import {
   reportPromptInput,
   validateWeeklyContent,
   WeeklyContent,
+  resolveAiItems,
 } from "./report.contract";
 import { buildLearnerSnapshot } from "../policies/learner-snapshot";
 import { reportSnapshot } from "./report.contract";
@@ -148,12 +149,27 @@ describe("weekly AI contract", () => {
       validateWeeklyContent(content, "WEEKLY", fixtureJob()),
     ).toThrow();
   });
-  it("sends short candidate references, never titles, database IDs or question keys", () => {
+  it("sends public titles and retrieval facts without database IDs or question keys", () => {
     const prompt = JSON.stringify(reportPromptInput("MIDTERM", fixtureJob()));
     expect(prompt).not.toMatch(
-      /private|testId|sourceAttemptId|questionKeys|p1:q1/,
+      /private-user|private-test|private-attempt|testId|sourceAttemptId|questionKeys|p1:q1/,
     );
     expect(prompt).toContain('"isMidterm":true');
+    expect(prompt).toContain('"title":"private-title"');
+  });
+  it("validates retrieval claims against the selected candidate and persists its trace", () => {
+    const job = fixtureJob();
+    job.plan = { ...job.plan, days: 1, requiredPace: 1, remainingTests: 1 };
+    job.candidates = [{ ...job.candidates[0], tier: 1, matchCount: 3,
+      retrieval: { tier: 1, matchCount: 3, matchedTopics: ['Conditionals'] } }];
+    const content: WeeklyContent = { plan: { items: [{ dayIndex: 1, candidateId: 'c1', targetCount: 1, reason: 'Tương tự 3 câu sai' }] } };
+    expect(() => validateWeeklyContent(content, 'PLAN_START', job)).not.toThrow();
+    expect(resolveAiItems(content, job)[0].retrieval).toEqual(job.candidates[0].retrieval);
+    content.plan.items[0].reason = 'Tương tự 2 câu sai';
+    expect(() => validateWeeklyContent(content, 'PLAN_START', job)).toThrow();
+    job.candidates[0].matchCount = 0;
+    content.plan.items[0].reason = 'Cùng dạng câu hỏi';
+    expect(() => validateWeeklyContent(content, 'PLAN_START', job)).toThrow();
   });
   it("requires practice after reaching the test target", () => {
     const job = fixtureJob();

@@ -48,7 +48,7 @@ export class QuestionSearchService {
     WHERE t.status='PUBLISHED' AND t.archived_at IS NULL AND e.component=$2
     AND NOT(e.test_id=ANY($3::uuid[])) AND NOT(e.question_id=ANY($4::uuid[]))
     AND 1-(e.embedding <=> $1::vector)>=$5 AND e.embedding_model=$6 AND e.embedding_version=$7
-    ${part} ${options.regularOnly === false ? '' : `AND ${REGULAR_TEST_SQL}`}
+    ${part} ${options.regularOnly === false ? '' : `AND ${REGULAR_TEST_SQL} AND (t.purpose='PRACTICE' OR t.scope='FULL_SKILL') AND EXISTS(SELECT 1 FROM test_snapshots ps WHERE ps.id=t.published_snapshot_id AND ps.schema_version=1)`}
     ORDER BY e.embedding <=> $1::vector,e.question_id LIMIT ${limit}`,
         args,
       );

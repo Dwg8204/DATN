@@ -145,8 +145,8 @@ async function main() {
       [goalB],
     );
     assert.deepEqual(
-      (await db.runMigrations()).map((m) => m.name),
-      ['AddLearningPersonalization1760000018000','AddTopicWorkflow1760000019000','ExpandGrammarTopics1760000020000'],
+      (await db.runMigrations()).map((m) => m.name).sort(),
+      db.migrations.map(m => m.name ?? m.constructor.name).filter(name => Number(name.slice(-13)) >= 1760000018000).sort(),
     );
     assert.equal(await db.showMigrations(), false);
 
@@ -333,6 +333,7 @@ async function main() {
       {
         ...itemBase,
         activityType: 'TEST',
+        retrieval: { tier: 1, matchCount: 3, matchedTopics: ['Conditionals'] },
         component: 'READING',
         testId,
         partNumber: 1,
@@ -369,6 +370,8 @@ async function main() {
     );
     const foundItems = await plans.findItems(alice, plan.id);
     assert.equal(foundItems.length, 4);
+    assert.deepEqual(foundItems[0].retrieval, items[0].retrieval);
+    assert.equal(foundItems[1].retrieval, null);
     assert.equal(foundItems[0].scheduled_on, '2026-10-19');
     assert.deepEqual(
       foundItems.map((i) => i.activity_type),
@@ -562,9 +565,8 @@ async function main() {
     await db.query("UPDATE learning_goals SET status='REPLACED' WHERE id=$1", [
       goalB,
     ]);
-    await db.undoLastMigration(); // GĐ10 expanded catalog preserves reviewed data.
-    await db.undoLastMigration(); // GĐ10 workflow depends on the GĐ1 schema.
-    await db.undoLastMigration();
+    while ((await db.query('SELECT timestamp FROM migrations ORDER BY id DESC LIMIT 1'))[0]?.timestamp > 1760000017000)
+      await db.undoLastMigration();
     await assert.rejects(
       db.undoLastMigration(),
       /PERSONALIZATION_ENUM_ROLLBACK_IN_USE/,
@@ -605,7 +607,7 @@ async function main() {
       )[0].target_test_count,
       40,
     );
-    assert.equal((await db.runMigrations()).length, 4);
+    assert.equal((await db.runMigrations()).length, db.migrations.filter(m => Number((m.name ?? m.constructor.name).slice(-13)) >= 1760000017000).length);
     assert.equal(await db.showMigrations(), false);
     console.log(
       'PASS personalization: full migration chain, legacy preflight, up/down/up, constraints, ownership, concurrency, cascades, repositories and rollback.',

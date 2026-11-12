@@ -1,5 +1,9 @@
 {
   "personalization": {
+    "retrieval": {
+      "matches": "Khớp {{count}} câu với lỗi gần đây",
+      "topic": "Chủ đề cần ôn: {{topics}}"
+    },
     "explain": {
       "open": "Vì sao sai?",
       "error": "Chưa tải được giải thích.",

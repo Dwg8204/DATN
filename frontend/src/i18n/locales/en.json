@@ -1,5 +1,9 @@
 {
   "personalization": {
+    "retrieval": {
+      "matches": "Matches {{count}} recent mistakes",
+      "topic": "Topic to review: {{topics}}"
+    },
     "explain": {
       "open": "Why is this wrong?",
       "error": "Could not load the explanation.",

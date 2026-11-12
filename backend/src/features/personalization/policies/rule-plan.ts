@@ -1,8 +1,15 @@
 import { SkillComponent } from "../../test-attempts/types/attempt.type";
-import { CreatePlanItemInput } from "../types/personalization.type";
+import {
+  CreatePlanItemInput,
+  PlanRetrieval,
+} from "../types/personalization.type";
 import { addDays, dayNumber } from "./calendar";
 
-export type PlanCandidate =
+export type PlanCandidate = {
+  tier?: number;
+  matchCount?: number;
+  retrieval?: PlanRetrieval;
+} & (
   | {
       candidateId: string;
       activityType: "TOPIC_REVIEW";
@@ -34,7 +41,8 @@ export type PlanCandidate =
       sourceAttemptId: string;
       questionKeys: string[];
       component: SkillComponent;
-    };
+    }
+);
 
 export function buildRulePlan(
   candidates: PlanCandidate[],
@@ -124,7 +132,13 @@ export function buildRulePlan(
         component: test.component,
         partNumber: test.partNumber,
         testId: test.testId,
-        reason: remainingTests === 0 ? "BAND_PRACTICE" : "GOAL_PACE",
+        reason:
+          test.tier === 1
+            ? "SIMILAR_QUESTIONS"
+            : remainingTests === 0
+              ? "BAND_PRACTICE"
+              : "GOAL_PACE",
+        ...(test.retrieval ? { retrieval: test.retrieval } : {}),
       });
       if (remainingTests > 0) left--;
     }
@@ -154,6 +168,7 @@ export function buildRulePlan(
           component: topic.component,
           partNumber: topic.partNumber,
           reason: "WEAK_TOPIC",
+          ...(topic.retrieval ? { retrieval: topic.retrieval } : {}),
         });
       }
     }

@@ -1,5 +1,14 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## RAG R3 — 12/11/2026
+
+- Nhánh chung feature/personalization-rag. Chọn đề theo vector lỗi đã lưu, distinct source matchCount, ưu tiên trước top21, TOPIC_REVIEW theo số câu/chưa làm, gap PLAN, trace rule/AI/repository/API và badge Việt/Anh.
+- Migration 1760000026000 đã áp dụng local (34 migrations), readiness 200. Kế hoạch cũ không tự đổi; cột replanned_after_placement_at dự phòng R4, chưa tự replan sau placement.
+- Weekly prompt personal-weekly-v6; snapshot vẫn 5. Tắt RAG giữ thứ tự legacy. Planning không gọi embedding API.
+- Unit backend 326/27 suite đạt; focused cuối 34/3 đạt sau bổ sung contract test. R3 DB + migration/repository trace, GĐ4/S1, GĐ7, placement, S4, topic workflow và browser desktop/mobile đạt; builds/typecheck đạt.
+- Runner DB tổng bị fixture goal cũ 40 bài/3 ngày (vượt pace hiện hành) chặn; các regression R3 đã chạy trực tiếp, không nói toàn runner xanh.
+- Baseline R0: toàn nhóm lỗi 0.1667 so 0.1117 câu nhãn/đề (cũ 20 seed); riêng câu trung tâm 0.0167 so 0.0267, kém hơn. Giữ cả hai, không chỉnh ngưỡng theo điểm; evaluationEligible=false. Chức năng xong, chưa nghiệm thu chất lượng độc lập/từng câu. Xem docs/PERSONALIZATION_RAG_R3_REPORT.md và backend/test/fixtures/rag-r3-plan-baseline.json.
+
 ## RAG R2 — 11/11/2026
 
 - Đã triển khai API giải thích câu sai/bỏ qua có nguồn, cache theo revision/locale/prompt, retrieval gap, quota nguyên tử 50 lượt/ngày UTC và UI lazy Việt/Anh. Nhánh giữ nguyên `feature/personalization-rag`.

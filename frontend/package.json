@@ -30,7 +30,8 @@
     "test:topics:ui": "node --test tests/topics.browser.test.mjs",
     "test:placement:ui": "node --test tests/placement.browser.test.mjs",
     "test:personalization:s4:ui": "node --test tests/personalizationOverview.browser.test.mjs",
-    "test:explanation:ui": "node --test tests/mistakeExplanation.browser.test.mjs"
+    "test:explanation:ui": "node --test tests/mistakeExplanation.browser.test.mjs",
+    "test:rag:plan:ui": "node --test tests/retrievalPlan.browser.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

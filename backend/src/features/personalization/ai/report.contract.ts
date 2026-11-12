@@ -15,7 +15,7 @@ import { SnapshotService } from "../services/snapshot.service";
 import { addDays } from "../policies/calendar";
 import { CreatePlanItemInput } from "../types/personalization.type";
 
-export const REPORT_PROMPT_VERSION = "personal-weekly-v5";
+export const REPORT_PROMPT_VERSION = "personal-weekly-v6";
 export type ReportKind = "PLAN_START" | "WEEKLY" | "MIDTERM";
 export interface AiPlanItem {
   dayIndex: number;
@@ -111,6 +111,10 @@ export function reportPromptInput(kind: ReportKind, job: ReportJob) {
     candidates: job.candidates.map((candidate) => ({
       candidateId: candidate.candidateId,
       activityType: candidate.activityType,
+      ...('title' in candidate ? { title: candidate.title } : {}),
+      tier: candidate.tier ?? null,
+      matchCount: candidate.matchCount ?? 0,
+      matchedTopics: candidate.retrieval?.matchedTopics ?? [],
       ...(candidate.activityType === "TEST"
         ? { purpose: candidate.purpose }
         : {}),
@@ -144,8 +148,9 @@ PLAN_START chỉ trả {plan:{items:[]}}. WEEKLY/MIDTERM trả {report,plan}; m�
 report có headline (tối đa 160 ký tự), narrative (tối đa 120 từ), wins (tối đa 3 mục), nextSteps (tối đa 3 mục).
 baseline và bandChange là band đầu kỳ → hiện tại; phân biệt rõ hai mốc khi so sánh, không coi band đầu kỳ là band hiện tại.
 Chỉ MIDTERM thêm report.progressSoFar (tối đa 120 từ), tổng kết tiến độ từ đầu mục tiêu theo cumulative và goal.
-Mọi con số trong văn bản phải có trong snapshot. Gợi ý dựa vào Part/tiêu chí yếu; thiếu dữ liệu thì nói rõ.
+Mọi con số trong văn bản phải có trong snapshot; riêng reason được dùng đúng matchCount của ứng viên được chọn. Gợi ý dựa vào Part/tiêu chí yếu; thiếu dữ liệu thì nói rõ.
 plan.items gồm dayIndex (1..plan.days), candidateId, targetCount, reason (tối đa 20 từ). Mỗi ngày tối đa 3 việc.
+Ưu tiên tier thấp trong mỗi kỹ năng, sau ưu tiên PLACEMENT. Chỉ nói tương tự/giống lỗi/cùng dạng/similar khi matchCount > 0; phải nêu đúng matchCount bằng chữ số, ví dụ “Tương tự 3 câu sai gần đây”. matchCount là số câu sai khác nhau được đối chiếu, không phải số câu trong đề. matchedTopics chỉ là nhãn có căn cứ.
 Chỉ chọn candidateId được cung cấp; không lặp cùng ứng viên trong ngày. TEST là một đề cụ thể, targetCount bắt buộc bằng 1. Không lặp đề trong tuần khi còn đề chưa dùng; chỉ lặp sau khi đã dùng hết ứng viên TEST, không lặp đề trong cùng ngày.
 Số việc TEST phải >= min(min(requiredPace, 3, số đề TEST khác nhau) * days, remainingTests). Ưu tiên TEST theo nhịp, slot còn lại ôn câu sai/chủ đề, sau đó ôn thẻ.
 Khi đã đủ bài, tiếp tục luyện band đích. Xoay vòng đủ các kỹ năng có trong ứng viên nếu số ngày cho phép.
@@ -211,6 +216,14 @@ const exact = (value: Record<string, unknown>, keys: string[]) =>
 const wordCount = (text: string) =>
   text.trim().split(/\s+/u).filter(Boolean).length;
 
+export function retrievalReasonIssues(reason: unknown, matchCount: number): string[] {
+  if (typeof reason !== 'string') return [];
+  if (!/(tương tự|giống lỗi|cùng dạng|similar|khớp)/iu.test(reason)) return [];
+  if (matchCount <= 0) return ['REASON_CLAIMS_SIMILARITY'];
+  const counts = [...reason.matchAll(/(\d+(?:[.,]\d+)?)\s*(?:câu|questions?|mistakes?|matches?)/giu)].map(m => Number(m[1].replace(',', '.')));
+  return !counts.length || counts.some(n => n !== matchCount) ? ['REASON_MATCH_COUNT_MISMATCH'] : [];
+}
+
 export function validateWeeklyContent(
   value: unknown,
   kind: ReportKind,
@@ -220,7 +233,7 @@ export function validateWeeklyContent(
   const fail = (issue: string) => {
     issues.push(issue);
   };
-  const text = (value: unknown, maxChars: number, maxWords: number) => {
+  const text = (value: unknown, maxChars: number, maxWords: number, matchCount?: number) => {
     if (
       typeof value !== "string" ||
       !value.trim() ||
@@ -230,7 +243,7 @@ export function validateWeeklyContent(
       fail("TEXT_LENGTH");
       return;
     }
-    issues.push(...groundedTextIssues([value], job.learner));
+    issues.push(...groundedTextIssues([value], matchCount === undefined ? job.learner : { ...job.learner, matchCount }));
   };
   if (
     !object(value) ||
@@ -334,7 +347,8 @@ export function validateWeeklyContent(
       fail("REVIEW_COUNT");
     if (candidate.activityType === "TOPIC_REVIEW" && item.targetCount !== 1)
       fail("REVIEW_COUNT");
-    text(item.reason, 200, 20);
+    issues.push(...retrievalReasonIssues(item.reason, candidate.matchCount ?? 0));
+    text(item.reason, 200, 20, candidate.matchCount ?? 0);
   }
   const planItems = value.plan.items;
   const placements = job.candidates.filter(
@@ -401,6 +415,7 @@ export function resolveAiItems(
       sortOrder,
       targetCount: item.targetCount,
       reason: item.reason,
+      ...(candidate.retrieval ? { retrieval: candidate.retrieval } : {}),
     };
     if (candidate.activityType === "TEST")
       return {
