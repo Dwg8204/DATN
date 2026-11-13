@@ -54,6 +54,7 @@ export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
   }
 
   async runBatch(): Promise<void> {
+    await this.plans.replanAfterPlacementBatch();
     const users = await this.db.query<
       Array<{ user_id: string; updated_at: string }>
     >(

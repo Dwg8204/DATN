@@ -1,5 +1,10 @@
 {
   "personalization": {
+    "placementReplan": {
+      "message": "This week’s plan has been adjusted to your initial assessment results.",
+      "dismiss": "Dismiss notice",
+      "help": "Complete the three required assessments to adjust your learning plan right away. Writing and Speaking are optional."
+    },
     "retrieval": {
       "matches": "Matches {{count}} recent mistakes",
       "topic": "Topic to review: {{topics}}"

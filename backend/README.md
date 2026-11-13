@@ -399,3 +399,11 @@ Migration `1760000026000-AddPlanRetrievalTrace` thêm trace cho item và cột d
 `matchCount` đếm câu sai nguồn khác nhau, score cộng similarity tốt nhất mỗi nguồn; không đồng nghĩa số câu trong đề. Trace lưu tối đa 5 IDs/khóa lỗi/tên chủ đề, API chỉ công khai tier/matchCount/matchedTopics. TOPIC_REVIEW bậc 2 đếm câu có nhãn để chọn đề nhưng không tuyên bố khớp lỗi bằng vector. Weekly prompt v6 bảo vệ lý do tương tự và số câu; snapshot vẫn v5.
 
 Kiểm thử `npm run test:rag:plan:db` với TEST_DATABASE_URL `_test`; frontend `npm run test:rag:plan:ui`. `npm run rag:plan:baseline` dùng câu công khai/vector hiện có, transaction giả lập rollback, không gọi AI; output theo RAG_BASELINE_OUTPUT_DIR hoặc test/fixtures. Nhãn R0 vẫn không đủ chuẩn gold độc lập; báo cả metric nhóm lỗi và từng câu. Xem `../docs/PERSONALIZATION_RAG_R3_REPORT.md` cho kết quả và giới hạn.
+
+### R4 — Xếp lại sau đánh giá đầu vào
+
+Dùng cột replanned_after_placement_at của migration R3, không có migration mới. Bật PERSONALIZATION_RAG_ENABLED và PERSONALIZATION_WORKER_ENABLED để worker quét tối đa 50 ứng viên mỗi lượt 60 giây. Mục tiêu phải ACTIVE, plan thuộc tuần hiện tại có item PLACEMENT, ba kỹ năng bắt buộc đã assessmentComplete, chưa từng xếp lại. Lập RULE bằng R3 và vector có sẵn, không gọi thêm AI.
+
+GET current/overview tiếp tục chỉ đọc: current trả needsPlacementReplan, overview gộp vào needsSync; Dashboard gọi POST sync rồi đọc lại. Worker và sync đều khóa user trước plan, giữ nguyên ngày quá khứ/có tiến độ, ghi marker cùng transaction, retry nếu đề vừa archive. Báo cáo START/cũ không được ghi đè kế hoạch sau R4. Không thêm phụ thuộc vòng từ afterLearning.
+
+Overview trả plan.replannedAfterPlacementAt; notice Việt/Anh lưu trạng thái đóng theo planId. Kiểm thử backend `npm run test:placement:replan:db` với TEST_DATABASE_URL `_test`, frontend `npm run test:placement:replan:ui`. Xem `../docs/PERSONALIZATION_RAG_R4_REPORT.md` cho kịch bản và giới hạn đo.

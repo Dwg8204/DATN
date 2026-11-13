@@ -53,7 +53,7 @@ export default function AbilityAssessmentCard({ profile, loadError = false }) {
   return (
     <section className={styles.card}>
       <h2>{t('personalization.placement.title')}</h2>
-      <p>{t('personalization.placement.help')}</p>
+      <p>{t('personalization.placementReplan.help')}</p>
       {(error || loadError) && (
         <p role="alert">{t('personalization.loadFailed')}</p>
       )}

@@ -238,6 +238,9 @@ export class ReportJobsService {
     const today = localDay(this.clock.now(), goal.timezone);
     if (today > job.plan.endsOn) return;
     let plan = await this.plans.findWeek(row.user_id, goal.id, job.plan.weekIndex, manager);
+    // A START/queued report based on the pre-assessment snapshot must not undo R4.
+    if (plan?.replanned_after_placement_at && (row.kind === 'PLAN_START' ||
+      new Date(row.created_at).getTime() <= new Date(plan.replanned_after_placement_at).getTime())) return;
     if (plan) await this.progress.syncPlan(manager, goal, plan, this.clock.now());
     else plan = await this.plans.create(row.user_id, {
       goalId: goal.id, weekIndex: job.plan.weekIndex, startsOn: job.plan.startsOn,

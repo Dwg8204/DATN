@@ -1,5 +1,10 @@
 {
   "personalization": {
+    "placementReplan": {
+      "message": "Lộ trình tuần này đã được điều chỉnh theo kết quả đánh giá đầu vào.",
+      "dismiss": "Đóng thông báo",
+      "help": "Hoàn thành 3 bài đánh giá để lộ trình được điều chỉnh ngay. Writing và Speaking là tùy chọn."
+    },
     "retrieval": {
       "matches": "Khớp {{count}} câu với lỗi gần đây",
       "topic": "Chủ đề cần ôn: {{topics}}"

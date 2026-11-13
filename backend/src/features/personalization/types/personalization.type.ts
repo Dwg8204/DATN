@@ -74,6 +74,7 @@ export interface PlanRetrieval {
 }
 
 export interface StudyPlanRow {
+  replanned_after_placement_at?: Date | null;
   id: string;
   goal_id: string;
   user_id: string;

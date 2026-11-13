@@ -1,5 +1,13 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## RAG R4 — 13/11/2026
+
+- Thêm replanAfterPlacementLocked và batch worker tối đa 50/60s; sync/ensureLocked kích hoạt sau đủ 3 assessment. Khóa user trước plan, giữ toàn bộ ngày có tiến độ/quá khứ, marker cùng transaction, chống lặp và AI START/cũ ghi đè.
+- Giữ GET chỉ đọc theo S4: current báo needsPlacementReplan, overview.needsSync kích hoạt POST sync hiện có trên Dashboard. Overview thêm replannedAfterPlacementAt. Notice Việt/Anh đóng theo planId/localStorage có try/catch.
+- Không migration mới, dùng R3; local 34 migrations, rag/worker true, readiness 200. Lúc kiểm tra DB ứng dụng chưa có plan mang dấu R4; kịch bản Lan trong schema test riêng, không giả dữ liệu tài khoản thật.
+- 327 unit/27 suites đạt; R4 PostgreSQL đạt Lan 2/3→3/3, ngày4 khớp2lỗi, giữ ngày1–3, partialday4→day5, concurrency/idempotency, rollback/archive retry, staleAI, flagoff/noAPI. Hồi quy plan/report/placement/S4 đạt. Browser1280/390 đạt sync, dismissal/reload/newplan/locale/storageblocked. Builds/typecheck đạt.
+- Chi tiết docs/PERSONALIZATION_RAG_R4_REPORT.md. Vector/outcome fixture có kiểm soát, không nâng kết luận chất lượng semantic của R3. Nhánh vẫn feature/personalization-rag; chưa push.
+
 ## RAG R3 — 12/11/2026
 
 - Nhánh chung feature/personalization-rag. Chọn đề theo vector lỗi đã lưu, distinct source matchCount, ưu tiên trước top21, TOPIC_REVIEW theo số câu/chưa làm, gap PLAN, trace rule/AI/repository/API và badge Việt/Anh.

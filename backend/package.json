@@ -60,7 +60,8 @@
     "test:explanation:db": "ts-node test/integration/mistake-explanation.ts",
     "rag:explanations:eval": "ts-node scripts/rag-explanation-eval.ts",
     "test:rag:plan:db": "ts-node test/integration/retrieval-plan.ts",
-    "rag:plan:baseline": "ts-node scripts/rag-plan-baseline.ts"
+    "rag:plan:baseline": "ts-node scripts/rag-plan-baseline.ts",
+    "test:placement:replan:db": "ts-node test/integration/placement-replan.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { practiceAttemptsApi } from '../../test-attempts/services/practiceAttemptsApi';
 import styles from './Personalization.module.css';
+import PlacementReplanNotice from './PlacementReplanNotice';
 
 const routes = {
   GRAMMAR_VOCAB: 'grammar-vocab',
@@ -113,6 +114,9 @@ export default function StudyPlanCard({ data, loadError = false }) {
   return (
     <section className={styles.card}>
       <h2>{t('personalization.today')}</h2>
+      {data?.plan?.id && data.plan.replannedAfterPlacementAt && (
+        <PlacementReplanNotice key={data.plan.id} planId={data.plan.id} />
+      )}
       {(error || loadError) && (
         <p role="alert" className={styles.error}>
           {t('personalization.planFailed')}
