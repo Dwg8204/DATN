@@ -1,5 +1,15 @@
 {
   "personalization": {
+    "grounding": {
+      "coverage": "Các nhóm dưới đây chỉ gồm lỗi đã phân tích và tìm được bài học phù hợp.",
+      "patterns": "Nhóm lỗi trong kỳ",
+      "count": "{{count}} lỗi",
+      "prior": "Đã gặp {{count}} lần trước đó",
+      "lesson": "Bài học",
+      "lessonChip": "Bài học: {{title}}",
+      "testChip": "Đề gợi ý: {{title}}",
+      "unavailable": "Bài học hiện không khả dụng"
+    },
     "placementReplan": {
       "message": "Lộ trình tuần này đã được điều chỉnh theo kết quả đánh giá đầu vào.",
       "dismiss": "Đóng thông báo",

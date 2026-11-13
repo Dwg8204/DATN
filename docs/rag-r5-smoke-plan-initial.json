@@ -1,0 +1,190 @@
+{
+  "at": "2026-11-13T07:59:51.915Z",
+  "synthetic": true,
+  "firstPass": true,
+  "attempted": 10,
+  "passed": 5,
+  "firstPassRate": 0.5,
+  "results": [
+    {
+      "case": 1,
+      "kind": "WEEKLY",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Chào bạn, tuần này dữ liệu chưa đủ để đánh giá chi tiết nhưng chúng ta sẽ tiếp tục cố gắng nhé!",
+          "narrative": "Bạn chưa hoàn thành đủ bài làm để hệ thống ghi nhận tiến độ. Hãy duy trì nhịp học đều đặn và hoàn thành các bài tập được giao sắp tới.",
+          "wins": [
+            "Đã khởi động kế hoạch học tập."
+          ],
+          "nextSteps": [],
+          "citations": []
+        },
+        "plan": {
+          "items": []
+        }
+      }
+    },
+    {
+      "case": 2,
+      "kind": "WEEKLY",
+      "status": "FAIL",
+      "reason": [
+        "TEST_PACE"
+      ]
+    },
+    {
+      "case": 3,
+      "kind": "WEEKLY",
+      "status": "FAIL",
+      "reason": [
+        "UNKNOWN_BAND"
+      ]
+    },
+    {
+      "case": 4,
+      "kind": "WEEKLY",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Từng bước củng cố kiến thức ngữ pháp và từ vựng mỗi ngày.",
+          "narrative": "Chào bạn, hãy cùng bắt đầu kế hoạch ôn luyện Aptis tuần này nhé. Chúng ta sẽ tập trung rèn luyện các dạng bài tập để cải thiện kỹ năng.",
+          "wins": [
+            "Bắt đầu tuần mới với tinh thần học tập tích cực."
+          ],
+          "nextSteps": [
+            "Ôn tập kỹ phần giới từ chỉ thời gian trước khi làm bài tập."
+          ],
+          "citations": [
+            {
+              "nextStepIndex": 0,
+              "chunkId": "f904aa80-dfcb-427b-99a6-a28e2edbbc52"
+            }
+          ]
+        },
+        "plan": {
+          "items": [
+            {
+              "dayIndex": 1,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện giới từ thời gian"
+            },
+            {
+              "dayIndex": 2,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện giới từ thời gian"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": 5,
+      "kind": "MIDTERM",
+      "status": "FAIL",
+      "reason": [
+        "UNKNOWN_BAND"
+      ]
+    },
+    {
+      "case": 6,
+      "kind": "MIDTERM",
+      "status": "FAIL",
+      "reason": [
+        "UNKNOWN_BAND"
+      ]
+    },
+    {
+      "case": 7,
+      "kind": "MIDTERM",
+      "status": "FAIL",
+      "reason": [
+        "REPORT_NEXT_STEP_UNCITED",
+        "UNKNOWN_BAND"
+      ]
+    },
+    {
+      "case": 8,
+      "kind": "FINAL",
+      "status": "PASS",
+      "content": {
+        "statusEcho": "ON_TRACK",
+        "bandClaim": "NONE",
+        "headline": "Chào bạn, hãy bắt đầu luyện tập cùng AptiMate nhé!",
+        "narrative": "Hiện tại chưa có đủ dữ liệu bài thi để đánh giá band của bạn. Hãy tiếp tục cố gắng luyện tập mỗi ngày để cải thiện kỹ năng.",
+        "achievements": [
+          "Bạn đã sẵn sàng để bắt đầu hành trình ôn thi Aptis ESOL."
+        ],
+        "nextGoalSuggestion": {
+          "targetCefr": "B1",
+          "targetTests": 5,
+          "durationDays": 30
+        },
+        "nextSteps": [
+          "Xem lại bài học Giới từ chỉ thời gian để củng cố kiến thức với 1 lỗi đã ghi nhận."
+        ],
+        "citations": [
+          {
+            "nextStepIndex": 0,
+            "chunkId": "f904aa80-dfcb-427b-99a6-a28e2edbbc52"
+          }
+        ]
+      }
+    },
+    {
+      "case": 9,
+      "kind": "FINAL",
+      "status": "PASS",
+      "content": {
+        "statusEcho": "ON_TRACK",
+        "bandClaim": "NONE",
+        "headline": "Chao ban, chung ta cung bat dau luyen tap Aptis ESOL nhe!",
+        "narrative": "Hien tai chua co du lieu luyen thi de danh gia band. Ban hay tiep tuc hoan thanh cac bai tap de co them thong tin nhe.",
+        "achievements": [
+          "Da bat dau hanh trinh luyen thi Aptis ESOL cùng AptiMate."
+        ],
+        "nextGoalSuggestion": {
+          "targetCefr": "B1",
+          "targetTests": 5,
+          "durationDays": 30
+        },
+        "nextSteps": [],
+        "citations": []
+      }
+    },
+    {
+      "case": 10,
+      "kind": "FINAL",
+      "status": "PASS",
+      "content": {
+        "statusEcho": "ON_TRACK",
+        "bandClaim": "NONE",
+        "headline": "Chào mừng bạn đến với hành trình ôn luyện Aptis ESOL cùng chúng tôi!",
+        "narrative": "Bạn chưa hoàn thành bài thi nào trong kỳ này nên chưa có dữ liệu đánh giá band hiện tại. Hãy tiếp tục luyện tập đều đặn nhé.",
+        "achievements": [
+          "Khởi động hành trình làm quen với hệ thống học tập."
+        ],
+        "nextGoalSuggestion": {
+          "targetCefr": "B1",
+          "targetTests": 5,
+          "durationDays": 30
+        },
+        "nextSteps": [
+          "Ôn tập lại bài học Giới từ chỉ thời gian để cải thiện kỹ năng đọc."
+        ],
+        "citations": [
+          {
+            "nextStepIndex": 0,
+            "chunkId": "f904aa80-dfcb-427b-99a6-a28e2edbbc52"
+          }
+        ]
+      }
+    }
+  ]
+}

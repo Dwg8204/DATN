@@ -6,6 +6,7 @@ import { personalizationApi } from '../services/personalizationApi';
 import layout from '../../profile/pages/ProfilePage.module.css';
 import styles from './Personalization.module.css';
 import FinalGoalSuggestion from './FinalGoalSuggestion';
+import ReportEvidence from './ReportEvidence';
 
 export default function WeeklyReportPage() {
   const { id } = useParams();
@@ -76,11 +77,17 @@ function ReportDetail({ id }) {
             </table></div>
             {!snapshot.baseline && <p className={styles.muted}>{t('personalization.ability.noBaseline')}</p>}
           </section>}
+          {snapshot.errorPatterns?.length > 0 && <section data-testid="error-patterns">
+            <h2>{t('personalization.grounding.patterns')}</h2><p className={styles.muted}>{t('personalization.grounding.coverage')}</p>
+            <ul>{snapshot.errorPatterns.map(p=><li key={p.patternId}>{p.lessonTitle} · {t('personalization.grounding.count',{count:p.count})}
+              {p.priorCount>0&&<> · {t('personalization.grounding.prior',{count:p.priorCount})}</>}</li>)}</ul>
+          </section>}
           {content && <article>
             <h2>{content.headline}</h2><p>{content.narrative}</p>
             {content.progressSoFar && <><h3>{t('personalization.reportSoFar')}</h3><p>{content.progressSoFar}</p></>}
             {content.wins?.length > 0 && <><h3>{t('personalization.reportWins')}</h3><ul>{content.wins.map((text, i) => <li key={i}>{text}</li>)}</ul></>}
-            {content.nextSteps?.length > 0 && <><h3>{t('personalization.reportNextSteps')}</h3><ul>{content.nextSteps.map((text, i) => <li key={i}>{text}</li>)}</ul></>}
+            {content.nextSteps?.length > 0 && <><h3>{t('personalization.reportNextSteps')}</h3><ul>{content.nextSteps.map((text, i) => <li key={i}>{text}
+              {content.citations&&<ReportEvidence index={i} citations={content.citations} sources={report.sources} candidates={report.candidates}/>}</li>)}</ul></>}
             {content.achievements?.length > 0 && <><h3>{t('personalization.reportWins')}</h3><ul>{content.achievements.map((text, i) => <li key={i}>{text}</li>)}</ul></>}
           </article>}
           {final && content?.nextGoalSuggestion && <FinalGoalSuggestion key={report.id} suggestion={content.nextGoalSuggestion} />}

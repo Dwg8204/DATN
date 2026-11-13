@@ -1,0 +1,324 @@
+{
+  "at": "2026-11-13T08:07:18.072Z",
+  "synthetic": true,
+  "firstPass": true,
+  "attempted": 10,
+  "passed": 9,
+  "firstPassRate": 0.9,
+  "results": [
+    {
+      "case": 1,
+      "kind": "WEEKLY",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Chưa đủ dữ liệu để đánh giá tiến độ",
+          "narrative": "Hiện tại hệ thống chưa ghi nhận đủ dữ liệu học tập của bạn. Hãy bắt đầu luyện tập để chúng ta có cơ sở theo dõi tiến độ nhé.",
+          "wins": [],
+          "nextSteps": [],
+          "citations": []
+        },
+        "plan": {
+          "items": []
+        }
+      }
+    },
+    {
+      "case": 2,
+      "kind": "WEEKLY",
+      "status": "FAIL",
+      "raw": "{\n  \"report\": {\n    \"statusEcho\": \"ON_TRACK\",\n    \"bandClaim\": \"NONE\",\n    \"headline\": \"Tuan nay chua du du lieu luyen tap\",\n    \"narrative\": \"Chung ta chua co du du lieu de danh gia tien do. Hay tiep tuc co gang hoan thanh cac bai tap duoc giao nhe.\",\n    \"wins\": [],\n    \"nextSteps\": [\n      \"On lai bai hoc ve gioi tu chi thoi gian\",\n      \"Thuc hanh them bai tap READING de cai thien ky nang\"\n    ],\n    \"citations\": [\n      {\n        \"nextStepIndex\": 0,\n        \"chunkId\": \"f7334a77-c92c-4a8a-9d7b-48d36256f0c2\"\n      }\n    ]\n  },\n  \"plan\": {\n    \"items\": [\n      {\n        \"dayIndex\": 1,\n        \"candidateId\": \"practice\",\n        \"targetCount\": 1,\n        \"reason\": \"Luyen tap ky nang READING\"\n      },\n      {\n        \"dayIndex\": 2,\n        \"candidateId\": \"practice\",\n        \"targetCount\": 1,\n        \"reason\": \"Củng cố kiến thức READING\"\n      }\n    ]\n  }\n}",
+      "reason": [
+        "REPORT_NEXT_STEP_UNCITED"
+      ]
+    },
+    {
+      "case": 3,
+      "kind": "WEEKLY",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Chào bạn, tuần này chúng ta cùng bắt đầu ôn luyện nhé!",
+          "narrative": "Hiện tại chưa đủ dữ liệu để đánh giá tiến độ. Hãy kiên trì hoàn thành các bài tập được giao để cải thiện kỹ năng mỗi ngày.",
+          "wins": [],
+          "nextSteps": [
+            "Ôn tập kiến thức về giới từ chỉ thời gian"
+          ],
+          "citations": [
+            {
+              "nextStepIndex": 0,
+              "chunkId": "f7334a77-c92c-4a8a-9d7b-48d36256f0c2"
+            }
+          ]
+        },
+        "plan": {
+          "items": [
+            {
+              "dayIndex": 1,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện giới từ thời gian"
+            },
+            {
+              "dayIndex": 2,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện giới từ thời gian"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": 4,
+      "kind": "WEEKLY",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Chao ban, chung ta cung bat dau tuan moi nhe.",
+          "narrative": "Hien tai chua du du lieu de danh gia qua trinh, hay tiep tuc luyen tap deu dan moi ngay nhe.",
+          "wins": [],
+          "nextSteps": [
+            "On tap lai kien thuc ve gioi tu chi thoi gian."
+          ],
+          "citations": [
+            {
+              "nextStepIndex": 0,
+              "chunkId": "f7334a77-c92c-4a8a-9d7b-48d36256f0c2"
+            }
+          ]
+        },
+        "plan": {
+          "items": [
+            {
+              "dayIndex": 1,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyen tap de cai thien ky nang."
+            },
+            {
+              "dayIndex": 2,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "On tap lai kien thuc."
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": 5,
+      "kind": "MIDTERM",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Chưa đủ dữ liệu để đánh giá tiến độ chi tiết",
+          "narrative": "Hiện tại bạn chưa hoàn thành bài tập nào nên hệ thống chưa thể ghi nhận kết quả. Hãy bắt đầu làm các bài tập được giao để cải thiện kỹ năng.",
+          "wins": [],
+          "nextSteps": [
+            "Ôn lại bài học về giới từ chỉ thời gian."
+          ],
+          "citations": [
+            {
+              "nextStepIndex": 0,
+              "chunkId": "f7334a77-c92c-4a8a-9d7b-48d36256f0c2"
+            }
+          ],
+          "progressSoFar": "Bạn chưa có dữ liệu học tập tích lũy từ đầu kỳ. Hãy bắt đầu luyện tập đều đặn mỗi ngày."
+        },
+        "plan": {
+          "items": [
+            {
+              "dayIndex": 1,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện tập kỹ năng Reading"
+            },
+            {
+              "dayIndex": 2,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện tập kỹ năng Reading"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": 6,
+      "kind": "MIDTERM",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Chưa đủ dữ liệu để đánh giá tiến độ",
+          "narrative": "Hiện chưa có đủ dữ liệu bài làm để tổng kết tiến độ học tập. Hãy tiếp tục duy trì luyện tập theo kế hoạch để cải thiện kết quả.",
+          "wins": [
+            "Đã bắt đầu làm quen với các dạng bài luyện tập."
+          ],
+          "nextSteps": [
+            "Ôn tập lại phần giới từ chỉ thời gian để tránh lặp lại 1 lỗi sai trước đó."
+          ],
+          "citations": [
+            {
+              "nextStepIndex": 0,
+              "chunkId": "f7334a77-c92c-4a8a-9d7b-48d36256f0c2"
+            }
+          ],
+          "progressSoFar": "Chưa ghi nhận dữ liệu hoàn thành từ đầu kỳ do số bài làm bằng 0."
+        },
+        "plan": {
+          "items": [
+            {
+              "dayIndex": 1,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện tập đề đọc"
+            },
+            {
+              "dayIndex": 2,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện tập đề đọc"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": 7,
+      "kind": "MIDTERM",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Chưa đủ dữ liệu tổng kết",
+          "narrative": "Hiện tại chưa có đủ dữ liệu học tập để đánh giá tiến độ. Hãy tiếp tục hoàn thành các bài luyện tập sắp tới nhé.",
+          "wins": [
+            "Đã chuẩn bị sẵn sàng cho kế hoạch học tập."
+          ],
+          "nextSteps": [
+            "Ôn tập giới từ chỉ thời gian trước khi làm bài."
+          ],
+          "citations": [
+            {
+              "nextStepIndex": 0,
+              "chunkId": "f7334a77-c92c-4a8a-9d7b-48d36256f0c2"
+            }
+          ],
+          "progressSoFar": "Chưa ghi nhận hoạt động hoàn thành nào từ đầu kỳ đến nay do chưa đủ dữ liệu học tập."
+        },
+        "plan": {
+          "items": [
+            {
+              "dayIndex": 1,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện tập đọc hiểu"
+            },
+            {
+              "dayIndex": 2,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Củng cố kiến thức"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": 8,
+      "kind": "FINAL",
+      "status": "PASS",
+      "content": {
+        "statusEcho": "ON_TRACK",
+        "bandClaim": "NONE",
+        "headline": "Chào bạn, hãy bắt đầu hành trình ôn tập Aptis ESOL cùng AptiMate nhé!",
+        "narrative": "Bạn chưa hoàn thành bài luyện tập nào trong kỳ này. Hãy tiếp tục cố gắng để cải thiện kết quả. Chúc bạn học tốt và đạt mục tiêu!",
+        "achievements": [
+          "Bạn đã sẵn sàng để bắt đầu làm quen với các dạng bài tập Aptis ESOL."
+        ],
+        "nextGoalSuggestion": {
+          "targetCefr": "B1",
+          "targetTests": 5,
+          "durationDays": 30
+        },
+        "nextSteps": [
+          "Ôn tập lại bài học về giới từ chỉ thời gian để chuẩn bị cho phần đọc."
+        ],
+        "citations": [
+          {
+            "nextStepIndex": 0,
+            "chunkId": "f7334a77-c92c-4a8a-9d7b-48d36256f0c2"
+          }
+        ]
+      }
+    },
+    {
+      "case": 9,
+      "kind": "FINAL",
+      "status": "PASS",
+      "content": {
+        "statusEcho": "ON_TRACK",
+        "bandClaim": "NONE",
+        "headline": "Chào bạn, hãy bắt đầu luyện tập Aptis ESOL nhé!",
+        "narrative": "Hiện tại chưa có đủ dữ liệu để đánh giá band hay tiến độ cụ thể. Bạn hãy bắt đầu làm các bài luyện tập để cải thiện kỹ năng tiếng Anh mỗi ngày.",
+        "achievements": [
+          "Sẵn sàng bắt đầu hành trình luyện thi Aptis ESOL."
+        ],
+        "nextGoalSuggestion": {
+          "targetCefr": "B1",
+          "targetTests": 5,
+          "durationDays": 30
+        },
+        "nextSteps": [
+          "Ôn tập lại phần Giới từ chỉ thời gian để chuẩn bị làm bài tập tốt hơn."
+        ],
+        "citations": [
+          {
+            "nextStepIndex": 0,
+            "chunkId": "f7334a77-c92c-4a8a-9d7b-48d36256f0c2"
+          }
+        ]
+      }
+    },
+    {
+      "case": 10,
+      "kind": "FINAL",
+      "status": "PASS",
+      "content": {
+        "statusEcho": "ON_TRACK",
+        "bandClaim": "NONE",
+        "headline": "Chào mừng bạn bắt đầu hành trình luyện thi Aptis ESOL",
+        "narrative": "Bạn chưa hoàn thành bài luyện tập nào trong giai đoạn này. Hãy bắt đầu làm các bài tập để hệ thống có dữ liệu ghi nhận quá trình học tập của bạn.",
+        "achievements": [
+          "Sẵn sàng bắt đầu kế hoạch học tập mới với các học liệu hỗ trợ."
+        ],
+        "nextGoalSuggestion": {
+          "targetCefr": "B1",
+          "targetTests": 10,
+          "durationDays": 30
+        },
+        "nextSteps": [
+          "Ôn tập lại phần Giới từ chỉ thời gian để cải thiện kỹ năng READING."
+        ],
+        "citations": [
+          {
+            "nextStepIndex": 0,
+            "chunkId": "f7334a77-c92c-4a8a-9d7b-48d36256f0c2"
+          }
+        ]
+      }
+    }
+  ]
+}

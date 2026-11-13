@@ -407,3 +407,9 @@ Dùng cột replanned_after_placement_at của migration R3, không có migratio
 GET current/overview tiếp tục chỉ đọc: current trả needsPlacementReplan, overview gộp vào needsSync; Dashboard gọi POST sync rồi đọc lại. Worker và sync đều khóa user trước plan, giữ nguyên ngày quá khứ/có tiến độ, ghi marker cùng transaction, retry nếu đề vừa archive. Báo cáo START/cũ không được ghi đè kế hoạch sau R4. Không thêm phụ thuộc vòng từ afterLearning.
 
 Overview trả plan.replannedAfterPlacementAt; notice Việt/Anh lưu trạng thái đóng theo planId. Kiểm thử backend `npm run test:placement:replan:db` với TEST_DATABASE_URL `_test`, frontend `npm run test:placement:replan:ui`. Xem `../docs/PERSONALIZATION_RAG_R4_REPORT.md` cho kịch bản và giới hạn đo.
+
+## RAG R5: learner errors and cited reports
+
+Run `npm run db:migrate`, then enable `PERSONALIZATION_RAG_ENABLED=true` to index learner errors asynchronously. `npm run rag:status` includes aggregate error-index progress and historical missing-vector gaps. WEEKLY/MIDTERM/FINAL reports created with snapshot v6 carry lesson sources; existing READY reports remain unchanged.
+
+Verification: `npm run test:rag:errors:db` uses an isolated `_test` database; `npm run ai:personalization:smoke -- --live --rag` explicitly calls the configured AI provider with synthetic data. Frontend: `npm run test:rag:reports:ui`. See [R5 implementation and validation](../docs/PERSONALIZATION_RAG_R5_REPORT.md) for results, limitations and manual checks.

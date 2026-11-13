@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { LearnerKnowledgeService } from '../../retrieval/learner-knowledge.service';
+import { Injectable, Optional } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { LearningInsightRow } from '../types/personalization.type';
@@ -7,7 +8,7 @@ import { ReportJob } from '../ai/report.contract';
 
 @Injectable()
 export class ReportsService {
-  constructor(private readonly db: DataSource, private readonly clock: PersonalizationClock) {}
+  constructor(private readonly db: DataSource, private readonly clock: PersonalizationClock, @Optional() private readonly knowledge?:LearnerKnowledgeService) {}
 
   async list(userId: string, goalId: string | undefined, page = 1) {
     const rows = await this.db.query<LearningInsightRow[]>(
@@ -15,7 +16,7 @@ export class ReportsService {
        WHERE user_id=$1 AND kind IN ('WEEKLY','MIDTERM','FINAL') AND snapshot ? 'learner' AND ($2::uuid IS NULL OR goal_id=$2)
        ORDER BY learning_insights.covers_to DESC,created_at DESC,id DESC LIMIT 21 OFFSET $3`, [userId, goalId ?? null, (page - 1) * 20],
     );
-    return { items: rows.slice(0, 20).map(row => this.present(row)), page, hasMore: rows.length > 20 };
+    return { items: await Promise.all(rows.slice(0, 20).map(row => this.present(row))), page, hasMore: rows.length > 20 };
   }
 
   async read(userId: string, id: string) {
@@ -28,12 +29,14 @@ export class ReportsService {
     return this.present(row);
   }
 
-  private present(row: LearningInsightRow) {
+  private async present(row: LearningInsightRow) {
     const job = row.snapshot as unknown as ReportJob;
     return {
       id: row.id, goalId: row.goal_id, kind: row.kind, weekIndex: row.week_index,
       coversFrom: row.covers_from, coversTo: row.covers_to, status: row.status,
       source: row.content?.source ?? 'RULE', content: row.content?.report ?? null,
+      sources: this.knowledge ? await this.knowledge.sources((job.sources??[]).map(s=>s.chunkId)) : [],
+      candidates: job.candidates.filter(c=>'testId' in c).map(c=>({candidateId:c.candidateId,...('testId' in c?{testId:c.testId,title:c.title,component:c.component,partNumber:c.partNumber,purpose:c.purpose}:{})})),
       snapshot: job.learner, outcome: job.outcome ?? null, deliverAt: row.deliver_at, readAt: row.read_at,
     };
   }

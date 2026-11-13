@@ -150,9 +150,9 @@ export function groundedTextIssues(
     if (/<[^>]+>|https?:\/\/|www\./iu.test(text)) issues.push("UNSAFE_FORMAT");
     if (/(cam kết|đảm bảo|chắc chắn).{0,50}(đạt|điểm|band|thi)/iu.test(text))
       issues.push("SCORE_PROMISE");
-    for (const band of text.match(/\b(?:A[12]|B[12]|C[12]?)\b/g) ?? [])
+    for (const band of text.match(/(?<![\p{L}\p{N}_])(?:A[12]|B[12]|C[12]?)(?![\p{L}\p{N}_])/gu) ?? [])
       if (!strings.has(band)) issues.push("UNKNOWN_BAND");
-    const withoutBands = text.replace(/\b(?:A[12]|B[12]|C[12]?)\b/g, "");
+    const withoutBands = text.replace(/(?<![\p{L}\p{N}_])(?:A[12]|B[12]|C[12]?)(?![\p{L}\p{N}_])/gu, "");
     for (const token of withoutBands.match(/-?\d+(?:[.,]\d+)?/g) ?? []) {
       const number = Number(token.replace(",", "."));
       if (!numbers.some((n) => Math.abs(n - number) <= 1))

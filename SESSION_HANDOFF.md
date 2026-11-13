@@ -1,5 +1,13 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## RAG R5 — 13/11/2026
+
+- Kho lỗi riêng learner_error_chunks/jobs, migration 1760000027000 (local 35 migrations). Trigger invalidates/requeues khi status/result/revision đổi; worker SKIP LOCKED sao chép vector trắc nghiệm, embed tối đa 10 finding Writing, quota/backoff. Không gửi văn bản người học vào report prompt.
+- ErrorPatternsService gom theo bài học READY/LEARNER, top5, current/priorCount, report-only snapshot v6. Weekly v7/final v4, nextSteps có citations; nguồn kiểm tra khi lưu và khi đọc; báo cáo READY cũ không viết lại. API đọc chunk STUDENT, modal/chip Việt-Anh và sources cho chatbot.
+- 342 unit/29 suites; DB R5/GĐ7/GĐ8/GĐ9/S4/chatbot đạt, GĐ7 có lượt RAG_REPORT_TEST=true; browser1280/390 đạt. Backend typecheck/build, frontend build/lint hoàn tất (lint có warning cũ).
+- Smoke AI thật bộ đầy đủ có lộ trình: 9/10 (90%) lần đầu, 1 thiếu citation bị chặn. Lưu cả các lượt trước 10/10 (days=0), 5/10, 6/10; phát hiện và sửa regex CEFR nhận nhầm “Củng/Cố” là C. minimumTestItems dùng chung code/prompt. Xem docs/PERSONALIZATION_RAG_R5_REPORT.md và docs/rag-r5-smoke*.json; không phải đánh giá semantic độc lập.
+- Local index: 725 error chunks, 31 job completed, 1 pending vì thiếu vector tương thích snapshot lịch sử, 0 failed. Pattern chỉ gồm finding đã index/khớp học liệu, không phải toàn bộ lỗi. Worker bất đồng bộ, READY không backfill nhóm trễ. Cờ RAG local true, mặc định triển khai false. Nhánh feature/personalization-rag, chưa push.
+
 ## RAG R4 — 13/11/2026
 
 - Thêm replanAfterPlacementLocked và batch worker tối đa 50/60s; sync/ensureLocked kích hoạt sau đủ 3 assessment. Khóa user trước plan, giữ toàn bộ ngày có tiến độ/quá khứ, marker cùng transaction, chống lặp và AI START/cũ ghi đè.

@@ -1,16 +1,16 @@
-import 'reflect-metadata';
-import 'dotenv/config';
-import { DataSource } from 'typeorm';
-import { createDataSourceOptions } from '../src/database/data-source-options';
+import "reflect-metadata";
+import "dotenv/config";
+import { DataSource } from "typeorm";
+import { createDataSourceOptions } from "../src/database/data-source-options";
 import {
   buildQuestionText,
   QUESTION_TEXT_VERSION,
-} from '../src/features/retrieval/question-text';
-import { EMBEDDING_MODEL } from '../src/features/retrieval/embedding.service';
-import { KnowledgeSearchService } from '../src/features/retrieval/knowledge-search.service';
-import { QuestionSearchService } from '../src/features/retrieval/question-search.service';
+} from "../src/features/retrieval/question-text";
+import { EMBEDDING_MODEL } from "../src/features/retrieval/embedding.service";
+import { KnowledgeSearchService } from "../src/features/retrieval/knowledge-search.service";
+import { QuestionSearchService } from "../src/features/retrieval/question-search.service";
 
-// Read-only readiness and retrieval check; uses stored vectors, no provider calls or learner records.
+// Read-only readiness and retrieval check; uses stored vectors, no provider calls or learner content; only aggregate error-index counts.
 async function main() {
   const db = await new DataSource({
     ...createDataSourceOptions(),
@@ -63,12 +63,19 @@ async function main() {
           },
         )
       : [];
+    const [learnerErrors] =
+      await db.query(`SELECT (SELECT count(*)::int FROM learner_error_chunks) chunks,
+      count(*) FILTER(WHERE completed_at IS NOT NULL)::int completed,
+      count(*) FILTER(WHERE completed_at IS NULL)::int pending,
+      count(*) FILTER(WHERE completed_at IS NULL AND retry_count>=5)::int failed,
+      count(*) FILTER(WHERE error_code='QUESTION_VECTOR_MISSING')::int missingQuestionVectors FROM learner_error_jobs`);
     console.log(
       JSON.stringify(
         {
           questions: { expected: rows.length, missing, stale },
           knowledge,
           jobs,
+          learnerErrors,
           smoke: {
             knowledgeHits: knowledgeHits.length,
             questionHits: questionHits.length,
@@ -92,6 +99,6 @@ async function main() {
   }
 }
 main().catch(() => {
-  console.error('RAG readiness check failed. Check database and migrations.');
+  console.error("RAG readiness check failed. Check database and migrations.");
   process.exitCode = 1;
 });

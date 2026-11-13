@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { LearnerKnowledgeService } from '../../retrieval/learner-knowledge.service';
+import { Injectable, Optional } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { LearningInsightsRepository } from '../repositories/learning-insights.repository';
 import { ReportJob } from '../ai/report.contract';
@@ -6,7 +7,7 @@ import { ReportJob } from '../ai/report.contract';
 /** Read-only projection shared with chatbot. Never exposes internal candidate mappings. */
 @Injectable()
 export class InsightContextService {
-  constructor(private readonly insights: LearningInsightsRepository) {}
+  constructor(private readonly insights: LearningInsightsRepository, @Optional() private readonly knowledge?:LearnerKnowledgeService) {}
 
   async read(userId: string, insightId: string) {
     const row = await this.insights.findById(userId, insightId);
@@ -27,11 +28,13 @@ export class InsightContextService {
       status: row.status, source: row.content?.source ?? 'RULE',
       snapshotVersion: row.snapshot_version, inputHash: row.input_hash,
       snapshot: {
+        errorPatterns: learner.errorPatterns ?? [],
         goal: learner.goal, band: learner.band, baseline: learner.baseline ?? null, bandChange: learner.bandChange ?? [], statistics: groups(learner.statistics),
         cumulative: { completed: learner.cumulative.completed, statistics: groups(learner.cumulative.statistics) },
         weak: learner.weak, mistakes: learner.mistakes, vocab: learner.vocab,
         habit: learner.habit, period: learner.period,
       },
+      sources: this.knowledge ? (await this.knowledge.sources((job.sources??[]).map(s=>s.chunkId))).map(s=>({id:s.chunkId,...s})) : [],
       outcome: job.outcome ?? null, content: row.content?.report ?? null,
       limitation: 'Saved report snapshot, not current progress. At most five score samples per group. CEFR is an estimate; do not recalculate scores or infer bands from Parts.',
     };

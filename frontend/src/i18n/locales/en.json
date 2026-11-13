@@ -1,5 +1,15 @@
 {
   "personalization": {
+    "grounding": {
+      "coverage": "These groups include only analyzed errors with a matching lesson.",
+      "patterns": "Error patterns in this period",
+      "count": "{{count}} errors",
+      "prior": "Seen {{count}} times previously",
+      "lesson": "Lesson",
+      "lessonChip": "Lesson: {{title}}",
+      "testChip": "Suggested test: {{title}}",
+      "unavailable": "This lesson is unavailable"
+    },
     "placementReplan": {
       "message": "This week’s plan has been adjusted to your initial assessment results.",
       "dismiss": "Dismiss notice",

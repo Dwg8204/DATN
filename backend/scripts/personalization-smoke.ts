@@ -12,6 +12,8 @@ if (!process.argv.includes('--live')) {
   console.log(
     'Use --live with TEST_DATABASE_URL ending in _test and configured PERSONALIZATION_PROVIDER/model/key to run one synthetic COMMENT request. Gemini additionally requires confirmed FREE configuration.',
   );
+} else if (process.argv.includes('--rag')) {
+  import('./rag-report-smoke').then(m=>m.ragReportSmoke()).catch(()=>{console.error('RAG smoke setup failed');process.exitCode=1;});
 } else {
   withPersonalizationDatabase(async (db, userId) => {
     const config = new ConfigService({

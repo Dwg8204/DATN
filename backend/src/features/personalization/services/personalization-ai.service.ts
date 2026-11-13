@@ -1,8 +1,9 @@
 import { claimContext } from "../ai/state-claims";
+import { groundedReport } from '../ai/report-grounding';
 import { Injectable } from "@nestjs/common";
 import {
   FINAL_PROMPT_VERSION,
-  FINAL_SCHEMA,
+  finalSchema,
   FINAL_SYSTEM,
   validateFinalContent,
 } from "../ai/final.contract";
@@ -88,7 +89,7 @@ export class PersonalizationAiService {
       kind === "PLAN_START" ? "PERSONAL_PLAN" : "PERSONAL_WEEKLY",
       REPORT_PROMPT_VERSION,
       REPORT_SYSTEM,
-      reportSchema(kind),
+      reportSchema(kind, groundedReport(job)),
       reportPromptInput(kind, job),
       issues,
       8192,
@@ -105,14 +106,15 @@ export class PersonalizationAiService {
       "PERSONAL_FINAL",
       FINAL_PROMPT_VERSION,
       FINAL_SYSTEM,
-      FINAL_SCHEMA,
+      finalSchema(groundedReport(job)),
       {
         snapshot: job.learner,
+        groundingEnabled: groundedReport(job), sources: job.sources ?? [], candidates: [],
         outcome: job.outcome,
         validationContext: claimContext(job.learner, job.outcome),
       },
       issues,
-      2048,
+      4096,
     );
     return {
       content: validateFinalContent(result.parsed, job),

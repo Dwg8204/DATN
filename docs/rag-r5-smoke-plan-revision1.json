@@ -1,0 +1,232 @@
+{
+  "at": "2026-11-13T08:03:11.595Z",
+  "synthetic": true,
+  "firstPass": true,
+  "attempted": 10,
+  "passed": 6,
+  "firstPassRate": 0.6,
+  "results": [
+    {
+      "case": 1,
+      "kind": "WEEKLY",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Chào mừng bạn đến với hành trình ôn luyện Aptis!",
+          "narrative": "Hãy bắt đầu làm các bài tập đầu tiên để hệ thống ghi nhận dữ liệu và xây dựng lộ trình cá nhân hóa cho bạn nhé.",
+          "wins": [
+            "Đã sẵn sàng bắt đầu hành trình ôn tập."
+          ],
+          "nextSteps": [],
+          "citations": []
+        },
+        "plan": {
+          "items": []
+        }
+      }
+    },
+    {
+      "case": 2,
+      "kind": "WEEKLY",
+      "status": "FAIL",
+      "raw": "{\"report\":{\"statusEcho\":\"ON_TRACK\",\"bandClaim\":\"NONE\",\"headline\":\"Tóm tắt tiến độ học tập hàng tuần\",\"narrative\":\"Chúng ta tiếp tục cố gắng ôn luyện bám sát kế hoạch đề ra mỗi ngày để cải thiện kỹ năng.\",\"wins\":[\"Hoàn thành nhiệm vụ học tập theo kế hoạch\"],\"nextSteps\":[\"Xem lại bài học Giới từ chỉ thời gian trước khi làm bài.\"],\"citations\":[{\"nextStepIndex\":0,\"chunkId\":\"d64fbcb4-0a00-4135-9eb8-0abb30e3a7fa\"}]},\"plan\":{\"items\":[{\"dayIndex\":1,\"candidateId\":\"practice\",\"targetCount\":1,\"reason\":\"Luyện tập Reading\"},{\"dayIndex\":2,\"candidateId\":\"practice\",\"targetCount\":1,\"reason\":\"Luyện tập Reading\"}]}}",
+      "reason": [
+        "STATUS_CONTRADICTION"
+      ]
+    },
+    {
+      "case": 3,
+      "kind": "WEEKLY",
+      "status": "FAIL",
+      "raw": "{\"report\":{\"statusEcho\":\"ON_TRACK\",\"bandClaim\":\"NONE\",\"headline\":\"Chào mừng bạn đến với lộ trình luyện thi Aptis ESOL!\",\"narrative\":\"Hãy bắt đầu làm quen với các bài tập để hệ thống ghi nhận dữ liệu tiến độ. Cố gắng luyện tập đều đặn mỗi ngày nhé.\",\"wins\":[\"Khởi động tinh thần học tập tích cực.\"],\"nextSteps\":[\"Ôn tập bài học Giới từ chỉ thời gian để nắm vững kiến thức cơ bản.\"],\"citations\":[{\"nextStepIndex\":0,\"chunkId\":\"d64fbcb4-0a00-4135-9eb8-0abb30e3a7fa\"}]},\"plan\":{\"items\":[{\"dayIndex\":1,\"candidateId\":\"practice\",\"targetCount\":1,\"reason\":\"Luyện tập đọc hiểu\"},{\"dayIndex\":2,\"candidateId\":\"practice\",\"targetCount\":1,\"reason\":\"Củng cố kiến thức\"}]}}",
+      "reason": [
+        "UNKNOWN_BAND"
+      ]
+    },
+    {
+      "case": 4,
+      "kind": "WEEKLY",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Tuan moi nhe nhang cung luyen tap",
+          "narrative": "Chung ta chua du du lieu de danh gia band. Hay tiep tuc luyen tap deu dan moi ngay nhe.",
+          "wins": [
+            "Bat dau lam quen voi cac bai luyen tap"
+          ],
+          "nextSteps": [
+            "On lai bai hoc ve gioi tu chi thoi gian"
+          ],
+          "citations": [
+            {
+              "nextStepIndex": 0,
+              "chunkId": "d64fbcb4-0a00-4135-9eb8-0abb30e3a7fa"
+            }
+          ]
+        },
+        "plan": {
+          "items": [
+            {
+              "dayIndex": 1,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyen tap ky nang"
+            },
+            {
+              "dayIndex": 2,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "On tap them"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": 5,
+      "kind": "MIDTERM",
+      "status": "PASS",
+      "content": {
+        "report": {
+          "statusEcho": "ON_TRACK",
+          "bandClaim": "NONE",
+          "headline": "Báo cáo giữa kỳ quá trình ôn tập",
+          "narrative": "Chưa đủ dữ liệu để đánh giá tiến độ chi tiết. Hãy tiếp tục duy trì luyện tập đều đặn mỗi ngày.",
+          "wins": [
+            "Khởi động hành trình học tập"
+          ],
+          "nextSteps": [
+            "Ôn tập bài học Giới từ chỉ thời gian từ học liệu."
+          ],
+          "citations": [
+            {
+              "nextStepIndex": 0,
+              "chunkId": "d64fbcb4-0a00-4135-9eb8-0abb30e3a7fa"
+            }
+          ],
+          "progressSoFar": "Chưa có dữ liệu tích lũy để tổng kết tiến độ từ đầu mục tiêu."
+        },
+        "plan": {
+          "items": [
+            {
+              "dayIndex": 1,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện tập đọc"
+            },
+            {
+              "dayIndex": 2,
+              "candidateId": "practice",
+              "targetCount": 1,
+              "reason": "Luyện tập củng cố"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "case": 6,
+      "kind": "MIDTERM",
+      "status": "FAIL",
+      "raw": "{\"report\":{\"statusEcho\":\"ON_TRACK\",\"bandClaim\":\"NONE\",\"headline\":\"Báo cáo giữa kỳ ôn luyện Aptis ESOL General\",\"narrative\":\"Hãy tiếp tục cố gắng hoàn thành các bài tập để cải thiện kỹ năng tiếng Anh của bạn.\",\"wins\":[\"Bắt đầu quá trình luyện tập đều đặn.\"],\"nextSteps\":[\"Ôn tập lại bài học về giới từ chỉ thời gian.\"],\"citations\":[{\"nextStepIndex\":0,\"chunkId\":\"d64fbcb4-0a00-4135-9eb8-0abb30e3a7fa\"}],\"progressSoFar\":\"Bạn đang trong giai đoạn đầu của lộ trình học tập, hãy kiên trì ôn luyện mỗi ngày.\"}, \"plan\":{\"items\":[{\"dayIndex\":1,\"candidateId\":\"practice\",\"targetCount\":1,\"reason\":\"Luyện tập giới từ thời gian\"},{\"dayIndex\":2,\"candidateId\":\"practice\",\"targetCount\":1,\"reason\":\"Củng cố kỹ năng đọc\"}]}}",
+      "reason": [
+        "UNKNOWN_BAND"
+      ]
+    },
+    {
+      "case": 7,
+      "kind": "MIDTERM",
+      "status": "FAIL",
+      "raw": "{\n  \"report\": {\n    \"statusEcho\": \"ON_TRACK\",\n    \"bandClaim\": \"NONE\",\n    \"headline\": \"Tong ket giua ky: Chu y On tap Giói tu chi thoi gian\",\n    \"narrative\": \"Ban da bat dau qua trinh luyen tap. Hay tiep tuc co gang hoan thanh cac bai luyen tap de cai thien ky nang.\",\n    \"wins\": [\n      \"Da bat dau tham gia luyen tap\"\n    ],\n    \"nextSteps\": [\n      \"Theo bai hoc Giới từ chỉ thời gian de luyen tap them.\",\n      \"Thuc hien bai tap luyen tap de tang cuong ky nang.\"\n    ],\n    \"citations\": [\n      {\n        \"nextStepIndex\": 0,\n        \"chunkId\": \"d64fbcb4-0a00-4135-9eb8-0abb30e3a7fa\"\n      },\n      {\n        \"nextStepIndex\": 1,\n        \"candidateId\": \"practice\"\n      }\n    ],\n    \"progressSoFar\": \"Chua co du lieu chi tiet ve tien do do ban moi bat dau.\"\n  },\n  \"plan\": {\n    \"items\": [\n      {\n        \"dayIndex\": 1,\n        \"candidateId\": \"practice\",\n        \"targetCount\": 1,\n        \"reason\": \"Luyen tap ky nang Reading\"\n      },\n      {\n        \"dayIndex\": 2,\n        \"candidateId\": \"practice\",\n        \"targetCount\": 1,\n        \"reason\": \"On tap lai bai luyen tap\"\n      }\n    ]\n  }\n}",
+      "reason": [
+        "REPORT_NEXT_STEP_UNCITED"
+      ]
+    },
+    {
+      "case": 8,
+      "kind": "FINAL",
+      "status": "PASS",
+      "content": {
+        "statusEcho": "ON_TRACK",
+        "bandClaim": "NONE",
+        "headline": "Chào bạn, hãy bắt đầu luyện tập Aptis cùng AptiMate nhé!",
+        "narrative": "Hiện tại chúng ta chưa ghi nhận đủ dữ liệu bài làm để đánh giá band điểm. Bạn hãy hoàn thành các bài luyện tập tiếp theo để cải thiện kỹ năng nhé.",
+        "achievements": [
+          "Đã sẵn sàng để bắt đầu hành trình ôn luyện."
+        ],
+        "nextGoalSuggestion": {
+          "targetCefr": "B1",
+          "targetTests": 5,
+          "durationDays": 14
+        },
+        "nextSteps": [
+          "Ôn tập lại phần Giới từ chỉ thời gian để tránh mắc phải 1 lỗi đã thống kê."
+        ],
+        "citations": [
+          {
+            "nextStepIndex": 0,
+            "chunkId": "d64fbcb4-0a00-4135-9eb8-0abb30e3a7fa"
+          }
+        ]
+      }
+    },
+    {
+      "case": 9,
+      "kind": "FINAL",
+      "status": "PASS",
+      "content": {
+        "statusEcho": "ON_TRACK",
+        "bandClaim": "NONE",
+        "headline": "Chưa có đủ dữ liệu bài thi để đánh giá tiến độ luyện thi Aptis của bạn.",
+        "narrative": "Bạn chưa hoàn thành bài thi nào trong giai đoạn này. Hãy bắt đầu luyện tập đều đặn để tích lũy dữ liệu và cải thiện kỹ năng tiếng Anh.",
+        "achievements": [],
+        "nextGoalSuggestion": {
+          "targetCefr": "B1",
+          "targetTests": 5,
+          "durationDays": 14
+        },
+        "nextSteps": [
+          "Ôn tập bài học Giới từ chỉ thời gian để nắm vững cách dùng on, at, in."
+        ],
+        "citations": [
+          {
+            "nextStepIndex": 0,
+            "chunkId": "d64fbcb4-0a00-4135-9eb8-0abb30e3a7fa"
+          }
+        ]
+      }
+    },
+    {
+      "case": 10,
+      "kind": "FINAL",
+      "status": "PASS",
+      "content": {
+        "statusEcho": "ON_TRACK",
+        "bandClaim": "NONE",
+        "headline": "Chào bạn, chúng ta hãy bắt đầu hành trình ôn tập Aptis ESOL nhé!",
+        "narrative": "Bạn chưa có đủ dữ liệu bài làm để đánh giá band hiện tại. Hãy tiếp tục luyện tập các kỹ năng để cải thiện kết quả.",
+        "achievements": [
+          "Bạn đã hoàn thành 0 bài luyện tập trong kỳ."
+        ],
+        "nextGoalSuggestion": {
+          "targetCefr": "B1",
+          "targetTests": 5,
+          "durationDays": 30
+        },
+        "nextSteps": [
+          "Ôn tập lại phần Giới từ chỉ thời gian."
+        ],
+        "citations": [
+          {
+            "nextStepIndex": 0,
+            "chunkId": "d64fbcb4-0a00-4135-9eb8-0abb30e3a7fa"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import {PersonalizationOverviewController} from './controllers/personalization-overview.controller';
 import {AdminPlacementController} from './controllers/admin-placement.controller';
 import {AbilityProfileController} from './controllers/ability-profile.controller';
+import { ErrorPatternsService } from './services/error-patterns.service';
 import { Module } from '@nestjs/common';
 import { RetrievalModule } from '../retrieval/retrieval.module';
 import { TestAttemptsModule } from '../test-attempts/test-attempts.module';
@@ -29,6 +30,7 @@ import { InsightContextService } from './services/insight-context.service';
   imports: [RetrievalModule, PersonalizationDataModule, TestAttemptsModule, AiSharedModule, ConfigModule],
   controllers: [PersonalizationOverviewController, AdminPlacementController, AbilityProfileController, PersonalizationController, StudyPlanController, ReportsController],
   providers: [
+    ErrorPatternsService,
     SnapshotService,
     MistakeSourceService,
     MistakeExplanationService,

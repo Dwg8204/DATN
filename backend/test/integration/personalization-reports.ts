@@ -26,11 +26,14 @@ import {
 } from "../../src/features/personalization/ai/report.contract";
 import { AuthUser } from "../../src/features/auth/types/auth-user.type";
 
+import { ErrorPatternsService } from '../../src/features/personalization/services/error-patterns.service';
+const rag=process.env.RAG_REPORT_TEST==='true';
 withPersonalizationDatabase(async (db, alice, bob) => {
   let now = new Date("2026-10-01T02:00:00Z");
   const clock = { now: () => now };
   const config = new ConfigService({
     PERSONALIZATION_AI_ENABLED: true,
+    PERSONALIZATION_RAG_ENABLED: rag,
     PERSONALIZATION_MAX_RPM: 100,
     CHATBOT_MODEL: "fixture",
     GEMINI_BILLING_TIER: "FREE",
@@ -50,7 +53,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
   const mistakes = {
     recent: async () => [],
   } as unknown as MistakeSourceService;
-  const snapshots = new SnapshotService(db, goals, goalRepo, mistakes, clock);
+  const snapshots = new SnapshotService(db, goals, goalRepo, mistakes, clock, new ErrorPatternsService(config));
   const candidates = new PlanCandidatesService();
   const jobs = new ReportJobsService(
     db,
@@ -113,7 +116,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
       alice,
       bob,
       testId,
-      "PRIVATE_TITLE",
+      ...(rag?[]:["PRIVATE_TITLE"]),
       "sourceAttemptId",
       "questionKeys",
       "gradingFingerprint",
@@ -146,6 +149,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
                       headline: "Tổng kết mục tiêu",
                       narrative: "Tiếp tục luyện tập.",
                       achievements: [],
+                      ...(prompt.groundingEnabled?{nextSteps:[],citations:[]}:{}),
                       nextGoalSuggestion: {
                         targetCefr: "B2",
                         targetTests: 40,
@@ -182,6 +186,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
         narrative: "Hãy duy trì việc học để tiến tới mục tiêu.",
         wins: [],
         nextSteps: [],
+        ...(prompt.groundingEnabled?{citations:[]}:{}),
         ...(prompt.kind === "MIDTERM"
           ? { progressSoFar: "Bạn đang xây dựng thói quen học tập." }
           : {}),
@@ -283,6 +288,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
       [goal.id],
     );
     assert.equal(weekly.status, "READY");
+    if(rag){assert.deepEqual(weekly.snapshot.sources,[]);assert.deepEqual(weekly.content.report.citations,[]);assert.equal(weekly.snapshot.snapshotVersion,6);}
     assert.equal((weekly.snapshot as ReportJob).learner.period.completed, 2);
     assert.equal(
       (weekly.snapshot as ReportJob).learner.cumulative.completed,

@@ -1,3 +1,5 @@
+import { PUBLIC_CHUNK_WHERE } from '../../retrieval/learner-knowledge.service';
+import { CommentValidationError } from '../ai/comment.contract';
 import { CEFR_LEVELS } from '../../ai-shared/ability-profile';
 import { Injectable, Logger } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
@@ -123,6 +125,7 @@ export class ReportJobsService {
           const estimate = learner.band.overallEstimate;
           const job: ReportJob = {
             snapshotVersion: full.snapshotVersion, learner, candidates: [],
+            sources: full.errorPatterns?.map(p=>({chunkId:p.chunkId,title:p.lessonTitle,excerpt:p.excerpt.slice(0,400)})),
             plan: { weekIndex: 0, startsOn: goal.start_date, endsOn: localDay(boundary.cutoff, goal.timezone),
               days: 0, requiredPace: 0, remainingTests: 0 },
             promptVersion: FINAL_PROMPT_VERSION,
@@ -177,15 +180,15 @@ export class ReportJobsService {
        AND submitted_at>=($2::date::timestamp AT TIME ZONE $4)
        AND submitted_at<(($3::date+1)::timestamp AT TIME ZONE $4) AND submitted_at<=$5`, [goal.user_id, from, to, goal.timezone, asOf],
     );
-    const candidates = (await this.candidates.build(manager, goal.user_id, full, week + 1)).map(candidate =>
-      candidate.activityType === 'TEST' ? { ...candidate, title: '' } : candidate);
+    const candidates = await this.candidates.build(manager, goal.user_id, full, week + 1);
     const plan = planWindow(goal.start_date, goal.duration_days, week + 1);
     const remainingTests = Math.max(0, goal.target_test_count - full.cumulative.completed);
     // At a report boundary the completed day is no longer available for the next week's pace.
     const remainingDays = week ? goal.duration_days - week * 7 : goal.duration_days;
     const job: ReportJob = {
       snapshotVersion: full.snapshotVersion,
-      learner: reportSnapshot(full, periodCount.count), candidates,
+      learner: reportSnapshot(full, periodCount.count), candidates: full.errorPatterns ? candidates : candidates.map(c => 'title' in c ? {...c,title:''} : c),
+      sources: full.errorPatterns?.map(p=>({chunkId:p.chunkId,title:p.lessonTitle,excerpt:p.excerpt.slice(0,400)})),
       plan: { ...plan, requiredPace: Math.ceil(remainingTests / Math.max(1, remainingDays)), remainingTests },
       promptVersion: REPORT_PROMPT_VERSION,
     };
@@ -219,6 +222,10 @@ export class ReportJobsService {
   }
 
   async completeLocked(manager: EntityManager, row: LearningInsightRow, content: WeeklyContent | FinalContent, requestId: string, timezone: string) {
+    const report = row.kind === 'FINAL' ? content as FinalContent : (content as WeeklyContent).report;
+    const chunkIds = [...new Set((report?.citations ?? []).flatMap(c=>c.chunkId?[c.chunkId]:[]))];
+    if(chunkIds.length){const available=await manager.query(`SELECT c.id FROM knowledge_chunks c JOIN knowledge_documents d ON d.id=c.document_id WHERE c.id=ANY($1::uuid[]) AND ${PUBLIC_CHUNK_WHERE} FOR SHARE OF c,d`,[chunkIds]);
+      if(chunkIds.some(id=>!available.some((r:any)=>r.id===id)))throw new CommentValidationError(['REPORT_CITATION_UNAVAILABLE']);}
     if (row.kind !== 'FINAL') await this.applyPlanLocked(manager, row, content as WeeklyContent);
     const readyAt = this.clock.now();
     await manager.query(

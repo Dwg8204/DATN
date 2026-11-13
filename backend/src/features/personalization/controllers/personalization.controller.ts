@@ -29,6 +29,7 @@ import { SnapshotService } from '../services/snapshot.service';
 import { PlanService } from '../services/plan.service';
 import { CommentsService } from '../services/comments.service';
 import { MistakeExplanationService } from '../services/mistake-explanation.service';
+import { LearnerKnowledgeService } from '../../retrieval/learner-knowledge.service';
 import { MistakeExplanationQueryDto } from '../dto/mistake-explanation.dto';
 
 @Controller('me')
@@ -42,7 +43,9 @@ export class PersonalizationController {
     private readonly plans: PlanService,
     private readonly comments: CommentsService,
     private readonly explanations: MistakeExplanationService,
+    private readonly knowledge: LearnerKnowledgeService,
   ) {}
+  @Get('knowledge/chunks/:id') chunk(@Param('id',new ParseUUIDPipe()) id:string) { return this.knowledge.read(id); }
   @Get('mistakes/:attemptId/questions/:questionKey/explanation') explanation(
     @CurrentUser() actor:AuthUser,
     @Param('attemptId',new ParseUUIDPipe()) attemptId:string,
