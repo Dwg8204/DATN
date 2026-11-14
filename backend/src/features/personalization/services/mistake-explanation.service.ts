@@ -1,15 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { DataSource } from 'typeorm';
-import { ApplicationError } from '../../../common/errors/application.error';
-import { AuthUser } from '../../auth/types/auth-user.type';
-import { JsonGenerationService } from '../../ai-shared/json-generation.service';
-import { KnowledgeSearchService } from '../../retrieval/knowledge-search.service';
-import { MistakeSourceService } from './mistake-source.service';
+import { AiRequestRecorder } from "../../ai-shared/ai-request-recorder.service";
+import { Injectable, Optional } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { DataSource } from "typeorm";
+import { ApplicationError } from "../../../common/errors/application.error";
+import { AuthUser } from "../../auth/types/auth-user.type";
+import { JsonGenerationService } from "../../ai-shared/json-generation.service";
+import { KnowledgeSearchService } from "../../retrieval/knowledge-search.service";
+import { MistakeSourceService } from "./mistake-source.service";
 import {
   explanationContext,
   explanationQuery,
-} from '../ai/explanation-context';
+} from "../ai/explanation-context";
 import {
   EXPLAIN_PROMPT_VERSION,
   explanationSchema,
@@ -19,12 +20,12 @@ import {
   plainText,
   validateExplanation,
   VI_MARKS,
-} from '../ai/explanation.contract';
+} from "../ai/explanation.contract";
 
 const unavailable = () =>
   new ApplicationError(
-    'MISTAKE_SOURCE_UNAVAILABLE',
-    'The submitted question is unavailable.',
+    "MISTAKE_SOURCE_UNAVAILABLE",
+    "The submitted question is unavailable.",
     404,
   );
 @Injectable()
@@ -36,24 +37,25 @@ export class MistakeExplanationService {
     private readonly mistakes: MistakeSourceService,
     private readonly knowledge: KnowledgeSearchService,
     private readonly generation: JsonGenerationService,
+    @Optional() private readonly recorder?: AiRequestRecorder,
   ) {}
   get enabled() {
     return (
-      String(this.config.get('PERSONALIZATION_RAG_ENABLED', false)) === 'true'
+      String(this.config.get("PERSONALIZATION_RAG_ENABLED", false)) === "true"
     );
   }
   async explain(
     actor: AuthUser,
     attemptId: string,
     questionKey: string,
-    locale: 'vi' | 'en',
+    locale: "vi" | "en",
   ) {
     if (!this.enabled) throw unavailable();
     const part = Number(/^p([1-4]):[qs]\d{1,4}$/.exec(questionKey)?.[1]);
-    if (!part || !['vi', 'en'].includes(locale))
+    if (!part || !["vi", "en"].includes(locale))
       throw new ApplicationError(
-        'MISTAKE_CONTEXT_INVALID',
-        'Invalid explanation context.',
+        "MISTAKE_CONTEXT_INVALID",
+        "Invalid explanation context.",
         400,
       );
     const [attempt] = await this.db.query(
@@ -75,10 +77,10 @@ export class MistakeExplanationService {
     }
     const item = detail.items.find((i: any) => i.key === questionKey);
     if (!item) throw unavailable();
-    if (!['INCORRECT', 'SKIPPED'].includes(item.outcome?.outcome))
+    if (!["INCORRECT", "SKIPPED"].includes(item.outcome?.outcome))
       throw new ApplicationError(
-        'MISTAKE_QUESTION_NOT_INCORRECT',
-        'Choose an incorrect or skipped question.',
+        "MISTAKE_QUESTION_NOT_INCORRECT",
+        "Choose an incorrect or skipped question.",
         400,
       );
     const key = JSON.stringify([
@@ -122,7 +124,7 @@ export class MistakeExplanationService {
   private safeUrl(value: unknown) {
     try {
       const url = new URL(String(value));
-      return url.protocol === 'https:' && !url.username && !url.password
+      return url.protocol === "https:" && !url.username && !url.password
         ? url.href
         : null;
     } catch {
@@ -142,7 +144,7 @@ export class MistakeExplanationService {
     attempt: any,
     item: any,
     detail: any,
-    locale: 'vi' | 'en',
+    locale: "vi" | "en",
   ) {
     const params = [
       userId,
@@ -161,7 +163,7 @@ export class MistakeExplanationService {
     if (cached) {
       const sources = await this.sources(cached.chunk_ids);
       if (
-        cached.status === 'FALLBACK' ||
+        cached.status === "FALLBACK" ||
         (sources.length === cached.chunk_ids.length && sources.length > 0)
       ) {
         await this.stillCurrent(userId, attempt);
@@ -174,31 +176,31 @@ export class MistakeExplanationService {
         600,
       );
       const compatible =
-        locale === 'vi' ? VI_MARKS.test(raw) : !VI_MARKS.test(raw);
+        locale === "vi" ? VI_MARKS.test(raw) : !VI_MARKS.test(raw);
       return {
-        status: 'FALLBACK',
+        status: "FALLBACK",
         explanation:
           raw && compatible
             ? raw
-            : locale === 'vi'
-              ? 'Hãy đối chiếu đáp án đúng và phần giải thích của đề. Hiện chưa có giải thích chi tiết phù hợp.'
-              : 'Compare the correct answer with the test explanation. A detailed explanation is not available yet.',
-        ruleSummary: '',
-        tip: '',
+            : locale === "vi"
+              ? "Hãy đối chiếu đáp án đúng và phần giải thích của đề. Hiện chưa có giải thích chi tiết phù hợp."
+              : "Compare the correct answer with the test explanation. A detailed explanation is not available yet.",
+        ruleSummary: "",
+        tip: "",
         sources: [],
         notice,
       };
     };
-    if (!context.correctAnswer) return fallback('EXPLAIN_UNAVAILABLE');
+    if (!context.correctAnswer) return fallback("EXPLAIN_UNAVAILABLE");
     const [usage] = await this.db.query(
       `SELECT calls FROM mistake_explanation_usage WHERE user_id=$1 AND usage_day=(now() AT TIME ZONE 'UTC')::date`,
       [userId],
     );
     if (
       Number(usage?.calls ?? 0) >=
-      Number(this.config.get('RAG_EXPLAIN_DAILY_LIMIT', 50))
+      Number(this.config.get("RAG_EXPLAIN_DAILY_LIMIT", 50))
     )
-      return fallback('EXPLAIN_LIMIT_REACHED');
+      return fallback("EXPLAIN_LIMIT_REACHED");
     const [question] = await this.db.query(
       `SELECT sq.question_id,COALESCE(array_agg(DISTINCT t.code) FILTER(WHERE t.code IS NOT NULL),'{}') topic_codes
       FROM topic_snapshot_questions sq LEFT JOIN question_topics l ON l.question_id=sq.question_id AND l.question_hash=sq.question_hash AND l.status='APPROVED'
@@ -210,10 +212,10 @@ export class MistakeExplanationService {
     const filters = {
       component: attempt.component,
       part: detail.partNumber,
-      usage: 'LESSON',
+      usage: "LESSON",
       limit: 3,
       minSimilarity: Number(
-        this.config.get('RAG_KNOWLEDGE_MIN_SIMILARITY', 0.7),
+        this.config.get("RAG_KNOWLEDGE_MIN_SIMILARITY", 0.7),
       ),
     };
     const query = explanationQuery(context);
@@ -232,10 +234,10 @@ export class MistakeExplanationService {
       if (!chunks.length && question?.topic_codes?.length)
         chunks = await this.knowledge.search(query, filters, deadline);
     } catch {
-      return fallback('EXPLAIN_UNAVAILABLE');
+      return fallback("EXPLAIN_UNAVAILABLE");
     }
     if (!chunks.length) {
-      const result = fallback('NO_LESSON');
+      const result = fallback("NO_LESSON");
       await this.save(params, attempt, result, [], null, {
         component: attempt.component,
         part: detail.partNumber,
@@ -246,32 +248,32 @@ export class MistakeExplanationService {
     }
     let issues: string[] = [];
     for (let retry = 0; retry < 2; retry++) {
-      if (deadline.aborted) return fallback('EXPLAIN_UNAVAILABLE');
+      if (deadline.aborted) return fallback("EXPLAIN_UNAVAILABLE");
       // Atomic daily reservation includes failed calls and validation retries, across replicas.
       const reserved = await this.db.query(
         `INSERT INTO mistake_explanation_usage(user_id,usage_day,calls) VALUES($1,(now() AT TIME ZONE 'UTC')::date,1)
         ON CONFLICT(user_id,usage_day) DO UPDATE SET calls=mistake_explanation_usage.calls+1
         WHERE mistake_explanation_usage.calls<$2 RETURNING calls`,
-        [userId, Number(this.config.get('RAG_EXPLAIN_DAILY_LIMIT', 50))],
+        [userId, Number(this.config.get("RAG_EXPLAIN_DAILY_LIMIT", 50))],
       );
-      if (!reserved.length) return fallback('EXPLAIN_LIMIT_REACHED');
+      if (!reserved.length) return fallback("EXPLAIN_LIMIT_REACHED");
       let generated;
       try {
         const provider = this.config.get<string>(
-          'PERSONALIZATION_PROVIDER',
-          'gemini',
+          "PERSONALIZATION_PROVIDER",
+          "gemini",
         );
         generated = await this.generation.generate(
           {
             provider,
             model:
-              this.config.get<string>('PERSONALIZATION_MODEL') ||
-              (provider === 'gemini'
+              this.config.get<string>("PERSONALIZATION_MODEL") ||
+              (provider === "gemini"
                 ? this.config.get<string>(
-                    'CHATBOT_MODEL',
-                    'gemini-3.5-flash-lite',
+                    "CHATBOT_MODEL",
+                    "gemini-3.5-flash-lite",
                   )
-                : ''),
+                : ""),
             system: EXPLAIN_SYSTEM,
             schema: explanationSchema(
               locale,
@@ -294,25 +296,25 @@ export class MistakeExplanationService {
               userId,
               purpose: PERSONAL_EXPLAIN,
               promptVersion: EXPLAIN_PROMPT_VERSION,
-              errorCodePrefix: 'PERSONAL_EXPLAIN',
+              errorCodePrefix: "PERSONAL_EXPLAIN",
             },
           },
           AbortSignal.any([
             deadline,
             AbortSignal.timeout(
-              Number(this.config.get('PERSONALIZATION_AI_TIMEOUT_MS', 20000)),
+              Number(this.config.get("PERSONALIZATION_AI_TIMEOUT_MS", 20000)),
             ),
           ]),
         );
       } catch {
-        return fallback('EXPLAIN_UNAVAILABLE');
+        return fallback("EXPLAIN_UNAVAILABLE");
       }
       try {
         let parsed;
         try {
           parsed = JSON.parse(generated.text);
         } catch {
-          throw new ExplanationValidationError(['INVALID_JSON']);
+          throw new ExplanationValidationError(["INVALID_JSON"]);
         }
         const content = validateExplanation(
           parsed,
@@ -321,11 +323,12 @@ export class MistakeExplanationService {
           chunks.map((c) => c.chunkId),
           context.alternatives,
         );
+        await this.recorder?.validation(generated.requestId, retry + 1, true);
         const sources = await this.sources(content.citations);
         if (sources.length !== content.citations.length)
-          return fallback('EXPLAIN_UNAVAILABLE');
+          return fallback("EXPLAIN_UNAVAILABLE");
         const result = {
-          status: 'READY',
+          status: "READY",
           explanation: content.explanation,
           ruleSummary: content.ruleSummary,
           tip: content.tip,
@@ -341,10 +344,16 @@ export class MistakeExplanationService {
         return result;
       } catch (error) {
         if (!(error instanceof ExplanationValidationError)) throw error;
+        await this.recorder?.validation(
+          generated.requestId,
+          retry + 1,
+          false,
+          error.issues,
+        );
         issues = error.issues;
       }
     }
-    const result = fallback('EXPLAIN_UNAVAILABLE');
+    const result = fallback("EXPLAIN_UNAVAILABLE");
     await this.save(params, attempt, result, [], null);
     return result;
   }

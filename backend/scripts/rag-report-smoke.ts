@@ -1,3 +1,4 @@
+import { AiRequestRecorder } from '../src/features/ai-shared/ai-request-recorder.service';
 import { writeFileSync } from "node:fs";
 import { randomUUID } from "node:crypto";
 import { ConfigService } from "@nestjs/config";
@@ -29,7 +30,7 @@ export async function ragReportSmoke() {
         raw = r.text;
         return r;
       },
-    } as any);
+    } as any, new AiRequestRecorder(db));
     const documentId = randomUUID(),
       chunkId = randomUUID();
     await db.query(

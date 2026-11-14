@@ -107,6 +107,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
     details,
     knowledge,
     generation,
+    recorder,
   );
   const actor: any = { id: alice, role: 'STUDENT' };
   await assert.rejects(
@@ -120,6 +121,8 @@ withPersonalizationDatabase(async (db, alice, bob) => {
   assert.equal(calls, 1);
   assert.equal(answers[0].status, 'READY');
   assert.equal(answers[0].sources[0].chunkId, chunk);
+  const [validationRow] = await db.query("SELECT config_snapshot FROM ai_requests WHERE purpose='PERSONAL_EXPLAIN'");
+  assert.deepEqual(validationRow.config_snapshot.validation, {attempt:1,valid:true,issues:[]});
   assert.equal(
     (await db.query('SELECT * FROM mistake_explanations')).length,
     1,

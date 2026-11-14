@@ -177,7 +177,7 @@ async function main() {
         | "cohortRandomMean",
     ) => (rs.length ? rs.reduce((a, r) => a + r[key], 0) / rs.length : 0);
     const report = {
-      date: "2026-11-12",
+      date: new Date().toISOString(),
       labelHash: createHash("sha256")
         .update(JSON.stringify(labels))
         .digest("hex"),

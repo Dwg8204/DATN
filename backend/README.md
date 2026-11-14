@@ -419,3 +419,7 @@ Verification: `npm run test:rag:errors:db` uses an isolated `_test` database; `n
 ADMIN users can open `/admin/rag` (Học liệu AI) to inspect question-vector coverage, missing lessons/criterion guides, aggregate retrieval gaps and requeue published tests. Reindex preserves pending/running jobs and reuses valid vectors. No new migration. The personalization worker removes gaps older than 180 days in bounded batches.
 
 Backend checks: `npm run test:rag:admin:db` with an isolated `_test` database. Frontend: `npm run test:rag:admin:ui` and `npm run test:admin:responsive`. See [R6 report and manual testing](../docs/PERSONALIZATION_RAG_R6_REPORT.md).
+
+## RAG R7: evaluation
+
+`npm run rag:eval` evaluates stored vectors without provider calls and writes `docs/PERSONALIZATION_RAG_EVAL.md`, JSON metrics and a 40-item review pack. Missing or unreviewed labels remain explicit; the script does not invent negative labels or human scores. `--apply-thresholds` updates `.env.example` only when fully judged, reviewed results qualify. See [R7 setup and limitations](../docs/PERSONALIZATION_RAG_R7_REPORT.md) and [R0–R7 checks](../docs/PERSONALIZATION_RAG_R0_R7_CHECK.md). Test validation telemetry using `npm run test:rag:eval:db` with an isolated `_test` database.

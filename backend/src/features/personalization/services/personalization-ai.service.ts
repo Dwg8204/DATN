@@ -1,6 +1,7 @@
+import { AiRequestRecorder } from "../../ai-shared/ai-request-recorder.service";
 import { claimContext } from "../ai/state-claims";
-import { groundedReport } from '../ai/report-grounding';
-import { Injectable } from "@nestjs/common";
+import { groundedReport } from "../ai/report-grounding";
+import { Injectable, Optional } from "@nestjs/common";
 import {
   FINAL_PROMPT_VERSION,
   finalSchema,
@@ -33,6 +34,7 @@ export class PersonalizationAiService {
   constructor(
     private readonly config: ConfigService,
     private readonly generation: JsonGenerationService,
+    @Optional() private readonly recorder?: AiRequestRecorder,
   ) {}
   get enabled(): boolean {
     return (
@@ -73,7 +75,9 @@ export class PersonalizationAiService {
       2048,
     );
     return {
-      content: validateComment(result.parsed, snapshot),
+      content: await this.validated(result.requestId, issues, () =>
+        validateComment(result.parsed, snapshot),
+      ),
       requestId: result.requestId,
     };
   }
@@ -95,7 +99,9 @@ export class PersonalizationAiService {
       8192,
     );
     return {
-      content: validateWeeklyContent(result.parsed, kind, job),
+      content: await this.validated(result.requestId, issues, () =>
+        validateWeeklyContent(result.parsed, kind, job),
+      ),
       requestId: result.requestId,
     };
   }
@@ -109,7 +115,9 @@ export class PersonalizationAiService {
       finalSchema(groundedReport(job)),
       {
         snapshot: job.learner,
-        groundingEnabled: groundedReport(job), sources: job.sources ?? [], candidates: [],
+        groundingEnabled: groundedReport(job),
+        sources: job.sources ?? [],
+        candidates: [],
         outcome: job.outcome,
         validationContext: claimContext(job.learner, job.outcome),
       },
@@ -117,11 +125,33 @@ export class PersonalizationAiService {
       4096,
     );
     return {
-      content: validateFinalContent(result.parsed, job),
+      content: await this.validated(result.requestId, issues, () =>
+        validateFinalContent(result.parsed, job),
+      ),
       requestId: result.requestId,
     };
   }
 
+  private async validated<T>(
+    id: string,
+    previous: string[],
+    validate: () => T,
+  ): Promise<T> {
+    try {
+      const value = validate();
+      await this.recorder?.validation(id, previous.length ? 2 : 1, true);
+      return value;
+    } catch (e) {
+      if (e instanceof CommentValidationError)
+        await this.recorder?.validation(
+          id,
+          previous.length ? 2 : 1,
+          false,
+          e.issues,
+        );
+      throw e;
+    }
+  }
   private async generate(
     userId: string,
     purpose: string,
@@ -169,6 +199,12 @@ export class PersonalizationAiService {
     try {
       parsed = JSON.parse(result.text);
     } catch {
+      await this.recorder?.validation(
+        result.requestId,
+        issues.length ? 2 : 1,
+        false,
+        ["INVALID_JSON"],
+      );
       throw new CommentValidationError(["INVALID_JSON"]);
     }
     return {

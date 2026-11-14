@@ -1,3 +1,4 @@
+import { AiRequestRecorder } from '../src/features/ai-shared/ai-request-recorder.service';
 import 'reflect-metadata';
 import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
@@ -21,7 +22,7 @@ if (!process.argv.includes('--live')) {
       PERSONALIZATION_AI_ENABLED: 'true',
     });
     const { jsonGeneration } = createGeminiServices(config, db);
-    const ai = new PersonalizationAiService(config, jsonGeneration);
+    const ai = new PersonalizationAiService(config, jsonGeneration, new AiRequestRecorder(db));
     const snapshot = {
       snapshotVersion: 1,
       goal: {

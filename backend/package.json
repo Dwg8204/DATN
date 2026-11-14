@@ -63,7 +63,9 @@
     "rag:plan:baseline": "ts-node scripts/rag-plan-baseline.ts",
     "test:placement:replan:db": "ts-node test/integration/placement-replan.ts",
     "test:rag:errors:db": "ts-node test/integration/learner-errors.ts",
-    "test:rag:admin:db": "ts-node test/integration/admin-rag.ts"
+    "test:rag:admin:db": "ts-node test/integration/admin-rag.ts",
+    "rag:eval": "ts-node scripts/rag-eval.ts",
+    "test:rag:eval:db": "ts-node test/integration/rag-evaluation.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",

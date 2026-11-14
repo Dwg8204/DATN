@@ -1,5 +1,15 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## RAG R7 — 14/11/2026
+
+- Đã thêm rag:eval: Recall/MRR hai kho × keyword/vector/RRF × kỹ năng, threshold sweep, R3 20 seed, telemetry validator, review pack 40 mẫu và vận hành. Không gọi provider. Thêm --apply-thresholds có chặn nhãn chưa đủ chuẩn.
+- R0 cấu trúc PASS; 318 unit/27 suites, 12 browser, 11 DB/API scripts PASS; typecheck/build backend, build frontend PASS. Sửa fixture overview nạp config đúng.
+- Local 2428 question vectors đúng, 79 docs/251 chunks, 173 jobs completed. Learner errors vẫn 1 pending do snapshot lịch sử thiếu vector tương thích; không ép ánh xạ.
+- 60 mẫu/360 rankings đánh giá đủ vector. Knowledge vector R@5=1/MRR=.9094; questions vector R@5=.3054/MRR=.4225 trên 37 mẫu có relevant, chỉ là nhãn phát triển. R3 nguồn trung tâm kém baseline; toàn nhóm tốt hơn.
+- R7 nghiệm thu REVIEW_REQUIRED: chưa có gold độc lập, chưa chấm tay 40 mẫu 1–5, chưa chốt threshold; request AI cũ UNKNOWN, chưa có tier/gap quan sát. Không tuyên bố toàn bộ kế hoạch đã nghiệm thu.
+- Xem docs/PERSONALIZATION_RAG_R7_REPORT.md, PERSONALIZATION_RAG_EVAL.md, PERSONALIZATION_RAG_R0_R7_CHECK.md; branch vẫn feature/personalization-rag, không push.
+
+
 ## RAG R6 — 14/11/2026
 
 - Admin-only /admin/rag/status, gaps, reembed; trang /admin/rag “Học liệu AI”, 3 tab, Việt/Anh, responsive, confirm + poll10s. Không migration, giữ branch feature/personalization-rag.
