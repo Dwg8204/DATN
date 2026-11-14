@@ -8,6 +8,7 @@ export const ADMIN_NAVIGATION = [
   ] },
   { label: 'User Management', to: '/admin/users', icon: Users, roles: ['ADMIN'] },
   { label: 'Topic management', to: '/admin/learning-topics', activePaths: ['/admin/learning-topics', '/admin/topic-labels'], icon: ClipboardList, roles: ['ADMIN'] },
+  { label: 'AI learning resources', to: '/admin/rag', icon: ClipboardList, roles: ['ADMIN'] },
   { label: 'Notification', to: '/admin/notifications', icon: Bell, roles: ['ADMIN'] },
 ];
 

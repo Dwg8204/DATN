@@ -413,3 +413,9 @@ Overview trả plan.replannedAfterPlacementAt; notice Việt/Anh lưu trạng th
 Run `npm run db:migrate`, then enable `PERSONALIZATION_RAG_ENABLED=true` to index learner errors asynchronously. `npm run rag:status` includes aggregate error-index progress and historical missing-vector gaps. WEEKLY/MIDTERM/FINAL reports created with snapshot v6 carry lesson sources; existing READY reports remain unchanged.
 
 Verification: `npm run test:rag:errors:db` uses an isolated `_test` database; `npm run ai:personalization:smoke -- --live --rag` explicitly calls the configured AI provider with synthetic data. Frontend: `npm run test:rag:reports:ui`. See [R5 implementation and validation](../docs/PERSONALIZATION_RAG_R5_REPORT.md) for results, limitations and manual checks.
+
+## RAG R6: admin coverage and retrieval gaps
+
+ADMIN users can open `/admin/rag` (Học liệu AI) to inspect question-vector coverage, missing lessons/criterion guides, aggregate retrieval gaps and requeue published tests. Reindex preserves pending/running jobs and reuses valid vectors. No new migration. The personalization worker removes gaps older than 180 days in bounded batches.
+
+Backend checks: `npm run test:rag:admin:db` with an isolated `_test` database. Frontend: `npm run test:rag:admin:ui` and `npm run test:admin:responsive`. See [R6 report and manual testing](../docs/PERSONALIZATION_RAG_R6_REPORT.md).

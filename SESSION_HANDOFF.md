@@ -1,5 +1,13 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## RAG R6 — 14/11/2026
+
+- Admin-only /admin/rag/status, gaps, reembed; trang /admin/rag “Học liệu AI”, 3 tab, Việt/Anh, responsive, confirm + poll10s. Không migration, giữ branch feature/personalization-rag.
+- Độ phủ kiểm tra snapshot/hash/text/model/version; thiếu học liệu xét READY/LEARNER/latest/vector. Tiêu chí 6 Writing + 4 Speaking đúng corpus. Gaps gộp kỹ năng/Part/topic, users distinct, max3 sample câu đề, UTC, pagination chung và REPEATABLE READ. Không trả dữ liệu người học.
+- Reembed thêm job thiếu, reset completed/failed, giữ pending/locked SKIP LOCKED, audit cùng transaction. Giữ vector tốt; không ép gọi embedding. Retention gaps >180 ngày, batch1000 mỗi tick PersonalizationWorker.
+- DB R6 đạt auth/validation/group/page/retention/lock/audit/reindex100/stale/scope. 344 unit/30 suites backend đạt; typecheck/build đạt. Browser R6 4/4 (en/vi390/1280), admin layout320–1440 đạt; sửa fixture sidebar từ route feedback cũ sang rag và rerun 2/2 đạt. Frontend build đạt, lint chỉ warnings.
+- Local đọc đủ 2.428/2.428 vector, không thiếu LESSON/CRITERION_GUIDE. Đã queue35 Reading bằng service (audit actor hệ thống null), worker sẵn có đã hoàn tất35/35, pending0/failed0, Reading512/512(100%); CLI drain riêng bị auto-review từ chối, không chạy hay đi vòng lệnh đó. Xem kết quả cuối và hướng dẫn trong docs/PERSONALIZATION_RAG_R6_REPORT.md. Chưa push; không làm R7.
+
 ## RAG R5 — 13/11/2026
 
 - Kho lỗi riêng learner_error_chunks/jobs, migration 1760000027000 (local 35 migrations). Trigger invalidates/requeues khi status/result/revision đổi; worker SKIP LOCKED sao chép vector trắc nghiệm, embed tối đa 10 finding Writing, quota/backoff. Không gửi văn bản người học vào report prompt.

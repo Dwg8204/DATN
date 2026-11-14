@@ -1,0 +1,137 @@
+.page {
+  padding: 24px;
+  min-width: 0;
+  color: #252525;
+}
+.tabs,
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 16px 0;
+}
+.filters label {
+  display: grid;
+  gap: 6px;
+}
+.page select,
+.page input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  max-width: 100%;
+  background: white;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.card {
+  border: 1px solid #ead5d9;
+  border-top: 3px solid #bd1f36;
+  border-radius: 10px;
+  padding: 16px;
+  background: white;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.card strong {
+  font-size: 24px;
+  color: #bd1f36;
+}
+.card h3 {
+  margin-top: 0;
+}
+.gaps {
+  display: grid;
+  gap: 14px;
+}
+.page a {
+  color: #a9152d;
+}
+.page ul {
+  padding-left: 20px;
+}
+@media (max-width: 600px) {
+  .page {
+    padding: 12px;
+  }
+  .cards {
+    grid-template-columns: 1fr;
+  }
+  .filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .filters label {
+    min-width: 0;
+  }
+  .tabs > button {
+    flex: 1;
+    white-space: normal;
+  }
+}
+
+.tableWrap {
+  min-width: 0;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: white;
+}
+.table th,
+.table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #ead5d9;
+  overflow-wrap: anywhere;
+}
+.table th {
+  background: #fff1f3;
+}
+.table th:last-child {
+  width: 32%;
+}
+@media (max-width: 700px) {
+  .table,
+  .table tbody,
+  .table tr,
+  .table td {
+    display: block;
+    width: auto;
+  }
+  .table thead {
+    display: none;
+  }
+  .table tr {
+    border: 1px solid #ead5d9;
+    border-top: 3px solid #bd1f36;
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .table td:before {
+    content: attr(data-label);
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .table td:last-child {
+    border-bottom: 0;
+  }
+}
+
+.filters input,
+.filters select {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 600px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}

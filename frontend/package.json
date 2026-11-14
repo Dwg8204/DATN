@@ -33,7 +33,8 @@
     "test:explanation:ui": "node --test tests/mistakeExplanation.browser.test.mjs",
     "test:rag:plan:ui": "node --test tests/retrievalPlan.browser.test.mjs",
     "test:placement:replan:ui": "node --test tests/placementReplan.browser.test.mjs",
-    "test:rag:reports:ui": "node --test tests/reportGrounding.browser.test.mjs"
+    "test:rag:reports:ui": "node --test tests/reportGrounding.browser.test.mjs",
+    "test:rag:admin:ui": "node --test tests/adminRag.browser.test.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
