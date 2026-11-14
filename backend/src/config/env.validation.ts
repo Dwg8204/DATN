@@ -1,6 +1,9 @@
 import * as Joi from 'joi';
 
 export const environmentSchema = Joi.object({
+  REDIS_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+  REDIS_URL: Joi.string().uri({ scheme: ['redis', 'rediss'] }).default('redis://127.0.0.1:6379'),
+  REDIS_KEY_PREFIX: Joi.string().pattern(/^[a-zA-Z0-9:_-]+$/).max(80).default('aptimate:cache:v1'),
   CHATBOT_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
   CHATBOT_MODEL: Joi.string().pattern(/^[a-zA-Z0-9._-]+$/).default('gemini-3.5-flash-lite'),
   GEMINI_MAX_RPM: Joi.number().integer().min(1).max(1000).default(5),
