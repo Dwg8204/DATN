@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { RedisCacheService } from '../../common/cache/redis-cache.service';
+import { Injectable, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AiProviderError } from '../ai-shared/ai-provider.error';
 import { GeminiClient } from '../ai-shared/gemini-client.service';
@@ -33,6 +34,7 @@ export class ChatbotProvider {
     private readonly config: ConfigService,
     private readonly client: GeminiClient,
     private readonly generation: GeminiGenerationService,
+    @Optional() private readonly cache?: RedisCacheService,
   ) {}
 
   get model() {
@@ -98,18 +100,26 @@ export class ChatbotProvider {
 
   async embed(text: string, query: boolean, signal: AbortSignal) {
     this.assertReady();
-    const result = await this.request(
-      'gemini-embedding-001',
-      'embedContent',
-      {
-        model: 'models/gemini-embedding-001',
-        content: { parts: [{ text }] },
-        taskType: query ? 'RETRIEVAL_QUERY' : 'RETRIEVAL_DOCUMENT',
-        outputDimensionality: 768,
-      },
-      signal,
-    );
-    return normalizeVector(result.embedding?.values);
+    signal.throwIfAborted();
+    const load = async () => {
+      const result = await this.request(
+        'gemini-embedding-001',
+        'embedContent',
+        {
+          model: 'models/gemini-embedding-001',
+          content: { parts: [{ text }] },
+          taskType: query ? 'RETRIEVAL_QUERY' : 'RETRIEVAL_DOCUMENT',
+          outputDimensionality: 768,
+        },
+        signal,
+      );
+      return normalizeVector(result.embedding?.values);
+    };
+    return this.cache ? this.cache.getOrLoad('embedding:gemini-embedding-001:768:v1',
+      JSON.stringify([query, text]), 86400, load, false,
+      (value): value is number[] => Array.isArray(value) && value.length === 768
+        && value.every(v => typeof v === 'number' && Number.isFinite(v))
+        && Math.abs(Math.sqrt(value.reduce((sum, v) => sum + v * v, 0)) - 1) < 0.001) : load();
   }
 }
 

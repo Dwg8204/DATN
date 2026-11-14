@@ -342,3 +342,7 @@ Một số migration có cùng timestamp (gồm nhóm `1760000019000`, `17600000
 ### Cá nhân hóa S3: đánh giá đầu vào
 
 Xem [báo cáo S3](../docs/PERSONALIZATION_S3_REPORT.md). Sau migration `1760000022000-AddPlacementTests`, cấu hình bộ Music đã seed bằng `npm run personalization:placement-music -- --dry-run`, rồi `--apply`. Part chỉ liên kết nội dung, không bật `is_placement`. Kiểm thử DB: `npm run test:placement:db` với `TEST_DATABASE_URL` là database riêng kết thúc `_test`.
+
+## Redis cache và bộ đề bổ sung
+
+Xem [kế hoạch, cấu hình, kiểm thử và seed an toàn](../docs/REDIS_CACHE_AND_ADDITIONAL_SEED.md). Redis là cache tùy chọn; checkpoint AI và dữ liệu người dùng vẫn lưu PostgreSQL.

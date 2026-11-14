@@ -1,3 +1,4 @@
+import { RedisCacheModule } from './common/cache/redis-cache.module';
 import { Module } from '@nestjs/common';
 import { TopicsModule } from './features/topics/topics.module';
 import { ConfigModule } from '@nestjs/config';
@@ -33,6 +34,7 @@ import { PersonalizationModule } from './features/personalization/personalizatio
     TopicsModule,
     ConfigModule.forRoot({ isGlobal: true, cache: true, load: [configuration], validationSchema: environmentSchema }),
     DatabaseModule,
+    RedisCacheModule,
     ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 120 }]),
     AuthModule,
     UsersModule,
