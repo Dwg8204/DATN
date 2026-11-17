@@ -84,3 +84,7 @@ docker compose stop
 Nếu backend không healthy, xem log để kiểm tra `.env`, database và migration. Nếu cổng đã được sử dụng, dừng tiến trình chạy local hoặc container khác đang giữ cổng đó. Không chạy đồng thời backend bằng terminal và Docker để tránh trùng worker xử lý nền.
 
 Chạy Compose từ thư mục gốc để dùng chế độ tự cập nhật. Chạy trong thư mục `backend` dùng bản build cố định. Hướng dẫn phát triển bằng Node.js và các tính năng backend nằm trong [backend/README.md](backend/README.md).
+
+## Redis cache sau khi pull code
+
+Xem [hướng dẫn cài và kiểm tra Redis trên Docker](docs/REDIS_DOCKER_SETUP.md), có cả cách chạy backend bằng Docker hoặc Node.js trên máy. Không cần reset database hay chạy lại seed.
