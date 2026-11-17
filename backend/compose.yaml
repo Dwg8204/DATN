@@ -1,6 +1,19 @@
 name: backend
 
 services:
+  redis:
+    image: redis:7.4-alpine
+    container_name: aptimate-redis
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6379:6379"
+    command: ["redis-server", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
   postgres:
     image: pgvector/pgvector:pg17
     container_name: aptimate-postgres
@@ -37,6 +50,8 @@ services:
       - .env
     environment:
       # This stack runs locally over HTTP; auth cookies must support HTTP.
+      REDIS_ENABLED: "true"
+      REDIS_URL: redis://redis:6379
       NODE_ENV: development
       PORT: 3000
       API_PREFIX: api/v1

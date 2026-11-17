@@ -1,5 +1,7 @@
 import { Injectable, Optional } from '@nestjs/common';
 import { EmbeddingService, normalizeEmbedding } from '../retrieval/embedding.service';
+import { RedisCacheService } from '../../common/cache/redis-cache.service';
+
 import { ConfigService } from '@nestjs/config';
 import { AiProviderError } from '../ai-shared/ai-provider.error';
 import { GeminiClient } from '../ai-shared/gemini-client.service';
@@ -35,6 +37,8 @@ export class ChatbotProvider {
     private readonly client: GeminiClient,
     private readonly generation: GeminiGenerationService,
     @Optional() private readonly embeddings?: EmbeddingService,
+    @Optional() private readonly cache?: RedisCacheService,
+
   ) {}
 
   get model() {
@@ -100,8 +104,18 @@ export class ChatbotProvider {
 
   async embed(text: string, query: boolean, signal: AbortSignal) {
     this.assertReady();
-    try{return await (this.embeddings ?? new EmbeddingService(this.client)).embed(text,query,signal);}
-    catch(error){throw toChatError(error);}
+    signal.throwIfAborted();
+    const load = () => (this.embeddings ?? new EmbeddingService(this.client)).embed(text, query, signal);
+    try {
+      return await (this.cache ? this.cache.getOrLoad('embedding:gemini-embedding-001:768:v1',
+        JSON.stringify([query, text]), 86400, load, false,
+        (value): value is number[] => Array.isArray(value) && value.length === 768
+          && value.every(v => typeof v === 'number' && Number.isFinite(v))
+          && Math.abs(Math.hypot(...value) - 1) < 0.001) : load());
+    } catch (error) {
+      throw toChatError(error);
+    }
+
   }
 }
 

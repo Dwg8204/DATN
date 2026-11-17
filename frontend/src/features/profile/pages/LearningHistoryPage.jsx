@@ -4,7 +4,7 @@ import Pagination from '../../../components/common/Pagination';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProfileSidebar from '../components/ProfileSidebar';
-import { ClipboardList, Calendar, Clock, FileText, Search, History, GraduationCap } from 'lucide-react';
+import { ClipboardList, Calendar, Clock, FileText, Search, GraduationCap } from 'lucide-react';
 import styles from './LearningHistoryPage.module.css';
 import AnswerSelect from '../../../components/common/AnswerSelect';
 import { testAttemptsApi } from '../../test-attempts/services/testAttemptsApi';
@@ -162,8 +162,7 @@ export default function LearningHistoryPage() {
 
         <div className={styles.content}>
           <header className={styles.header}>
-            <div className={styles.heroDecoration} aria-hidden="true" />
-            <div className={styles.heroTitle}><span className={styles.heroIcon}><History size={26} aria-hidden="true" /></span><h1>{t('profile.history')}</h1></div>
+            <div className={styles.heroTitle}><h1>{t('profile.history')}</h1></div>
             <p>{t('history.subtitle')}</p>
           </header>
           <section className={styles.stats} aria-label={t('history.summary')}>

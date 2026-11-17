@@ -1,5 +1,13 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Đồng bộ develop vào RAG — 17/11/2026
+
+- Merge origin/develop tại fd81151 vào feature/personalization-rag, giữ toàn bộ R0–R7. Giải quyết conflict README backend, package.json, env.validation.ts và chatbot.provider.ts bằng cách kết hợp cấu hình/script RAG với Redis cache và seed additional.
+- Chatbot cache embedding vẫn dùng Redis tùy chọn, khóa phân biệt query/document và kiểm tra vector 768 chiều chuẩn hóa. Khi cache miss hoặc không bật cache, gọi EmbeddingService chung của RAG để giữ batch embedding và telemetry; giữ kiểm tra abort và ánh xạ lỗi chatbot. Có regression cho cache hit/miss, query mode, abort và không dùng Redis.
+- Kiểm chứng sau merge: typecheck backend, build backend/frontend, 119 test backend/14 suite (chatbot, retrieval, Redis, reference assessment, additional seed), 6 test chatbot frontend đều đạt; diff check không lỗi. Frontend còn cảnh báo chunk lớn có sẵn.
+- Cài dependency ioredis theo lockfile (không thay lockfile); không chạy migration, seed, gọi AI thật hay cập nhật container. Chưa push.
+
+
 ## RAG R7 — 14/11/2026
 
 - Đã thêm rag:eval: Recall/MRR hai kho × keyword/vector/RRF × kỹ năng, threshold sweep, R3 20 seed, telemetry validator, review pack 40 mẫu và vận hành. Không gọi provider. Thêm --apply-thresholds có chặn nhãn chưa đủ chuẩn.

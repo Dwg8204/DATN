@@ -8,6 +8,11 @@ export const environmentSchema = Joi.object({
   RAG_EXPLAIN_DAILY_LIMIT: Joi.number().integer().min(1).max(500).default(50),
   RAG_SIMILAR_PER_MISTAKE: Joi.number().integer().min(1).max(50).default(10),
   RAG_MIN_MATCHES_PER_TEST: Joi.number().integer().min(1).max(30).default(2),
+
+  REDIS_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+  REDIS_URL: Joi.string().uri({ scheme: ['redis', 'rediss'] }).default('redis://127.0.0.1:6379'),
+  REDIS_KEY_PREFIX: Joi.string().pattern(/^[a-zA-Z0-9:_-]+$/).max(80).default('aptimate:cache:v1'),
+
   CHATBOT_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
   CHATBOT_MODEL: Joi.string().pattern(/^[a-zA-Z0-9._-]+$/).default('gemini-3.5-flash-lite'),
   GEMINI_MAX_RPM: Joi.number().integer().min(1).max(1000).default(5),

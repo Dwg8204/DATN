@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { Injectable, Optional } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApplicationError } from '../../../common/errors/application.error';
 
@@ -43,7 +44,8 @@ export class DictionaryService {
   private readonly pendingSuggestions = new Map<string, Promise<{ words: string[]; unavailable: boolean }>>();
   private readonly pendingLookups = new Map<string, Promise<DictionaryResponse>>();
 
-  constructor(private readonly config: ConfigService = new ConfigService()) {}
+  constructor(private readonly config: ConfigService = new ConfigService(),
+    @Optional() private readonly sharedCache?: RedisCacheService) {}
 
   async suggest(rawQuery: string): Promise<{ words: string[]; unavailable: boolean }> {
     const query = rawQuery.trim().toLowerCase();
@@ -79,6 +81,17 @@ export class DictionaryService {
   }
 
   async lookup(rawWord: string, forceRefresh = false): Promise<DictionaryResponse> {
+    const load = () => this.lookupLocal(rawWord, forceRefresh);
+    return this.sharedCache
+      ? this.sharedCache.getOrLoad('dictionary:en-vi:v1', rawWord.trim().toLowerCase(), 300, load, forceRefresh,
+          (value): value is DictionaryResponse => !!value && typeof value === 'object'
+            && Array.isArray((value as DictionaryResponse).entries)
+            && Array.isArray((value as DictionaryResponse).translations)
+            && Array.isArray((value as DictionaryResponse).examples))
+      : load();
+  }
+
+  private async lookupLocal(rawWord: string, forceRefresh = false): Promise<DictionaryResponse> {
     const word = rawWord.trim().toLowerCase();
     if (forceRefresh) this.cache.delete(word);
     const cached = this.cache.get(word);

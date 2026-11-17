@@ -118,7 +118,7 @@ export class ReferenceAssessmentService implements OnModuleInit, OnModuleDestroy
             this.logger.log(`Groq Writing checkpoint: job=${job.id} parts=${Object.keys(cache.parts).length} final=${!!cache.final}`);
           }, async (nextStage, event) => {
             stage=nextStage;
-            if(event==='started') await this.db.query(`UPDATE reference_ai_jobs SET config=jsonb_set(config,'{writingStage}',$3::jsonb),updated_at=now()
+            if(event==='started' || event==='compact_started') await this.db.query(`UPDATE reference_ai_jobs SET config=jsonb_set(config,'{writingStage}',$3::jsonb),updated_at=now()
               WHERE id=$1 AND lease=$2 AND status='PROCESSING' AND lease_until>now()`,[job.id,job.lease,JSON.stringify(nextStage)]);
             this.logger.log(`Groq Writing stage: job=${job.id} stage=${nextStage} event=${event}`);
           });
@@ -143,7 +143,7 @@ export class ReferenceAssessmentService implements OnModuleInit, OnModuleDestroy
           systemInstruction:REFERENCE_SPEAKING_PROMPT,input:{mode:paper.mode,rubricReference:SPEAKING_RUBRIC,responses:recorded,
             skippedKeys:inputs.filter(input=>!input.transcript.trim()).map(input=>input.key)},
           outputSchema:speakingReferenceSchema(recorded.map(input=>input.key)),maxOutputTokens:4096,signal:AbortSignal.timeout(90000)})
-          : {summary:'Không có transcript đủ dữ liệu để đánh giá.',responses:[]};
+          : {summary:'KhÃ´ng cÃ³ transcript Ä‘á»§ dá»¯ liá»‡u Ä‘á»ƒ Ä‘Ã¡nh giÃ¡.',responses:[]};
         stage='speaking_validate';
         result={speaking:{...validateReferenceSpeaking(raw,inputs),inputs,promptVersion:`${SPEAKING_PROMPT_VERSION}-transcript-v1`}};
       }

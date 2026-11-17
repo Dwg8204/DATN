@@ -1,3 +1,5 @@
+import { EmbeddingService } from '../retrieval/embedding.service';
+import { RedisCacheService } from '../../common/cache/redis-cache.service';
 import { ConfigService } from '@nestjs/config';
 import { ChatbotProvider } from './chatbot.provider';
 import { createGeminiServices } from '../ai-shared/create-gemini-services';
@@ -13,7 +15,7 @@ function fixture() {
   });
   const { client, generation } = createGeminiServices(config, { query } as any);
   const provider = new ChatbotProvider(config, client, generation);
-  return { provider, query, client };
+  return { provider, query, client, config, generation };
 }
 const context = { userId: 'test-user', messageId: 'test-message' };
 
@@ -118,5 +120,41 @@ describe('Chat provider contract', () => {
       provider.generate('system', [], [], context, controller.signal),
     ).rejects.toMatchObject({ code: 'CHAT_TIMEOUT' });
     expect(query.mock.calls.at(-1)?.[1][1]).toBe('CHAT_TIMEOUT');
+  });
+});
+
+
+describe('Chat embedding with shared RAG service and Redis', () => {
+  test('cache hits skip embedding; cache misses use the shared service and preserve query mode', async () => {
+    const { config, client, generation } = fixture();
+    const vector = [1, ...Array(767).fill(0)];
+    const embed = jest.fn().mockResolvedValue(vector);
+    const getOrLoad = jest.fn(async (_namespace: string, _key: string, _ttl: number, load: () => Promise<number[]>, _refresh: boolean, validate: (value: unknown) => boolean) => {
+      expect(validate(vector)).toBe(true);
+      expect(validate(Array(768).fill(0))).toBe(false);
+      return load();
+    });
+    const provider = new ChatbotProvider(config, client, generation,
+      { embed } as unknown as EmbeddingService, { getOrLoad } as unknown as RedisCacheService);
+    const signal = new AbortController().signal;
+    await expect(provider.embed('question', true, signal)).resolves.toEqual(vector);
+    expect(embed).toHaveBeenCalledWith('question', true, signal);
+    expect(getOrLoad.mock.calls[0][1]).toBe(JSON.stringify([true, 'question']));
+    getOrLoad.mockImplementationOnce(async () => vector);
+    await expect(provider.embed('question', true, signal)).resolves.toEqual(vector);
+    expect(embed).toHaveBeenCalledTimes(1);
+    await provider.embed('question', false, signal);
+    expect(getOrLoad.mock.calls[2][1]).toBe(JSON.stringify([false, 'question']));
+    const aborted = new AbortController(); aborted.abort();
+    await expect(provider.embed('question', true, aborted.signal)).rejects.toThrow();
+    expect(getOrLoad).toHaveBeenCalledTimes(3);
+  });
+  test('without Redis, embedding still uses the RAG service and maps failures safely', async () => {
+    const { config, client, generation } = fixture();
+    const embed = jest.fn().mockRejectedValue(new Error('private provider details'));
+    const provider = new ChatbotProvider(config, client, generation, { embed } as unknown as EmbeddingService);
+    await expect(provider.embed('question', true, new AbortController().signal))
+      .rejects.toMatchObject({ code: 'CHAT_UNAVAILABLE' });
+    expect(embed).toHaveBeenCalledTimes(1);
   });
 });
