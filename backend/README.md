@@ -346,3 +346,5 @@ Xem [báo cáo S3](../docs/PERSONALIZATION_S3_REPORT.md). Sau migration `1760000
 ## Redis cache và bộ đề bổ sung
 
 Xem [kế hoạch, cấu hình, kiểm thử và seed an toàn](../docs/REDIS_CACHE_AND_ADDITIONAL_SEED.md). Redis là cache tùy chọn; checkpoint AI và dữ liệu người dùng vẫn lưu PostgreSQL.
+
+Hướng dẫn riêng cho người pull code: [Redis Docker — cài đặt, kết nối và kiểm tra](../docs/REDIS_DOCKER_SETUP.md).

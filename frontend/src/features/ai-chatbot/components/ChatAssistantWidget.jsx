@@ -60,19 +60,41 @@ function ChatWidget({context,autoOpen = false}) {
     try{await fn();}catch(e){failure(e);}finally{mutating.current=false;if(alive.current){setBusy(false);if(isReply)setReplyingTo(undefined);}}
   };
   const send=event=>{
-    event?.preventDefault();const content=draft.trim();if(!content||!enabled||hasPending)return;
+    event?.preventDefault();const content=draft.trim();if(!content||!enabled||hasPending||loading||mutating.current)return;
+    const previous=pendingSend.current;
+    const clientMessageId=previous?.content===content?previous.clientMessageId:crypto.randomUUID();
+    const temporaryId=`sending-${clientMessageId}`;
+    pendingSend.current={...(previous?.creating?{creating:previous.creating}:{}),clientMessageId,content};
+    follow.current=true;
+    setDraft('');
+    setMessages(prev=>[...prev.filter(m=>m.id!==temporaryId),{id:temporaryId,role:'user',content,status:'COMPLETED'}]);
     mutate(async()=>{
       let id=activeRef.current;
-      if(!id){
-        const creating=pendingSend.current?.creating??crypto.randomUUID();
-        pendingSend.current={creating,clientMessageId:pendingSend.current?.clientMessageId??crypto.randomUUID(),content};
-        const session=await request('POST','/sessions',{id:creating,...(context??{})});if(!alive.current)return;
-        id=session.id;activeRef.current=id;setActive(id);setReplyingTo(id);version.current++;setSessions(prev=>[session,...prev.filter(s=>s.id!==id)]);
+      let accepted=false;
+      try {
+        if(!id){
+          const creating=pendingSend.current.creating??crypto.randomUUID();
+          pendingSend.current={...pendingSend.current,creating};
+          const session=await request('POST','/sessions',{id:creating,...(context??{})});if(!alive.current)return;
+          id=session.id;activeRef.current=id;setActive(id);setReplyingTo(id);version.current++;
+          setSessions(prev=>[session,...prev.filter(s=>s.id!==id)]);
+        }
+        const payload={clientMessageId,content};
+        pendingSend.current=payload;
+        await request('POST',`/sessions/${id}/messages`,payload);accepted=true;
+        if(!alive.current)return;
+        pendingSend.current=null;
+        if(activeRef.current===id){follow.current=true;await load(id);}
+        await list();
+      } catch(e) {
+        // A rejected/uncertain send is editable again; retain its idempotency key.
+        // Once accepted, a history refresh error must not invite a duplicate send.
+        if(alive.current&&!accepted&&activeRef.current===id){
+          setMessages(prev=>prev.filter(m=>m.id!==temporaryId));
+          setDraft(content);
+        }
+        throw e;
       }
-      const retry=pendingSend.current;
-      const payload=retry?.content===content?{clientMessageId:retry.clientMessageId,content}:{clientMessageId:crypto.randomUUID(),content};
-      pendingSend.current=payload;await request('POST',`/sessions/${id}/messages`,payload);if(!alive.current)return;
-      pendingSend.current=null;if(activeRef.current===id){setDraft('');follow.current=true;await load(id);}await list();
     },true);
   };
   const retryMessage=id=>mutate(async()=>{const session=activeRef.current;await request('POST',`/sessions/${session}/messages/${id}/retry`);if(alive.current&&activeRef.current===session)await load(session);},true);
@@ -98,7 +120,7 @@ function ChatWidget({context,autoOpen = false}) {
               <div className={styles.renameActions}><button type="button" className={styles.cancelRename} disabled={busy} onClick={cancelRename}>{tr('cancel')}</button><button type="submit" className={styles.saveRename} disabled={busy||!title.trim()}><Check size={15}/>{tr('save')}</button></div>
               {error&&<p className={styles.renameError} role="alert">{tr('error')}</p>}
             </form>:<>
-            <button className={styles.historyOpen} onClick={()=>choose(s)}><MessageCircle size={17}/><span><strong>{s.title==='New conversation'?tr('new'):s.title}</strong><small>{new Date(s.updatedAt).toLocaleString(i18n.language)}</small></span></button>
+            <button className={styles.historyOpen} disabled={busy} onClick={()=>choose(s)}><MessageCircle size={17}/><span><strong>{s.title==='New conversation'?tr('new'):s.title}</strong><small>{new Date(s.updatedAt).toLocaleString(i18n.language)}</small></span></button>
             <div className={styles.historyActions}><button type="button" disabled={busy} title={tr('rename')} aria-label={tr('rename')} onClick={()=>{setRename(s.id);setTitle(s.title);setError('');}}><Pencil size={16}/></button><button type="button" className={styles.deleteAction} disabled={busy} title={tr('delete')} aria-label={tr('delete')} onClick={()=>remove(s)}><Trash2 size={16}/></button></div>
             </>}
           </div>)}
@@ -106,7 +128,7 @@ function ChatWidget({context,autoOpen = false}) {
           {error&&!rename&&<p role="alert">{tr('error')}</p>}
         </div>
       </div>:<div className={styles.messages} ref={scroller} onScroll={()=>{const el=scroller.current;follow.current=el.scrollHeight-el.scrollTop-el.clientHeight<60;}}>
-        {older&&<button onClick={()=>{follow.current=false;load(active,messagePage+1).catch(failure);}}>{tr('older')}</button>}
+        {older&&<button disabled={busy} onClick={()=>{follow.current=false;load(active,messagePage+1).catch(failure);}}>{tr('older')}</button>}
         {activeContext?.insightId && <p>{tr('reportContext')} <Link to={`/profile/reports/${activeContext.insightId}`}>{tr('openReport')}</Link></p>}
         {!messages.length&&!loading&&<div className={styles.welcome}><span><Sparkles size={22}/></span><h2>{tr('welcome')}</h2><p>{tr(activeContext?.insightId?'reportIntro':activeContext?.attemptId?'resultContext':'intro')}</p><div className={styles.suggestions}>{(activeContext?.insightId?['reportQuestion','reportNextSteps']:['grammar','stats','features']).map(k=><button key={k} onClick={()=>setDraft(tr(k))}>{tr(k)}</button>)}</div></div>}
         {loading&&<p role="status">{tr('loading')}</p>}
@@ -115,7 +137,7 @@ function ChatWidget({context,autoOpen = false}) {
       </div>}
       {!history&&<>
         {error&&<div className={styles.notice} role="alert">{tr(['CHAT_DISABLED','CHAT_CONFIG_INVALID'].includes(error)?'disabled':error==='CHAT_RATE_LIMIT'?'rateLimit':'error')}<button onClick={()=>active?load(active).then(()=>setError('')).catch(failure):list().catch(failure)}>{tr('refresh')}</button></div>}
-        <form className={styles.composer} onSubmit={send}><textarea aria-label={tr('input')} placeholder={tr('input')} value={draft} maxLength={4000} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send();}}}/><button disabled={busy||hasPending||!enabled||!draft.trim()} aria-label={tr('send')}><Send size={17}/></button></form>
+        <form className={styles.composer} onSubmit={send}><textarea disabled={busy} aria-label={tr('input')} placeholder={tr('input')} value={draft} maxLength={4000} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send();}}}/><button disabled={busy||loading||hasPending||!enabled||!draft.trim()} aria-label={tr('send')}><Send size={17}/></button></form>
         <small className={styles.disclaimer}>{tr('privacy')}</small>
       </>}
     </section>}

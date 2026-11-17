@@ -128,6 +128,21 @@ describe('Groq HTTP contract (mock only)',()=>{
     expect(global.fetch).not.toHaveBeenCalled();
     expect(manager.query.mock.calls.some(([sql])=>sql.includes("interval '30 seconds'"))).toBe(true);
   });
+  it('shares upstream cooldown across jobs and honors Retry-After without sending again', async () => {
+    let cooldown: string | undefined;
+    const manager = { query: jest.fn(async (sql: string) => sql.startsWith('SELECT count')
+      ? [{ minute: 0, day: 0, cooldown_until: cooldown }] : sql.startsWith('INSERT') ? [{ id: 'call' }] : []) };
+    const db = { transaction: async (fn: any) => fn(manager), query: jest.fn(async (_sql: string, args: any[]) => {
+      cooldown = JSON.parse(args[1]).diagnostic.retryAt;
+    }) };
+    const provider = new GroqReferenceProvider(new ConfigService({ GROQ_FREE_TIER_CONFIRMED: 'true' }), db as any);
+    const request = { model: 'model', systemInstruction: 'test', input: {}, outputSchema: { type: 'object' as const, properties: {}, required: [] }, maxOutputTokens: 100, signal: AbortSignal.timeout(1000) };
+    global.fetch = jest.fn(async () => new Response(JSON.stringify({ error: { code: 'rate_limit_exceeded', type: 'tokens', message: 'Limit 8000 Used 1573 Requested 7055' } }), { status: 429, headers: { 'retry-after': '90' } })) as any;
+    await expect(provider.generateStructured(request)).rejects.toMatchObject({ code: 'GROQ_RATE_WAIT', retryAfterMs: 90000 });
+    expect(cooldown).toBeDefined();
+    await expect(provider.generateStructured(request)).rejects.toMatchObject({ code: 'GROQ_RATE_WAIT' });
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
   it('defaults to 100 daily calls, honors lower caps and blocks invalid overrides at the default cap',async()=>{
     let day=99;
     const manager={query:jest.fn(async(sql:string)=>sql.startsWith('SELECT count')?[{minute:0,day}]:sql.startsWith('INSERT')?[{id:'call'}]:[])};
@@ -149,7 +164,7 @@ describe('Groq HTTP contract (mock only)',()=>{
     for (const [status,code,type,message,expected] of [
       [413,'rate_limit_exceeded','tokens','Limit 8000 Requested 11741','TOKEN_LIMIT_EXCEEDED'],
       [413,'payload_too_large','request','Too large',undefined],
-      [429,'rate_limit_exceeded','tokens','Limit 8000 Requested 1000',undefined],
+      [429,'rate_limit_exceeded','tokens','Limit 8000 Requested 1000','UPSTREAM_RATE_LIMIT'],
     ]) {
       const manager={query:jest.fn(async(sql:string)=>sql.startsWith('SELECT count')?[{minute:0,day:0}]:sql.startsWith('INSERT')?[{id:'call'}]:[])};
       const db={transaction:async(fn:any)=>fn(manager),query:jest.fn()};

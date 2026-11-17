@@ -10,17 +10,17 @@ function fixture() {
   const provider = { generateStructured: jest.fn(async (request: any) => {
     if (request.input.scope === 'FULL_SKILL') {
       const cefr:any=structuredClone(result.cefr);
-      cefr.evidence=cefr.evidence.map(({quote,...entry}:any)=>({...entry,evidenceId:request.input.evidenceCatalog.find((e:any)=>e.questionKey===entry.questionKey && e.text===quote)?.id ?? 'invalid'}));
+      cefr.evidence=cefr.evidence.map(({quote,...entry}:any)=>({...entry,evidenceId:request.input.evidenceCatalog.find((e:any)=>e.questionKey===entry.questionKey && e.text===quote)?.id ?? request.input.evidenceCatalog.find((e:any)=>e.questionKey===entry.questionKey)?.id ?? 'invalid'}));
       return { cefr, summary: structuredClone(result.summary) };
     }
     const part = request.input.parts[0];
     const blank = new WritingAssessmentService({} as any, validator).blank({ ...input, scope: 'PART', parts: [part] });
     return {
-      schemaVersion: 1, cefr: blank.cefr, overallComment: 'Bạn diễn đạt được ý chính.', priorities: ['Luyện thêm thì.'],
-      parts: [{ partNumber: part.partNumber, comment: 'Bạn nêu được ý chính.', suggestions: [],
-        questions: part.questions.map((q: any) => ({ questionKey: q.questionKey, comment: 'Bạn nêu được ý chính.', suggestions: [], suggestedRevision:'Yesterday I went to the club.',
+      schemaVersion: 1, cefr: blank.cefr, overallComment: 'Báº¡n diá»…n Ä‘áº¡t Ä‘Æ°á»£c Ã½ chÃ­nh.', priorities: ['Luyá»‡n thÃªm thÃ¬.'],
+      parts: [{ partNumber: part.partNumber, comment: 'Báº¡n nÃªu Ä‘Æ°á»£c Ã½ chÃ­nh.', suggestions: [],
+        questions: part.questions.map((q: any) => ({ questionKey: q.questionKey, comment: 'Báº¡n nÃªu Ä‘Æ°á»£c Ã½ chÃ­nh.', suggestions: [], suggestedRevision:'Yesterday I went to the club.',
           criteria: Object.fromEntries(result.details.parts[0].questions[0].criteria.map(c => [c.criterion,
-            { judgment: 'ADEQUATE', comment: 'Cần sửa thì.', evidenceId: request.input.evidenceCatalog.find((e:any)=>e.questionKey===q.questionKey && e.text==='Yesterday')!.id }])) })) }],
+            { judgment: 'ADEQUATE', comment: 'Cáº§n sá»­a thÃ¬.', evidenceId: request.input.evidenceCatalog.find((e:any)=>e.questionKey===q.questionKey && e.text==='Yesterday')!.id }])) })) }],
     };
   }) };
   return { input, result, provider, validator };
@@ -46,10 +46,52 @@ describe('Groq per-Part resumable Writing', () => {
     expect(h.provider.generateStructured).toHaveBeenCalledTimes(4);
     expect(result.details.parts[1].questions[0].suggestedRevision).toBe('Yesterday I went to the club.');
   });
+  it('checkpoints compact synthesis after token rejection and resumes only synthesis', async () => {
+    const h = fixture(); let checkpoint: WritingPartsCache | undefined;
+    const real = h.provider.generateStructured.getMockImplementation()!;
+    h.provider.generateStructured.mockImplementation(async request => {
+      if (request.input.scope === 'FULL_SKILL') throw new AiError('GROQ_HTTP_413', false, undefined, 'TOKEN_LIMIT_EXCEEDED');
+      return real(request);
+    });
+    await expect(assessWritingByParts(h.provider, h.input, 'model', 'hash', undefined,
+      async c => { checkpoint = c; })).rejects.toThrow('GROQ_RATE_WAIT');
+    expect(Object.keys(checkpoint!.parts)).toHaveLength(4);
+    expect(checkpoint!.synthesisMode).toBe('compact');
+    const savedParts = structuredClone(checkpoint!.parts);
+    h.provider.generateStructured.mockReset().mockImplementation(async request => {
+      const raw = await real(request);
+      raw.cefr.evidence = raw.cefr.evidence.map((e: any) => ({ ...e,
+        evidenceId: request.input.evidenceCatalog.find((c: any) => c.questionKey === e.questionKey)!.id }));
+      return raw;
+    });
+    const result = await assessWritingByParts(h.provider, h.input, 'model', 'hash', checkpoint, async c => { checkpoint = c; });
+    expect(h.provider.generateStructured).toHaveBeenCalledTimes(1);
+    const sent = h.provider.generateStructured.mock.calls[0][0];
+    expect(sent.input.parts.flatMap((p: any) => p.questions.map((q: any) => q.response)))
+      .toEqual(h.input.parts.flatMap(p => p.questions.map(q => q.response)));
+    expect(result.details.parts).toEqual(Object.values(savedParts).flatMap(p => p.details.parts));
+    expect(result.cefr.level).toBe('B1');
+  });
+  it('does not loop on a compact request that still exceeds the provider limit', async () => {
+    const h = fixture(); let checkpoint: WritingPartsCache | undefined;
+    const real = h.provider.generateStructured.getMockImplementation()!;
+    h.provider.generateStructured.mockImplementation(async request => {
+      if (request.input.scope === 'FULL_SKILL') throw new AiError('GROQ_HTTP_413', false, undefined, 'TOKEN_LIMIT_EXCEEDED');
+      return real(request);
+    });
+    await expect(assessWritingByParts(h.provider, h.input, 'model', 'hash', undefined, async c => { checkpoint = c; })).rejects.toThrow('GROQ_RATE_WAIT');
+    h.provider.generateStructured.mockClear();
+    await expect(assessWritingByParts(h.provider, h.input, 'model', 'hash', checkpoint, async () => {})).rejects.toThrow('GROQ_HTTP_413');
+    expect(h.provider.generateStructured).toHaveBeenCalledTimes(1);
+  });
   it('uses four independent Parts and one synthesis, preserving all six criteria and full CEFR', async () => {
     const h = fixture(), saves: WritingPartsCache[] = [];
     const result = await assessWritingByParts(h.provider, h.input, 'model', 'hash', undefined, async cache => { saves.push(cache); });
     expect(h.provider.generateStructured).toHaveBeenCalledTimes(5);
+    const synthesis = h.provider.generateStructured.mock.calls[4][0];
+    expect(synthesis.maxOutputTokens).toBe(1200);
+    for (const p of h.input.parts) for (const q of p.questions)
+      expect(synthesis.input.evidenceCatalog.filter((e: any) => e.questionKey === q.questionKey).length).toBeLessThanOrEqual(4);
     expect(result.details.parts).toHaveLength(4);
     expect(result.details.parts[0].questions[0].criteria).toHaveLength(6);
     expect(result.cefr.level).toBe('B1');

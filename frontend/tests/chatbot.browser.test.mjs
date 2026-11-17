@@ -16,7 +16,7 @@ test('chat sessions, feedback, retry, ownership boundary and exam visibility',as
   const browser=await chromium.launch({headless:true,...(process.platform==='win32'?{channel:'msedge'}:{})});
   try{
     const page=await browser.newPage({viewport:{width:390,height:850}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
-    const sessions=Array.from({length:30},(_,i)=>({id:'older-'+i,title:'Older conversation '+i,updatedAt:'2026-10-16T00:00:00Z'})),messages=new Map(sessions.map(s=>[s.id,[]]));let failNext=false,failRename=false;let releaseReply;let holdReply=new Promise(resolve=>{releaseReply=resolve;});
+    const sessions=Array.from({length:30},(_,i)=>({id:'older-'+i,title:'Older conversation '+i,updatedAt:'2026-10-16T00:00:00Z'})),messages=new Map(sessions.map(s=>[s.id,[]]));let failNext=false,failRename=false,failSend=false;const sentIds=[];let releaseReply;let holdReply=new Promise(resolve=>{releaseReply=resolve;});
     await page.route('**/*',async route=>{
       const r=route.request(),url=new URL(r.url()),method=r.method(),path=url.pathname.replace('/api/v1/chatbot','');
       const ok=data=>route.fulfill({json:{data}});
@@ -27,6 +27,8 @@ test('chat sessions, feedback, retry, ownership boundary and exam visibility',as
       const [, ,id,,messageId,action]=path.split('/');const list=messages.get(id);
       if(path.endsWith('/messages')&&method==='GET')return ok({items:list,hasMore:false});
       if(path.endsWith('/messages')&&method==='POST'){
+        sentIds.push(r.postDataJSON().clientMessageId);
+        if(failSend){failSend=false;return route.fulfill({status:500,json:{error:{code:'TEST_ERROR'}}});}
         if(holdReply)await holdReply;
         const d=r.postDataJSON();const reply={id:`reply-${list.length}`,role:'assistant',status:failNext?'FAILED':'COMPLETED',content:failNext?'':`Answer: ${d.content}`,citations:[],actions:sessions.find(s=>s.id===id).insightId?[{code:'OPEN_STUDY_PLAN'},{code:'OPEN_MISTAKE_REVIEW'}]:[{code:'OPEN_NOTEBOOK'}]};failNext=false;
         list.push({id:d.clientMessageId,role:'user',content:d.content,status:'COMPLETED'},reply);sessions.find(s=>s.id===id).title=d.content;return ok(reply);
@@ -50,14 +52,28 @@ test('chat sessions, feedback, retry, ownership boundary and exam visibility',as
     await launcher.focus();await page.keyboard.press('Enter');
     assert.equal(await page.getByRole('region',{name:'AptiMate Assistant'}).count(),1);
     const ask=async text=>{await page.getByLabel('Type a question…').fill(text);await page.getByRole('button',{name:'Send',exact:true}).click();};
-    await ask('First session');
+    await page.getByLabel('Type a question…').fill('First session');
+    await page.getByLabel('Type a question…').press('Enter');
+    await page.getByText('First session',{exact:true}).waitFor();
+    assert.equal(await page.getByLabel('Type a question…').inputValue(),'');
+    assert.equal(await page.getByText('Answer: First session',{exact:true}).count(),0);
     const typing=page.getByRole('status',{name:'Preparing a reply…'});await typing.waitFor();assert.equal(await typing.locator('i').count(),3);assert.equal(await typing.innerText(),'');
     assert.notEqual(await typing.locator('i').first().evaluate(el=>getComputedStyle(el).animationName),'none');
     await page.emulateMedia({reducedMotion:'reduce'});assert.equal(await typing.locator('i').first().evaluate(el=>getComputedStyle(el).animationName),'none');await page.emulateMedia({reducedMotion:'no-preference'});
     releaseReply();holdReply=null;await page.getByText('Answer: First session',{exact:true}).waitFor();
     assert.equal(await typing.count(),0);
+    assert.equal(await page.getByText('First session',{exact:true}).count(),1);
     const notebook=page.getByRole('link',{name:'Open vocabulary notebook'});assert.equal(await notebook.getAttribute('href'),'/dictation?mode=notebook');await notebook.click();await page.waitForFunction(()=>window.chatPath==='/dictation?mode=notebook');
     await page.getByRole('button',{name:'Helpful',exact:true}).click();await page.waitForFunction(()=>document.querySelector('[aria-label="Helpful"]').getAttribute('aria-pressed')==='true');
+    failSend=true;await ask('Temporary network failure');
+    await page.getByRole('alert').waitFor();
+    await page.waitForFunction(()=>document.querySelector('textarea').value==='Temporary network failure');
+    assert.equal(await page.locator('article').filter({hasText:'Temporary network failure'}).count(),0);
+    await page.getByRole('button',{name:'Send',exact:true}).click();
+    await page.getByText('Answer: Temporary network failure',{exact:true}).waitFor();
+    assert.equal(sentIds.at(-1),sentIds.at(-2));
+    assert.equal(await page.getByText('Temporary network failure',{exact:true}).count(),1);
+    sessions[0].title='First session';
     await page.getByRole('button',{name:'New conversation',exact:true}).click();await ask('Second session');await page.getByText('Answer: Second session',{exact:true}).waitFor();
     assert.equal(await page.getByText('Answer: First session',{exact:true}).count(),0);
     await page.getByRole('button',{name:'Chat history',exact:true}).click();await page.getByRole('button',{name:/First session/}).click();await page.getByText('Answer: First session',{exact:true}).waitFor();
