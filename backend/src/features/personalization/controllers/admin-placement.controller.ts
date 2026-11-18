@@ -1,6 +1,6 @@
+import { CatalogInvalidationInterceptor } from '../../../common/cache/catalog-invalidation.interceptor';
 import { firstMutationRow } from '../../../common/database/mutation-result';
-import {
-  Body,
+import { UseInterceptors, Body,
   Controller,
   Get,
   Param,
@@ -21,6 +21,7 @@ class PlacementDto {
   @IsBoolean() isPlacement!: boolean;
   @IsInt() @Min(1) version!: number;
 }
+@UseInterceptors(CatalogInvalidationInterceptor)
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')

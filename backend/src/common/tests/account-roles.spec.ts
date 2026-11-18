@@ -1,3 +1,4 @@
+import { RedisCacheService } from '../cache/redis-cache.service';
 import { ExecutionContext, INestApplication, UnauthorizedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import * as request from 'supertest';
@@ -25,7 +26,7 @@ describe('two-role HTTP authorization', () => {
     const module = await Test.createTestingModule({
       controllers: [UsersController, GrammarTestsController, WritingTestsController, ListeningTestsController,
         ReadingTestsController, SpeakingTestsController],
-      providers: [RolesGuard, ...[UsersService, GrammarTestsService, WritingTestsService, ListeningTestsService,
+      providers: [{ provide: RedisCacheService, useValue: { invalidateCatalog: jest.fn() } }, RolesGuard, ...[UsersService, GrammarTestsService, WritingTestsService, ListeningTestsService,
         ReadingTestsService, SpeakingTestsService].map(provide => ({ provide, useValue: { list } }))],
     }).overrideGuard(JwtAuthGuard).useValue({ canActivate(context: ExecutionContext) {
       const req = context.switchToHttp().getRequest();

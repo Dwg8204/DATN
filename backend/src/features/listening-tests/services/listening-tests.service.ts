@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { Injectable, Optional } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { paginate, PaginatedResponse } from '../../../common/pagination/pagination.dto';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -13,6 +14,7 @@ export class ListeningTestsService {
   constructor(
     private readonly repository: ListeningTestsRepository,
     private readonly content: ListeningTestContentService,
+    @Optional() private readonly cache?: RedisCacheService,
   ) {}
 
   async list(query: ListListeningTestsQueryDto, actor: AuthUser): Promise<PaginatedResponse<ListeningTestSummary>> {
@@ -21,7 +23,7 @@ export class ListeningTestsService {
   }
 
   async listPublished(query: ListListeningTestsQueryDto): Promise<PaginatedResponse<ListeningTestSummary>> {
-    const result = await this.repository.listPublished(query);
+    const result = await (this.cache ? this.cache.catalog('listening', query, () => this.repository.listPublished(query)) : this.repository.listPublished(query));
     return paginate(result.tests, result.total, query);
   }
 

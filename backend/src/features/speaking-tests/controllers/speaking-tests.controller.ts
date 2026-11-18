@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { CatalogInvalidationInterceptor } from '../../../common/cache/catalog-invalidation.interceptor';
+import { UseInterceptors, Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
@@ -16,6 +17,7 @@ const ACCESS_COOKIE = 'aptimate_access_token';
 @ApiTags('Speaking Tests')
 @ApiCookieAuth(ACCESS_COOKIE)
 @UseGuards(JwtAuthGuard, RolesGuard)
+@UseInterceptors(CatalogInvalidationInterceptor)
 @Controller('speaking-tests')
 export class SpeakingTestsController {
   constructor(private readonly testsService: SpeakingTestsService) {}

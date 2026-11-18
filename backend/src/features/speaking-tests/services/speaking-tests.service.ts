@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { Injectable, Optional } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { CreateSpeakingTestDto, PublishSpeakingTestDto, UpdateSpeakingTestDto } from '../dto/save-speaking-test.dto';
 import { ListSpeakingTestsQueryDto } from '../dto/list-speaking-tests-query.dto';
@@ -11,6 +12,7 @@ export class SpeakingTestsService {
   constructor(
     private readonly repository: SpeakingTestsRepository,
     private readonly contentService: SpeakingTestContentService,
+    @Optional() private readonly cache?: RedisCacheService,
   ) {}
 
   async list(query: ListSpeakingTestsQueryDto, actor: SpeakingActor) {
@@ -18,7 +20,7 @@ export class SpeakingTestsService {
   }
 
   async listPublished(query: ListSpeakingTestsQueryDto) {
-    return this.repository.listPublished(query);
+    return (this.cache ? this.cache.catalog('speaking', query, () => this.repository.listPublished(query)) : this.repository.listPublished(query));
   }
 
   async getOne(id: string) {
