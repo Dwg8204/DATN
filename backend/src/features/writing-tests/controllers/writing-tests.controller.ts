@@ -1,5 +1,5 @@
-import {
-  Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, Req, UseGuards,
+import { CatalogInvalidationInterceptor } from '../../../common/cache/catalog-invalidation.interceptor';
+import { UseInterceptors, Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Put, Query, Req, UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
@@ -17,6 +17,7 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
 
 @ApiTags('Writing Test Management')
 @ApiCookieAuth('aptimate_access_token')
+@UseInterceptors(CatalogInvalidationInterceptor)
 @Controller('admin/writing-tests')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')

@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Put, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { CatalogInvalidationInterceptor } from '../../../common/cache/catalog-invalidation.interceptor';
+import { UseInterceptors, Controller, Get, Post, Put, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
 import { Roles } from '../../auth/decorators/roles.decorator';
@@ -10,6 +11,7 @@ import { UpdateReadingTestDto } from '../dto/update-reading-test.dto';
 import { QueryReadingTestDto } from '../dto/query-reading-test.dto';
 import { CreateQuestionDto } from '../dto/create-question.dto';
 
+@UseInterceptors(CatalogInvalidationInterceptor)
 @Controller('admin/reading/tests')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('ADMIN')

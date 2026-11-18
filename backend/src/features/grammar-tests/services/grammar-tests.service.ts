@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { Injectable, Optional } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { paginate, PaginatedResponse } from '../../../common/pagination/pagination.dto';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -13,6 +14,7 @@ export class GrammarTestsService {
   constructor(
     private readonly repository: GrammarTestsRepository,
     private readonly content: GrammarTestContentService,
+    @Optional() private readonly cache?: RedisCacheService,
   ) {}
 
   async list(query: ListGrammarTestsQueryDto, actor: AuthUser): Promise<PaginatedResponse<GrammarTestSummary>> {
@@ -21,7 +23,7 @@ export class GrammarTestsService {
   }
 
   async listPublished(query: ListGrammarTestsQueryDto): Promise<PaginatedResponse<GrammarTestSummary>> {
-    const result = await this.repository.listPublished(query);
+    const result = await (this.cache ? this.cache.catalog('grammar', query, () => this.repository.listPublished(query)) : this.repository.listPublished(query));
     return paginate(result.tests, result.total, query);
   }
 

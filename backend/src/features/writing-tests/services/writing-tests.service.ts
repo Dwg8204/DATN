@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { Injectable, Optional } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { paginate, PaginatedResponse } from '../../../common/pagination/pagination.dto';
 import { AuthUser } from '../../auth/types/auth-user.type';
@@ -10,7 +11,7 @@ import { WritingTestContentService } from './writing-test-content.service';
 
 @Injectable()
 export class WritingTestsService {
-  constructor(private readonly repository: WritingTestsRepository, private readonly content: WritingTestContentService) {}
+  constructor(private readonly repository: WritingTestsRepository, private readonly content: WritingTestContentService, @Optional() private readonly cache?: RedisCacheService) {}
 
   async list(query: ListWritingTestsQueryDto, actor: AuthUser): Promise<PaginatedResponse<WritingTestSummary>> {
     const result = await this.repository.list(query, actor);
@@ -18,7 +19,7 @@ export class WritingTestsService {
   }
 
   async listPublished(query: ListWritingTestsQueryDto): Promise<PaginatedResponse<WritingTestSummary>> {
-    const result = await this.repository.listPublished(query);
+    const result = await (this.cache ? this.cache.catalog('writing', query, () => this.repository.listPublished(query)) : this.repository.listPublished(query));
     return paginate(result.tests, result.total, query);
   }
 

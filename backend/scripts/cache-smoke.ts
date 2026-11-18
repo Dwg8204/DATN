@@ -25,12 +25,27 @@ async function main() {
     assert.equal(calls, 1); assert.equal(await probe.ttl(key), 1);
     await new Promise(resolve => setTimeout(resolve, 1100));
     assert.deepEqual(await b.getOrLoad('smoke', 'shared', 1, load), { value: 2 });
+    let catalogReads = 0;
+    const catalogLoad = async () => ({ tests: [{ id: 'smoke', version: ++catalogReads }], total: 1 });
+    await a.catalog('writing', { page: 1 }, catalogLoad);
+    await b.catalog('writing', { page: 1 }, catalogLoad);
+    assert.equal(catalogReads, 1);
+    await a.invalidateCatalog();
+    await b.catalog('writing', { page: 1 }, catalogLoad);
+    assert.equal(catalogReads, 2);
     a.onModuleDestroy();
     assert.deepEqual(await a.getOrLoad('smoke', 'shared', 1, load), { value: 3 });
-    console.info('PASS: shared cache, TTL expiry, disconnected fallback; only smoke key touched.');
+    console.info('PASS: shared cache, TTL expiry, catalog cross-client invalidation, disconnected fallback; only UUID smoke namespace touched.');
   } finally {
     a.onModuleDestroy(); b.onModuleDestroy();
-    if (probe.status === 'ready') await probe.del(key);
+    if (probe.status === 'ready') {
+      let cursor = '0';
+      do {
+        const [next, keys] = await probe.scan(cursor, 'MATCH', `${prefix}:*`, 'COUNT', 100);
+        cursor = next;
+        if (keys.length) await probe.del(...keys);
+      } while (cursor !== '0');
+    }
     probe.disconnect();
   }
 }
