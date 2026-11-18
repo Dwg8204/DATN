@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createHash } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import Redis from 'ioredis';
 
 /** Optional cache only. PostgreSQL remains the source of truth for user data and jobs. */
@@ -36,6 +36,30 @@ export class RedisCacheService implements OnModuleInit, OnModuleDestroy {
   private key(namespace: string, input: string) {
     const digest = createHash('sha256').update(input).digest('hex');
     return `${this.config.get<string>('REDIS_KEY_PREFIX', 'aptimate:cache:v1')}:${namespace}:${digest}`;
+  }
+
+  /** Generation keys prevent a slow pre-edit loader from repopulating the current catalog. */
+  async catalog<T>(skill: string, query: object, load: () => Promise<T>): Promise<T> {
+    if (this.client?.status !== 'ready') return load();
+    let generation: string;
+    try {
+      const generationKey = this.key('catalog-generation', 'published');
+      await this.client.set(generationKey, randomUUID(), 'EX', 300, 'NX');
+      const current = await this.client.get(generationKey);
+      if (!current) return load();
+      generation = current;
+    } catch { this.warn(); return load(); }
+    const normalized = Object.entries({ ...query, status: 'PUBLISHED' })
+      .filter(([, value]) => value !== undefined)
+      .sort(([a], [b]) => a.localeCompare(b));
+    return this.getOrLoad('published-catalog:v1', JSON.stringify([generation, skill, normalized]), 120, load);
+  }
+
+  async invalidateCatalog(): Promise<void> {
+    if (this.client?.status !== 'ready') return;
+    try {
+      await this.client.set(this.key('catalog-generation', 'published'), randomUUID(), 'EX', 300);
+    } catch { this.warn(); }
   }
 
   async getOrLoad<T>(namespace: string, input: string, ttlSeconds: number,

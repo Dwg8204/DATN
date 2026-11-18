@@ -4,7 +4,7 @@ Cập nhật: 17/11/2026. Dành cho môi trường local, ưu tiên dự án đ�
 
 ## 1. Redis dùng để làm gì?
 
-Redis hiện cache kết quả từ điển Anh–Việt (5 phút) và vector embedding chatbot (24 giờ). Điểm thi, feedback, lịch sử, checkpoint và hàng chờ AI vẫn lưu PostgreSQL. Redis không tăng quota Groq/Gemini và không tự sửa lỗi payload quá lớn.
+Redis hiện cache kết quả từ điển Anh–Việt (5 phút), vector embedding chatbot (24 giờ) và danh sách đề đã xuất bản (2 phút). Danh sách đề được vô hiệu hóa sau khi API quản trị thay đổi đề thành công; trạng thái và điểm theo người dùng vẫn lấy riêng từ PostgreSQL. Chi tiết và kế hoạch mở rộng: [Cache danh sách đề và lộ trình Redis](REDIS_CATALOG_AND_ROADMAP.md). Điểm thi, feedback, lịch sử, checkpoint và hàng chờ AI vẫn lưu PostgreSQL. Redis không tăng quota Groq/Gemini và không tự sửa lỗi payload quá lớn.
 
 Cấu hình đã có trong backend/compose.yaml:
 

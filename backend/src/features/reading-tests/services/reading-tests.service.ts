@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
+import { Injectable, Optional } from '@nestjs/common';
 import { ApplicationError } from '../../../common/errors/application.error';
 import { ListReadingTestsQueryDto } from '../dto/list-reading-tests-query.dto';
 import { CreateReadingTestDto, PublishReadingTestDto, UpdateReadingTestDto } from '../dto/save-reading-test.dto';
@@ -8,9 +9,9 @@ import { ReadingTestContentService } from './reading-test-content.service';
 
 @Injectable()
 export class ReadingTestsService {
-  constructor(private readonly repository: ReadingTestsRepository, private readonly content: ReadingTestContentService) {}
+  constructor(private readonly repository: ReadingTestsRepository, private readonly content: ReadingTestContentService, @Optional() private readonly cache?: RedisCacheService) {}
   list(query: ListReadingTestsQueryDto, actor: ReadingActor) { return this.repository.list(query, actor); }
-  listPublished(query: ListReadingTestsQueryDto) { return this.repository.listPublished(query); }
+  listPublished(query: ListReadingTestsQueryDto) { return (this.cache ? this.cache.catalog('reading', query, () => this.repository.listPublished(query)) : this.repository.listPublished(query)); }
   async getOne(id: string) {
     const test = await this.repository.findAggregate(id);
     if (!test) this.notFound();
