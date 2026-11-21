@@ -76,10 +76,11 @@ export default function ListeningResultPage() {
 
   if (loading || error) return <AttemptPageState loading={loading} error={error}  backHref={isPractice ? '/listening/practice' : '/listening/tests'} />;
   if (!view) return <AttemptPageState error={ui("This result is not available yet.")}  backHref={isPractice ? '/listening/practice' : '/listening/tests'} />;
+  const singlePartPractice = data.purpose === "PRACTICE" && data.scope === "PART" && view.parts.length === 1;
   const columns = [];
   if (view.parts.length > 0) {
     const p1 = view.items.filter(i => i.partNumber === 1);
-    if (p1.length > 6) {
+    if (p1.length > 6 && !singlePartPractice) {
       columns.push({ title: 'Part 1', items: p1.slice(0, Math.ceil(p1.length / 2)) });
       columns.push({ title: 'Part 1', items: p1.slice(Math.ceil(p1.length / 2)) });
     } else if (p1.length > 0) {
@@ -142,7 +143,7 @@ export default function ListeningResultPage() {
         {columns.length > 0 && (
           <div className={styles.detailBox}>
             <div className={styles.resultLabel} style={{ color: '#A11D33', fontSize: '20px', fontWeight: 'bold', marginBottom: '24px' }}>{ui("Answer overview")}</div>
-            <div className={styles.columnsWrapper} style={{ gap: '32px', overflowX: 'auto' }}>
+            <div className={`${styles.columnsWrapper} ${singlePartPractice ? styles.singlePartOverview : ""}`} style={{ gap: '32px', overflowX: 'auto' }}>
               {columns.map((col, idx) => (
                 <div className={styles.mainColumn} key={idx} style={{ flex: '0 0 auto', minWidth: '120px' }}>
                   <div className={styles.partColumn}>

@@ -1,3 +1,4 @@
+import useLogoutConfirmation from '../../../components/common/useLogoutConfirmation';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { ChevronDown, MoreVertical } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
@@ -81,23 +82,14 @@ function NavigationGroup({ item, collapsed }) {
 
 export default function AdminSidebar({ collapsed }) {
   const ui = useUiTranslation();
-  const { user, logout } = useAuth();
+  const { requestLogout, logoutDialog, signingOut } = useLogoutConfirmation();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [signingOut, setSigningOut] = useState(false);
   const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || 'Admin user';
   const initials = displayName.split(/\s+/).map(part => part[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
   const visibleNavigation = ADMIN_NAVIGATION.filter(item => hasAnyRole(user?.role, item.roles));
 
-  const handleLogout = async () => {
-    if (signingOut) return;
-    setSigningOut(true);
-    try {
-      await logout();
-      navigate('/', { replace: true });
-    } catch {
-      setSigningOut(false);
-    }
-  };
+
 
   return (
     <aside className={`${styles.sidebar} ${collapsed ? 'adminSidebarCollapsed' : ''}`}>
@@ -108,7 +100,8 @@ export default function AdminSidebar({ collapsed }) {
           ? <NavigationGroup item={item} collapsed={collapsed} key={item.to} />
           : <NavigationItem item={item} key={item.to} />)}
       </nav>
-      <NavigationAction item={ADMIN_LOGOUT_ITEM} disabled={signingOut} onClick={handleLogout} />
+      <NavigationAction item={ADMIN_LOGOUT_ITEM} disabled={signingOut} onClick={requestLogout} />
+    {logoutDialog}
     </aside>
   );
 }

@@ -1,3 +1,4 @@
+import { STRONG_PASSWORD, PASSWORD_REQUIREMENTS } from './password-policy';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Buffer } from 'node:buffer';
@@ -21,6 +22,7 @@ export class PasswordService {
     if (password !== confirmation) throw new ApplicationError('PASSWORD_MISMATCH', 'Passwords do not match.', 400);
     if (!password.trim()) throw new ApplicationError('INVALID_PASSWORD', 'Password cannot contain only spaces.', 400);
     this.assertByteLength(password);
+    if (!STRONG_PASSWORD.test(password)) throw new ApplicationError('INVALID_PASSWORD', PASSWORD_REQUIREMENTS, 400);
   }
 
   private assertByteLength(password: string): void {

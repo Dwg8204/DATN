@@ -473,3 +473,15 @@
 :global([data-theme="dark"]) .passwordToggle { color: var(--text-muted); }
 :global([data-theme="dark"]) .loadingHint { color: var(--text-muted); }
 :global([data-theme="dark"]) .warningText { color: var(--brand-hover); }
+
+.requiredMark { color: #ef4444 !important; }
+.passwordRequirements { margin: 4px 0 0; font-size: 13px; line-height: 1.5; color: var(--text-secondary, #64748b); max-width: 100%; }
+
+/* Keep help text within the same field width as the other signup controls. */
+.signupFormGroup { width:635px; max-width:100%; align-items:stretch; }
+.signupFormGroup > .inputCol { width:100%; min-width:0; }
+.signupFormGroup .inputFull, .signupFormGroup .passwordInputWrap { width:100%; box-sizing:border-box; }
+.signupFormGroup .inputRow { width:100%; gap:32px; }
+.signupFormGroup .inputRow > div { flex:1; min-width:0; margin-right:0; }
+.signupFormGroup .inputHalf { width:100%; box-sizing:border-box; }
+.signupFormGroup .passwordRequirements { width:100%; box-sizing:border-box; overflow-wrap:anywhere; }

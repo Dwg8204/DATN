@@ -1,3 +1,4 @@
+import useLogoutConfirmation from '../common/useLogoutConfirmation';
 import { useUiTranslation } from "../../i18n/useUiTranslation.jsx";
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
@@ -109,9 +110,10 @@ function dropdownLabel(item, subItem, t) {
 
 export default function Header() {
   const ui = useUiTranslation();
+  const { requestLogout, logoutDialog } = useLogoutConfirmation();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const dashboardPath = canAccessAdminPath(user?.role) ? '/admin/dashboard' : '/profile/dashboard';
   const { theme } = useTheme();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -205,15 +207,7 @@ export default function Header() {
                   <History size={16} style={{ marginRight: '8px' }} />
                   {t('profile.history')}
                 </button>
-                <button className={styles.dropdownItem} onClick={async () => {
-                  setIsUserMenuOpen(false);
-                  try {
-                    await logout();
-                    navigate('/', { replace: true });
-                  } catch {
-                    // The shared API error toast keeps the user informed.
-                  }
-                }}>
+                <button className={styles.dropdownItem} onClick={() => { setIsUserMenuOpen(false); requestLogout(); }}>
                   <LogOut size={16} style={{ marginRight: '8px' }} />
                   {t('profile.logout')}
                 </button>
@@ -245,6 +239,7 @@ export default function Header() {
           );
         })}
       </nav>
+    {logoutDialog}
     </header>
   );
 }

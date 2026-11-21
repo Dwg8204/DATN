@@ -110,3 +110,9 @@ Mục tiêu: xác định truy vấn tốn thời gian trước khi mở rộng 
 ## 5. Phạm vi thay đổi đợt này
 
 Đã triển khai cache danh sách đề 5 kỹ năng và invalidation qua API quản trị, bổ sung kiểm thử. Tái sử dụng hai API và frontend ghép dữ liệu hiện có. Các mục ưu tiên 1–5 là kế hoạch, chưa tự thay đổi dashboard, truy vấn lịch sử, RAG hoặc hàng chờ chấm.
+
+## Cập nhật triển khai dashboard ngày 20/11/2026
+
+Đã triển khai riêng cache dashboard theo tài khoản, TTL 45 giây. Thay vì phụ thuộc hook invalidation ở từng API/worker, mỗi lần đọc kiểm tra dấu vân tay metadata các bài đã nộp và múi giờ; thay đổi dữ liệu tạo khóa mới. Cách này bao phủ cả thay đổi điểm từ worker và tránh truy vấn cũ ghi vào khóa mới. Đổi lại, cache hit còn một truy vấn metadata; cần tiếp tục đo với dữ liệu lớn trước khi cân nhắc bộ đếm revision lưu bền.
+
+Bộ lọc gồm skill/part/range theo API hiện có. Mục thống kê bài thi và hồ sơ năng lực giữ nguyên phạm vi dữ liệu trước đây. Chưa triển khai các ưu tiên Redis khác (chủ đề, RAG retrieval, quota hoặc hàng chờ).
