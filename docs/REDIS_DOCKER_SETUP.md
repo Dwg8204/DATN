@@ -372,3 +372,21 @@ Tài liệu tham khảo:
 - Giới hạn Memurai: https://www.memurai.com/get-memurai
 - Redis Insight: https://redis.io/docs/latest/operate/redisinsight/install/install-on-desktop/
 
+
+## Dashboard người dùng (bổ sung 20/11/2026)
+
+API `/api/v1/test-attempts/dashboard` cache kết quả trong Redis **45 giây** với namespace `student-dashboard:v1`. Khóa được băm từ ID tài khoản đăng nhập, phiên bản dữ liệu bài làm, múi giờ, ngày hiện tại và các bộ lọc skill/part/range. Không lấy userId tùy ý từ query.
+
+Mỗi request vẫn chạy một truy vấn PostgreSQL nhẹ kiểm tra metadata của các bài đã nộp (ID, trạng thái, revision, thời gian cập nhật, điểm/CEFR), cùng múi giờ tài khoản. Khi dữ liệu đổi do nộp bài, chấm xong, chấm lại hoặc xóa bài, khóa đổi ngay; cache cũ không được dùng nữa và tự hết TTL. Không phải mỗi cache hit đều hoàn toàn không truy vấn database. Hai truy vấn nặng lấy dữ liệu biểu đồ và hồ sơ năng lực được bỏ qua khi có cache.
+
+Giữ nguyên cách tính dashboard và kết quả chính; không dùng kết quả Groq tham khảo thay Gemini. Redis lỗi thì tính từ database. Không cần migration, seed hoặc biến env mới.
+
+Kiểm tra thủ công:
+
+1. Mở dashboard; lọc `aptimate:cache:v1:student-dashboard:v1:*` trong Redis Insight (thay prefix nếu đã tùy chỉnh).
+2. Tải lại cùng bộ lọc: TTL giảm từ tối đa 45 giây, không gia hạn mỗi lần đọc.
+3. Đổi kỹ năng/Part/khoảng thời gian: cache riêng cho từng lựa chọn.
+4. Đăng nhập tài khoản khác: dữ liệu riêng, không dùng chung kết quả dashboard.
+5. Sau khi nộp bài hoặc AI chấm xong, tải lại dashboard: phiên bản mới được tính ngay, không cần đợi TTL cũ.
+
+Trang đang mở không tự nhận push từ Redis; cần request mới. Các thời điểm giới hạn hồ sơ năng lực có thể được cập nhật chậm tối đa TTL nếu không có thay đổi bài làm. Cache chỉ chứa dữ liệu tổng hợp hiện có; quyền đọc Redis phải được bảo vệ vì dashboard là dữ liệu cá nhân.

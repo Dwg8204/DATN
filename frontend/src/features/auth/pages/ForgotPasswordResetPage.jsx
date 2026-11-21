@@ -1,3 +1,5 @@
+import InfoTooltip from '../../../components/common/InfoTooltip';
+import PasswordRequirements from '../components/PasswordRequirements';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -21,7 +23,7 @@ export default function ForgotPasswordResetPage() {
     dismissToast();
     const validationError = validatePassword(newPassword, confirmPassword);
     if (validationError) {
-      showError(validationError);
+      showError(ui(validationError));
       return;
     }
     setBusy(true);
@@ -45,23 +47,26 @@ export default function ForgotPasswordResetPage() {
           <div className={styles.formGroup}>
             <div className={styles.signupFormGroup}>
               <div className={styles.inputCol}>
-                <span className={styles.label} style={{ alignSelf: 'flex-start' }}>{ui("New Password")}</span>
+                <label htmlFor="reset-new" className={styles.label} style={{ alignSelf: 'flex-start' }}>{ui("New Password")} <span className={styles.requiredMark} aria-hidden="true">*</span> <InfoTooltip label={ui("More information")} text={ui("Password must contain at least 8 characters, an uppercase letter (A-Z), a lowercase letter (a-z), a number and a special character.")} /></label>
                 <PasswordInput
                   className={`${styles.input} ${styles.inputFull}`}
+                  id="reset-new" aria-describedby="reset-new-rules"
+                  required
                   value={newPassword}
                   onChange={event => setNewPassword(event.target.value)}
                   autoComplete="new-password"
-                  required
                 />
+              <PasswordRequirements id="reset-new-rules" />
               </div>
               <div className={styles.inputCol}>
-                <span className={styles.label} style={{ alignSelf: 'flex-start' }}>{ui("Confirm New Password")}</span>
+                <label htmlFor="reset-confirm" className={styles.label} style={{ alignSelf: 'flex-start' }}>{ui("Confirm New Password")} <span className={styles.requiredMark} aria-hidden="true">*</span></label>
                 <PasswordInput
                   className={`${styles.input} ${styles.inputFull}`}
+                  id="reset-confirm"
+                  required
                   value={confirmPassword}
                   onChange={event => setConfirmPassword(event.target.value)}
                   autoComplete="new-password"
-                  required
                 />
               </div>
             </div>

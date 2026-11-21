@@ -435,3 +435,6 @@
 :global([data-theme="dark"]) .speedControl {
   border: 1px solid var(--text-primary);
 }
+
+.matchItem { align-items:flex-start; }
+.speakerText { padding-top:10px; }

@@ -6,3 +6,6 @@
   color: var(--text-primary);
   background: var(--bg-surface);
 }
+
+/* Keep the close icon visible in both themes, including global dark button rules. */
+.modal > header button svg { color: #da1e21; stroke: #da1e21; }

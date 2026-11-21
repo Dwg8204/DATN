@@ -1,3 +1,4 @@
+import { STRONG_PASSWORD, PASSWORD_REQUIREMENTS } from '../services/password-policy';
 import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 
 export class ChangePasswordDto {
@@ -7,7 +8,7 @@ export class ChangePasswordDto {
   currentPassword!: string;
 
   @IsString()
-  @Matches(/^(?=.*\S).{8,128}$/, { message: 'New password must contain 8–128 characters and cannot contain only spaces.' })
+  @Matches(STRONG_PASSWORD, { message: PASSWORD_REQUIREMENTS })
   newPassword!: string;
 
   @IsString()

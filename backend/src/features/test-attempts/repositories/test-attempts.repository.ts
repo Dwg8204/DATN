@@ -172,6 +172,18 @@ export class TestAttemptsRepository {
     return { rows, total: Number(count[0]?.total ?? 0) };
   }
 
+  /** Read only revision metadata, not the large assessment payloads. Covers worker updates too. */
+  async dashboardCacheState(studentId: string): Promise<{ timezone: string; revision: string }> {
+    const [state] = await this.dataSource.query<Array<{ timezone: string; revision: string }>>(
+      `SELECT u.timezone, md5(COALESCE((
+        SELECT string_agg(ROW(a.id,a.component,a.purpose,a.scope,a.part_number,a.status,
+          a.grading_status,a.submitted_at,a.updated_at,a.assessment_revision,
+          a.score,a.max_score,a.estimated_cefr)::text, '|' ORDER BY a.id)
+        FROM test_attempts a WHERE a.student_id=u.id AND a.status='SUBMITTED'
+      ), '')) AS revision FROM users u WHERE u.id=$1`, [studentId]);
+    return state ?? { timezone: 'UTC', revision: 'no-user' };
+  }
+
   async dashboardAttempts(studentId: string): Promise<DashboardAttemptRow[]> {
     return this.dataSource.query<DashboardAttemptRow[]>(
       `SELECT component,submitted_at AS "submittedAt",score::float8 AS score,

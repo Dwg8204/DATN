@@ -38,13 +38,6 @@
   line-height: 24px;
 }
 
-.tabsIcon {
-  width: 24px;
-  height: 24px;
-  position: relative;
-  overflow: hidden;
-}
-
 .tabsContainer {
   display: flex;
   align-items: center;
@@ -167,16 +160,17 @@
 }
 
 .gridRow {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  align-items: stretch;
   gap: 24px;
   width: 100%;
-  flex-wrap: wrap;
 }
 
 .testCard {
   width: 100%;
-  max-width: 418px;
+  min-width: 0;
+  box-sizing: border-box;
   padding-top: 40px;
   padding-bottom: 20px;
   position: relative;
@@ -454,6 +448,7 @@
   }
 
   .gridRow {
+    grid-template-columns: 1fr;
     align-items: stretch;
   }
 

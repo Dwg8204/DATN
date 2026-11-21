@@ -1,14 +1,14 @@
+import SkillResources from '../../../components/common/SkillResources';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { useNavigate } from 'react-router-dom';
 import styles from './ListeningFeedPage.module.css';
 
-const popularDocs = Array.from({ length: 5 }, (_, index) => ({
-  id: index + 1,
-  title: 'APTIS LISTENING PRACTICE',
-  subTitle: 'Practice questions with detailed explanations',
-  badge: 'LATEST 2026',
-  desc: 'Improve your listening skills with regularly updated Aptis practice materials.',
-}));
+const listeningResources = [
+  { key: 'format', href: 'https://www.britishcouncil.org/exam/aptis/practice-materials/listening-aptis-test' },
+  { key: 'practice', href: 'https://www.britishcouncil.vn/sites/default/files/aptis_esol_general_practice_tests.pdf' },
+  { key: 'guide', href: 'https://www.britishcouncil.vn/sites/default/files/aptis_esol_general_candidate_guide_2023_a4_0.pdf' },
+  { key: 'preparation', href: 'https://aptistests.vn/danh-muc/cac-de-thi-mau-cua-hoi-dong-anh-tai-viet-nam-dar74' },
+];
 
 export default function ListeningFeedPage() {
   const ui = useUiTranslation();
@@ -82,40 +82,7 @@ export default function ListeningFeedPage() {
         </div>
       </div>
 
-      <div className={styles.section}>
-        <div className={styles.titleContainer}>
-          <div className={styles.title}>{ui("LISTENING DOCUMENTS")}</div>
-          <div className={styles.divider}></div>
-        </div>
-        <div className={styles.contentBlock}>
-          <div className={styles.documentLink}>{ui("Some tips for taking the APTIS Listening test")}</div>
-          <div className={styles.documentLink}>{ui("APTIS Listening practice test")}</div>
-          <div className={styles.documentLink}>{ui("Question types in the APTIS Listening test")}</div>
-          <div className={styles.documentLink}>{ui("APTIS Listening band scores")}</div>
-        </div>
-      </div>
-
-      <div className={styles.section}>
-        <div className={styles.popularTitle}>{ui("MOST POPULAR")}</div>
-        <div className={styles.popularGrid}>
-          {popularDocs.map((doc) => (
-            <div key={doc.id} className={styles.popularCard}>
-              <div className={styles.cardHeader}>
-                <div className={styles.cardHeaderTop}>
-                  <div className={styles.cardTitle}>{ui(doc.title)}</div>
-                  <div className={styles.cardSubTitle}>{doc.subTitle}</div>
-                </div>
-                <div className={styles.cardBadge}>
-                  <span className={styles.cardBadgeText}>{doc.badge}</span>
-                </div>
-              </div>
-              <div className={styles.cardBody}>
-                <div className={styles.cardBodyText}>{doc.desc}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <SkillResources skill="listening" items={listeningResources} />
 
       <button className={styles.goToTestBtn} onClick={() => navigate('/listening/tests')}>{ui("View Test List")}</button>
     </div>

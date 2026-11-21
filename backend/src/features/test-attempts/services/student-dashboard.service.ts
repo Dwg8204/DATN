@@ -1,6 +1,7 @@
+import { RedisCacheService } from '../../../common/cache/redis-cache.service';
 import { AbilityProfile, buildAbilityProfile } from '../../ai-shared/ability-profile';
 import { readAbilityProfile } from '../../ai-shared/ability-profile.repository';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { localDay } from '../../personalization/policies/calendar';
 import { AuthUser } from '../../auth/types/auth-user.type';
 import { StudentDashboardQueryDto } from '../dto/student-dashboard-query.dto';
@@ -104,12 +105,21 @@ export function buildStudentDashboard(rows: DashboardAttemptRow[], query: Studen
 
 @Injectable()
 export class StudentDashboardService {
-  constructor(private readonly repository: TestAttemptsRepository) {}
+  constructor(private readonly repository: TestAttemptsRepository,
+    @Optional() private readonly cache?: RedisCacheService) {}
 
   async get(actor: AuthUser, query: StudentDashboardQueryDto) {
-    const [user] = await this.repository.dataSource.query<Array<{ timezone: string }>>('SELECT timezone FROM users WHERE id=$1', [actor.id]);
+    const state = await this.repository.dashboardCacheState(actor.id);
     const now = new Date();
-    const profile = await readAbilityProfile(this.repository.dataSource.manager, actor.id, now);
-    return buildStudentDashboard(await this.repository.dashboardAttempts(actor.id), query, now, user?.timezone ?? 'UTC', profile);
+    const timezone = state.timezone ?? 'UTC';
+    const load = async () => {
+      const profile = await readAbilityProfile(this.repository.dataSource.manager, actor.id, now);
+      return buildStudentDashboard(await this.repository.dashboardAttempts(actor.id), query, now, timezone, profile);
+    };
+    // A post-submit/grade revision gets a new key even before TTL expiry. Old in-flight
+    // reads cannot populate the new revision. Day/timezone also affect streak and charts.
+    const key = JSON.stringify([actor.id, state.revision, timezone, localDay(now, timezone),
+      query.skill ?? 'all', query.part ?? 'all', query.range ?? 'all']);
+    return this.cache ? this.cache.getOrLoad('student-dashboard:v1', key, 45, load) : load();
   }
 }
