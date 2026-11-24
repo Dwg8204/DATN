@@ -1,0 +1,1493 @@
+{
+  "promptVersion": "mistake-explain-v1",
+  "scope": "30 public R0 questions: 20 Grammar, 10 Reading. No learner data or audio correctness claim.",
+  "reviewer": {
+    "type": "AI",
+    "name": "Codex",
+    "date": "2026-11-11",
+    "humanReviewed": false,
+    "method": "Read each question/context, generated explanation/rule/tip and all cited passages; record 0–2 scores. Not an independent held-out evaluation."
+  },
+  "results": [
+    {
+      "id": "grammar_vocab-1",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "I have lived here ___ 2020.",
+        "correctAnswer": "since",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "during",
+        "alternatives": [
+          "for",
+          "since",
+          "during"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "since",
+        "explanation": "Trong câu này, động từ được chia ở thì hiện tại hoàn thành (have lived) kết hợp với một mốc thời gian cụ thể trong quá khứ là '2020' (năm bắt đầu hành động). Do đó, ta phải dùng 'since' để chỉ mốc thời gian bắt đầu, chứ không dùng 'for' (dùng cho khoảng thời gian) hay 'during'.",
+        "ruleSummary": "Dùng 'since' với thì hiện tại hoàn thành để chỉ mốc thời gian bắt đầu của hành động.",
+        "tip": "Hãy nhìn từ sau chỗ trống: nếu là mốc thời gian cụ thể (như 2020, thứ Hai, tháng Giêng), hãy chọn 'since'.",
+        "citations": [
+          "93f01e4c-7d76-4ce3-b46d-f96bc65aa684",
+          "5ce421eb-aea3-4fa3-a966-f68e4a509101"
+        ]
+      },
+      "requestId": "277df1a2-38c6-4c38-aac9-09a8ae0ae707",
+      "sources": [
+        {
+          "chunkId": "93f01e4c-7d76-4ce3-b46d-f96bc65aa684",
+          "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành",
+          "content": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành\nVí dụ đúng và ví dụ cần sửa\nVí dụ phù hợp: I have lived here since 2020. Ví dụ sai hoặc cách hiểu không phù hợp với ngữ cảnh đã nêu: I have lived here for 2020. Lưu ý: Nếu thời điểm đã kết thúc được nêu rõ như yesterday, thường cần quá khứ đơn. Xem ý nghĩa cả câu trước khi dùng từ khóa."
+        },
+        {
+          "chunkId": "e0c01a96-1428-4ff0-9052-06a874aae0f0",
+          "title": "AptiMate — Prepositions",
+          "content": "AptiMate — Prepositions\nPhân tích và thực hành\nWe meet at nine, on Monday, in November phân biệt giờ, ngày và tháng. Nhưng at night, in the morning, on Monday morning là các cụm cần xét đầy đủ. Không thêm giới từ trong next Monday hoặc last year. Với vị trí, at the station có thể chỉ điểm hẹn; in the station nhấn mạnh bên trong. With và without thay đổi nghĩa: I cannot imagine life without her diễn tả không thể tưởng tượng cuộc sống thiếu cô ấy. Tự luyện: điền on vào The class starts ___ Tuesday và không điền gì trước next Tuesday. Sau đó chọn since hoặc for trong I have lived here ___ three years: chọn for vì đó là khoảng thời gian. Học giới từ cùng cụm chứa nó, không kết luận mọi câu có years đều dùng for vì since my early years lại nêu mốc bắt đầu."
+        },
+        {
+          "chunkId": "5ce421eb-aea3-4fa3-a966-f68e4a509101",
+          "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành",
+          "content": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành\nPhân tích và thực hành\nI have lost my key nhấn mạnh kết quả hiện tại, chẳng hạn giờ không mở được cửa. I lost my key yesterday đặt sự kiện ở thời điểm quá khứ đã xác định. I have lived here since 2020 có mốc bắt đầu; I have lived here for three years có khoảng thời gian. Với They have visited London, have phù hợp chủ ngữ số nhiều; không dùng has. Tự luyện: chọn since trong We have known each other ___ school và chọn for trong We have known each other ___ a long time. Sau đó phân biệt Have you finished yet? với I finished an hour ago. Yet thường dùng trong câu hỏi/phủ định để hỏi việc đã hoàn tất đến hiện tại; already có thể diễn tả hoàn thành sớm hoặc trước dự kiến. Chọn theo nghĩa toàn câu, không dùng một từ khóa để suy mọi cấu trúc hoàn thành đều giống nhau."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 1,
+        "verdict": "ACCEPTED_WITH_NOTE",
+        "note": "Đúng since với hiện tại hoàn thành; mẹo nên nhắc lại phạm vi thì để tránh áp dụng máy móc cho mọi mốc thời gian."
+      }
+    },
+    {
+      "id": "grammar_vocab-3",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "You ________ have booked tickets in advance; the entry is completely free.",
+        "correctAnswer": "needn't",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "mustn't",
+        "alternatives": [
+          "shouldn't",
+          "needn't",
+          "mustn't"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "needn't",
+        "explanation": "Câu này diễn tả một hành động đã được thực hiện trong quá khứ nhưng thực tế là không cần thiết (đã đặt vé trước nhưng vé vào cổng hoàn toàn miễn phí). Cấu trúc 'needn't have' + phân từ hai (booked) được dùng để chỉ việc người nói đã làm một việc mà sau đó nhận ra là không cần thiết phải làm.",
+        "ruleSummary": "Dùng 'needn't have' cộng với động từ phân từ hai để diễn tả một hành động đã xảy ra trong quá khứ nhưng thực ra không cần thiết.",
+        "tip": "Khi thấy ngữ cảnh nói về việc đã làm gì đó trong quá khứ nhưng không bắt buộc hoặc không cần thiết phải làm, hãy dùng 'needn't have' thay vì 'mustn't' (chỉ sự cấm đoán).",
+        "citations": [
+          "921becae-6c8b-42b2-b2be-a05b57dae120"
+        ]
+      },
+      "requestId": "a977d2bc-5134-436e-a43d-db8d0dc90b9e",
+      "sources": [
+        {
+          "chunkId": "921becae-6c8b-42b2-b2be-a05b57dae120",
+          "title": "AptiMate — Modal verbs",
+          "content": "AptiMate — Modal verbs\nPhân tích và thực hành\nYou must not enter nghĩa là bị cấm vào; You do not have to enter nghĩa là không bắt buộc, nhưng vẫn có thể vào. Trong quá khứ, You needn't have booked diễn tả đã đặt nhưng không cần thiết; You didn't need to book chỉ nói không có nhu cầu, không tự xác nhận đã đặt hay chưa. Should have called thường thể hiện lời phê bình hoặc tiếc nuối về việc đáng ra nên làm. Tự luyện: chọn mustn't hoặc don't have to trong Visitors ___ pay; admission is free. Chọn don't have to. Với You ___ touch that wire; it is dangerous, chọn mustn't. Để giải thích một câu chứa modal, xác định mức độ bắt buộc, thời gian và việc đã xảy ra hay chưa. Không dịch riêng must, should hay need rồi bỏ qua have cùng phân từ phía sau."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-7",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "Clara usually ___ the park on Saturdays.",
+        "correctAnswer": "visits",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "visit",
+        "alternatives": [
+          "visiting",
+          "visits",
+          "visit"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "visits",
+        "explanation": "Trong thì hiện tại đơn, khi chủ ngữ là ngôi thứ ba số ít (như 'Clara'), động từ chính phải được thêm 's' hoặc 'es'. Do đó, với chủ ngữ 'Clara' và trạng từ 'usually' chỉ thói quen, đáp án chính xác là 'visits'.",
+        "ruleSummary": "Chủ ngữ số ít (he, she, it, tên riêng) ở thì hiện tại đơn đi với động từ thêm s/es.",
+        "tip": "Hãy luôn xác định chủ ngữ của câu là số ít hay số nhiều trước khi chia động từ ở thì hiện tại đơn.",
+        "citations": [
+          "0176473b-0406-409f-bdbd-aa09340a8069"
+        ]
+      },
+      "requestId": "b160a3bf-e2f7-4802-a06e-d0261f6d56fa",
+      "sources": [
+        {
+          "chunkId": "0176473b-0406-409f-bdbd-aa09340a8069",
+          "title": "AptiMate biên soạn — hiện tại đơn và tiếp diễn",
+          "content": "AptiMate biên soạn — hiện tại đơn và tiếp diễn\nPhân tích và thực hành\nShe visits the library every Saturday cần visits vì chủ ngữ số ít. They visit the library dùng visit. Ở câu hỏi Does she visit the library?, dấu hiệu số ít đã nằm trong does nên không thêm s vào visit. Với be, viết She is a member, không viết She does be a member. Trạng từ tần suất thường đứng trước động từ thường nhưng sau be: She usually arrives early; She is usually early. Tự luyện: sửa He don't like coffee thành He doesn't like coffee. Sau đó đổi chủ ngữ thành They và dùng don't. Khi gặp usually hoặc every day, xem câu có thật sự nói thói quen hay không; đó là dấu hiệu hữu ích chứ không thay việc đọc nghĩa. Đối chiếu I work here với I am working here this month để phân biệt trạng thái thường lệ và tạm thời."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-9",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "The new notebook ___ yesterday.",
+        "correctAnswer": "was delivered",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "delivers",
+        "alternatives": [
+          "is delivering",
+          "was delivered",
+          "delivers"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "was delivered",
+        "explanation": "Câu cần dùng thể bị động vì chủ ngữ 'The notebook' là vật nhận hành động giao hàng, không tự thực hiện hành động. Trạng từ 'yesterday' chỉ thời gian trong quá khứ, do đó động từ 'be' phải ở thì quá khứ đơn (was) kết hợp với phân từ hai (delivered) để tạo thành 'was delivered'.",
+        "ruleSummary": "Cấu trúc câu bị động ở thì quá khứ đơn: was/were + past participle (V3/ed).",
+        "tip": "Hãy chú ý đến trạng từ chỉ thời gian (như yesterday) và xem chủ ngữ là người thực hiện hay đối tượng chịu tác động của hành động.",
+        "citations": [
+          "83bf4156-dbd7-4eab-bd37-77a897ef4393",
+          "927fe4e4-26b4-48fc-b011-af6cf66a90f8"
+        ]
+      },
+      "requestId": "f6c1e764-57fd-4bf6-a47e-6ac57fe0384e",
+      "sources": [
+        {
+          "chunkId": "83bf4156-dbd7-4eab-bd37-77a897ef4393",
+          "title": "AptiMate biên soạn — câu bị động",
+          "content": "AptiMate biên soạn — câu bị động\nPhân tích và thực hành\nThe teacher checked the answers có tân ngữ the answers. Chuyển thành The answers were checked by the teacher: answers số nhiều nên dùng were, còn checked giữ dạng phân từ. Với hiện tại hoàn thành, The answers have been checked cần cả have và been. The parcel will be delivered tomorrow dùng will be, không dùng will delivered. Tự luyện: chuyển Someone stole my bike thành My bike was stolen. Stolen là phân từ bất quy tắc, không phải stealed. Sau đó giải thích vì sao không chuyển The train arrived thành The train was arrived: arrive trong nghĩa này không có tân ngữ để nâng lên làm chủ ngữ bị động. Khi đọc câu, xem động từ mô tả hành động hay trạng thái; The door is closed đôi khi mô tả trạng thái, nên không tự suy ra có người vừa thực hiện hành động đóng cửa."
+        },
+        {
+          "chunkId": "927fe4e4-26b4-48fc-b011-af6cf66a90f8",
+          "title": "AptiMate biên soạn — câu bị động",
+          "content": "AptiMate biên soạn — câu bị động\nBe và past participle\nCâu bị động cơ bản có dạng be + past participle; thì nằm ở be. Chủ động: The club published the schedule. Bị động: The schedule was published by the club. Dùng bị động khi chú trọng đối tượng chịu tác động hoặc không cần nêu người thực hiện. Không phải động từ nào cũng chuyển bị động được: arrive không có tân ngữ trong cách dùng thông thường, nên The train was arrived là sai. By nêu tác nhân, không bắt buộc xuất hiện."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-10",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "The letter ___ yesterday.",
+        "correctAnswer": "was sent",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "sends",
+        "alternatives": [
+          "was sent",
+          "sends",
+          "is sending"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "was sent",
+        "explanation": "The correct answer is 'was sent' because the sentence requires a passive voice structure in the past tense. The subject 'The letter' receives the action, and the time marker 'yesterday' indicates that the past simple passive ('was/were' + past participle) must be used. 'Sends' is active and present tense, while 'is sending' is active and present continuous, neither of which fits the context.",
+        "ruleSummary": "Use the past simple passive ('was/were' + past participle) when the subject receives the action and a past time marker like 'yesterday' is present.",
+        "tip": "Look for time markers like 'yesterday' to determine the tense, and check if the subject performs or receives the action to decide between active and passive voice.",
+        "citations": [
+          "83bf4156-dbd7-4eab-bd37-77a897ef4393"
+        ]
+      },
+      "requestId": "5e677f68-b2db-4f44-9f00-2a1578d33ca4",
+      "sources": [
+        {
+          "chunkId": "83bf4156-dbd7-4eab-bd37-77a897ef4393",
+          "title": "AptiMate biên soạn — câu bị động",
+          "content": "AptiMate biên soạn — câu bị động\nPhân tích và thực hành\nThe teacher checked the answers có tân ngữ the answers. Chuyển thành The answers were checked by the teacher: answers số nhiều nên dùng were, còn checked giữ dạng phân từ. Với hiện tại hoàn thành, The answers have been checked cần cả have và been. The parcel will be delivered tomorrow dùng will be, không dùng will delivered. Tự luyện: chuyển Someone stole my bike thành My bike was stolen. Stolen là phân từ bất quy tắc, không phải stealed. Sau đó giải thích vì sao không chuyển The train arrived thành The train was arrived: arrive trong nghĩa này không có tân ngữ để nâng lên làm chủ ngữ bị động. Khi đọc câu, xem động từ mô tả hành động hay trạng thái; The door is closed đôi khi mô tả trạng thái, nên không tự suy ra có người vừa thực hiện hành động đóng cửa."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-13",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "My friends enjoy ___ about taking photographs.",
+        "correctAnswer": "learning",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "learn",
+        "alternatives": [
+          "learn",
+          "to learn",
+          "learning"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "learning",
+        "explanation": "Động từ 'enjoy' thuộc nhóm từ được theo sau trực tiếp bởi một danh động từ (gerund), tức là động từ thêm đuôi -ing (V-ing). Do đó, sau 'enjoy' ta phải dùng 'learning' thay vì động từ nguyên mẫu 'learn' hay 'to learn'.",
+        "ruleSummary": "Sau động từ 'enjoy', ta luôn dùng động từ thêm đuôi -ing (V-ing).",
+        "tip": "Hãy ghi nhớ các động từ thường đi kèm với V-ing như enjoy, suggest, mind để tránh nhầm lẫn với dạng to-infinitive.",
+        "citations": [
+          "92c609d6-10ac-4ca3-b462-2f4d8a26974b"
+        ]
+      },
+      "requestId": "34adba3b-ed16-4fbb-9e03-d31236734cd1",
+      "sources": [
+        {
+          "chunkId": "92c609d6-10ac-4ca3-b462-2f4d8a26974b",
+          "title": "AptiMate — Verb patterns: gerunds and infinitives",
+          "content": "AptiMate — Verb patterns: gerunds and infinitives\nPhân tích và thực hành\nEnjoy reading và suggest taking a break dùng V-ing sau động từ. Decide to leave dùng to-infinitive. Trong look forward to meeting you, to là giới từ nên theo sau bằng V-ing, không phải nguyên mẫu. Would you mind closing the door? cũng cần V-ing. Tự luyện: chọn meeting trong We look forward to ___ you, rồi chọn to meet trong We hope ___ you. Cùng ý gặp gỡ nhưng động từ dẫn khác nhau làm cấu trúc khác. Stop smoking là ngừng hút thuốc; stop to smoke là dừng việc khác để hút thuốc. Khi gặp cấu trúc chưa biết, tra cả cụm và ghi ví dụ, không suy rằng mọi động từ sau to đều ở nguyên mẫu. Nếu có tân ngữ ở giữa như want somebody to leave, cần giữ đúng vị trí chủ thể thực hiện hành động sau, không bỏ người đó rồi dùng máy móc mẫu khác."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 1,
+        "verdict": "ACCEPTED_WITH_NOTE",
+        "note": "Đúng enjoy + V-ing trong câu này; quy tắc dùng từ luôn cần hiểu trong phạm vi theo sau bằng động từ, vì enjoy còn nhận tân ngữ danh từ."
+      }
+    },
+    {
+      "id": "grammar_vocab-19",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "Would you mind ______ the door, please?",
+        "correctAnswer": "closing",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "close",
+        "alternatives": [
+          "closing",
+          "close",
+          "to close"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "closing",
+        "explanation": "Trong tiếng Anh, cụm từ 'Would you mind' được dùng để diễn tả lời đề nghị lịch sự và động từ theo sau nó bắt buộc phải ở dạng V-ing (gerund). Do đó, đáp án chính xác là 'closing'.",
+        "ruleSummary": "Sau cụm từ 'Would you mind', động từ luôn phải ở dạng V-ing.",
+        "tip": "Hãy ghi nhớ các cấu trúc đi kèm V-ing đặc biệt như 'would you mind' hay 'enjoy' để không nhầm với động từ nguyên mẫu.",
+        "citations": [
+          "92c609d6-10ac-4ca3-b462-2f4d8a26974b"
+        ]
+      },
+      "requestId": "b55a1889-b5e7-4d58-8803-7da748f63af2",
+      "sources": [
+        {
+          "chunkId": "92c609d6-10ac-4ca3-b462-2f4d8a26974b",
+          "title": "AptiMate — Verb patterns: gerunds and infinitives",
+          "content": "AptiMate — Verb patterns: gerunds and infinitives\nPhân tích và thực hành\nEnjoy reading và suggest taking a break dùng V-ing sau động từ. Decide to leave dùng to-infinitive. Trong look forward to meeting you, to là giới từ nên theo sau bằng V-ing, không phải nguyên mẫu. Would you mind closing the door? cũng cần V-ing. Tự luyện: chọn meeting trong We look forward to ___ you, rồi chọn to meet trong We hope ___ you. Cùng ý gặp gỡ nhưng động từ dẫn khác nhau làm cấu trúc khác. Stop smoking là ngừng hút thuốc; stop to smoke là dừng việc khác để hút thuốc. Khi gặp cấu trúc chưa biết, tra cả cụm và ghi ví dụ, không suy rằng mọi động từ sau to đều ở nguyên mẫu. Nếu có tân ngữ ở giữa như want somebody to leave, cần giữ đúng vị trí chủ thể thực hiện hành động sau, không bỏ người đó rồi dùng máy móc mẫu khác."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 1,
+        "verdict": "ACCEPTED_WITH_NOTE",
+        "note": "Đúng would you mind + V-ing; nên giữ rõ phạm vi cấu trúc theo sau trực tiếp bằng động từ, không loại trừ mệnh đề if."
+      }
+    },
+    {
+      "id": "reading-5",
+      "locale": "vi",
+      "context": {
+        "component": "READING",
+        "part": 4,
+        "question": "At first, members met in their homes, but space soon became a problem. After comparing several buildings, the group rented a room near the market. It had good public transport connections and enough space for practical activities.",
+        "correctAnswer": "Finding a meeting place",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "",
+        "alternatives": [],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "Finding a meeting place",
+        "explanation": "Đoạn văn mô tả việc các thành viên ban đầu họp tại nhà nhưng không đủ chỗ, sau đó so sánh các tòa nhà và quyết định thuê một phòng gần chợ có giao thông thuận tiện và đủ không gian. Ý chính của đoạn này xoay quanh quá trình tìm kiếm địa điểm họp phù hợp cho nhóm.",
+        "ruleSummary": "Xác định tiêu đề hoặc ý chính dựa trên nội dung bao quát của toàn bộ đoạn văn, tránh chỉ nhìn vào một chi tiết nhỏ.",
+        "tip": "Đọc toàn bộ đoạn văn và chú ý đến các hành động chính như so sánh địa điểm và thuê phòng để chọn tiêu đề tóm tắt đúng nhất.",
+        "citations": [
+          "8ec040a8-30f2-4e7d-b85e-ff21ba973cc5"
+        ]
+      },
+      "requestId": "97174a1f-bde6-481f-ba94-554dcb162be6",
+      "sources": [
+        {
+          "chunkId": "8ec040a8-30f2-4e7d-b85e-ff21ba973cc5",
+          "title": "AptiMate — Identifying main ideas",
+          "content": "AptiMate — Identifying main ideas\nPhân tích và thực hành\nMột đoạn kể câu lạc bộ bắt đầu từ bốn hàng xóm rồi mở rộng cho cả thị trấn có trọng tâm là nguồn gốc phát triển. Tiêu đề How the group began phù hợp hơn A new timetable dù đoạn có thể nhắc thời gian gặp gỡ. Đoạn khác nói giảm phí, hỗ trợ sinh viên và dùng chung thiết bị có thể được tóm tắt là making participation affordable. Tự luyện: đoạn nêu phòng cũ chật, nhóm so sánh địa điểm và thuê phòng mới gần giao thông công cộng. Chọn Finding a suitable meeting place, không chọn Training new members. Gạch ý bao quát rồi xem các câu còn lại có hỗ trợ ý đó không. Đừng chỉ dựa câu đầu nếu đoạn chuyển hướng bằng however hoặc but. Tiêu đề tốt không quá rộng đến mức hợp mọi đoạn và cũng không quá hẹp chỉ mô tả một ví dụ phụ."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "reading-13",
+      "locale": "vi",
+      "context": {
+        "component": "READING",
+        "part": 4,
+        "question": "At first, members met in their homes, but space soon became a problem. After comparing several buildings, the group rented a room near the museum. It had good public transport connections and enough space for practical activities.",
+        "correctAnswer": "Finding a meeting place",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "",
+        "alternatives": [],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "Finding a meeting place",
+        "explanation": "Đoạn văn kể về việc các thành viên ban đầu gặp nhau ở nhà riêng nhưng gặp vấn đề về không gian, sau đó họ so sánh các tòa nhà và quyết định thuê một phòng mới đáp ứng đủ nhu cầu. Ý chính của đoạn này tập trung vào quá trình tìm kiếm một địa điểm họp thích hợp.",
+        "ruleSummary": "Xác định ý chính bằng cách tìm chủ đề bao quát toàn bộ các chi tiết trong đoạn văn thay vì chỉ dựa vào một câu đơn lẻ.",
+        "tip": "Đọc toàn bộ các câu trong đoạn để hiểu mục đích chính, chú ý các chi tiết về việc so sánh và lựa chọn địa điểm.",
+        "citations": [
+          "8ec040a8-30f2-4e7d-b85e-ff21ba973cc5"
+        ]
+      },
+      "requestId": "b39a7566-0ced-45bd-895c-c83db19a5d34",
+      "sources": [
+        {
+          "chunkId": "8ec040a8-30f2-4e7d-b85e-ff21ba973cc5",
+          "title": "AptiMate — Identifying main ideas",
+          "content": "AptiMate — Identifying main ideas\nPhân tích và thực hành\nMột đoạn kể câu lạc bộ bắt đầu từ bốn hàng xóm rồi mở rộng cho cả thị trấn có trọng tâm là nguồn gốc phát triển. Tiêu đề How the group began phù hợp hơn A new timetable dù đoạn có thể nhắc thời gian gặp gỡ. Đoạn khác nói giảm phí, hỗ trợ sinh viên và dùng chung thiết bị có thể được tóm tắt là making participation affordable. Tự luyện: đoạn nêu phòng cũ chật, nhóm so sánh địa điểm và thuê phòng mới gần giao thông công cộng. Chọn Finding a suitable meeting place, không chọn Training new members. Gạch ý bao quát rồi xem các câu còn lại có hỗ trợ ý đó không. Đừng chỉ dựa câu đầu nếu đoạn chuyển hướng bằng however hoặc but. Tiêu đề tốt không quá rộng đến mức hợp mọi đoạn và cũng không quá hẹp chỉ mô tả một ví dụ phụ."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-2",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "There is ___ useful guide to the library on the desk.",
+        "correctAnswer": "a",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "an",
+        "alternatives": [
+          "a",
+          "an",
+          "some"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "a",
+        "explanation": "The correct article is 'a' because 'useful' begins with a consonant sound (/j/), even though it starts with the vowel letter 'u'. We choose between 'a' and 'an' based on the initial sound of the following word, not the spelling.",
+        "ruleSummary": "Use 'a' before singular countable nouns starting with a consonant sound, and 'an' before vowel sounds.",
+        "tip": "Always listen to or think about the phonetic sound of the first letter when choosing between a and an.",
+        "citations": [
+          "0e2a60b6-f3a7-4fd2-a273-b686eb57db91",
+          "fb65c88b-173d-4b23-b09f-b3b828b75278",
+          "a733b9d7-ce16-42c6-945d-9ca85f8e958b"
+        ]
+      },
+      "requestId": "918e18a9-3656-444e-8cfe-ad9b504e6803",
+      "sources": [
+        {
+          "chunkId": "0e2a60b6-f3a7-4fd2-a273-b686eb57db91",
+          "title": "AptiMate biên soạn — danh từ đếm được",
+          "content": "AptiMate biên soạn — danh từ đếm được\nVí dụ đúng và ví dụ cần sửa\nVí dụ phù hợp: It is a useful guide and an interesting book. Ví dụ sai hoặc cách hiểu không phù hợp với ngữ cảnh đã nêu: It is an useful guide. Lưu ý: Useful bắt đầu bằng âm /j/; university cũng vậy. Danh từ số nhiều hoặc không đếm được có thể không cần mạo từ khi nói chung."
+        },
+        {
+          "chunkId": "fb65c88b-173d-4b23-b09f-b3b828b75278",
+          "title": "AptiMate biên soạn — danh từ đếm được",
+          "content": "AptiMate biên soạn — danh từ đếm được\nQuy tắc và phạm vi\nA/an đi với danh từ đếm được số ít chưa xác định; the chỉ đối tượng xác định trong ngữ cảnh. Chọn a/an theo âm đầu, không theo chữ cái."
+        },
+        {
+          "chunkId": "a733b9d7-ce16-42c6-945d-9ca85f8e958b",
+          "title": "AptiMate biên soạn — danh từ đếm được",
+          "content": "AptiMate biên soạn — danh từ đếm được\nPhân tích và thực hành\nSo sánh I saw a dog với The dog followed me. Lần đầu người đọc chưa biết con chó nào; lần sau danh từ đã được xác định. Tuy nhiên, the không chỉ dùng khi nhắc lại: the sun chỉ một đối tượng được hiểu chung trong ngữ cảnh. Trong She is a doctor, nghề nghiệp số ít cần a; không viết She is doctor. Khi nói chung, Dogs need exercise không dùng the; The dogs in this room lại chỉ một nhóm cụ thể. Advice không đếm được nên dùng some advice, không dùng an advice. Tự luyện: điền mạo từ vào He waited for ___ hour. Đáp án an vì hour bắt đầu bằng nguyên âm khi phát âm. Đối chiếu với a university, có âm đầu /j/. Giải thích quyết định bằng âm và tính xác định, không bằng chữ cái hoặc quy tắc nhắc lần đầu một cách máy móc."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-4",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "There is ___ useful guide to the library on the desk.",
+        "correctAnswer": "a",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "an",
+        "alternatives": [
+          "a",
+          "an",
+          "some"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "a",
+        "explanation": "The correct article is 'a' because 'useful' begins with a consonant sound (/j/), even though it starts with the vowel letter 'u'. In English, the choice between 'a' and 'an' depends on the starting sound of the following word, not its spelling. Since 'guide' is a singular countable noun mentioned for the first time and has a consonant sound preceding it, 'a' is required.",
+        "ruleSummary": "Choose 'a' or 'an' based on the starting sound of the following word, not the spelling. Use 'a' before consonant sounds (including /j/ as in useful).",
+        "tip": "Always say the word out loud to check its starting sound rather than just looking at the first letter.",
+        "citations": [
+          "0e2a60b6-f3a7-4fd2-a273-b686eb57db91",
+          "fb65c88b-173d-4b23-b09f-b3b828b75278"
+        ]
+      },
+      "requestId": "9b0514e0-6c9a-4d58-b444-4a3b058059a2",
+      "sources": [
+        {
+          "chunkId": "0e2a60b6-f3a7-4fd2-a273-b686eb57db91",
+          "title": "AptiMate biên soạn — danh từ đếm được",
+          "content": "AptiMate biên soạn — danh từ đếm được\nVí dụ đúng và ví dụ cần sửa\nVí dụ phù hợp: It is a useful guide and an interesting book. Ví dụ sai hoặc cách hiểu không phù hợp với ngữ cảnh đã nêu: It is an useful guide. Lưu ý: Useful bắt đầu bằng âm /j/; university cũng vậy. Danh từ số nhiều hoặc không đếm được có thể không cần mạo từ khi nói chung."
+        },
+        {
+          "chunkId": "fb65c88b-173d-4b23-b09f-b3b828b75278",
+          "title": "AptiMate biên soạn — danh từ đếm được",
+          "content": "AptiMate biên soạn — danh từ đếm được\nQuy tắc và phạm vi\nA/an đi với danh từ đếm được số ít chưa xác định; the chỉ đối tượng xác định trong ngữ cảnh. Chọn a/an theo âm đầu, không theo chữ cái."
+        },
+        {
+          "chunkId": "a733b9d7-ce16-42c6-945d-9ca85f8e958b",
+          "title": "AptiMate biên soạn — danh từ đếm được",
+          "content": "AptiMate biên soạn — danh từ đếm được\nPhân tích và thực hành\nSo sánh I saw a dog với The dog followed me. Lần đầu người đọc chưa biết con chó nào; lần sau danh từ đã được xác định. Tuy nhiên, the không chỉ dùng khi nhắc lại: the sun chỉ một đối tượng được hiểu chung trong ngữ cảnh. Trong She is a doctor, nghề nghiệp số ít cần a; không viết She is doctor. Khi nói chung, Dogs need exercise không dùng the; The dogs in this room lại chỉ một nhóm cụ thể. Advice không đếm được nên dùng some advice, không dùng an advice. Tự luyện: điền mạo từ vào He waited for ___ hour. Đáp án an vì hour bắt đầu bằng nguyên âm khi phát âm. Đối chiếu với a university, có âm đầu /j/. Giải thích quyết định bằng âm và tính xác định, không bằng chữ cái hoặc quy tắc nhắc lần đầu một cách máy móc."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-5",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "There is ___ useful guide to the theatre on the desk.",
+        "correctAnswer": "a",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "an",
+        "alternatives": [
+          "an",
+          "some",
+          "a"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "a",
+        "explanation": "Bạn đã chọn nhầm 'an', nhưng đáp án đúng là 'a'. Mạo từ 'a' hoặc 'an' được chọn dựa trên âm đầu tiên của từ đứng sau, chứ không dựa vào chữ cái viết. Từ 'useful' bắt đầu bằng âm phụ âm /j/ (giống như từ 'university'), do đó chúng ta phải dùng mạo từ 'a' chứ không dùng 'an'.",
+        "ruleSummary": "Chọn mạo từ a hoặc an dựa theo âm phát âm đầu tiên của từ theo sau, không dựa vào chữ cái viết. Dùng a trước âm phụ âm và an trước âm nguyên âm.",
+        "tip": "Hãy chú ý phát âm của từ đi sau chỗ trống. Các từ bắt đầu bằng chữ cái u như 'useful' hay 'university' thực tế phát âm bắt đầu bằng âm /j/, nên đi với 'a'.",
+        "citations": [
+          "0e2a60b6-f3a7-4fd2-a273-b686eb57db91",
+          "fb65c88b-173d-4b23-b09f-b3b828b75278",
+          "a733b9d7-ce16-42c6-945d-9ca85f8e958b"
+        ]
+      },
+      "requestId": "596a4905-7251-456a-820a-42abb051c446",
+      "sources": [
+        {
+          "chunkId": "0e2a60b6-f3a7-4fd2-a273-b686eb57db91",
+          "title": "AptiMate biên soạn — danh từ đếm được",
+          "content": "AptiMate biên soạn — danh từ đếm được\nVí dụ đúng và ví dụ cần sửa\nVí dụ phù hợp: It is a useful guide and an interesting book. Ví dụ sai hoặc cách hiểu không phù hợp với ngữ cảnh đã nêu: It is an useful guide. Lưu ý: Useful bắt đầu bằng âm /j/; university cũng vậy. Danh từ số nhiều hoặc không đếm được có thể không cần mạo từ khi nói chung."
+        },
+        {
+          "chunkId": "fb65c88b-173d-4b23-b09f-b3b828b75278",
+          "title": "AptiMate biên soạn — danh từ đếm được",
+          "content": "AptiMate biên soạn — danh từ đếm được\nQuy tắc và phạm vi\nA/an đi với danh từ đếm được số ít chưa xác định; the chỉ đối tượng xác định trong ngữ cảnh. Chọn a/an theo âm đầu, không theo chữ cái."
+        },
+        {
+          "chunkId": "a733b9d7-ce16-42c6-945d-9ca85f8e958b",
+          "title": "AptiMate biên soạn — danh từ đếm được",
+          "content": "AptiMate biên soạn — danh từ đếm được\nPhân tích và thực hành\nSo sánh I saw a dog với The dog followed me. Lần đầu người đọc chưa biết con chó nào; lần sau danh từ đã được xác định. Tuy nhiên, the không chỉ dùng khi nhắc lại: the sun chỉ một đối tượng được hiểu chung trong ngữ cảnh. Trong She is a doctor, nghề nghiệp số ít cần a; không viết She is doctor. Khi nói chung, Dogs need exercise không dùng the; The dogs in this room lại chỉ một nhóm cụ thể. Advice không đếm được nên dùng some advice, không dùng an advice. Tự luyện: điền mạo từ vào He waited for ___ hour. Đáp án an vì hour bắt đầu bằng nguyên âm khi phát âm. Đối chiếu với a university, có âm đầu /j/. Giải thích quyết định bằng âm và tính xác định, không bằng chữ cái hoặc quy tắc nhắc lần đầu một cách máy móc."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-6",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "You should see my puppy. She's so cute that now I can't imagine life ______ her.",
+        "correctAnswer": "without",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "with",
+        "alternatives": [
+          "with",
+          "apart",
+          "without"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "without",
+        "explanation": "The sentence expresses that the speaker cannot conceive of life lacking their puppy. In this context, 'without' is the correct preposition to show the absence of someone or something, matching the idiom 'imagine life without her'.",
+        "ruleSummary": "Use 'without' to indicate the absence of someone or something in expressions like 'imagine life without'.",
+        "tip": "Pay attention to the contextual meaning when choosing prepositions; here, the puppy makes life so cute that living in its absence is unimaginable.",
+        "citations": [
+          "e0c01a96-1428-4ff0-9052-06a874aae0f0"
+        ]
+      },
+      "requestId": "acaa5429-62d4-4146-ac59-548b5e12cdaa",
+      "sources": [
+        {
+          "chunkId": "e0c01a96-1428-4ff0-9052-06a874aae0f0",
+          "title": "AptiMate — Prepositions",
+          "content": "AptiMate — Prepositions\nPhân tích và thực hành\nWe meet at nine, on Monday, in November phân biệt giờ, ngày và tháng. Nhưng at night, in the morning, on Monday morning là các cụm cần xét đầy đủ. Không thêm giới từ trong next Monday hoặc last year. Với vị trí, at the station có thể chỉ điểm hẹn; in the station nhấn mạnh bên trong. With và without thay đổi nghĩa: I cannot imagine life without her diễn tả không thể tưởng tượng cuộc sống thiếu cô ấy. Tự luyện: điền on vào The class starts ___ Tuesday và không điền gì trước next Tuesday. Sau đó chọn since hoặc for trong I have lived here ___ three years: chọn for vì đó là khoảng thời gian. Học giới từ cùng cụm chứa nó, không kết luận mọi câu có years đều dùng for vì since my early years lại nêu mốc bắt đầu."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 1,
+        "verdict": "ACCEPTED_WITH_NOTE",
+        "note": "Đúng nghĩa without và bám ví dụ nguồn; cách diễn đạt puppy makes life so cute trong tip hơi thiếu tự nhiên."
+      }
+    },
+    {
+      "id": "grammar_vocab-8",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "She suggested ________ a short break before continuing the discussion.",
+        "correctAnswer": "taking",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "to take",
+        "alternatives": [
+          "taking",
+          "to take",
+          "take"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "taking",
+        "explanation": "In English grammar, certain verbs are followed by a gerund (the -ing form) rather than an infinitive. The verb 'suggest' requires a gerund when it is followed directly by an action. Therefore, you must use 'taking' instead of 'to take' after 'suggest'.",
+        "ruleSummary": "The verb 'suggest' is followed by a gerund (-ing form), as in 'suggest taking'.",
+        "tip": "Memorize verb patterns in chunks. When you learn verbs like 'suggest' or 'enjoy', learn them with the '-ing' form that follows.",
+        "citations": [
+          "92c609d6-10ac-4ca3-b462-2f4d8a26974b"
+        ]
+      },
+      "requestId": "1f377747-fec1-4b69-8081-be504e6d6fc2",
+      "sources": [
+        {
+          "chunkId": "92c609d6-10ac-4ca3-b462-2f4d8a26974b",
+          "title": "AptiMate — Verb patterns: gerunds and infinitives",
+          "content": "AptiMate — Verb patterns: gerunds and infinitives\nPhân tích và thực hành\nEnjoy reading và suggest taking a break dùng V-ing sau động từ. Decide to leave dùng to-infinitive. Trong look forward to meeting you, to là giới từ nên theo sau bằng V-ing, không phải nguyên mẫu. Would you mind closing the door? cũng cần V-ing. Tự luyện: chọn meeting trong We look forward to ___ you, rồi chọn to meet trong We hope ___ you. Cùng ý gặp gỡ nhưng động từ dẫn khác nhau làm cấu trúc khác. Stop smoking là ngừng hút thuốc; stop to smoke là dừng việc khác để hút thuốc. Khi gặp cấu trúc chưa biết, tra cả cụm và ghi ví dụ, không suy rằng mọi động từ sau to đều ở nguyên mẫu. Nếu có tân ngữ ở giữa như want somebody to leave, cần giữ đúng vị trí chủ thể thực hiện hành động sau, không bỏ người đó rồi dùng máy móc mẫu khác."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-11",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "We look forward to ___ you at the museum.",
+        "correctAnswer": "meeting",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "meet",
+        "alternatives": [
+          "met",
+          "meeting",
+          "meet"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "meeting",
+        "explanation": "Trong cấu trúc 'look forward to', từ 'to' đóng vai trò là một giới từ (preposition) chứ không phải là dấu hiệu của động từ nguyên mẫu (to-infinitive). Do đó, theo sau 'look forward to' phải là một động từ thêm đuôi -ing (gerund). Vì vậy, đáp án chính xác là 'meeting'.",
+        "ruleSummary": "Sau cụm từ 'look forward to', từ 'to' là giới từ nên động từ đi sau phải ở dạng V-ing.",
+        "tip": "Hãy ghi nhớ các cụm từ kết thúc bằng 'to' là giới từ như 'look forward to' luôn đi với V-ing thay vì động từ nguyên mẫu.",
+        "citations": [
+          "92c609d6-10ac-4ca3-b462-2f4d8a26974b"
+        ]
+      },
+      "requestId": "bc5896e3-751d-49c2-b629-013c210b5fa9",
+      "sources": [
+        {
+          "chunkId": "92c609d6-10ac-4ca3-b462-2f4d8a26974b",
+          "title": "AptiMate — Verb patterns: gerunds and infinitives",
+          "content": "AptiMate — Verb patterns: gerunds and infinitives\nPhân tích và thực hành\nEnjoy reading và suggest taking a break dùng V-ing sau động từ. Decide to leave dùng to-infinitive. Trong look forward to meeting you, to là giới từ nên theo sau bằng V-ing, không phải nguyên mẫu. Would you mind closing the door? cũng cần V-ing. Tự luyện: chọn meeting trong We look forward to ___ you, rồi chọn to meet trong We hope ___ you. Cùng ý gặp gỡ nhưng động từ dẫn khác nhau làm cấu trúc khác. Stop smoking là ngừng hút thuốc; stop to smoke là dừng việc khác để hút thuốc. Khi gặp cấu trúc chưa biết, tra cả cụm và ghi ví dụ, không suy rằng mọi động từ sau to đều ở nguyên mẫu. Nếu có tân ngữ ở giữa như want somebody to leave, cần giữ đúng vị trí chủ thể thực hiện hành động sau, không bỏ người đó rồi dùng máy móc mẫu khác."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-12",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "We ___ a new camera last week.",
+        "correctAnswer": "bought",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "buy",
+        "alternatives": [
+          "have buy",
+          "bought",
+          "buy"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "bought",
+        "explanation": "The sentence contains the time marker 'last week', which indicates a finished action in the past. Therefore, you must use the past simple tense form of the verb 'buy', which is 'bought'.",
+        "ruleSummary": "Use the past simple tense for completed actions at a specific time in the past.",
+        "tip": "Look out for past time expressions like 'last week' or 'yesterday' to choose the correct past tense form.",
+        "citations": [
+          "f8fd6584-d28f-4ee2-86fa-e080efe9a9e9"
+        ]
+      },
+      "requestId": "b4783767-f877-4c0f-ad3f-083b0048df77",
+      "sources": [
+        {
+          "chunkId": "f8fd6584-d28f-4ee2-86fa-e080efe9a9e9",
+          "title": "AptiMate — Past simple",
+          "content": "AptiMate — Past simple\nPhân tích và thực hành\nYesterday we bought a camera diễn tả việc hoàn tất trong khoảng thời gian đã qua. Câu phủ định là We did not buy a camera, không dùng did not bought. Với be, dùng was hoặc were trực tiếp: She was tired, Was she tired? Không thêm did trước was. Trong câu hỏi Who bought the camera?, who làm chủ ngữ nên không cần did ở dạng hỏi thông thường. Tự luyện: sửa Did they went to the club last week? thành Did they go to the club last week? Tiếp theo đổi She is at home thành She was at home yesterday. Khi kể chuyện, sắp các sự kiện theo trình tự và giữ mốc thời gian nhất quán. Nếu một câu chuyển sang nói thói quen hiện tại, có thể đổi thì nhưng phải làm rõ chuyển mốc; không giữ quá khứ chỉ vì câu trước đang nói chuyện hôm qua."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-14",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "They ___ visited London before.",
+        "correctAnswer": "have",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "has",
+        "alternatives": [
+          "has",
+          "having",
+          "have"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "have",
+        "explanation": "In this present perfect sentence, the subject is the plural pronoun \"They\". According to subject-verb agreement rules for the present perfect tense, plural subjects take the auxiliary verb \"have\" followed by the past participle \"visited\". The form \"has\" is only used with third-person singular subjects such as he, she, or it.",
+        "ruleSummary": "Plural subjects take \"have\" in the present perfect tense.",
+        "tip": "Always check whether your subject is singular or plural before choosing between \"has\" and \"have\".",
+        "citations": [
+          "5ce421eb-aea3-4fa3-a966-f68e4a509101",
+          "7f736f2e-56dd-44ae-a109-16545921041f"
+        ]
+      },
+      "requestId": "d4c80888-65ee-4de9-9465-f248c981f34b",
+      "sources": [
+        {
+          "chunkId": "5ce421eb-aea3-4fa3-a966-f68e4a509101",
+          "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành",
+          "content": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành\nPhân tích và thực hành\nI have lost my key nhấn mạnh kết quả hiện tại, chẳng hạn giờ không mở được cửa. I lost my key yesterday đặt sự kiện ở thời điểm quá khứ đã xác định. I have lived here since 2020 có mốc bắt đầu; I have lived here for three years có khoảng thời gian. Với They have visited London, have phù hợp chủ ngữ số nhiều; không dùng has. Tự luyện: chọn since trong We have known each other ___ school và chọn for trong We have known each other ___ a long time. Sau đó phân biệt Have you finished yet? với I finished an hour ago. Yet thường dùng trong câu hỏi/phủ định để hỏi việc đã hoàn tất đến hiện tại; already có thể diễn tả hoàn thành sớm hoặc trước dự kiến. Chọn theo nghĩa toàn câu, không dùng một từ khóa để suy mọi cấu trúc hoàn thành đều giống nhau."
+        },
+        {
+          "chunkId": "7f736f2e-56dd-44ae-a109-16545921041f",
+          "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành",
+          "content": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành\nThời điểm đã kết thúc và liên hệ hiện tại\nQuá khứ đơn kể sự việc ở thời gian quá khứ đã kết thúc: I visited Hue last June. Hiện tại hoàn thành dùng have/has + past participle để nói trải nghiệm hoặc việc liên quan hiện tại: I have visited Hue twice. Không dùng hiện tại hoàn thành với last June khi mốc này đã kết thúc. Since chỉ mốc bắt đầu; for chỉ khoảng thời gian: She has lived here since 2020 / for six years. Cần ngữ cảnh để chọn thì, không tự coi mọi câu không có mốc thời gian là hiện tại hoàn thành."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-15",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "They have lived here ___ 2020.",
+        "correctAnswer": "since",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "from",
+        "alternatives": [
+          "for",
+          "since",
+          "from"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "since",
+        "explanation": "Trong câu này, thì hiện tại hoàn thành 'have lived' được dùng với mốc thời gian bắt đầu cụ thể trong quá khứ là '2020'. Do đó, ta dùng 'since' để chỉ mốc thời gian bắt đầu hành động, thay vì 'for' (dùng cho khoảng thời gian) hay 'from'.",
+        "ruleSummary": "Dùng 'since' với thì hiện tại hoàn thành khi đi kèm một mốc thời gian bắt đầu cụ thể.",
+        "tip": "Hãy phân biệt rõ: 'since' đi với mốc thời gian (ví dụ: 2020, yesterday), còn 'for' đi với khoảng thời gian (ví dụ: three years, a long time).",
+        "citations": [
+          "93f01e4c-7d76-4ce3-b46d-f96bc65aa684",
+          "5ce421eb-aea3-4fa3-a966-f68e4a509101"
+        ]
+      },
+      "requestId": "99a924e6-7569-4745-9efc-e43472145ac3",
+      "sources": [
+        {
+          "chunkId": "93f01e4c-7d76-4ce3-b46d-f96bc65aa684",
+          "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành",
+          "content": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành\nVí dụ đúng và ví dụ cần sửa\nVí dụ phù hợp: I have lived here since 2020. Ví dụ sai hoặc cách hiểu không phù hợp với ngữ cảnh đã nêu: I have lived here for 2020. Lưu ý: Nếu thời điểm đã kết thúc được nêu rõ như yesterday, thường cần quá khứ đơn. Xem ý nghĩa cả câu trước khi dùng từ khóa."
+        },
+        {
+          "chunkId": "e0c01a96-1428-4ff0-9052-06a874aae0f0",
+          "title": "AptiMate — Prepositions",
+          "content": "AptiMate — Prepositions\nPhân tích và thực hành\nWe meet at nine, on Monday, in November phân biệt giờ, ngày và tháng. Nhưng at night, in the morning, on Monday morning là các cụm cần xét đầy đủ. Không thêm giới từ trong next Monday hoặc last year. Với vị trí, at the station có thể chỉ điểm hẹn; in the station nhấn mạnh bên trong. With và without thay đổi nghĩa: I cannot imagine life without her diễn tả không thể tưởng tượng cuộc sống thiếu cô ấy. Tự luyện: điền on vào The class starts ___ Tuesday và không điền gì trước next Tuesday. Sau đó chọn since hoặc for trong I have lived here ___ three years: chọn for vì đó là khoảng thời gian. Học giới từ cùng cụm chứa nó, không kết luận mọi câu có years đều dùng for vì since my early years lại nêu mốc bắt đầu."
+        },
+        {
+          "chunkId": "5ce421eb-aea3-4fa3-a966-f68e4a509101",
+          "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành",
+          "content": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành\nPhân tích và thực hành\nI have lost my key nhấn mạnh kết quả hiện tại, chẳng hạn giờ không mở được cửa. I lost my key yesterday đặt sự kiện ở thời điểm quá khứ đã xác định. I have lived here since 2020 có mốc bắt đầu; I have lived here for three years có khoảng thời gian. Với They have visited London, have phù hợp chủ ngữ số nhiều; không dùng has. Tự luyện: chọn since trong We have known each other ___ school và chọn for trong We have known each other ___ a long time. Sau đó phân biệt Have you finished yet? với I finished an hour ago. Yet thường dùng trong câu hỏi/phủ định để hỏi việc đã hoàn tất đến hiện tại; already có thể diễn tả hoàn thành sớm hoặc trước dự kiến. Chọn theo nghĩa toàn câu, không dùng một từ khóa để suy mọi cấu trúc hoàn thành đều giống nhau."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-16",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "By the time we reached the park, the visitors ___ left.",
+        "correctAnswer": "had",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "have",
+        "alternatives": [
+          "are",
+          "had",
+          "have"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "had",
+        "explanation": "This sentence requires the past perfect tense because it describes an action that happened before another action in the past. The phrase 'By the time we reached the park' establishes a past reference point, and the visitors leaving happened prior to that moment. Therefore, 'had' is the correct auxiliary verb to pair with the past participle 'left'.",
+        "ruleSummary": "Use the past perfect tense (had + past participle) to describe an action that occurred before a specific point or action in the past.",
+        "tip": "Look for past time markers like 'By the time' combined with a past tense clause to signal that you need the past perfect tense ('had').",
+        "citations": [
+          "02467a57-2216-462a-8100-3d4c9c8305a8",
+          "5b9cd675-015c-4b36-b724-5efeb0a26a4f"
+        ]
+      },
+      "requestId": "e2b3c189-4971-4995-a3ad-b8d487b61bc8",
+      "sources": [
+        {
+          "chunkId": "02467a57-2216-462a-8100-3d4c9c8305a8",
+          "title": "AptiMate — Past perfect simple and continuous",
+          "content": "AptiMate — Past perfect simple and continuous\nPhân tích và thực hành\nBy the time we reached the station, the train had left đặt việc tàu rời ga trước việc chúng tôi đến. Had không thay đổi theo chủ ngữ. Nếu hai sự kiện được kể theo đúng trình tự, đôi khi quá khứ đơn đã đủ rõ: I opened the door and entered. She looked tired because she had been working all morning nhấn mạnh quá trình trước biểu hiện mệt; had worked nhấn mạnh việc hoặc kết quả tùy ngữ cảnh. Tự luyện: chọn had eaten hoặc has eaten trong When I arrived, he ___ already. Chọn had eaten vì mốc arrived ở quá khứ. Nếu nói về hiện tại, He has already eaten có cách nhìn khác. Đừng gắn nhãn hiện tại hoàn thành chỉ vì explanation chứa từ hoàn thành; cần xem have/has hay had, dạng tiếp diễn và mốc tham chiếu của câu."
+        },
+        {
+          "chunkId": "5ce421eb-aea3-4fa3-a966-f68e4a509101",
+          "title": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành",
+          "content": "AptiMate biên soạn — quá khứ đơn và hiện tại hoàn thành\nPhân tích và thực hành\nI have lost my key nhấn mạnh kết quả hiện tại, chẳng hạn giờ không mở được cửa. I lost my key yesterday đặt sự kiện ở thời điểm quá khứ đã xác định. I have lived here since 2020 có mốc bắt đầu; I have lived here for three years có khoảng thời gian. Với They have visited London, have phù hợp chủ ngữ số nhiều; không dùng has. Tự luyện: chọn since trong We have known each other ___ school và chọn for trong We have known each other ___ a long time. Sau đó phân biệt Have you finished yet? với I finished an hour ago. Yet thường dùng trong câu hỏi/phủ định để hỏi việc đã hoàn tất đến hiện tại; already có thể diễn tả hoàn thành sớm hoặc trước dự kiến. Chọn theo nghĩa toàn câu, không dùng một từ khóa để suy mọi cấu trúc hoàn thành đều giống nhau."
+        },
+        {
+          "chunkId": "5b9cd675-015c-4b36-b724-5efeb0a26a4f",
+          "title": "AptiMate — Past perfect simple and continuous",
+          "content": "AptiMate — Past perfect simple and continuous\nQuy tắc và phạm vi\nQuá khứ hoàn thành dùng had + phân từ cho việc xảy ra trước một mốc quá khứ. Dạng tiếp diễn nhấn mạnh quá trình kéo dài trước mốc đó."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-17",
+      "locale": "vi",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "A. That film we saw yesterday was hilarious, ______? B. Yes, it was really funny!",
+        "correctAnswer": "wasn't it",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "didn't it",
+        "alternatives": [
+          "was it",
+          "wasn't it",
+          "didn't it"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "wasn't it",
+        "explanation": "Trong câu hỏi đuôi (question tags), nếu mệnh đề chính dùng động từ 'to be' ở thể khẳng định ('was'), thì phần đuôi phải đổi sang thể phủ định ('wasn't'). Danh từ 'That film' ở mệnh đề chính được thay thế bằng đại từ 'it' ở phần đuôi. Do đó, đáp án chính xác là 'wasn't it'.",
+        "ruleSummary": "Mệnh đề chính dùng động từ 'to be' khẳng định thì phần đuôi dùng phủ định tương ứng và thay chủ ngữ bằng đại từ.",
+        "tip": "Hãy luôn xác định động từ chính và chủ ngữ ở vế trước, sau đó dùng dạng phủ định ngược lại cho phần đuôi.",
+        "citations": [
+          "2d6205e7-1444-488a-9537-f671ddbb26db"
+        ]
+      },
+      "requestId": "aeb4bc1f-5746-46ee-bd42-e00043dde9af",
+      "sources": [
+        {
+          "chunkId": "2d6205e7-1444-488a-9537-f671ddbb26db",
+          "title": "AptiMate — Question tags",
+          "content": "AptiMate — Question tags\nPhân tích và thực hành\nThat film was hilarious, wasn’t it? dùng was từ mệnh đề chính, đổi sang phủ định và thay that film bằng it. She works here, doesn’t she? dùng does vì động từ chính là works. They didn’t arrive, did they? đổi phủ định thành khẳng định. Cấu trúc I am late, aren’t I? là một trường hợp cần học riêng. Tự luyện: chọn hasn’t she trong She has finished, ___? vì has là trợ động từ của hiện tại hoàn thành. So sánh She has a car, doesn’t she? trong cách dùng have chỉ sở hữu phổ biến. Câu hỏi đuôi có thể dùng để xác nhận hoặc thực sự hỏi; ngữ điệu thay đổi sắc thái. Khi giải câu trắc nghiệm, kiểm tra trợ động từ, cực khẳng định/phủ định và đại từ ở đuôi theo từng bước. Không gán mọi câu chứa was vào bài quá khứ đơn nếu khoảng trống đang kiểm tra đuôi câu hỏi."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-18",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "I would travel more if I ___ more money.",
+        "correctAnswer": "had",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "have",
+        "alternatives": [
+          "have",
+          "will have",
+          "had"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "had",
+        "explanation": "This sentence is a second conditional clause expressing an unreal situation in the present. The structure uses 'if' followed by the past simple tense in the conditional clause ('had') and 'would' plus the base verb in the main clause ('would travel'). Therefore, 'had' is the correct choice to indicate a hypothetical present state.",
+        "ruleSummary": "Second conditionals use 'if' + past simple (e.g., 'had') and 'would' + base verb in the main clause to express unreal present situations.",
+        "tip": "Look at the main clause ('would travel'). When you see 'would' + verb, use the past simple form in the 'if' clause.",
+        "citations": [
+          "90dbdbcc-0850-4d22-8265-17e420a4510c",
+          "cabde292-ac96-4f84-9832-46fbd4612dff"
+        ]
+      },
+      "requestId": "e5fff308-5fa0-4800-a9a0-8d33f57c9340",
+      "sources": [
+        {
+          "chunkId": "90dbdbcc-0850-4d22-8265-17e420a4510c",
+          "title": "AptiMate biên soạn — câu điều kiện",
+          "content": "AptiMate biên soạn — câu điều kiện\nVí dụ đúng và ví dụ cần sửa\nVí dụ phù hợp: If I were rich, I would travel more. Ví dụ sai hoặc cách hiểu không phù hợp với ngữ cảnh đã nêu: If I am rich, I would travel more. Lưu ý: Xác định thời điểm và mức độ giả định; không chọn thì chỉ vì nhìn thấy if. Điều kiện quá khứ dùng had + phân từ và would have + phân từ."
+        },
+        {
+          "chunkId": "cabde292-ac96-4f84-9832-46fbd4612dff",
+          "title": "AptiMate biên soạn — câu điều kiện",
+          "content": "AptiMate biên soạn — câu điều kiện\nPhân tích và thực hành\nĐặt hai tình huống cạnh nhau: If it rains tomorrow, we will stay home là khả năng tương lai; If I lived nearer, I would walk là giả định trái với hoàn cảnh hiện tại. Trong câu thứ hai, lived không kể chuyện đã kết thúc. Với điều kiện quá khứ, If I had left earlier, I would have caught the bus diễn tả việc thực tế đã không xảy ra. Không ghép had left với would catch nếu mục đích là nói kết quả đã qua mà không có ngữ cảnh điều kiện hỗn hợp. Tự luyện: chọn had hoặc have trong If I ___ more time now, I would help. Đáp án had vì giả định hiện tại. Đổi câu sang khả năng thực: If I have time tomorrow, I will help. So sánh thông điệp, không chỉ thay hình thức thì. Các mẫu này là dạng phổ biến, không loại bỏ những cách dùng modal khác phù hợp nghĩa."
+        },
+        {
+          "chunkId": "d8fcd491-60a5-4498-b85f-2a7e442281d6",
+          "title": "AptiMate — Unreal past: wish and would rather",
+          "content": "AptiMate — Unreal past: wish and would rather\nPhân tích và thực hành\nI wish I lived nearer nói mong muốn khác với thực tế hiện tại; I wish I had left earlier tiếc việc đã qua. Dạng quá khứ không luôn đánh dấu thời gian quá khứ mà có thể tạo khoảng cách với sự thật. I would rather you stayed here tonight dùng stayed khi người nói muốn người khác ở lại; I would rather stay here dùng nguyên mẫu vì chủ ngữ người thực hiện không đổi. Tự luyện: chọn knew trong I wish I ___ the answer now. Với I wish I ___ the answer yesterday, had known phù hợp nếu đang tiếc vì đã không biết. Sau đó so sánh I hope she comes với I wish she were here: hope thể hiện mong đợi có thể xảy ra, wish ở đây nói tình huống trái hiện tại. Không thay hope và wish chỉ vì cả hai đều dịch là mong trong tiếng Việt."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 1,
+        "verdict": "ACCEPTED_WITH_NOTE",
+        "note": "Đúng điều kiện loại hai; mẹo would + verb nên nhắc phạm vi giả định hiện tại, không áp dụng cho mọi câu điều kiện hỗn hợp."
+      }
+    },
+    {
+      "id": "reading-1",
+      "locale": "vi",
+      "context": {
+        "component": "READING",
+        "part": 4,
+        "question": "The music club started with just four neighbours. They met informally each month to share their interest in playing music. As more people asked to join, they decided to establish an organised group open to the whole town.",
+        "correctAnswer": "How the group began",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "",
+        "alternatives": [],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "How the group began",
+        "explanation": "Đoạn văn kể về việc câu lạc bộ âm nhạc khởi nguồn từ bốn người hàng xóm gặp gỡ không chính thức và sau đó phát triển thành một tổ chức mở rộng cho cả thị trấn. Nội dung này tập trung vào nguồn gốc hình thành của nhóm.",
+        "ruleSummary": "Xác định ý chính bằng cách tìm từ khóa chỉ sự khởi đầu và sự phát triển ban đầu của đối tượng trong đoạn văn.",
+        "tip": "Hãy đọc kỹ toàn bộ đoạn văn để nắm bắt ý bao quát thay vì chỉ dựa vào một câu đơn lẻ.",
+        "citations": [
+          "8ec040a8-30f2-4e7d-b85e-ff21ba973cc5"
+        ]
+      },
+      "requestId": "1e09de7a-fbf3-4711-808b-8ac7d6c8e363",
+      "sources": [
+        {
+          "chunkId": "8ec040a8-30f2-4e7d-b85e-ff21ba973cc5",
+          "title": "AptiMate — Identifying main ideas",
+          "content": "AptiMate — Identifying main ideas\nPhân tích và thực hành\nMột đoạn kể câu lạc bộ bắt đầu từ bốn hàng xóm rồi mở rộng cho cả thị trấn có trọng tâm là nguồn gốc phát triển. Tiêu đề How the group began phù hợp hơn A new timetable dù đoạn có thể nhắc thời gian gặp gỡ. Đoạn khác nói giảm phí, hỗ trợ sinh viên và dùng chung thiết bị có thể được tóm tắt là making participation affordable. Tự luyện: đoạn nêu phòng cũ chật, nhóm so sánh địa điểm và thuê phòng mới gần giao thông công cộng. Chọn Finding a suitable meeting place, không chọn Training new members. Gạch ý bao quát rồi xem các câu còn lại có hỗ trợ ý đó không. Đừng chỉ dựa câu đầu nếu đoạn chuyển hướng bằng however hoặc but. Tiêu đề tốt không quá rộng đến mức hợp mọi đoạn và cũng không quá hẹp chỉ mô tả một ví dụ phụ."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 1,
+        "verdict": "ACCEPTED_WITH_NOTE",
+        "note": "Giải thích đúng nguồn gốc nhóm; ruleSummary hơi riêng cho đoạn nguồn gốc, chưa phải quy tắc bao quát mọi bài tìm ý chính."
+      }
+    },
+    {
+      "id": "reading-3",
+      "locale": "vi",
+      "context": {
+        "component": "READING",
+        "part": 2,
+        "question": "Which sentence belongs at position 1 in this sequence?",
+        "correctAnswer": "Yesterday I decided to book a place at the evening concert.",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "",
+        "alternatives": [],
+        "paper": "{\"sentences\":[\"Finally, a confirmation message arrived in my inbox.\",\"Yesterday I decided to book a place at the evening concert.\",\"First, I opened the booking page on the club website.\",\"Once the page had loaded, I selected a suitable time.\",\"After selecting that time, I entered my name and email address.\",\"With my details complete, I pressed the confirmation button.\"]}"
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "Yesterday I decided to book a place at the evening concert.",
+        "explanation": "Câu này đóng vai trò mở đầu cho toàn bộ chuỗi hành động đặt vé vì nó giới thiệu sự việc quyết định đi xem hòa nhạc trước khi các bước chi tiết diễn ra. Các câu tiếp theo chứa từ chỉ thứ tự như First hoặc các hành động tiếp nối phụ thuộc vào bối cảnh khởi đầu này.",
+        "ruleSummary": "Xác định câu mở đầu bằng cách tìm sự kiện nền tảng xuất hiện trước các từ chỉ trình tự hoặc chi tiết cụ thể.",
+        "tip": "Đọc toàn bộ các câu để tìm ý chính khởi nguồn sự việc trước khi sắp xếp các bước thực hiện tiếp theo.",
+        "citations": [
+          "e38fe6b2-c1b8-45c1-a252-3ab35fac03df"
+        ]
+      },
+      "requestId": "79cfbe6e-8f47-4712-a2c5-2f60877ff47c",
+      "sources": [
+        {
+          "chunkId": "e38fe6b2-c1b8-45c1-a252-3ab35fac03df",
+          "title": "AptiMate — Text cohesion and sequencing",
+          "content": "AptiMate — Text cohesion and sequencing\nPhân tích và thực hành\nI bought a book. It was about gardening tạo liên kết vì it nhắc book đã được giới thiệu. Nếu đưa câu It was about gardening lên đầu mà không có ngữ cảnh, người đọc không biết it là gì. Trong bài xếp câu, First, then, after that và finally giúp định hướng nhưng chưa đủ: Then I paid cần một hoạt động chọn hàng hoặc đặt mua trước đó. Tự luyện: sắp I selected a book / I went to the library / Finally, I borrowed it thành I went to the library, I selected a book, Finally, I borrowed it. Giải thích cả trình tự và đại từ it. Sau khi xếp, đọc từ đầu đến cuối để kiểm tra thời gian và quan hệ nhân quả. Một cặp câu hợp lý riêng lẻ vẫn có thể làm cả đoạn sai nếu đặt trước câu giới thiệu người hoặc vật. Đừng chỉ tìm từ nối rồi bỏ qua nội dung hành động."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "reading-4",
+      "locale": "en",
+      "context": {
+        "component": "READING",
+        "part": 3,
+        "question": "Who wants to improve the online reservation process?",
+        "correctAnswer": "D",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "A",
+        "alternatives": [],
+        "paper": "[{\"speaker\":\"A\",\"post\":\"I joined the music club because membership costs very little. I can only attend in the morning because I work every evening. I wish the club had more equipment to lend to beginners.\"},{\"speaker\":\"B\",\"post\":\"I travel to the music club from a village, so getting there takes an hour. Fortunately, the sessions are worth the journey. I have made a close friend there and we sometimes practise together.\"},{\"speaker\":\"C\",\"post\":\"I have enjoyed playing music for years and now help new members. I prefer small sessions because everyone can ask questions. I am also organising a free introductory session next month.\"},{\"speaker\":\"D\",\"post\":\"I discovered the music club through its website. The weekend timetable suits me, but booking a place online can be confusing. I have suggested making the booking page easier to use.\"}]"
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "D",
+        "explanation": "Speaker D mentions that booking a place online can be confusing and states, 'I have suggested making the booking page easier to use,' which directly matches the objective of wanting to improve the online reservation process.",
+        "ruleSummary": "Match the specific opinion or action mentioned in the question to the correct speaker's text without relying solely on matching isolated keywords.",
+        "tip": "Read each speaker's post carefully to identify specific actions, complaints, or suggestions rather than just skimming for matching words.",
+        "citations": [
+          "d66939c0-bcbe-497d-b936-eab6aa5cea6b"
+        ]
+      },
+      "requestId": "6d50ba21-a46e-4ba2-a48c-ca44f41e63b4",
+      "sources": [
+        {
+          "chunkId": "d66939c0-bcbe-497d-b936-eab6aa5cea6b",
+          "title": "AptiMate — Matching opinions",
+          "content": "AptiMate — Matching opinions\nPhân tích và thực hành\nA: I joined because the fee was low. B: The journey is long, but I enjoy working with others. Nhận định Who was attracted by the price? ghép A; Who values the social aspect? ghép B. B nhắc khó khăn di chuyển nhưng không có nghĩa B ghét câu lạc bộ. Tự luyện: C says I help newcomers, while D says the booking website needs improvement. Ghép teaching beginners với C và improving reservations với D. Đánh dấu mỗi người bằng một ý ngắn và lưu lại câu làm bằng chứng. Một người có thể phù hợp nhiều nhận định tùy quy định bài, nên không tự loại sau lần ghép đầu. Chú ý ý kiến được trích: I understand why Anna dislikes it, but I enjoy it thể hiện quan điểm người nói khác Anna. Không ghép bằng tên hoặc từ khóa xuất hiện mà bỏ qua ai thực sự giữ quan điểm đó."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "reading-7",
+      "locale": "vi",
+      "context": {
+        "component": "READING",
+        "part": 2,
+        "question": "Which sentence belongs at position 3 in this sequence?",
+        "correctAnswer": "Next, I cut them into small pieces.",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "",
+        "alternatives": [],
+        "paper": "{\"sentences\":[\"Yesterday I made vegetable soup for my family.\",\"First, I washed all the vegetables carefully.\",\"Next, I cut them into small pieces.\",\"After that, I put them in a pot with some water.\",\"I cooked the soup for twenty minutes.\",\"At the end, we ate it together with some bread.\"]}"
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "Next, I cut them into small pieces.",
+        "explanation": "Để xác định vị trí số 3 trong đoạn văn kể lại quá trình nấu súp, ta cần chú ý đến sự liên kết ngữ nghĩa và từ quy chiếu. Câu thứ hai kết thúc bằng việc rửa rau củ ('washed all the vegetables carefully'). Câu ở vị trí số 3 tiếp nối hợp lý bằng từ chỉ trình tự 'Next' và đại từ 'them' để thay thế cho 'all the vegetables', mô tả hành động tiếp theo là cắt nhỏ chúng trước khi cho vào nồi.",
+        "ruleSummary": "Các câu trong đoạn văn phải liên kết chặt chẽ với nhau thông qua từ nối chỉ trình tự thời gian và các đại từ quy chiếu (như them, it) ám chỉ sự vật đã được nhắc đến ở câu trước đó.",
+        "tip": "Hãy chú ý đến các từ thay thế (như them, it) trong câu hỏi để tìm sự liên kết với danh từ vừa xuất hiện ở câu liền trước.",
+        "citations": [
+          "98ae9de2-30da-4145-bd03-6a63e257210c",
+          "e38fe6b2-c1b8-45c1-a252-3ab35fac03df"
+        ]
+      },
+      "requestId": "c81b7a33-0634-47f5-983c-250853dc8bfb",
+      "sources": [
+        {
+          "chunkId": "98ae9de2-30da-4145-bd03-6a63e257210c",
+          "title": "AptiMate — Text cohesion and sequencing",
+          "content": "AptiMate — Text cohesion and sequencing\nVí dụ đúng và ví dụ cần sửa\nVí dụ phù hợp: I bought some vegetables. Then I washed them. Ví dụ sai hoặc cách hiểu không phù hợp với ngữ cảnh đã nêu: Then I washed them. I bought some vegetables. (khi chưa có đối tượng trước đó) Lưu ý: Kiểm tra cả chuỗi câu, không chỉ nối hai từ giống nhau; một từ nối có thể hợp với nhiều câu nhưng tham chiếu chỉ hợp với một câu."
+        },
+        {
+          "chunkId": "e38fe6b2-c1b8-45c1-a252-3ab35fac03df",
+          "title": "AptiMate — Text cohesion and sequencing",
+          "content": "AptiMate — Text cohesion and sequencing\nPhân tích và thực hành\nI bought a book. It was about gardening tạo liên kết vì it nhắc book đã được giới thiệu. Nếu đưa câu It was about gardening lên đầu mà không có ngữ cảnh, người đọc không biết it là gì. Trong bài xếp câu, First, then, after that và finally giúp định hướng nhưng chưa đủ: Then I paid cần một hoạt động chọn hàng hoặc đặt mua trước đó. Tự luyện: sắp I selected a book / I went to the library / Finally, I borrowed it thành I went to the library, I selected a book, Finally, I borrowed it. Giải thích cả trình tự và đại từ it. Sau khi xếp, đọc từ đầu đến cuối để kiểm tra thời gian và quan hệ nhân quả. Một cặp câu hợp lý riêng lẻ vẫn có thể làm cả đoạn sai nếu đặt trước câu giới thiệu người hoặc vật. Đừng chỉ tìm từ nối rồi bỏ qua nội dung hành động."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "reading-8",
+      "locale": "en",
+      "context": {
+        "component": "READING",
+        "part": 3,
+        "question": "Who is planning an event for newcomers?",
+        "correctAnswer": "C",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "A",
+        "alternatives": [],
+        "paper": "[{\"speaker\":\"A\",\"post\":\"I joined the book club because membership costs very little. I can only attend in the morning because I work every evening. I wish the club had more equipment to lend to beginners.\"},{\"speaker\":\"B\",\"post\":\"I travel to the book club from a village, so getting there takes an hour. Fortunately, the sessions are worth the journey. I have made a close friend there and we sometimes practise together.\"},{\"speaker\":\"C\",\"post\":\"I have enjoyed reading novels for years and now help new members. I prefer small sessions because everyone can ask questions. I am also organising a free introductory session next month.\"},{\"speaker\":\"D\",\"post\":\"I discovered the book club through its website. The weekend timetable suits me, but booking a place online can be confusing. I have suggested making the booking page easier to use.\"}]"
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "C",
+        "explanation": "Speaker C states, 'I am also organising a free introductory session next month,' which directly matches the question asking who is planning an event for newcomers. Speaker A talks about beginners and equipment, Speaker B mentions making a friend, and Speaker D discusses the booking website, making C the only correct choice.",
+        "ruleSummary": "Match the specific action or plan described in the question statement to the correct speaker's post.",
+        "tip": "Scan the texts for direct synonyms or paraphrases related to the specific event or plan mentioned in the prompt.",
+        "citations": [
+          "d66939c0-bcbe-497d-b936-eab6aa5cea6b"
+        ]
+      },
+      "requestId": "57687a90-03e1-45df-acb0-90eab089ba8a",
+      "sources": [
+        {
+          "chunkId": "d66939c0-bcbe-497d-b936-eab6aa5cea6b",
+          "title": "AptiMate — Matching opinions",
+          "content": "AptiMate — Matching opinions\nPhân tích và thực hành\nA: I joined because the fee was low. B: The journey is long, but I enjoy working with others. Nhận định Who was attracted by the price? ghép A; Who values the social aspect? ghép B. B nhắc khó khăn di chuyển nhưng không có nghĩa B ghét câu lạc bộ. Tự luyện: C says I help newcomers, while D says the booking website needs improvement. Ghép teaching beginners với C và improving reservations với D. Đánh dấu mỗi người bằng một ý ngắn và lưu lại câu làm bằng chứng. Một người có thể phù hợp nhiều nhận định tùy quy định bài, nên không tự loại sau lần ghép đầu. Chú ý ý kiến được trích: I understand why Anna dislikes it, but I enjoy it thể hiện quan điểm người nói khác Anna. Không ghép bằng tên hoặc từ khóa xuất hiện mà bỏ qua ai thực sự giữ quan điểm đó."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "reading-9",
+      "locale": "vi",
+      "context": {
+        "component": "READING",
+        "part": 4,
+        "question": "The cooking club started with just four neighbours. They met informally each month to share their interest in preparing meals. As more people asked to join, they decided to establish an organised group open to the whole town.",
+        "correctAnswer": "How the group began",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "",
+        "alternatives": [],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "How the group began",
+        "explanation": "Đoạn văn kể về việc câu lạc bộ nấu ăn khởi nguồn từ bốn người hàng xóm gặp nhau hằng tháng và sau đó phát triển thành một nhóm có tổ chức cho cả thị trấn. Nội dung này tập trung vào nguồn gốc hình thành của nhóm, vì vậy tiêu đề phù hợp nhất là How the group began.",
+        "ruleSummary": "Xác định ý chính của đoạn văn bằng cách tìm ý bao quát toàn bộ nội dung thay vì chỉ dựa vào một chi tiết phụ.",
+        "tip": "Đọc toàn bộ đoạn văn để nắm bắt câu chuyện nền tảng hoặc sự phát triển của sự việc thay vì vội vàng chọn đáp án chỉ vì thấy từ khóa xuất hiện lẻ tẻ.",
+        "citations": [
+          "8ec040a8-30f2-4e7d-b85e-ff21ba973cc5"
+        ]
+      },
+      "requestId": "a61de0c8-6caf-4f2c-8b10-89c02f0c44a4",
+      "sources": [
+        {
+          "chunkId": "8ec040a8-30f2-4e7d-b85e-ff21ba973cc5",
+          "title": "AptiMate — Identifying main ideas",
+          "content": "AptiMate — Identifying main ideas\nPhân tích và thực hành\nMột đoạn kể câu lạc bộ bắt đầu từ bốn hàng xóm rồi mở rộng cho cả thị trấn có trọng tâm là nguồn gốc phát triển. Tiêu đề How the group began phù hợp hơn A new timetable dù đoạn có thể nhắc thời gian gặp gỡ. Đoạn khác nói giảm phí, hỗ trợ sinh viên và dùng chung thiết bị có thể được tóm tắt là making participation affordable. Tự luyện: đoạn nêu phòng cũ chật, nhóm so sánh địa điểm và thuê phòng mới gần giao thông công cộng. Chọn Finding a suitable meeting place, không chọn Training new members. Gạch ý bao quát rồi xem các câu còn lại có hỗ trợ ý đó không. Đừng chỉ dựa câu đầu nếu đoạn chuyển hướng bằng however hoặc but. Tiêu đề tốt không quá rộng đến mức hợp mọi đoạn và cũng không quá hẹp chỉ mô tả một ví dụ phụ."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "reading-12",
+      "locale": "en",
+      "context": {
+        "component": "READING",
+        "part": 3,
+        "question": "Who chose the club partly because it is inexpensive?",
+        "correctAnswer": "A",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "B",
+        "alternatives": [],
+        "paper": "[{\"speaker\":\"A\",\"post\":\"I joined the cooking club because membership costs very little. I can only attend in the morning because I work every evening. I wish the club had more equipment to lend to beginners.\"},{\"speaker\":\"B\",\"post\":\"I travel to the cooking club from a village, so getting there takes an hour. Fortunately, the sessions are worth the journey. I have made a close friend there and we sometimes practise together.\"},{\"speaker\":\"C\",\"post\":\"I have enjoyed preparing meals for years and now help new members. I prefer small sessions because everyone can ask questions. I am also organising a free introductory session next month.\"},{\"speaker\":\"D\",\"post\":\"I discovered the cooking club through its website. The weekend timetable suits me, but booking a place online can be confusing. I have suggested making the booking page easier to use.\"}]"
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "A",
+        "explanation": "Speaker A states that membership costs very little, which matches the requirement of choosing the club because it is inexpensive. Speaker B discusses travel time and making a friend, which does not relate to cost.",
+        "ruleSummary": "Match specific statements of cost or reason directly to the corresponding speaker text.",
+        "tip": "Look for direct synonyms of cost or price such as inexpensive or costs very little when answering questions about financial reasons.",
+        "citations": [
+          "d66939c0-bcbe-497d-b936-eab6aa5cea6b",
+          "7018eb63-f672-4f92-84c5-8b78a9524262"
+        ]
+      },
+      "requestId": "28ee96df-6452-4785-8afb-d5a642b25043",
+      "sources": [
+        {
+          "chunkId": "d66939c0-bcbe-497d-b936-eab6aa5cea6b",
+          "title": "AptiMate — Matching opinions",
+          "content": "AptiMate — Matching opinions\nPhân tích và thực hành\nA: I joined because the fee was low. B: The journey is long, but I enjoy working with others. Nhận định Who was attracted by the price? ghép A; Who values the social aspect? ghép B. B nhắc khó khăn di chuyển nhưng không có nghĩa B ghét câu lạc bộ. Tự luyện: C says I help newcomers, while D says the booking website needs improvement. Ghép teaching beginners với C và improving reservations với D. Đánh dấu mỗi người bằng một ý ngắn và lưu lại câu làm bằng chứng. Một người có thể phù hợp nhiều nhận định tùy quy định bài, nên không tự loại sau lần ghép đầu. Chú ý ý kiến được trích: I understand why Anna dislikes it, but I enjoy it thể hiện quan điểm người nói khác Anna. Không ghép bằng tên hoặc từ khóa xuất hiện mà bỏ qua ai thực sự giữ quan điểm đó."
+        },
+        {
+          "chunkId": "7018eb63-f672-4f92-84c5-8b78a9524262",
+          "title": "AptiMate — Reading for detail",
+          "content": "AptiMate — Reading for detail\nPhân tích và thực hành\nThe club offers reduced fees to students không có nghĩa mọi người đều được miễn phí. Reduced là thấp hơn, không phải zero; to students giới hạn nhóm hưởng ưu đãi. Khi đọc một nhận định, kiểm tra người, hành động, thời gian, mức độ và điều kiện. Tự luyện: đoạn gốc nói Members can borrow equipment after paying a deposit. Nhận định Members can borrow equipment without any payment không được hỗ trợ vì bỏ điều kiện đặt cọc. Nhận định Members may borrow equipment if they pay a deposit là diễn đạt tương đương. Với đáp án có always, never, only hoặc all, cần kiểm tra phạm vi thật trong đoạn. Đánh dấu câu chứa bằng chứng nhưng đọc thêm câu trước/sau khi có đại từ hoặc tương phản. Nếu câu hỏi yêu cầu thông tin chi tiết, không dùng kinh nghiệm ngoài đời để thay thế điều đoạn văn thực sự nói."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "grammar_vocab-20",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "She looked tired because she ________ on the computer all morning.",
+        "correctAnswer": "had been working",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "has worked",
+        "alternatives": [
+          "had been working",
+          "has worked",
+          "was worked"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "had been working",
+        "explanation": "The correct answer is 'had been working' because the sentence describes a continuous action that took place and lasted for a period of time before a point in the past ('She looked tired'). The past perfect continuous tense (had been + verb-ing) emphasizes the ongoing duration of the action leading up to that past moment.",
+        "ruleSummary": "Use the past perfect continuous tense (had been + verb-ing) to emphasize a continuous action that happened and lasted before a specific point in the past.",
+        "tip": "Look for past time markers and evidence of a continuous process (like 'all morning') leading up to a past state (like 'looked tired').",
+        "citations": [
+          "02467a57-2216-462a-8100-3d4c9c8305a8",
+          "5b9cd675-015c-4b36-b724-5efeb0a26a4f"
+        ]
+      },
+      "requestId": "eb356062-7025-4663-a1f0-56b37d86b942",
+      "sources": [
+        {
+          "chunkId": "02467a57-2216-462a-8100-3d4c9c8305a8",
+          "title": "AptiMate — Past perfect simple and continuous",
+          "content": "AptiMate — Past perfect simple and continuous\nPhân tích và thực hành\nBy the time we reached the station, the train had left đặt việc tàu rời ga trước việc chúng tôi đến. Had không thay đổi theo chủ ngữ. Nếu hai sự kiện được kể theo đúng trình tự, đôi khi quá khứ đơn đã đủ rõ: I opened the door and entered. She looked tired because she had been working all morning nhấn mạnh quá trình trước biểu hiện mệt; had worked nhấn mạnh việc hoặc kết quả tùy ngữ cảnh. Tự luyện: chọn had eaten hoặc has eaten trong When I arrived, he ___ already. Chọn had eaten vì mốc arrived ở quá khứ. Nếu nói về hiện tại, He has already eaten có cách nhìn khác. Đừng gắn nhãn hiện tại hoàn thành chỉ vì explanation chứa từ hoàn thành; cần xem have/has hay had, dạng tiếp diễn và mốc tham chiếu của câu."
+        },
+        {
+          "chunkId": "5b9cd675-015c-4b36-b724-5efeb0a26a4f",
+          "title": "AptiMate — Past perfect simple and continuous",
+          "content": "AptiMate — Past perfect simple and continuous\nQuy tắc và phạm vi\nQuá khứ hoàn thành dùng had + phân từ cho việc xảy ra trước một mốc quá khứ. Dạng tiếp diễn nhấn mạnh quá trình kéo dài trước mốc đó."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    },
+    {
+      "id": "reading-11",
+      "locale": "vi",
+      "context": {
+        "component": "READING",
+        "part": 2,
+        "question": "Which sentence belongs at position 5 in this sequence?",
+        "correctAnswer": "I cooked the soup for twenty minutes.",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "",
+        "alternatives": [],
+        "paper": "{\"sentences\":[\"Yesterday I made vegetable soup for my family.\",\"First, I washed all the vegetables carefully.\",\"Next, I cut them into small pieces.\",\"After that, I put them in a pot with some water.\",\"I cooked the soup for twenty minutes.\",\"At the end, we ate it together with some bread.\"]}"
+      },
+      "status": "READY",
+      "content": {
+        "locale": "vi",
+        "correctAnswer": "I cooked the soup for twenty minutes.",
+        "explanation": "Để xác định câu ở vị trí thứ 5, chúng ta cần dựa vào trình tự thời gian và logic của quá trình nấu ăn. Các câu trước đã mô tả các bước chuẩn bị gồm rửa rau củ, cắt nhỏ và cho vào nồi với nước. Câu 'I cooked the soup for twenty minutes.' tiếp nối chính xác quá trình này bằng hành động nấu thực tế diễn ra ngay sau khi đặt nguyên liệu vào nồi, trước khi đến câu kết luận ăn cùng bánh mì.",
+        "ruleSummary": "Sắp xếp các câu trong đoạn văn theo trình tự thời gian và quan hệ nhân quả của hành động.",
+        "tip": "Đọc toàn bộ chuỗi câu theo thứ tự từ đầu đến cuối để kiểm tra tính logic về thời gian và các bước thực hiện.",
+        "citations": [
+          "e38fe6b2-c1b8-45c1-a252-3ab35fac03df",
+          "98ae9de2-30da-4145-bd03-6a63e257210c"
+        ]
+      },
+      "requestId": "2f954e26-50e9-4122-bcf3-389ae2b60626",
+      "sources": [
+        {
+          "chunkId": "e38fe6b2-c1b8-45c1-a252-3ab35fac03df",
+          "title": "AptiMate — Text cohesion and sequencing",
+          "content": "AptiMate — Text cohesion and sequencing\nPhân tích và thực hành\nI bought a book. It was about gardening tạo liên kết vì it nhắc book đã được giới thiệu. Nếu đưa câu It was about gardening lên đầu mà không có ngữ cảnh, người đọc không biết it là gì. Trong bài xếp câu, First, then, after that và finally giúp định hướng nhưng chưa đủ: Then I paid cần một hoạt động chọn hàng hoặc đặt mua trước đó. Tự luyện: sắp I selected a book / I went to the library / Finally, I borrowed it thành I went to the library, I selected a book, Finally, I borrowed it. Giải thích cả trình tự và đại từ it. Sau khi xếp, đọc từ đầu đến cuối để kiểm tra thời gian và quan hệ nhân quả. Một cặp câu hợp lý riêng lẻ vẫn có thể làm cả đoạn sai nếu đặt trước câu giới thiệu người hoặc vật. Đừng chỉ tìm từ nối rồi bỏ qua nội dung hành động."
+        },
+        {
+          "chunkId": "98ae9de2-30da-4145-bd03-6a63e257210c",
+          "title": "AptiMate — Text cohesion and sequencing",
+          "content": "AptiMate — Text cohesion and sequencing\nVí dụ đúng và ví dụ cần sửa\nVí dụ phù hợp: I bought some vegetables. Then I washed them. Ví dụ sai hoặc cách hiểu không phù hợp với ngữ cảnh đã nêu: Then I washed them. I bought some vegetables. (khi chưa có đối tượng trước đó) Lưu ý: Kiểm tra cả chuỗi câu, không chỉ nối hai từ giống nhau; một từ nối có thể hợp với nhiều câu nhưng tham chiếu chỉ hợp với một câu."
+        }
+      ],
+      "review": {
+        "knowledge": 2,
+        "grounding": 2,
+        "clarity": 2,
+        "verdict": "ACCEPTED",
+        "note": "Đáp án/quy tắc đúng trong ngữ cảnh, các nhận định chính có căn cứ trong đoạn nguồn hoặc văn bản câu hỏi, diễn đạt rõ."
+      }
+    }
+  ],
+  "provider": "gemini",
+  "model": "gemini-3.5-flash-lite",
+  "updatedAt": "2026-11-11T16:44:15.904Z",
+  "complete": true,
+  "rejectedExamples": [
+    {
+      "id": "grammar_vocab-20",
+      "locale": "en",
+      "context": {
+        "component": "GRAMMAR_VOCAB",
+        "part": 1,
+        "question": "She looked tired because she ________ on the computer all morning.",
+        "correctAnswer": "had been working",
+        "outcome": "INCORRECT",
+        "selectedAnswer": "has worked",
+        "alternatives": [
+          "had been working",
+          "has worked",
+          "was worked"
+        ],
+        "paper": ""
+      },
+      "status": "READY",
+      "content": {
+        "locale": "en",
+        "correctAnswer": "had been working",
+        "explanation": "The correct choice is 'had been working' because the sentence describes an action in the past continuous (had been working) that was ongoing and led to a result observed at a past moment ('She looked tired'). The past perfect continuous emphasizes the duration and continuous nature of an action before another point in the past.",
+        "ruleSummary": "Use the past perfect continuous (had been + verb-ing) to emphasize an ongoing action that happened before a specific point in the past.",
+        "tip": "Look for past tense clues in the main clause (like 'looked') combined with a duration phrase (like 'all morning') to choose the past continuous form.",
+        "citations": [
+          "02467a57-2216-462a-8100-3d4c9c8305a8",
+          "5b9cd675-015c-4b36-b724-5efeb0a26a4f"
+        ]
+      },
+      "requestId": "14f47af1-3c5b-44b5-b841-dc49397fbf74",
+      "sources": [
+        {
+          "chunkId": "02467a57-2216-462a-8100-3d4c9c8305a8",
+          "title": "AptiMate — Past perfect simple and continuous",
+          "content": "AptiMate — Past perfect simple and continuous\nPhân tích và thực hành\nBy the time we reached the station, the train had left đặt việc tàu rời ga trước việc chúng tôi đến. Had không thay đổi theo chủ ngữ. Nếu hai sự kiện được kể theo đúng trình tự, đôi khi quá khứ đơn đã đủ rõ: I opened the door and entered. She looked tired because she had been working all morning nhấn mạnh quá trình trước biểu hiện mệt; had worked nhấn mạnh việc hoặc kết quả tùy ngữ cảnh. Tự luyện: chọn had eaten hoặc has eaten trong When I arrived, he ___ already. Chọn had eaten vì mốc arrived ở quá khứ. Nếu nói về hiện tại, He has already eaten có cách nhìn khác. Đừng gắn nhãn hiện tại hoàn thành chỉ vì explanation chứa từ hoàn thành; cần xem have/has hay had, dạng tiếp diễn và mốc tham chiếu của câu."
+        },
+        {
+          "chunkId": "5b9cd675-015c-4b36-b724-5efeb0a26a4f",
+          "title": "AptiMate — Past perfect simple and continuous",
+          "content": "AptiMate — Past perfect simple and continuous\nQuy tắc và phạm vi\nQuá khứ hoàn thành dùng had + phân từ cho việc xảy ra trước một mốc quá khứ. Dạng tiếp diễn nhấn mạnh quá trình kéo dài trước mốc đó."
+        }
+      ],
+      "review": {
+        "knowledge": 0,
+        "grounding": 1,
+        "clarity": 1,
+        "verdict": "REJECTED",
+        "note": "Chọn đúng had been working nhưng gọi nhầm past continuous. Đã bổ sung validator và regression; bản sinh lại dùng đúng past perfect continuous."
+      },
+      "rejection": [
+        "TENSE_LABEL: had been + V-ing is past perfect continuous, not past continuous"
+      ]
+    }
+  ],
+  "rubric": {
+    "scale": "0 = sai/không được hỗ trợ/khó hiểu; 1 = chấp nhận được nhưng cần làm rõ; 2 = đạt trong ngữ cảnh câu.",
+    "dimensions": [
+      "knowledge",
+      "grounding",
+      "clarity"
+    ]
+  },
+  "summary": {
+    "reviewed": 30,
+    "ready": 30,
+    "validCitationSamples": 30,
+    "rejectedDuringDevelopment": 1,
+    "averages": {
+      "knowledge": 2,
+      "grounding": 2,
+      "clarity": 1.8
+    },
+    "limitations": [
+      "AI review, not human teacher sign-off.",
+      "Only Grammar/Reading public R0 fixtures; Listening audio is not independently verified.",
+      "Provider 503/quota failures were retried to collect quality samples; this is not first-attempt availability or latency measurement.",
+      "Some samples are near duplicates. R7 needs an independent set.",
+      "The 30 development outputs were collected across prompt/query refinements and all revalidated against the final contract; they are not 30 fresh calls made after freezing the final prompt."
+    ]
+  }
+}

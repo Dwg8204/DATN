@@ -1,9 +1,86 @@
 {
+  "ragAdmin": {
+    "group": "Gap group",
+    "events": "Events",
+    "learners": "Learners",
+    "samples": "Sample questions",
+    "title": "AI learning resources",
+    "coverage": "Coverage",
+    "gaps": "Retrieval gaps",
+    "actions": "Actions",
+    "all": "All skills",
+    "error": "Unable to load or update data. Check filters and try again.",
+    "reload": "Reload",
+    "disabled": "RAG indexing is disabled. Enable it on the server to process jobs.",
+    "noQuestions": "No published questions",
+    "missingTopics": "Topics without a usable lesson",
+    "missingCriteria": "Criteria without a usable guide",
+    "none": "No results",
+    "skill": "Skill",
+    "feature": "Feature",
+    "from": "From",
+    "to": "To",
+    "utc": "Dates use UTC, including the entire end date. Multi-topic events can appear in more than one group.",
+    "part": "Part {{n}}",
+    "unknownTopic": "Unknown topic",
+    "counts": "{{count}} events · {{learners}} distinct learners",
+    "similarity": "Mean top similarity",
+    "reembedHelp": "Requeue published tests. Valid vectors are reused; missing or outdated vectors are rebuilt. Pending and running jobs are preserved.",
+    "reembed": "Reindex questions",
+    "queued": "{{count}} tests queued",
+    "jobs": "{{completed}} completed · {{pending}} pending · {{failed}} failed",
+    "poll": "Progress refreshes every 10 seconds.",
+    "confirm": "Reindex questions for {{scope}}? This can use embedding quota for missing or outdated vectors.",
+    "confirmButton": "Confirm",
+    "cancel": "Cancel",
+    "criteria": {
+      "TASK": "Task fulfillment",
+      "GRAMMAR": "Grammar",
+      "VOCABULARY": "Vocabulary",
+      "COHERENCE": "Coherence",
+      "REGISTER": "Register",
+      "MECHANICS": "Spelling and punctuation",
+      "grammarVocabulary": "Grammar and vocabulary",
+      "pronunciation": "Pronunciation",
+      "fluency": "Fluency",
+      "taskFulfillment": "Task fulfillment"
+    }
+  },
   "adminDashboardLabels": { "grammarVocab": "Grammar & Vocab" },
   "passwordPolicy": {
     "logoutConfirmation": "Are you sure you want to log out?",
     "moreInfo": "More information","requirements": "Password must contain at least 8 characters, an uppercase letter (A-Z), a lowercase letter (a-z), a number and a special character.", "nameLimit": "First name and last name must each be at most 100 characters."},
   "personalization": {
+    "grounding": {
+      "coverage": "These groups include only analyzed errors with a matching lesson.",
+      "patterns": "Error patterns in this period",
+      "count": "{{count}} errors",
+      "prior": "Seen {{count}} times previously",
+      "lesson": "Lesson",
+      "lessonChip": "Lesson: {{title}}",
+      "testChip": "Suggested test: {{title}}",
+      "unavailable": "This lesson is unavailable"
+    },
+    "placementReplan": {
+      "message": "This week’s plan has been adjusted to your initial assessment results.",
+      "dismiss": "Dismiss notice",
+      "help": "Complete the three required assessments to adjust your learning plan right away. Writing and Speaking are optional."
+    },
+    "retrieval": {
+      "matches": "Matches {{count}} recent mistakes",
+      "topic": "Topic to review: {{topics}}"
+    },
+    "explain": {
+      "open": "Why is this wrong?",
+      "error": "Could not load the explanation.",
+      "retry": "Try again",
+      "rule": "Rule",
+      "tip": "Practice tip",
+      "sources": "Sources",
+      "fallback": "A detailed lesson is not available for this question yet.",
+      "limit": "You have reached today's explanation limit. You can still view saved explanations.",
+      "unavailable": "A detailed explanation is temporarily unavailable."
+    },
     "refreshFailed": "Learning data could not be refreshed. Displayed data may be out of date. Please try again.",
     "retryLoad": "Try again",
     "placement": {

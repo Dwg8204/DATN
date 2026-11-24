@@ -121,7 +121,9 @@ async function main() {
         const config=new ConfigService({...process.env,CHATBOT_ENABLED:'true'});
         const {client,generation}=createGeminiServices(config,db);
         const provider=new ChatbotProvider(config,client,generation);
-        const knowledge=new ChatbotKnowledge(knowledgeDb,provider);
+        const {KnowledgeSearchService}=await import('../../src/features/retrieval/knowledge-search.service');
+        const {EmbeddingService}=await import('../../src/features/retrieval/embedding.service');
+        const knowledge=new ChatbotKnowledge(new KnowledgeSearchService(knowledgeDb,new EmbeddingService(client)));
         const context=new ChatbotContext(db,{} as any,{} as any);
         const chat=new ChatbotService(repo,provider,context,knowledge,{lookup:async()=>({error:'NOT_IN_THIS_TEST'})} as any);
         const actor={id:bob} as any;

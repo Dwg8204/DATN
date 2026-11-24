@@ -1,5 +1,87 @@
 # Bàn giao ngữ cảnh AptiMate cho phiên chat mới
 
+## Đồng bộ develop vào RAG — 17/11/2026
+
+- Merge origin/develop tại fd81151 vào feature/personalization-rag, giữ toàn bộ R0–R7. Giải quyết conflict README backend, package.json, env.validation.ts và chatbot.provider.ts bằng cách kết hợp cấu hình/script RAG với Redis cache và seed additional.
+- Chatbot cache embedding vẫn dùng Redis tùy chọn, khóa phân biệt query/document và kiểm tra vector 768 chiều chuẩn hóa. Khi cache miss hoặc không bật cache, gọi EmbeddingService chung của RAG để giữ batch embedding và telemetry; giữ kiểm tra abort và ánh xạ lỗi chatbot. Có regression cho cache hit/miss, query mode, abort và không dùng Redis.
+- Kiểm chứng sau merge: typecheck backend, build backend/frontend, 119 test backend/14 suite (chatbot, retrieval, Redis, reference assessment, additional seed), 6 test chatbot frontend đều đạt; diff check không lỗi. Frontend còn cảnh báo chunk lớn có sẵn.
+- Cài dependency ioredis theo lockfile (không thay lockfile); không chạy migration, seed, gọi AI thật hay cập nhật container. Chưa push.
+
+
+## RAG R7 — 14/11/2026
+
+- Đã thêm rag:eval: Recall/MRR hai kho × keyword/vector/RRF × kỹ năng, threshold sweep, R3 20 seed, telemetry validator, review pack 40 mẫu và vận hành. Không gọi provider. Thêm --apply-thresholds có chặn nhãn chưa đủ chuẩn.
+- R0 cấu trúc PASS; 318 unit/27 suites, 12 browser, 11 DB/API scripts PASS; typecheck/build backend, build frontend PASS. Sửa fixture overview nạp config đúng.
+- Local 2428 question vectors đúng, 79 docs/251 chunks, 173 jobs completed. Learner errors vẫn 1 pending do snapshot lịch sử thiếu vector tương thích; không ép ánh xạ.
+- 60 mẫu/360 rankings đánh giá đủ vector. Knowledge vector R@5=1/MRR=.9094; questions vector R@5=.3054/MRR=.4225 trên 37 mẫu có relevant, chỉ là nhãn phát triển. R3 nguồn trung tâm kém baseline; toàn nhóm tốt hơn.
+- R7 nghiệm thu REVIEW_REQUIRED: chưa có gold độc lập, chưa chấm tay 40 mẫu 1–5, chưa chốt threshold; request AI cũ UNKNOWN, chưa có tier/gap quan sát. Không tuyên bố toàn bộ kế hoạch đã nghiệm thu.
+- Xem docs/PERSONALIZATION_RAG_R7_REPORT.md, PERSONALIZATION_RAG_EVAL.md, PERSONALIZATION_RAG_R0_R7_CHECK.md; branch vẫn feature/personalization-rag, không push.
+
+
+## RAG R6 — 14/11/2026
+
+- Admin-only /admin/rag/status, gaps, reembed; trang /admin/rag “Học liệu AI”, 3 tab, Việt/Anh, responsive, confirm + poll10s. Không migration, giữ branch feature/personalization-rag.
+- Độ phủ kiểm tra snapshot/hash/text/model/version; thiếu học liệu xét READY/LEARNER/latest/vector. Tiêu chí 6 Writing + 4 Speaking đúng corpus. Gaps gộp kỹ năng/Part/topic, users distinct, max3 sample câu đề, UTC, pagination chung và REPEATABLE READ. Không trả dữ liệu người học.
+- Reembed thêm job thiếu, reset completed/failed, giữ pending/locked SKIP LOCKED, audit cùng transaction. Giữ vector tốt; không ép gọi embedding. Retention gaps >180 ngày, batch1000 mỗi tick PersonalizationWorker.
+- DB R6 đạt auth/validation/group/page/retention/lock/audit/reindex100/stale/scope. 344 unit/30 suites backend đạt; typecheck/build đạt. Browser R6 4/4 (en/vi390/1280), admin layout320–1440 đạt; sửa fixture sidebar từ route feedback cũ sang rag và rerun 2/2 đạt. Frontend build đạt, lint chỉ warnings.
+- Local đọc đủ 2.428/2.428 vector, không thiếu LESSON/CRITERION_GUIDE. Đã queue35 Reading bằng service (audit actor hệ thống null), worker sẵn có đã hoàn tất35/35, pending0/failed0, Reading512/512(100%); CLI drain riêng bị auto-review từ chối, không chạy hay đi vòng lệnh đó. Xem kết quả cuối và hướng dẫn trong docs/PERSONALIZATION_RAG_R6_REPORT.md. Chưa push; không làm R7.
+
+## RAG R5 — 13/11/2026
+
+- Kho lỗi riêng learner_error_chunks/jobs, migration 1760000027000 (local 35 migrations). Trigger invalidates/requeues khi status/result/revision đổi; worker SKIP LOCKED sao chép vector trắc nghiệm, embed tối đa 10 finding Writing, quota/backoff. Không gửi văn bản người học vào report prompt.
+- ErrorPatternsService gom theo bài học READY/LEARNER, top5, current/priorCount, report-only snapshot v6. Weekly v7/final v4, nextSteps có citations; nguồn kiểm tra khi lưu và khi đọc; báo cáo READY cũ không viết lại. API đọc chunk STUDENT, modal/chip Việt-Anh và sources cho chatbot.
+- 342 unit/29 suites; DB R5/GĐ7/GĐ8/GĐ9/S4/chatbot đạt, GĐ7 có lượt RAG_REPORT_TEST=true; browser1280/390 đạt. Backend typecheck/build, frontend build/lint hoàn tất (lint có warning cũ).
+- Smoke AI thật bộ đầy đủ có lộ trình: 9/10 (90%) lần đầu, 1 thiếu citation bị chặn. Lưu cả các lượt trước 10/10 (days=0), 5/10, 6/10; phát hiện và sửa regex CEFR nhận nhầm “Củng/Cố” là C. minimumTestItems dùng chung code/prompt. Xem docs/PERSONALIZATION_RAG_R5_REPORT.md và docs/rag-r5-smoke*.json; không phải đánh giá semantic độc lập.
+- Local index: 725 error chunks, 31 job completed, 1 pending vì thiếu vector tương thích snapshot lịch sử, 0 failed. Pattern chỉ gồm finding đã index/khớp học liệu, không phải toàn bộ lỗi. Worker bất đồng bộ, READY không backfill nhóm trễ. Cờ RAG local true, mặc định triển khai false. Nhánh feature/personalization-rag, chưa push.
+
+## RAG R4 — 13/11/2026
+
+- Thêm replanAfterPlacementLocked và batch worker tối đa 50/60s; sync/ensureLocked kích hoạt sau đủ 3 assessment. Khóa user trước plan, giữ toàn bộ ngày có tiến độ/quá khứ, marker cùng transaction, chống lặp và AI START/cũ ghi đè.
+- Giữ GET chỉ đọc theo S4: current báo needsPlacementReplan, overview.needsSync kích hoạt POST sync hiện có trên Dashboard. Overview thêm replannedAfterPlacementAt. Notice Việt/Anh đóng theo planId/localStorage có try/catch.
+- Không migration mới, dùng R3; local 34 migrations, rag/worker true, readiness 200. Lúc kiểm tra DB ứng dụng chưa có plan mang dấu R4; kịch bản Lan trong schema test riêng, không giả dữ liệu tài khoản thật.
+- 327 unit/27 suites đạt; R4 PostgreSQL đạt Lan 2/3→3/3, ngày4 khớp2lỗi, giữ ngày1–3, partialday4→day5, concurrency/idempotency, rollback/archive retry, staleAI, flagoff/noAPI. Hồi quy plan/report/placement/S4 đạt. Browser1280/390 đạt sync, dismissal/reload/newplan/locale/storageblocked. Builds/typecheck đạt.
+- Chi tiết docs/PERSONALIZATION_RAG_R4_REPORT.md. Vector/outcome fixture có kiểm soát, không nâng kết luận chất lượng semantic của R3. Nhánh vẫn feature/personalization-rag; chưa push.
+
+## RAG R3 — 12/11/2026
+
+- Nhánh chung feature/personalization-rag. Chọn đề theo vector lỗi đã lưu, distinct source matchCount, ưu tiên trước top21, TOPIC_REVIEW theo số câu/chưa làm, gap PLAN, trace rule/AI/repository/API và badge Việt/Anh.
+- Migration 1760000026000 đã áp dụng local (34 migrations), readiness 200. Kế hoạch cũ không tự đổi; cột replanned_after_placement_at dự phòng R4, chưa tự replan sau placement.
+- Weekly prompt personal-weekly-v6; snapshot vẫn 5. Tắt RAG giữ thứ tự legacy. Planning không gọi embedding API.
+- Unit backend 326/27 suite đạt; focused cuối 34/3 đạt sau bổ sung contract test. R3 DB + migration/repository trace, GĐ4/S1, GĐ7, placement, S4, topic workflow và browser desktop/mobile đạt; builds/typecheck đạt.
+- Runner DB tổng bị fixture goal cũ 40 bài/3 ngày (vượt pace hiện hành) chặn; các regression R3 đã chạy trực tiếp, không nói toàn runner xanh.
+- Baseline R0: toàn nhóm lỗi 0.1667 so 0.1117 câu nhãn/đề (cũ 20 seed); riêng câu trung tâm 0.0167 so 0.0267, kém hơn. Giữ cả hai, không chỉnh ngưỡng theo điểm; evaluationEligible=false. Chức năng xong, chưa nghiệm thu chất lượng độc lập/từng câu. Xem docs/PERSONALIZATION_RAG_R3_REPORT.md và backend/test/fixtures/rag-r3-plan-baseline.json.
+
+## RAG R2 — 11/11/2026
+
+- Đã triển khai API giải thích câu sai/bỏ qua có nguồn, cache theo revision/locale/prompt, retrieval gap, quota nguyên tử 50 lượt/ngày UTC và UI lazy Việt/Anh. Nhánh giữ nguyên `feature/personalization-rag`.
+- Migration 1760000025000 đã áp dụng DB local (33 migrations). Local PERSONALIZATION_RAG_ENABLED=true, backend đã restart healthy; mặc định cấu hình triển khai vẫn false. Không commit file môi trường.
+- 310 tests/25 suites backend đạt (28 test R2), PostgreSQL integration R2 và browser 1280/390 đạt; build/typecheck và lint file frontend sửa đạt.
+- 30 mẫu Grammar/Reading cuối READY, đã AI rà soát kiến thức/nguồn/độ rõ; điểm trung bình 2/2, 2/2, 1.8/2. Một lỗi tên thì bị loại và sửa, lưu audit. Không phải giáo viên duyệt, gold độc lập, đo availability hoặc kiểm chứng audio. Mẫu thu qua các lần tinh chỉnh, đã revalidate contract cuối.
+- Chi tiết: docs/PERSONALIZATION_RAG_R2_REPORT.md; artifact: backend/test/fixtures/rag-r2-explanation-eval.json. Chưa push.
+
+## RAG R1 — 11/11/2026
+
+- Giữ nhánh chung `feature/personalization-rag`. Đã sửa 63 học liệu cần biên tập; 73 tài liệu mới AI_APPROVED với hash, giữ 6 GENERAL có nguồn. Trạng thái mới thay thế vòng duyệt R0 lịch sử bên dưới.
+- DB local đã import 79 tài liệu READY/251 chunk/251 vector, áp dụng migration 1760000024000. Backfill đạt 2.428/2.428 câu snapshot hiện hành, 173 job hoàn thành, không thiếu/cũ/pending/failed.
+- RetrievalModule, embedding chung, query kiến thức vector+keyword+RRF, câu tương tự theo hash/snapshot, worker publish queue, CLI backfill/status/baseline. Có dùng lại vector đầu vào giống hệt để giảm quota. Gemini RetryInfo được tôn trọng; không thay billing/API key. PERSONALIZATION_RAG_ENABLED vẫn mặc định false; CLI backfill đã bật riêng process.
+- Baseline 60 mẫu tìm bài học AI rà soát: keyword 0%, vector/RRF 100% Recall@5; chỉ baseline phát triển, không gold độc lập hoặc xác minh audio/cặp câu. R0 gold cũ vẫn evaluationEligible=false. Báo cáo chi tiết: docs/PERSONALIZATION_RAG_R1_REPORT.md.
+- 282 unit tests/23 suites, PostgreSQL R1 và chatbot, typecheck/build đã kiểm chứng. Không triển khai R2 hoặc đổi frontend.
+
+## Duyệt R0 bằng AI — 10/11/2026
+
+- Người dùng yêu cầu AI duyệt thay. Đã rà soát 73 tài liệu mới và 60 mẫu/299 cặp. 10 hướng dẫn tiêu chí AI_APPROVED; 63 tài liệu NEEDS_REVISION vì nội dung chung/lặp hoặc thiếu đặc thù Part. Không ghi là con người duyệt.
+- Sửa 16 nhãn bài học; loại 109 cặp khác trọng tâm trong review.pairs, giữ IDs gốc phục vụ audit. Tất cả mẫu evaluationEligible=false: chưa đủ chuẩn gold, thiếu đối chiếu audio và phân nhóm gần trùng.
+- Sổ chi tiết: backend/test/fixtures/rag-r0-review-results.json; kết luận: docs/PERSONALIZATION_RAG_R0_REVIEW.md. Trạng thái này thay thế mô tả DRAFT trong báo cáo R0 ban đầu. Chưa import hoặc sửa DB; không được coi R0 đã nghiệm thu chất lượng.
+
+## RAG R0 — 10/11/2026
+
+- Nhánh chung `feature/personalization-rag` từ `origin/develop` tại `52edbd2`; dùng cho tất cả R0–R7 theo yêu cầu người dùng. Đã xóa 6 file untracked network/production không liên quan, giữ kế hoạch RAG.
+- Chuẩn bị 45 bài LESSON, 18 PART_STRATEGY, 10 CRITERION_GUIDE; giữ 6 tài liệu Aptis và nội dung 8 bài biên soạn cũ. Tất cả nội dung mới DRAFT, người dùng đồng ý commit bản nháp chờ duyệt.
+- Fixture có 60 câu sai giả lập (20 mỗi kỹ năng khách quan), 96 câu nguồn/ứng viên phục vụ duyệt; không có bài làm người học. Nhãn chỉ đề xuất, chưa được dùng làm ground truth hoặc công bố metric.
+- DB local: 18 question_type, 1.987 câu khách quan xuất bản; 450 câu Listening không có trường transcript trong content/part_contents. Một số đáp án mẫu chưa kiểm chứng âm thanh đã loại khỏi fixture.
+- Kiểm tra cấu trúc bằng `node backend/scripts/rag-r0-validate.cjs`; xem `docs/PERSONALIZATION_RAG_R0_REPORT.md`. Chưa import, migrate, embed hay thay code runtime. Importer cũ chưa chặn DRAFT: không import corpus trước khi duyệt và bổ sung kiểm tra R1.
+- Tiếp theo: duyệt học liệu/nhãn rồi triển khai R1; chú ý phiên bản question_hash, truy xuất đủ ngữ cảnh Part và thống nhất matchCount. Không quay lại quy trình mỗi giai đoạn một nhánh trong kế hoạch cũ.
+
 ## Sửa dịch nhầm nội dung đề — 02/11/2026
 
 - MultipleChoice không dịch label đáp án nữa (Grammar Part 1, Listening Part 1/4); sửa tương tự radio chọn đáp án trong admin. Rà soát cả 5 kỹ năng và bỏ các ui() nhận tiêu đề/nội dung đề ở danh sách, làm bài, Reading review và admin preview. Giữ bản dịch UI và dữ liệu snapshot/answer ID; không sửa JSON để né va chạm từ.

@@ -115,8 +115,8 @@ export class StudyPlansRepository {
       }
       await manager.query(
         `INSERT INTO study_plan_items(plan_id,scheduled_on,sort_order,activity_type,component,
-        part_number,test_id,topic_id,source_attempt_id,question_keys,target_count,reason)
-        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`,
+        part_number,test_id,topic_id,source_attempt_id,question_keys,target_count,reason,retrieval)
+        VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`,
         [
           plan.id,
           item.scheduledOn,
@@ -130,6 +130,7 @@ export class StudyPlansRepository {
           'questionKeys' in item ? item.questionKeys : null,
           item.targetCount,
           item.reason ?? null,
+          item.retrieval ? JSON.stringify(item.retrieval) : null,
         ],
       );
     }

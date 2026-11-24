@@ -1,3 +1,5 @@
+import { ConfigModule } from '@nestjs/config';
+import configuration from '../../src/config/configuration';
 import { MistakeSourceService } from '../../src/features/personalization/services/mistake-source.service';
 import { AddPlanProgressFinalizedAt1760000023000 } from '../../src/database/migrations/1760000023000-AddPlanProgressFinalizedAt';
 import * as assert from 'node:assert/strict';
@@ -69,7 +71,7 @@ withPersonalizationDatabase(async (db, alice, bob) => {
   })
   class AttemptsFixture {}
   const module = await Test.createTestingModule({
-    imports: [DatabaseFixture, PersonalizationModule],
+    imports: [ConfigModule.forRoot({ isGlobal: true, load: [configuration] }), DatabaseFixture, PersonalizationModule],
   })
     .overrideModule(TestAttemptsModule)
     .useModule(AttemptsFixture)

@@ -343,6 +343,87 @@ Một số migration có cùng timestamp (gồm nhóm `1760000019000`, `17600000
 
 Xem [báo cáo S3](../docs/PERSONALIZATION_S3_REPORT.md). Sau migration `1760000022000-AddPlacementTests`, cấu hình bộ Music đã seed bằng `npm run personalization:placement-music -- --dry-run`, rồi `--apply`. Part chỉ liên kết nội dung, không bật `is_placement`. Kiểm thử DB: `npm run test:placement:db` với `TEST_DATABASE_URL` là database riêng kết thúc `_test`.
 
+### Cá nhân hóa R1: nền tảng truy xuất
+
+Module `features/retrieval` dùng chung embedding 768 chiều đã chuẩn hóa, tìm kiến thức bằng vector + từ khóa + RRF, tìm câu hỏi theo snapshot đã xuất bản/hash hiện hành. Chatbot giữ bộ lọc LEARNER, examVariant và phiên bản READY mới nhất. R1 chưa thay giao diện hoặc sinh giải thích lỗi (R2).
+
+Thực hiện từ thư mục backend với DATABASE_URL của môi trường đích:
+
+```sh
+npm run db:migrate:status
+npm run db:migrate
+npm run knowledge:validate
+npm run knowledge:import
+npm run questions:embed
+npm run questions:embed -- --apply
+```
+
+`knowledge:import` chặn DRAFT/NEEDS_REVISION và nội dung AI_APPROVED có hash duyệt không khớp. Sáu tài liệu GENERAL có nguồn chính thức được giữ tương thích; AI_APPROVED không có nghĩa là con người duyệt. Import theo transaction từng tài liệu, giữ phiên bản cũ nếu embed thất bại. Lệnh có gọi Gemini thật.
+
+`questions:embed` mặc định chỉ đếm. `--apply` thêm job còn thiếu, không reset job đang chờ/thất bại. Khi thay model hoặc phiên bản ghép văn bản, dùng `--apply --refresh-completed`: mở lại job đã xong; worker chỉ embed phần có hash/key/text/model/version thay đổi. Job lỗi sau 5 lần cần xử lý nguyên nhân rồi xuất bản lại đề để reset; quota không tiêu hao số lần retry.
+
+`PERSONALIZATION_RAG_ENABLED=false` là mặc định. Bật `true` cho backend sẽ chạy worker mỗi 60 giây; mỗi lượt tối đa 5 job, mỗi transaction tối đa 20 câu. Có thể chạy riêng bằng PowerShell:
+
+```powershell
+$env:PERSONALIZATION_RAG_ENABLED='true'
+npm run questions:worker -- --drain
+npm run rag:status
+```
+
+CLI drain có giới hạn 30 phút, có thể chạy lại; tiến độ lưu trong PostgreSQL. Khi quota hết, tôn trọng Retry-After và RetryInfo của Gemini; tăng RAG_EMBED_MAX_RPM không tăng hạn mức ngày của nhà cung cấp. Rate limiter là theo process, không phải quota phân tán giữa nhiều replica. `rag:status` chỉ đọc DB, không gọi AI; exit 1 nếu thiếu/cũ, còn job hoặc smoke truy xuất không có kết quả.
+
+Các biến trong `.env.example`: `RAG_EMBED_MAX_RPM=60`, `RAG_QUESTION_MIN_SIMILARITY=0.75`, `RAG_KNOWLEDGE_MIN_SIMILARITY=0.70`, `RAG_EXPLAIN_DAILY_LIMIT=50`, `RAG_SIMILAR_PER_MISTAKE=10`, `RAG_MIN_MATCHES_PER_TEST=2`. Các ngưỡng dành cho caller cá nhân hóa ở giai đoạn tiếp theo; chatbot không áp thêm ngưỡng mới. Chưa tạo HNSW cho kho nhỏ này.
+
+Kiểm thử: `npm run test:rag`, `npm run test:chatbot`, `npm run test:rag:db`, `npm run test:chatbot:db`, `npm run typecheck`, `npm run build`. Test DB yêu cầu TEST_DATABASE_URL của database riêng kết thúc `_test`, tạo schema cách ly và dùng provider giả.
+
+Đánh giá: `npm run rag:baseline -- --embed` tạo query vectors thật có checkpoint local, sau đó so sánh keyword/vector/RRF trên 60 nhãn bài học AI rà soát. Chạy lại không `--embed` dùng cache, không gọi AI. Kết quả trong `test/fixtures/rag-r1-baseline-results.json` có coverage và trạng thái INCOMPLETE khi thiếu vectors, không lấy 0 thay cho metric chưa đo. Đây là baseline phát triển tìm bài học, không phải gold độc lập hoặc kiểm chứng audio/cặp câu tương tự; giữ nguyên loại trừ của `rag-gold.json`. Cache vectors không commit. Xem báo cáo `../docs/PERSONALIZATION_RAG_R1_REPORT.md`.
+
+Container development hiện không mount scripts/test: cần copy nội dung `backend/scripts/.`, `backend/test/.` và package.json vào `/app/scripts`, `/app/test`, `/app/package.json` trước khi chạy CLI mới. Không copy lồng thành `scripts/scripts`.
+
+### Cá nhân hóa R2: giải thích câu sai
+
+Migration `1760000025000-AddMistakeExplanations` thêm cache theo user/attempt/assessment revision/question/locale/prompt version, log thiếu học liệu và bộ đếm gọi sinh nội dung theo user/ngày UTC. Áp dụng migration trước khi bật `PERSONALIZATION_RAG_ENABLED=true`. Không cần cờ frontend riêng: payload `/me/mistakes` trả `ragEnabled`; backend cũng chặn endpoint nếu cờ tắt.
+
+`GET /me/mistakes/:attemptId/questions/:questionKey/explanation?locale=vi|en` chỉ cho STUDENT, bài của chính người gọi, SUBMITTED/OBJECTIVE và câu INCORRECT/SKIPPED. Nút **Vì sao sai?** tải khi mở, theo ngôn ngữ giao diện. Đề và đáp án không bị dịch. Nguồn chỉ lấy từ chunk LEARNER/READY/phiên bản hiện hành, không dùng URL do mô hình tự viết.
+
+Provider/model dùng `PERSONALIZATION_PROVIDER`/`PERSONALIZATION_MODEL`, mặc định dùng Gemini và `CHATBOT_MODEL`. Mỗi lần sinh (kể cả retry/lỗi) đặt trước một lượt trong `RAG_EXPLAIN_DAILY_LIMIT` (50 mặc định); thao tác atomic bảo vệ hạn mức giữa nhiều process. Cache vẫn đọc được khi hết lượt. Các lần mở đồng thời cùng khóa được gộp trong một process; giữa nhiều replica có thể có nhiều lượt sinh nhưng vẫn bị chặn bởi quota chung và unique cache.
+
+Không có bài học vượt ngưỡng: FALLBACK từ giải thích của đề và một dòng retrieval_gaps, không gọi sinh văn bản. Embedding truy vấn vẫn thuộc quá trình tìm kiếm. Lỗi provider/timeout hoặc hết hạn mức trả FALLBACK; lỗi validation được thử lại một lần. Mỗi request có deadline 60 giây, mỗi lượt sinh còn bị giới hạn bởi PERSONALIZATION_AI_TIMEOUT_MS. READY không hết hạn theo thời gian nhưng phải còn nguồn hợp lệ và cùng assessment_revision. FALLBACK đã lưu có TTL 15 phút; lỗi provider và hết quota không lưu cache. Không thay hoặc sửa đáp án của đề.
+
+Kiểm thử: `npm test -- --testPathPattern explanation`, `npm run test:explanation:db` với TEST_DATABASE_URL `_test`; frontend `npm run test:explanation:ui` kiểm tra desktop/mobile, lazy load, citation, fallback, thử lại, đổi locale và tắt cờ. Script `scripts/rag-explanation-eval.ts` mặc định chỉ đếm; `--apply` gọi AI thật trên 30 câu công khai R0 (Grammar/Reading), checkpoint ở `RAG_EVAL_OUTPUT_DIR` hoặc `test/fixtures`. Không dùng bài làm cá nhân; không tuyên bố xác minh audio Listening. Xem `../docs/PERSONALIZATION_RAG_R2_REPORT.md`.
+
+### R3 — Chọn đề theo lỗi gần đây
+
+Migration `1760000026000-AddPlanRetrievalTrace` thêm trace cho item và cột dự phòng R4. Bật `PERSONALIZATION_RAG_ENABLED` để dùng vector đã có khi tạo kế hoạch; không gọi API embedding. `RAG_SIMILAR_PER_MISTAKE=10`, `RAG_QUESTION_MIN_SIMILARITY=0.75`, `RAG_MIN_MATCHES_PER_TEST=2`. Thiếu vector dùng thứ tự Part yếu/used/seed cũ. Tắt flag giữ truy vấn TOPIC_REVIEW cũ. Plan đã lưu không tự được xếp lại.
+
+`matchCount` đếm câu sai nguồn khác nhau, score cộng similarity tốt nhất mỗi nguồn; không đồng nghĩa số câu trong đề. Trace lưu tối đa 5 IDs/khóa lỗi/tên chủ đề, API chỉ công khai tier/matchCount/matchedTopics. TOPIC_REVIEW bậc 2 đếm câu có nhãn để chọn đề nhưng không tuyên bố khớp lỗi bằng vector. Weekly prompt v6 bảo vệ lý do tương tự và số câu; snapshot vẫn v5.
+
+Kiểm thử `npm run test:rag:plan:db` với TEST_DATABASE_URL `_test`; frontend `npm run test:rag:plan:ui`. `npm run rag:plan:baseline` dùng câu công khai/vector hiện có, transaction giả lập rollback, không gọi AI; output theo RAG_BASELINE_OUTPUT_DIR hoặc test/fixtures. Nhãn R0 vẫn không đủ chuẩn gold độc lập; báo cả metric nhóm lỗi và từng câu. Xem `../docs/PERSONALIZATION_RAG_R3_REPORT.md` cho kết quả và giới hạn.
+
+### R4 — Xếp lại sau đánh giá đầu vào
+
+Dùng cột replanned_after_placement_at của migration R3, không có migration mới. Bật PERSONALIZATION_RAG_ENABLED và PERSONALIZATION_WORKER_ENABLED để worker quét tối đa 50 ứng viên mỗi lượt 60 giây. Mục tiêu phải ACTIVE, plan thuộc tuần hiện tại có item PLACEMENT, ba kỹ năng bắt buộc đã assessmentComplete, chưa từng xếp lại. Lập RULE bằng R3 và vector có sẵn, không gọi thêm AI.
+
+GET current/overview tiếp tục chỉ đọc: current trả needsPlacementReplan, overview gộp vào needsSync; Dashboard gọi POST sync rồi đọc lại. Worker và sync đều khóa user trước plan, giữ nguyên ngày quá khứ/có tiến độ, ghi marker cùng transaction, retry nếu đề vừa archive. Báo cáo START/cũ không được ghi đè kế hoạch sau R4. Không thêm phụ thuộc vòng từ afterLearning.
+
+Overview trả plan.replannedAfterPlacementAt; notice Việt/Anh lưu trạng thái đóng theo planId. Kiểm thử backend `npm run test:placement:replan:db` với TEST_DATABASE_URL `_test`, frontend `npm run test:placement:replan:ui`. Xem `../docs/PERSONALIZATION_RAG_R4_REPORT.md` cho kịch bản và giới hạn đo.
+
+## RAG R5: learner errors and cited reports
+
+Run `npm run db:migrate`, then enable `PERSONALIZATION_RAG_ENABLED=true` to index learner errors asynchronously. `npm run rag:status` includes aggregate error-index progress and historical missing-vector gaps. WEEKLY/MIDTERM/FINAL reports created with snapshot v6 carry lesson sources; existing READY reports remain unchanged.
+
+Verification: `npm run test:rag:errors:db` uses an isolated `_test` database; `npm run ai:personalization:smoke -- --live --rag` explicitly calls the configured AI provider with synthetic data. Frontend: `npm run test:rag:reports:ui`. See [R5 implementation and validation](../docs/PERSONALIZATION_RAG_R5_REPORT.md) for results, limitations and manual checks.
+
+## RAG R6: admin coverage and retrieval gaps
+
+ADMIN users can open `/admin/rag` (Học liệu AI) to inspect question-vector coverage, missing lessons/criterion guides, aggregate retrieval gaps and requeue published tests. Reindex preserves pending/running jobs and reuses valid vectors. No new migration. The personalization worker removes gaps older than 180 days in bounded batches.
+
+Backend checks: `npm run test:rag:admin:db` with an isolated `_test` database. Frontend: `npm run test:rag:admin:ui` and `npm run test:admin:responsive`. See [R6 report and manual testing](../docs/PERSONALIZATION_RAG_R6_REPORT.md).
+
+## RAG R7: evaluation
+
+`npm run rag:eval` evaluates stored vectors without provider calls and writes `docs/PERSONALIZATION_RAG_EVAL.md`, JSON metrics and a 40-item review pack. Missing or unreviewed labels remain explicit; the script does not invent negative labels or human scores. `--apply-thresholds` updates `.env.example` only when fully judged, reviewed results qualify. See [R7 setup and limitations](../docs/PERSONALIZATION_RAG_R7_REPORT.md) and [R0–R7 checks](../docs/PERSONALIZATION_RAG_R0_R7_CHECK.md). Test validation telemetry using `npm run test:rag:eval:db` with an isolated `_test` database.
+
 ## Redis cache và bộ đề bổ sung
 
 Xem [kế hoạch, cấu hình, kiểm thử và seed an toàn](../docs/REDIS_CACHE_AND_ADDITIONAL_SEED.md). Redis là cache tùy chọn; checkpoint AI và dữ liệu người dùng vẫn lưu PostgreSQL.

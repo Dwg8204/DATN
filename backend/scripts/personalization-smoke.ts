@@ -1,3 +1,4 @@
+import { AiRequestRecorder } from '../src/features/ai-shared/ai-request-recorder.service';
 import 'reflect-metadata';
 import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
@@ -12,6 +13,8 @@ if (!process.argv.includes('--live')) {
   console.log(
     'Use --live with TEST_DATABASE_URL ending in _test and configured PERSONALIZATION_PROVIDER/model/key to run one synthetic COMMENT request. Gemini additionally requires confirmed FREE configuration.',
   );
+} else if (process.argv.includes('--rag')) {
+  import('./rag-report-smoke').then(m=>m.ragReportSmoke()).catch(()=>{console.error('RAG smoke setup failed');process.exitCode=1;});
 } else {
   withPersonalizationDatabase(async (db, userId) => {
     const config = new ConfigService({
@@ -19,7 +22,7 @@ if (!process.argv.includes('--live')) {
       PERSONALIZATION_AI_ENABLED: 'true',
     });
     const { jsonGeneration } = createGeminiServices(config, db);
-    const ai = new PersonalizationAiService(config, jsonGeneration);
+    const ai = new PersonalizationAiService(config, jsonGeneration, new AiRequestRecorder(db));
     const snapshot = {
       snapshotVersion: 1,
       goal: {

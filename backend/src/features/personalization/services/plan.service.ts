@@ -1,4 +1,5 @@
 import { Injectable, Logger, Optional } from "@nestjs/common";
+import { ConfigService } from '@nestjs/config';
 import { TOPIC_COVERAGE_SQL } from "../../topics/topics.service";
 import { DataSource, EntityManager } from "typeorm";
 import { ApplicationError } from "../../../common/errors/application.error";
@@ -18,6 +19,9 @@ import { PlanCandidatesService } from "./plan-candidates.service";
 import { PersonalizationClock } from "./personalization-clock";
 import { MistakeSourceService } from "./mistake-source.service";
 import { ReportJobsService } from "./report-jobs.service";
+import { missingPlacement } from '../../ai-shared/placement';
+import { AbilityProfile } from '../../ai-shared/ability-profile';
+import { readAbilityProfile } from '../../ai-shared/ability-profile.repository';
 
 @Injectable()
 export class PlanService {
@@ -32,6 +36,7 @@ export class PlanService {
     private readonly clock: PersonalizationClock,
     private readonly mistakes: MistakeSourceService,
     @Optional() private readonly reports?: ReportJobsService,
+    @Optional() private readonly config?: ConfigService,
   ) {}
 
   /** One-time S1 repair; dry run does not lock, sync or write. */
@@ -83,7 +88,7 @@ export class PlanService {
           goal,
           { kind: "GOAL" },
           this.clock.now(),
-        manager,
+          manager,
         );
         const original = await this.plans.findItems(
           row.user_id,
@@ -149,21 +154,251 @@ export class PlanService {
     return { eligible: rows.length, updated };
   }
 
-  async current(actor: AuthUser) {
-    const [goal] = await this.db.query<LearningGoalRow[]>("SELECT *,start_date::text start_date FROM learning_goals WHERE user_id=$1 AND status='ACTIVE'",[actor.id]);
-    if (!goal) return {plan:null,today:null};
-    const today=localDay(this.clock.now(),goal.timezone);
-    if(today>=addDays(goal.start_date,goal.duration_days))return {plan:null,today};
-    const week=Math.floor((dayNumber(today)-dayNumber(goal.start_date))/7)+1;
-    const plan=await this.plans.findWeek(actor.id,goal.id,week);
-    return plan ? this.presentPlan(this.db.manager,actor,goal,plan,today) : {plan:null,today};
+  private get placementReplanEnabled() {
+    return (
+      String(this.config?.get("PERSONALIZATION_RAG_ENABLED", false)) === "true"
+    );
+  }
+
+  /** Read-only readiness check. Dashboard performs its existing POST sync when true. */
+  private async placementReplanNeeded(
+    manager: EntityManager,
+    goal: LearningGoalRow,
+    plan: StudyPlanRow,
+    profile?: AbilityProfile,
+  ) {
+    const today = localDay(this.clock.now(), goal.timezone);
+    if (
+      !this.placementReplanEnabled ||
+      !this.reports ||
+      goal.status !== "ACTIVE" ||
+      plan.user_id !== goal.user_id ||
+      plan.goal_id !== goal.id ||
+      plan.replanned_after_placement_at ||
+      plan.week_index !==
+        Math.floor((dayNumber(today) - dayNumber(goal.start_date)) / 7) + 1 ||
+      today < plan.starts_on ||
+      today > plan.ends_on ||
+      today >= addDays(goal.start_date, goal.duration_days)
+    )
+      return false;
+    const [placement] = await manager.query(
+      "SELECT 1 FROM study_plan_items WHERE plan_id=$1 AND reason='PLACEMENT' LIMIT 1",
+      [plan.id],
+    );
+    if (!placement) return false;
+    return (
+      missingPlacement(
+        profile ??
+          (await readAbilityProfile(manager, goal.user_id, this.clock.now())),
+      ).length === 0
+    );
+  }
+
+  /** Caller must own the user lock, always acquired before the plan row lock. */
+  async replanAfterPlacementLocked(
+    manager: EntityManager,
+    goal: LearningGoalRow,
+    plan: StudyPlanRow,
+  ) {
+    if (!this.placementReplanEnabled || !this.reports) return false;
+    if (!manager.queryRunner?.isTransactionActive)
+      throw new Error("PLAN_TRANSACTION_REQUIRED");
+    const [fresh] = await manager.query<StudyPlanRow[]>(
+      `SELECT *,starts_on::text starts_on,ends_on::text ends_on FROM study_plans
+       WHERE id=$1 AND user_id=$2 AND goal_id=$3 FOR UPDATE`,
+      [plan.id, goal.user_id, goal.id],
+    );
+    if (!fresh || !(await this.placementReplanNeeded(manager, goal, fresh)))
+      return false;
+    const now = this.clock.now(),
+      today = localDay(now, goal.timezone);
+    // Reconcile submitted work before deciding which entire days must stay frozen.
+    await this.progress.syncPlan(manager, goal, fresh, now);
+    const original = await this.plans.findItems(
+      goal.user_id,
+      fresh.id,
+      manager,
+    );
+    const frozenDays = new Set(
+      original
+        .filter(
+          (i) => i.scheduled_on < today || i.done_count > 0 || i.completed_at,
+        )
+        .map((i) => i.scheduled_on),
+    );
+    const openDays = Array.from(
+      { length: dayNumber(fresh.ends_on) - dayNumber(today) + 1 },
+      (_, i) => addDays(today, i),
+    ).filter((day) => !frozenDays.has(day));
+    const actor = { id: goal.user_id, role: "STUDENT" } as AuthUser;
+    const snapshot = await this.snapshots.build(
+      actor,
+      goal,
+      { kind: "GOAL" },
+      now,
+      manager,
+    );
+    const candidates = await this.candidates.build(
+      manager,
+      goal.user_id,
+      snapshot,
+      fresh.week_index,
+    );
+    const frozenTests = new Set(
+      original
+        .filter((i) => frozenDays.has(i.scheduled_on) && i.test_id)
+        .map((i) => i.test_id),
+    );
+    const preferred = candidates.filter(
+      (c) => c.activityType !== "TEST" || !frozenTests.has(c.testId),
+    );
+    const pool = preferred.some((c) => c.activityType === "TEST")
+      ? preferred
+      : candidates;
+    // Build only as many days as can change, then map them to actual dates so a frozen
+    // day does not consume the best candidate and drop it from the remaining week.
+    const items = openDays.length
+      ? buildRulePlan(
+          pool,
+          today,
+          addDays(today, openDays.length - 1),
+          snapshot.goal?.requiredPace ?? 1,
+          Math.max(0, goal.target_test_count - (snapshot.goal?.completed ?? 0)),
+        ).map((item) => ({
+          ...item,
+          scheduledOn: openDays[dayNumber(item.scheduledOn) - dayNumber(today)],
+        }))
+      : [];
+    if (openDays.length && !items.length) return false;
+    if (
+      !(await this.reports.replaceUntouched(
+        manager,
+        goal,
+        fresh,
+        null,
+        items,
+        today,
+      ))
+    )
+      return false;
+    // Preserve every stored value on frozen days, including manually reviewed items.
+    for (const item of original.filter((i) => frozenDays.has(i.scheduled_on)))
+      await manager.query(
+        "UPDATE study_plan_items SET done_count=$2,completed_at=$3 WHERE id=$1",
+        [item.id, item.done_count, item.completed_at],
+      );
+    await manager.query(
+      "UPDATE study_plans SET replanned_after_placement_at=$2 WHERE id=$1",
+      [fresh.id, now],
+    );
+    Object.assign(plan, fresh, {
+      source: "RULE",
+      insight_id: null,
+      replanned_after_placement_at: now,
+    });
+    return true;
+  }
+
+  async replanAfterPlacementBatch() {
+    if (!this.placementReplanEnabled || !this.reports) return 0;
+    const rows = await this.db.query<
+      Array<{ id: string; user_id: string; goal_id: string }>
+    >(
+      `
+      SELECT p.id,p.user_id,p.goal_id FROM study_plans p JOIN learning_goals g ON g.id=p.goal_id
+      JOIN users u ON u.id=p.user_id JOIN roles r ON r.id=u.role_id
+      WHERE g.status='ACTIVE' AND u.status='ACTIVE' AND u.deleted_at IS NULL AND r.code='STUDENT'
+        AND p.replanned_after_placement_at IS NULL
+        AND ($1::timestamptz AT TIME ZONE g.timezone)::date BETWEEN p.starts_on AND p.ends_on
+        AND ($1::timestamptz AT TIME ZONE g.timezone)::date < g.start_date+g.duration_days
+        AND EXISTS(SELECT 1 FROM study_plan_items i WHERE i.plan_id=p.id AND i.reason='PLACEMENT')
+        AND (SELECT count(DISTINCT a.component) FROM test_attempts a WHERE a.student_id=p.user_id
+          AND a.status='SUBMITTED' AND a.scope='FULL_SKILL' AND a.submitted_at<=$1 AND a.result->>'method'='OBJECTIVE'
+          AND a.component IN ('GRAMMAR_VOCAB','READING','LISTENING')
+          AND (a.estimated_cefr IN ('A1','A2','B1','B2','C','C1','C2') OR
+            (a.score IS NOT NULL AND a.max_score>0 AND a.score BETWEEN 0 AND a.max_score AND
+              (a.component='GRAMMAR_VOCAB' OR (a.component='READING' AND
+                (SELECT count(DISTINCT (part->>'partNumber')::int) FROM jsonb_array_elements(COALESCE(a.result->'parts','[]'::jsonb)) part
+                  WHERE (part->>'partNumber')::int BETWEEN 1 AND 4 AND (part->>'maxScore')::numeric>0)=4)))))=3
+      ORDER BY p.starts_on,p.id LIMIT 50`,
+      [this.clock.now()],
+    );
+    let updated = 0;
+    for (const row of rows) {
+      try {
+        await this.db.transaction(async (manager) => {
+          // User first, plan second: same order as sync/report/learning transactions.
+          const [user] = await manager.query(
+            "SELECT id FROM users WHERE id=$1 FOR UPDATE SKIP LOCKED",
+            [row.user_id],
+          );
+          if (!user) return;
+          await this.goals.lockUser(manager, row.user_id);
+          const [goal] = await manager.query<LearningGoalRow[]>(
+            "SELECT *,start_date::text start_date FROM learning_goals WHERE id=$1 AND user_id=$2 AND status='ACTIVE'",
+            [row.goal_id, row.user_id],
+          );
+          const [plan] = await manager.query<StudyPlanRow[]>(
+            "SELECT *,starts_on::text starts_on,ends_on::text ends_on FROM study_plans WHERE id=$1 FOR UPDATE SKIP LOCKED",
+            [row.id],
+          );
+          if (
+            goal &&
+            plan &&
+            (await this.replanAfterPlacementLocked(manager, goal, plan))
+          )
+            updated++;
+        });
+      } catch {
+        this.logger.warn("Placement replan deferred; continuing the batch.");
+      }
+    }
+    return updated;
+  }
+
+  async current(actor: AuthUser, profile?: AbilityProfile) {
+    const [goal] = await this.db.query<LearningGoalRow[]>(
+      "SELECT *,start_date::text start_date FROM learning_goals WHERE user_id=$1 AND status='ACTIVE'",
+      [actor.id],
+    );
+    if (!goal) return { plan: null, today: null, needsPlacementReplan: false };
+    const today = localDay(this.clock.now(), goal.timezone);
+    if (today >= addDays(goal.start_date, goal.duration_days))
+      return { plan: null, today, needsPlacementReplan: false };
+    const week =
+      Math.floor((dayNumber(today) - dayNumber(goal.start_date)) / 7) + 1;
+    const plan = await this.plans.findWeek(actor.id, goal.id, week);
+    return plan
+      ? {
+          ...(await this.presentPlan(
+            this.db.manager,
+            actor,
+            goal,
+            plan,
+            today,
+          )),
+          needsPlacementReplan: await this.placementReplanNeeded(
+            this.db.manager,
+            goal,
+            plan,
+            profile,
+          ),
+        }
+      : { plan: null, today, needsPlacementReplan: false };
   }
 
   async sync(actor: AuthUser) {
-    return this.db.transaction(async manager=>{
-      await this.goals.lockUser(manager,actor.id);
-      const active=await this.goals.reconcile(manager,actor.id,this.clock.now());
-      return active ? this.ensureLocked(manager,actor,active.goal) : {plan:null,today:null};
+    return this.db.transaction(async (manager) => {
+      await this.goals.lockUser(manager, actor.id);
+      const active = await this.goals.reconcile(
+        manager,
+        actor.id,
+        this.clock.now(),
+      );
+      return active
+        ? this.ensureLocked(manager, actor, active.goal)
+        : { plan: null, today: null };
     });
   }
 
@@ -235,10 +470,17 @@ export class PlanService {
       );
       await this.progress.syncPlan(manager, goal, plan, this.clock.now());
     }
-    return this.presentPlan(manager,actor,goal,plan,today);
+    await this.replanAfterPlacementLocked(manager, goal, plan);
+    return this.presentPlan(manager, actor, goal, plan, today);
   }
 
-  private async presentPlan(manager: EntityManager,actor: AuthUser,goal: LearningGoalRow,plan: StudyPlanRow,today: string) {
+  private async presentPlan(
+    manager: EntityManager,
+    actor: AuthUser,
+    goal: LearningGoalRow,
+    plan: StudyPlanRow,
+    today: string,
+  ) {
     const items = await this.plans.findItems(actor.id, plan.id, manager);
     const tests = await manager.query<
       Array<{ id: string; title: string; purpose: string; available: boolean }>
@@ -247,24 +489,28 @@ export class PlanService {
       FROM tests WHERE id=ANY($1::uuid[])`,
       [items.flatMap((item) => (item.test_id ? [item.test_id] : []))],
     );
-    const eligibleTopics = items.some(item => item.activity_type === "TOPIC_REVIEW") ? await manager.query<
-      Array<{ id: string; name: string; test_id: string }>
-    >(
-      `WITH catalog AS MATERIALIZED (SELECT * FROM topic_question_catalog), coverage AS (${TOPIC_COVERAGE_SQL.replaceAll('topic_question_catalog', 'catalog')})
+    const eligibleTopics = items.some(
+      (item) => item.activity_type === "TOPIC_REVIEW",
+    )
+      ? await manager.query<
+          Array<{ id: string; name: string; test_id: string }>
+        >(
+          `WITH catalog AS MATERIALIZED (SELECT * FROM topic_question_catalog), coverage AS (${TOPIC_COVERAGE_SQL.replaceAll("topic_question_catalog", "catalog")})
       SELECT DISTINCT p.id,p.name,t.id test_id FROM learning_topics p JOIN coverage c ON c.component=p.component
       JOIN question_topics l ON l.topic_id=p.id AND l.status='APPROVED'
       JOIN catalog q ON q.id=l.question_id AND q.question_hash=l.question_hash
       JOIN tests t ON t.id=q.test_id AND t.status='PUBLISHED' AND t.archived_at IS NULL
       JOIN topic_snapshot_questions sq ON sq.snapshot_id=t.published_snapshot_id AND sq.question_id=q.id AND sq.question_hash=q.question_hash
       WHERE p.is_active AND c.total>0 AND c.approved::numeric/c.total>=0.8 AND t.id=ANY($1::uuid[])`,
-      [
-        items.flatMap((item) =>
-          item.activity_type === "TOPIC_REVIEW" && item.test_id
-            ? [item.test_id]
-            : [],
-        ),
-      ],
-    ) : [];
+          [
+            items.flatMap((item) =>
+              item.activity_type === "TOPIC_REVIEW" && item.test_id
+                ? [item.test_id]
+                : [],
+            ),
+          ],
+        )
+      : [];
     return {
       today,
       timezone: goal.timezone,
@@ -275,6 +521,7 @@ export class PlanService {
         startsOn: plan.starts_on,
         endsOn: plan.ends_on,
         source: plan.source,
+        replannedAfterPlacementAt: plan.replanned_after_placement_at ?? null,
         items: items.map((item) => {
           const test = tests.find((test) => test.id === item.test_id);
           return {
@@ -285,6 +532,13 @@ export class PlanService {
             partNumber: item.part_number,
             testId: item.test_id,
             title: test?.title ?? null,
+            retrieval: item.retrieval
+              ? {
+                  tier: item.retrieval.tier,
+                  matchCount: item.retrieval.matchCount,
+                  matchedTopics: item.retrieval.matchedTopics,
+                }
+              : null,
             purpose: test?.purpose ?? null,
             available:
               (!["TEST", "TOPIC_REVIEW"].includes(item.activity_type) ||
@@ -380,6 +634,9 @@ export class PlanService {
     return {
       itemId,
       attemptId: item.source_attempt_id,
+      ragEnabled:
+        String(this.config?.get("PERSONALIZATION_RAG_ENABLED", false)) ===
+        "true",
       purpose: attempt.purpose,
       component: item.component,
       done: item.completed_at !== null,

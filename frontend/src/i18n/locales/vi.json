@@ -1,9 +1,86 @@
 {
+  "ragAdmin": {
+    "group": "Nhóm thiếu hụt",
+    "events": "Số lần",
+    "learners": "Người học",
+    "samples": "Câu nguồn mẫu",
+    "title": "Học liệu AI",
+    "coverage": "Độ phủ",
+    "gaps": "Thiếu hụt",
+    "actions": "Thao tác",
+    "all": "Tất cả kỹ năng",
+    "error": "Không thể tải hoặc cập nhật dữ liệu. Kiểm tra bộ lọc và thử lại.",
+    "reload": "Tải lại",
+    "disabled": "Lập chỉ mục RAG đang tắt. Cần bật trên máy chủ để xử lý job.",
+    "noQuestions": "Chưa có câu hỏi đã xuất bản",
+    "missingTopics": "Chủ đề thiếu bài học khả dụng",
+    "missingCriteria": "Tiêu chí thiếu hướng dẫn khả dụng",
+    "none": "Không có kết quả",
+    "skill": "Kỹ năng",
+    "feature": "Tính năng",
+    "from": "Từ ngày",
+    "to": "Đến ngày",
+    "utc": "Khoảng ngày tính theo UTC, bao gồm hết ngày kết thúc. Sự kiện có nhiều chủ đề có thể thuộc nhiều nhóm.",
+    "part": "Part {{n}}",
+    "unknownTopic": "Chưa rõ chủ đề",
+    "counts": "{{count}} lần · {{learners}} người học khác nhau",
+    "similarity": "Độ tương đồng cao nhất trung bình",
+    "reembedHelp": "Xếp lại hàng đợi các đề đã xuất bản. Dùng lại vector còn hợp lệ, tạo lại vector thiếu hoặc cũ. Giữ nguyên job đang chờ và đang chạy.",
+    "reembed": "Lập chỉ mục lại",
+    "queued": "Đã xếp hàng {{count}} đề",
+    "jobs": "{{completed}} hoàn thành · {{pending}} đang chờ · {{failed}} lỗi",
+    "poll": "Tiến độ cập nhật mỗi 10 giây.",
+    "confirm": "Lập chỉ mục lại câu hỏi cho {{scope}}? Thao tác có thể dùng hạn mức embedding cho vector thiếu hoặc cũ.",
+    "confirmButton": "Xác nhận",
+    "cancel": "Hủy",
+    "criteria": {
+      "TASK": "Đáp ứng yêu cầu",
+      "GRAMMAR": "Ngữ pháp",
+      "VOCABULARY": "Từ vựng",
+      "COHERENCE": "Mạch lạc",
+      "REGISTER": "Văn phong",
+      "MECHANICS": "Chính tả và dấu câu",
+      "grammarVocabulary": "Ngữ pháp và từ vựng",
+      "pronunciation": "Phát âm",
+      "fluency": "Độ trôi chảy",
+      "taskFulfillment": "Đáp ứng yêu cầu"
+    }
+  },
   "adminDashboardLabels": { "grammarVocab": "Ng\u1eef ph\u00e1p & T\u1eeb v\u1ef1ng" },
   "passwordPolicy": {
     "logoutConfirmation": "B\u1ea1n c\u00f3 ch\u1eafc ch\u1eafn mu\u1ed1n \u0111\u0103ng xu\u1ea5t kh\u1ecfi t\u00e0i kho\u1ea3n?",
     "moreInfo": "Th\u00f4ng tin th\u00eam","requirements": "Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa (A-Z), chữ thường (a-z), số và ký tự đặc biệt.", "nameLimit": "Họ và tên mỗi trường không được vượt quá 100 ký tự."},
   "personalization": {
+    "grounding": {
+      "coverage": "Các nhóm dưới đây chỉ gồm lỗi đã phân tích và tìm được bài học phù hợp.",
+      "patterns": "Nhóm lỗi trong kỳ",
+      "count": "{{count}} lỗi",
+      "prior": "Đã gặp {{count}} lần trước đó",
+      "lesson": "Bài học",
+      "lessonChip": "Bài học: {{title}}",
+      "testChip": "Đề gợi ý: {{title}}",
+      "unavailable": "Bài học hiện không khả dụng"
+    },
+    "placementReplan": {
+      "message": "Lộ trình tuần này đã được điều chỉnh theo kết quả đánh giá đầu vào.",
+      "dismiss": "Đóng thông báo",
+      "help": "Hoàn thành 3 bài đánh giá để lộ trình được điều chỉnh ngay. Writing và Speaking là tùy chọn."
+    },
+    "retrieval": {
+      "matches": "Khớp {{count}} câu với lỗi gần đây",
+      "topic": "Chủ đề cần ôn: {{topics}}"
+    },
+    "explain": {
+      "open": "Vì sao sai?",
+      "error": "Chưa tải được giải thích.",
+      "retry": "Thử lại",
+      "rule": "Quy tắc",
+      "tip": "Mẹo luyện tập",
+      "sources": "Nguồn tham khảo",
+      "fallback": "Chưa có bài học chi tiết cho dạng này.",
+      "limit": "Bạn đã dùng hết lượt giải thích hôm nay. Các giải thích đã lưu vẫn xem được.",
+      "unavailable": "Giải thích chi tiết tạm thời chưa sẵn sàng."
+    },
     "refreshFailed": "Chưa cập nhật được dữ liệu học tập. Dữ liệu đang hiển thị có thể chưa mới nhất. Vui lòng thử lại.",
     "retryLoad": "Thử lại",
     "placement": {

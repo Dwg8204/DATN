@@ -53,7 +53,13 @@ export class PersonalizationWorker implements OnModuleInit, OnModuleDestroy {
         });
   }
 
+  async pruneRetrievalGaps() {
+    await this.db.query(`WITH expired AS (SELECT id FROM retrieval_gaps WHERE created_at<$1::timestamptz-interval '180 days' ORDER BY created_at LIMIT 1000 FOR UPDATE SKIP LOCKED)
+      DELETE FROM retrieval_gaps g USING expired WHERE g.id=expired.id`,[this.clock.now()]);
+  }
   async runBatch(): Promise<void> {
+    await this.pruneRetrievalGaps();
+    await this.plans.replanAfterPlacementBatch();
     const users = await this.db.query<
       Array<{ user_id: string; updated_at: string }>
     >(

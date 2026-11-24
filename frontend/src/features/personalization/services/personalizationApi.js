@@ -3,6 +3,8 @@ import api from '../../../services/api';
 const options = { notifyOnError: false };
 const data = response => response.data;
 export const personalizationApi = {
+  knowledgeChunk: id => api.get(`/me/knowledge/chunks/${encodeURIComponent(id)}`, options).then(data),
+  getMistakeExplanation: (attemptId, questionKey, locale) => api.get(`/me/mistakes/${encodeURIComponent(attemptId)}/questions/${encodeURIComponent(questionKey)}/explanation`, { ...options, timeout: 70000, params: { locale } }).then(data),
   overview: () => api.get('/me/personalization/overview', options).then(data),
   sync: () => api.post('/me/personalization/sync', {}, options).then(data),
   ability: () => api.get('/me/ability-profile', options).then(data),

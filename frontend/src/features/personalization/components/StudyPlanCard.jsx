@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { practiceAttemptsApi } from '../../test-attempts/services/practiceAttemptsApi';
 import styles from './Personalization.module.css';
+import PlacementReplanNotice from './PlacementReplanNotice';
 
 const routes = {
   GRAMMAR_VOCAB: 'grammar-vocab',
@@ -19,6 +20,7 @@ const ruleReasons = new Set([
   'BAND_PRACTICE',
   'RECENT_MISTAKES',
   'WEAK_TOPIC',
+  'SIMILAR_QUESTIONS',
 ]);
 export default function StudyPlanCard({ data, loadError = false }) {
   const { t } = useTranslation();
@@ -69,6 +71,17 @@ export default function StudyPlanCard({ data, loadError = false }) {
               count: item.questionCount ?? item.targetCount,
             })}
       </span>
+      {item.retrieval?.tier === 1 && item.retrieval.matchCount > 0 && (
+        <span className={styles.muted} data-testid="retrieval-match">
+          {t('personalization.retrieval.matches', { count: item.retrieval.matchCount })}
+          {item.retrieval.matchedTopics?.length > 0 && ` · ${item.retrieval.matchedTopics.join(', ')}`}
+        </span>
+      )}
+      {item.retrieval?.tier === 2 && item.retrieval.matchedTopics?.length > 0 && (
+        <span className={styles.muted} data-testid="retrieval-topic">
+          {t('personalization.retrieval.topic', { topics: item.retrieval.matchedTopics.join(', ') })}
+        </span>
+      )}
       {item.reason === 'PLACEMENT' && (
         <span className={styles.muted}>
           {t('personalization.placement.title')}
@@ -101,6 +114,9 @@ export default function StudyPlanCard({ data, loadError = false }) {
   return (
     <section className={styles.card}>
       <h2>{t('personalization.today')}</h2>
+      {data?.plan?.id && data.plan.replannedAfterPlacementAt && (
+        <PlacementReplanNotice key={data.plan.id} planId={data.plan.id} />
+      )}
       {(error || loadError) && (
         <p role="alert" className={styles.error}>
           {t('personalization.planFailed')}

@@ -84,6 +84,7 @@ FAQ chính thức của ứng dụng (không phải kỳ thi):\n`+readFileSync(r
     try {
       const initial=turn.session.context_attempt_id?await this.context.review(actor,turn.session.context_attempt_id,turn.session.context_question_key??undefined):null;
       const report=turn.session.context_insight_id?await this.context.insight(actor,turn.session.context_insight_id):null;
+      if(report?.sources)sources.push(...report.sources);
       if(initial)reviews.set(initial.attemptId,initial);
       const history=await this.repo.history(turn.session.id,turn.reply.sequence);
       // A conservative character budget protects multilingual inputs; never claims an exact token count.

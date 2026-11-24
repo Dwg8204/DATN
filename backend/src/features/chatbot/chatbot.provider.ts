@@ -1,5 +1,7 @@
-import { RedisCacheService } from '../../common/cache/redis-cache.service';
 import { Injectable, Optional } from '@nestjs/common';
+import { EmbeddingService, normalizeEmbedding } from '../retrieval/embedding.service';
+import { RedisCacheService } from '../../common/cache/redis-cache.service';
+
 import { ConfigService } from '@nestjs/config';
 import { AiProviderError } from '../ai-shared/ai-provider.error';
 import { GeminiClient } from '../ai-shared/gemini-client.service';
@@ -34,7 +36,9 @@ export class ChatbotProvider {
     private readonly config: ConfigService,
     private readonly client: GeminiClient,
     private readonly generation: GeminiGenerationService,
+    @Optional() private readonly embeddings?: EmbeddingService,
     @Optional() private readonly cache?: RedisCacheService,
+
   ) {}
 
   get model() {
@@ -101,25 +105,17 @@ export class ChatbotProvider {
   async embed(text: string, query: boolean, signal: AbortSignal) {
     this.assertReady();
     signal.throwIfAborted();
-    const load = async () => {
-      const result = await this.request(
-        'gemini-embedding-001',
-        'embedContent',
-        {
-          model: 'models/gemini-embedding-001',
-          content: { parts: [{ text }] },
-          taskType: query ? 'RETRIEVAL_QUERY' : 'RETRIEVAL_DOCUMENT',
-          outputDimensionality: 768,
-        },
-        signal,
-      );
-      return normalizeVector(result.embedding?.values);
-    };
-    return this.cache ? this.cache.getOrLoad('embedding:gemini-embedding-001:768:v1',
-      JSON.stringify([query, text]), 86400, load, false,
-      (value): value is number[] => Array.isArray(value) && value.length === 768
-        && value.every(v => typeof v === 'number' && Number.isFinite(v))
-        && Math.abs(Math.sqrt(value.reduce((sum, v) => sum + v * v, 0)) - 1) < 0.001) : load();
+    const load = () => (this.embeddings ?? new EmbeddingService(this.client)).embed(text, query, signal);
+    try {
+      return await (this.cache ? this.cache.getOrLoad('embedding:gemini-embedding-001:768:v1',
+        JSON.stringify([query, text]), 86400, load, false,
+        (value): value is number[] => Array.isArray(value) && value.length === 768
+          && value.every(v => typeof v === 'number' && Number.isFinite(v))
+          && Math.abs(Math.hypot(...value) - 1) < 0.001) : load());
+    } catch (error) {
+      throw toChatError(error);
+    }
+
   }
 }
 
@@ -130,13 +126,5 @@ function toChatError(error: unknown) {
 }
 
 export function normalizeVector(values: unknown): number[] {
-  if (
-    !Array.isArray(values) ||
-    values.length !== 768 ||
-    values.some((v) => typeof v !== 'number' || !Number.isFinite(v))
-  )
-    throw chatError('CHAT_EMBEDDING_INVALID', 502);
-  const norm = Math.sqrt(values.reduce((s, v) => s + v * v, 0));
-  if (!norm) throw chatError('CHAT_EMBEDDING_INVALID', 502);
-  return values.map((v) => v / norm);
+  try{return normalizeEmbedding(values);}catch{throw chatError('CHAT_EMBEDDING_INVALID',502);}
 }

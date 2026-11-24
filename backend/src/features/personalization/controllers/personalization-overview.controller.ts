@@ -48,7 +48,7 @@ export class PersonalizationOverviewController {
       commentNeedsSync,
     ] = await Promise.all([
       abilityRequest.then((profile) => this.snapshots.current(actor, profile)),
-      this.plans.current(actor),
+      abilityRequest.then(profile => this.plans.current(actor, profile)),
       this.comments.current(actor),
       this.reports.list(actor.id, undefined),
       abilityRequest,
@@ -83,7 +83,7 @@ export class PersonalizationOverviewController {
         !!(
           current.goal &&
           (current.goal.effectiveStatus === "ENDING" || !schedule.plan)
-        ) || commentNeedsSync,
+        ) || schedule.needsPlacementReplan || commentNeedsSync,
     };
   }
 

@@ -10,6 +10,7 @@ import { mistakeSections } from '../services/mistakePresentation';
 import layout from '../../profile/pages/ProfilePage.module.css';
 import styles from './Personalization.module.css';
 import { useToast } from '../../../context/ToastContext';
+import MistakeExplanation from './MistakeExplanation';
 
 export default function MistakeReviewPage() {
   const { t } = useTranslation();
@@ -122,6 +123,8 @@ export default function MistakeReviewPage() {
                         <button onClick={() => ask(row.key)}>
                           {t('personalization.ask')}
                         </button>
+                        {current.ragEnabled && ['INCORRECT', 'SKIPPED'].includes(row.outcome.outcome?.outcome) &&
+                          <MistakeExplanation attemptId={current.attemptId} questionKey={row.key} />}
                       </article>
                     ))}
                   </section>

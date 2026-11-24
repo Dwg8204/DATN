@@ -1,0 +1,253 @@
+{
+  "capturedAt": "2026-11-10",
+  "topics": [
+    {
+      "code": "adjectives-adverbs",
+      "name": "Adjectives, adverbs and comparison",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "articles",
+      "name": "Articles and determiners",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "causative",
+      "name": "Causative have and get",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "collocations",
+      "name": "Collocations",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "conditionals",
+      "name": "Conditionals",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "conjunctions",
+      "name": "Conjunctions and linking clauses",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "future-forms",
+      "name": "Future forms",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "indirect-questions",
+      "name": "Indirect questions and noun clauses",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "inversion",
+      "name": "Inversion",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "listening-detail",
+      "name": "Listening for detail",
+      "component": "LISTENING"
+    },
+    {
+      "code": "listening-inference",
+      "name": "Listening inference",
+      "component": "LISTENING"
+    },
+    {
+      "code": "listening-main-idea",
+      "name": "Listening for main ideas",
+      "component": "LISTENING"
+    },
+    {
+      "code": "listening-matching",
+      "name": "Matching speakers",
+      "component": "LISTENING"
+    },
+    {
+      "code": "listening-opinion",
+      "name": "Speaker opinions",
+      "component": "LISTENING"
+    },
+    {
+      "code": "modals",
+      "name": "Modal verbs",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "participle-clauses",
+      "name": "Participle clauses",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "passive-voice",
+      "name": "Passive voice",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "past-continuous",
+      "name": "Past continuous",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "past-perfect",
+      "name": "Past perfect simple and continuous",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "past-simple",
+      "name": "Past simple",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "prepositions",
+      "name": "Prepositions",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "present-continuous",
+      "name": "Present continuous",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "present-perfect",
+      "name": "Present perfect",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "present-simple",
+      "name": "Present simple",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "pronouns",
+      "name": "Pronouns",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "question-tags",
+      "name": "Question tags",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "reading-cohesion",
+      "name": "Text cohesion and sequencing",
+      "component": "READING"
+    },
+    {
+      "code": "reading-detail",
+      "name": "Reading for detail",
+      "component": "READING"
+    },
+    {
+      "code": "reading-inference",
+      "name": "Reading inference",
+      "component": "READING"
+    },
+    {
+      "code": "reading-main-idea",
+      "name": "Identifying main ideas",
+      "component": "READING"
+    },
+    {
+      "code": "reading-opinion",
+      "name": "Matching opinions",
+      "component": "READING"
+    },
+    {
+      "code": "relative-clauses",
+      "name": "Relative clauses",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "speaking-fluency",
+      "name": "Fluency and coherence",
+      "component": "SPEAKING"
+    },
+    {
+      "code": "speaking-grammar",
+      "name": "Grammar range and accuracy",
+      "component": "SPEAKING"
+    },
+    {
+      "code": "speaking-pronunciation",
+      "name": "Pronunciation",
+      "component": "SPEAKING"
+    },
+    {
+      "code": "speaking-vocabulary",
+      "name": "Vocabulary range and accuracy",
+      "component": "SPEAKING"
+    },
+    {
+      "code": "subject-verb-agreement",
+      "name": "Subject–verb agreement",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "subjunctive",
+      "name": "Subjunctive",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "unreal-past",
+      "name": "Unreal past: wish and would rather",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "verb-patterns",
+      "name": "Verb patterns: gerunds and infinitives",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "word-meaning",
+      "name": "Word meaning and synonyms",
+      "component": "GRAMMAR_VOCAB"
+    },
+    {
+      "code": "writing-cohesion",
+      "name": "Coherence and cohesion",
+      "component": "WRITING"
+    },
+    {
+      "code": "writing-grammar",
+      "name": "Grammar range and accuracy",
+      "component": "WRITING"
+    },
+    {
+      "code": "writing-task",
+      "name": "Task fulfilment",
+      "component": "WRITING"
+    },
+    {
+      "code": "writing-vocabulary",
+      "name": "Vocabulary range and accuracy",
+      "component": "WRITING"
+    }
+  ],
+  "publishedObjectiveQuestions": 1987,
+  "questionTypes": [
+    "GRAMMAR_MULTIPLE_CHOICE",
+    "MATCHING_LISTENING_P2",
+    "MCQ_LISTENING_P1",
+    "MCQ_LISTENING_P4",
+    "OPINION_LISTENING_P3",
+    "READING_GAP_CHOICE",
+    "READING_HEADING_MATCH",
+    "READING_OPINION_MATCH",
+    "READING_ORDER",
+    "VOCABULARY_MATCHING"
+  ],
+  "listening": {
+    "total": 450,
+    "withTranscriptField": 0
+  },
+  "corpus": {
+    "lessons": 45,
+    "strategies": 18,
+    "criteria": 10
+  },
+  "samples": 60
+}

@@ -1,6 +1,7 @@
+import { ErrorPatternsService } from './error-patterns.service';
 import { AbilityProfile } from "../../ai-shared/ability-profile";
 import { readAbilityProfile } from "../../ai-shared/ability-profile.repository";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Optional } from "@nestjs/common";
 import { readWeakTopics } from "../../topics/topic-evidence";
 import { DataSource, EntityManager } from "typeorm";
 import { AuthUser } from "../../auth/types/auth-user.type";
@@ -24,6 +25,7 @@ export class SnapshotService {
     private readonly repository: LearningGoalsRepository,
     private readonly mistakes: MistakeSourceService,
     private readonly clock: PersonalizationClock,
+    @Optional() private readonly errorPatterns?: ErrorPatternsService,
   ) {}
 
   async current(actor: AuthUser, overviewProfile?: AbilityProfile) {
@@ -147,6 +149,9 @@ export class SnapshotService {
       },
       timezone,
     );
-    return { ...snapshot, inputHash: snapshotHash(snapshot) };
+    const patterns = this.errorPatterns?.enabled && ['WEEKLY','MIDTERM','FINAL'].includes(window.kind)
+      ? { errorPatterns: await this.errorPatterns.forPeriod(manager, actor.id, bounds.start, end) } : {};
+    const enriched = { ...snapshot, ...patterns };
+    return { ...enriched, inputHash: snapshotHash(enriched) };
   }
 }

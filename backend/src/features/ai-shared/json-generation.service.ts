@@ -13,7 +13,7 @@ export interface JsonGenerationInput {
   temperature: number;
   maxOutputTokens: number;
   context: {
-    userId: string;
+    userId: string | null;
     purpose: string;
     promptVersion: string;
     errorCodePrefix?: string;

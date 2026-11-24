@@ -64,7 +64,17 @@ export interface LearningInsightRow {
   updated_at: Date;
 }
 
+export interface PlanRetrieval {
+  tier: 1 | 2 | 3 | 4;
+  matchCount: number;
+  score?: number;
+  matchedQuestionIds?: string[];
+  sourceMistakeKeys?: string[];
+  matchedTopics: string[];
+}
+
 export interface StudyPlanRow {
+  replanned_after_placement_at?: Date | null;
   id: string;
   goal_id: string;
   user_id: string;
@@ -92,6 +102,7 @@ export interface StudyPlanItemRow {
   done_count: number;
   completed_at: Date | null;
   reason: string | null;
+  retrieval?: PlanRetrieval | null;
 }
 
 export interface LearningTopicRow {
@@ -165,6 +176,7 @@ export type CreatePlanItemInput = {
   sortOrder: number;
   targetCount: number;
   reason?: string;
+  retrieval?: PlanRetrieval;
 } & (
   | {
       activityType: 'TEST';
