@@ -1,3 +1,4 @@
+import useLogoutConfirmation from '../../../components/common/useLogoutConfirmation';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,8 +10,9 @@ import { useTranslation } from 'react-i18next';
 
 export default function ProfileSidebar({ activeTab }) {
   const ui = useUiTranslation();
+  const { requestLogout, logoutDialog } = useLogoutConfirmation();
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const dashboardPath = canAccessAdminPath(user?.role) ? '/admin/dashboard' : '/profile/dashboard';
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,14 +31,7 @@ export default function ProfileSidebar({ activeTab }) {
     };
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/', { replace: true });
-    } catch {
-      // The shared API error toast explains why the session could not be closed.
-    }
-  };
+
 
   return (
     <div className={styles.sidebar}>
@@ -91,7 +86,7 @@ export default function ProfileSidebar({ activeTab }) {
 
             <button className={styles.dropdownItem} onClick={() => { navigate('/profile/mistakes'); setIsMobileMenuOpen(false); }}><History size={16} style={{ marginRight: '8px' }} />{t('personalization.mistakesTitle')}</button>
             <button className={`${styles.dropdownItem} ${activeTab === 'reports' ? styles.active : ''}`} onClick={() => { navigate('/profile/reports'); setIsMobileMenuOpen(false); }}><History size={16} style={{ marginRight: '8px' }} />{t('personalization.reportsTitle')}</button>
-            <button className={styles.dropdownItem} onClick={handleLogout}>
+            <button className={styles.dropdownItem} onClick={requestLogout}>
               <LogOut size={16} style={{ marginRight: '8px' }} />
               {t('profile.logout')}
             </button>
@@ -154,12 +149,13 @@ export default function ProfileSidebar({ activeTab }) {
           <span className={styles.navText}>{t('profile.history')}</span>
         </button>
 
-        <button className={styles.navItem} onClick={handleLogout} title={t('profile.logout')}>
+        <button className={styles.navItem} onClick={requestLogout} title={t('profile.logout')}>
           <LogOut size={20} className={styles.navIcon} />
           <span className={styles.navText}>{t('profile.logout')}</span>
         </button>
       </div>
 
+    {logoutDialog}
     </div>
   );
 }

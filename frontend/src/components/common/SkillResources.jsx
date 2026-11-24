@@ -13,13 +13,13 @@ const sources = {
 export function SkillSource({ skill }) {
   const { t } = useTranslation();
   const [path, name] = sources[skill];
-  return <p className={styles.source}>{t('skillResources.source')}: <a href={base + path} target="_blank" rel="noopener noreferrer">British Council – Aptis {name}</a></p>;
+  return <p className={styles.source}>{t('skillResources.source')}: <a href={base + path} target="_blank" rel="noopener noreferrer">British Council â€“ Aptis {name}</a></p>;
 }
 
-export default function SkillResources({ skill }) {
+export default function SkillResources({ skill, items }) {
   const { t } = useTranslation();
   const [path, name] = sources[skill];
-  const resources = [
+  const resources = items ?? [
     { key: 'format', href: base + path },
     { key: 'practice', href: 'https://www.britishcouncil.vn/sites/default/files/aptis_esol_general_practice_tests.pdf' },
     { key: 'guide', href: base + '/sites/default/files/aptis_candidate_guide_2020_a4_final.pdf' },
@@ -35,7 +35,7 @@ export default function SkillResources({ skill }) {
       <div className={styles.cards}>{resources.map(item => <a className={styles.card} key={item.key} href={item.href} target="_blank" rel="noopener noreferrer">
         <span className={styles.publisher}>British Council</span>
         <strong>{t(`skillResources.${item.key}`, { skill: name })}</strong>
-        <span className={styles.open}>{t('skillResources.open')} <span aria-hidden="true">↗</span></span>
+        <span className={styles.open}>{t('skillResources.open')} <span aria-hidden="true">â†—</span></span>
       </a>)}</div>
     </section>
   </>;

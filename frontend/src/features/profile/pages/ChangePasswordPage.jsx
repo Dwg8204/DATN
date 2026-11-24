@@ -1,3 +1,4 @@
+import InfoTooltip from '../../../components/common/InfoTooltip';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import React, { useState } from 'react';
 import ProfileSidebar from '../components/ProfileSidebar';
@@ -34,7 +35,7 @@ export default function ChangePasswordPage() {
 
     const passwordError = validatePassword(newPassword, confirmPassword);
     if (passwordError) {
-      showError(passwordError);
+      showError(ui(passwordError));
       return;
     }
 
@@ -76,28 +77,34 @@ export default function ChangePasswordPage() {
 
           <form className={styles.form} onSubmit={handleFormSubmit} noValidate>
             <div className={styles.inputCol}>
-              <label className={styles.label}>{ui("Current password")}</label>
+              <label htmlFor="change-current" className={styles.label}>{ui("Current password")} <span className={styles.requiredMark} aria-hidden="true">*</span></label>
               <PasswordInput
                 className={styles.input}
-                value={currentPassword}
+                id="change-current"
+                  required
+                  value={currentPassword}
                 onChange={e => setCurrentPassword(e.target.value)}
               />
             </div>
 
             <div className={styles.inputCol}>
-              <label className={styles.label}>{ui("New Password")}</label>
+              <label htmlFor="change-new" className={styles.label}>{ui("New Password")} <span className={styles.requiredMark} aria-hidden="true">*</span> <InfoTooltip label={ui("More information")} text={ui("Password must contain at least 8 characters, an uppercase letter (A-Z), a lowercase letter (a-z), a number and a special character.")} /></label>
               <PasswordInput
                 className={styles.input}
-                value={newPassword}
+                id="change-new"
+                  required
+                  value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
               />
             </div>
 
             <div className={styles.inputCol}>
-              <label className={styles.label}>{ui("Confirm New Password")}</label>
+              <label htmlFor="change-confirm" className={styles.label}>{ui("Confirm New Password")} <span className={styles.requiredMark} aria-hidden="true">*</span></label>
               <PasswordInput
                 className={styles.input}
-                value={confirmPassword}
+                id="change-confirm"
+                  required
+                  value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
               />
             </div>

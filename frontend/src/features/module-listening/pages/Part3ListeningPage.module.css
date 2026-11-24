@@ -443,3 +443,6 @@
 :global([data-theme="dark"]) .speedControl {
   border: 1px solid var(--text-primary);
 }
+
+.matchItem { align-items:flex-start; }
+.statementText { padding-top:10px; }

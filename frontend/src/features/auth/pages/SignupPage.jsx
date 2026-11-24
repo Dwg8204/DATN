@@ -1,3 +1,4 @@
+import InfoTooltip from '../../../components/common/InfoTooltip';
 import { useUiTranslation } from "../../../i18n/useUiTranslation.jsx";
 import { validatePassword } from '../utils/passwordValidation';
 import React, { useState } from 'react';
@@ -29,10 +30,11 @@ export default function SignupPage() {
 
     const validationError = (!firstName.trim() && 'Please enter your first name.')
       || (!lastName.trim() && 'Please enter your last name.')
+      || (([...firstName.trim()].length > 100 || [...lastName.trim()].length > 100) && 'First name and last name must each be at most 100 characters.')
       || validateEmail(email)
       || validatePassword(password, confirmPassword);
     if (validationError) {
-      showError(validationError);
+      showError(ui(validationError));
       return;
     }
 
@@ -56,49 +58,62 @@ export default function SignupPage() {
           <div className={styles.signupFormGroup}>
             <div className={styles.inputRow}>
               <div className={styles.inputColMargin}>
-                <span className={styles.label}>{ui("First name")}</span>
+                <label htmlFor="signup-first-name" className={styles.label}>{ui("First name")} <span className={styles.requiredMark} aria-hidden="true">*</span> <InfoTooltip label={ui("More information")} text={ui("First name and last name must each be at most 100 characters.")} /></label>
                 <input
                   type="text"
                   className={`${styles.input} ${styles.inputHalf}`}
+                  id="signup-first-name" maxLength={100} autoComplete="given-name"
+                  required
                   value={firstName}
+                  onMouseEnter={(event) => { const input = event.currentTarget; input.title = input.scrollWidth > input.clientWidth ? input.value : ""; }}
                   onChange={(e) => setFirstName(e.target.value)}
                 />
               </div>
               <div className={styles.inputCol}>
-                <span className={styles.label}>{ui("Last name")}</span>
+                <label htmlFor="signup-last-name" className={styles.label}>{ui("Last name")} <span className={styles.requiredMark} aria-hidden="true">*</span> <InfoTooltip label={ui("More information")} text={ui("First name and last name must each be at most 100 characters.")} /></label>
                 <input
                   type="text"
                   className={`${styles.input} ${styles.inputHalf}`}
+                  id="signup-last-name" maxLength={100} autoComplete="family-name"
+                  required
                   value={lastName}
+                  onMouseEnter={(event) => { const input = event.currentTarget; input.title = input.scrollWidth > input.clientWidth ? input.value : ""; }}
                   onChange={(e) => setLastName(e.target.value)}
                 />
               </div>
             </div>
             <div className={styles.inputCol}>
-              <span className={styles.label}>{ui("Email")}</span>
+              <label htmlFor="signup-email" className={styles.label}>{ui("Email")} <span className={styles.requiredMark} aria-hidden="true">*</span></label>
               <input
                 type="email"
                 className={`${styles.input} ${styles.inputFull}`}
                 placeholder="abcxyz@gmail.com"
-                value={email}
+                id="signup-email" maxLength={320} autoComplete="email"
+                  required
+                  value={email}
+                  onMouseEnter={(event) => { const input = event.currentTarget; input.title = input.scrollWidth > input.clientWidth ? input.value : ""; }}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className={styles.inputCol}>
-              <span className={styles.label}>{ui("Password")}</span>
+              <label htmlFor="signup-password" className={styles.label}>{ui("Password")} <span className={styles.requiredMark} aria-hidden="true">*</span> <InfoTooltip label={ui("More information")} text={ui("Password must contain at least 8 characters, an uppercase letter (A-Z), a lowercase letter (a-z), a number and a special character.")} /></label>
               <PasswordInput
                 className={`${styles.input} ${styles.inputFull}`}
                 autoComplete="new-password"
-                value={password}
+                id="signup-password"
+                  required
+                  value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <div className={styles.inputCol}>
-              <span className={styles.label}>{ui("Confirm password")}</span>
+              <label htmlFor="signup-confirm" className={styles.label}>{ui("Confirm password")} <span className={styles.requiredMark} aria-hidden="true">*</span></label>
               <PasswordInput
                 className={`${styles.input} ${styles.inputFull}`}
                 autoComplete="new-password"
-                value={confirmPassword}
+                id="signup-confirm"
+                  required
+                  value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>

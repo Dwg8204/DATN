@@ -46,6 +46,10 @@
       "taskFulfillment": "Task fulfillment"
     }
   },
+  "adminDashboardLabels": { "grammarVocab": "Grammar & Vocab" },
+  "passwordPolicy": {
+    "logoutConfirmation": "Are you sure you want to log out?",
+    "moreInfo": "More information","requirements": "Password must contain at least 8 characters, an uppercase letter (A-Z), a lowercase letter (a-z), a number and a special character.", "nameLimit": "First name and last name must each be at most 100 characters."},
   "personalization": {
     "grounding": {
       "coverage": "These groups include only analyzed errors with a matching lesson.",

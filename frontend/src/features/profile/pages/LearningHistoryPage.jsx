@@ -91,6 +91,15 @@ export default function LearningHistoryPage() {
   const [searchDraft, setSearchDraft] = useState({ source: appliedSearch, value: appliedSearch });
   const searchInput = searchDraft.source === appliedSearch ? searchDraft.value : appliedSearch;
   const setSearchInput = value => setSearchDraft({ source: appliedSearch, value });
+  const [isComposingSearch, setIsComposingSearch] = useState(false);
+  useEffect(() => {
+    if (isComposingSearch || searchInput === appliedSearch) return undefined;
+    const timer = window.setTimeout(() => {
+      setUrlState({ appliedSearch: searchInput, page: 1 });
+    }, 300);
+    return () => window.clearTimeout(timer);
+  }, [searchInput, appliedSearch, isComposingSearch, setUrlState]);
+
   const setPage = next => setUrlState(current => ({ page: typeof next === 'function' ? next(current.page) : next }));
   const setPageSize = next => {
     setUrlState(current => ({ pageSize: typeof next === 'function' ? next(current.pageSize) : next, page: 1 }));
@@ -150,7 +159,7 @@ export default function LearningHistoryPage() {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.nativeEvent.isComposing && !isComposingSearch) {
       handleSearch();
     }
   };
@@ -194,6 +203,8 @@ export default function LearningHistoryPage() {
                   className={styles.searchInput}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
+                  onCompositionStart={() => setIsComposingSearch(true)}
+                  onCompositionEnd={(e) => { setIsComposingSearch(false); setSearchInput(e.currentTarget.value); }}
                   onKeyDown={handleKeyDown}
                 />
                 <button
