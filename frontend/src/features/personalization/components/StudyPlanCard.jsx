@@ -1,9 +1,13 @@
+import controls from '../../../components/common/LearningControls.module.css';
+import LearningSummary from '../../../components/common/LearningSummary.jsx';
+import { CalendarDays, CircleCheck, Circle } from 'lucide-react';
 import PageLoader from '../../../components/common/PageLoader.jsx';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { practiceAttemptsApi } from '../../test-attempts/services/practiceAttemptsApi';
 import styles from './Personalization.module.css';
+import ui from './LearningSurfaces.module.css';
 import PlacementReplanNotice from './PlacementReplanNotice';
 
 const routes = {
@@ -38,6 +42,14 @@ export default function StudyPlanCard({ data, loadError = false }) {
       return;
     }
     const skill = routes[item.component];
+    if (item.completedAt) {
+      if (skill && item.reviewAttempt) {
+        const query = new URLSearchParams({ attemptId: item.reviewAttempt.id });
+        if (item.reviewAttempt.purpose === 'PRACTICE') query.set('practice', 'true');
+        navigate(`/${skill}/result?${query}`);
+      }
+      return;
+    }
     if (!skill || !item.testId || !item.available || busy) return;
     if (item.purpose === 'EXAM') {
       navigate(`/${skill}/introduction?testId=${item.testId}&mode=full`);
@@ -60,10 +72,13 @@ export default function StudyPlanCard({ data, loadError = false }) {
       setBusy(false);
     }
   };
+  const canOpen = item => item.completedAt && ['TEST', 'TOPIC_REVIEW'].includes(item.activityType)
+    ? Boolean(item.reviewAttempt)
+    : item.available;
   const renderItem = (item) => (
-    <li key={item.id} className={styles.task}>
+    <li key={item.id} className={styles.task} data-complete={Boolean(item.completedAt)}>
+      {item.completedAt ? <CircleCheck className={ui.taskMark} size={20} aria-hidden="true" /> : <Circle className={ui.taskMark} size={20} aria-hidden="true" /> }
       <span>
-        {item.completedAt ? '✓ ' : ''}
         {item.activityType === 'TOPIC_REVIEW' && `${item.topicName ?? ''} · `}
         {['TEST', 'TOPIC_REVIEW'].includes(item.activityType)
           ? `${item.title} · ${t(`personalization.skills.${item.component}`)}${item.partNumber ? ` · Part ${item.partNumber}` : ''}`
@@ -92,12 +107,12 @@ export default function StudyPlanCard({ data, loadError = false }) {
         !ruleReasons.has(item.reason) && (
           <span className={styles.muted}>{item.reason}</span>
         )}
-      <span>
-        {item.doneCount}/{item.targetCount}
+      <span className={ui.taskCount}>
+        {item.completedAt && <strong>{t('goal.completed')} · </strong>}{item.doneCount}/{item.targetCount}
       </span>
-      <button disabled={busy || !item.available} onClick={() => open(item)}>
+      <button disabled={busy || !canOpen(item)} onClick={() => open(item)}>
         {t(
-          !item.available
+          !canOpen(item)
             ? 'personalization.unavailable'
             : item.completedAt
               ? 'personalization.review'
@@ -108,11 +123,12 @@ export default function StudyPlanCard({ data, loadError = false }) {
   );
   const today =
     data?.plan?.items.filter((item) => item.scheduledOn === data.today) ?? [];
+  const completedToday = today.filter(item => item.completedAt).length;
   const days = [
     ...new Set(data?.plan?.items.map((item) => item.scheduledOn) ?? []),
   ];
   return (
-    <section className={styles.card}>
+    <section className={`${styles.card} ${ui.schedule}`}>
       <h2>{t('personalization.today')}</h2>
       {data?.plan?.id && data.plan.replannedAfterPlacementAt && (
         <PlacementReplanNotice key={data.plan.id} planId={data.plan.id} />
@@ -126,18 +142,19 @@ export default function StudyPlanCard({ data, loadError = false }) {
       {data && !data.plan && <p>{t('personalization.noGoal')}</p>}
       {data?.plan && (
         <>
-          <p className={styles.muted}>
-            {data.today} · {data.timezone}
-          </p>
+          <div className={ui.todayLine}><time dateTime={data.today}>{data.today}</time>
+            {today.length > 0 && <span>{t('goal.completed')} · {completedToday}/{today.length}</span>}
+          </div>
+          {today.length > 0 && <progress className={controls.meter} aria-label={t('personalization.today')} value={completedToday} max={today.length} />}
           {today.length ? (
             <ul className={styles.taskList}>{today.map(renderItem)}</ul>
           ) : (
             <p>{t('personalization.noTasks')}</p>
           )}
           <details>
-            <summary>
+            <LearningSummary icon={CalendarDays}>
               {t('personalization.weekPlan', { week: data.plan.weekIndex })}
-            </summary>
+            </LearningSummary>
             {days.map((day) => (
               <section key={day}>
                 <h3>{day}</h3>

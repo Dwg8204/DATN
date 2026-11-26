@@ -2271,6 +2271,8 @@
     "confirmTest": "Test “{{title}}”: approve {{labels}} pending labels for {{questions}} questions across the entire test, regardless of page or filter. Skip {{skipped}} stale labels or labels for hidden topics. Approved and rejected labels stay unchanged. Confirm approval?",
     "approvedTest": "Approved {{reviewed}} labels for {{questions}} questions in this test; skipped {{skipped}} invalid labels.",
     "saveChangesFirst": "You have unsaved topic changes. Approve those changes or restore the original topics before approving the entire test.",
+    "selectQuestion": "Select a question",
+    "selectTopic": "Select a topic",
     "managementTitle": "Topic management",
     "managementHelp": "Manage the catalog and review question labels for personalized learning.",
     "search": "Search",

@@ -1,5 +1,5 @@
 import test from 'node:test';
-import { mkdir } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
@@ -41,6 +41,30 @@ test('topic management and human review, English/Vietnamese and mobile',async()=
     });
     await page.goto('https://topics-ui.test');await page.addStyleTag({content:bundle.outputFiles.find(f=>f.path.endsWith('.css')).text});await page.addScriptTag({content:bundle.outputFiles.find(f=>f.path.endsWith('.js')).text});
     await page.getByRole('heading',{name:'Topic management',exact:true}).waitFor();
+    await page.addStyleTag({content:await readFile(new URL('../src/assets/styles/global.css',import.meta.url),'utf8')});
+    const palette = async theme => {
+      await page.evaluate(value => {document.documentElement.dataset.theme = value}, theme);
+      return page.locator('progress').first().evaluate(el => {
+        const style = getComputedStyle(el);
+        const select = document.querySelector('select');
+        select.focus();
+        return {
+          fill:style.getPropertyValue('--fill').trim(),
+          track:style.backgroundColor,
+          border:getComputedStyle(select).borderTopColor,
+        };
+      });
+    };
+    const light = await palette('light');
+    const dark = await palette('dark');
+    assert.equal(light.fill, '#da1e21');
+    assert.notEqual(light.track, dark.track);
+    assert.notEqual(light.fill, dark.fill);
+    for (const {border} of [light, dark]) {
+      const [r,g,b] = border.match(/\d+/g).map(Number);
+      assert.ok(r <= Math.max(g,b), 'select focus border should be neutral');
+    }
+    await page.evaluate(() => {document.documentElement.dataset.theme = 'light'});
     await page.getByLabel('Search',{exact:true}).fill('past');
     await page.getByRole('heading',{name:'Past simple',exact:true}).waitFor();
     assert.equal(await page.getByRole('heading',{name:'Present simple',exact:true}).count(),0);

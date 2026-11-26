@@ -482,6 +482,18 @@ export class PlanService {
     today: string,
   ) {
     const items = await this.plans.findItems(actor.id, plan.id, manager);
+    // Progress records the submission time of the attempt that completed the item.
+    const reviews = items.some(i => i.completed_at && i.test_id)
+      ? await manager.query<Array<{ item_id: string; attempt_id: string; purpose: string }>>(
+          `SELECT i.id item_id, a.id attempt_id, a.purpose FROM study_plan_items i
+           JOIN test_snapshots s ON s.test_id=i.test_id
+           JOIN test_attempts a ON a.snapshot_id=s.id AND a.student_id=$2 AND a.status='SUBMITTED'
+             AND a.submitted_at >= date_trunc('milliseconds',i.completed_at)
+             AND a.submitted_at < date_trunc('milliseconds',i.completed_at) + interval '1 millisecond'
+             AND (a.part_number IS NULL OR a.part_number=i.part_number)
+           WHERE i.plan_id=$1 AND i.activity_type IN ('TEST','TOPIC_REVIEW')
+           ORDER BY i.id,a.submitted_at,a.id`, [plan.id, actor.id])
+      : [];
     const tests = await manager.query<
       Array<{ id: string; title: string; purpose: string; available: boolean }>
     >(
@@ -523,6 +535,8 @@ export class PlanService {
         source: plan.source,
         replannedAfterPlacementAt: plan.replanned_after_placement_at ?? null,
         items: items.map((item) => {
+          const matches = reviews.filter(row => row.item_id === item.id);
+          const review = matches.length === 1 ? matches[0] : null;
           const test = tests.find((test) => test.id === item.test_id);
           return {
             id: item.id,
@@ -553,6 +567,7 @@ export class PlanService {
             targetCount: item.target_count,
             doneCount: item.done_count,
             completedAt: item.completed_at,
+            reviewAttempt: review ? { id: review.attempt_id, purpose: review.purpose } : null,
             reason: item.reason,
             questionCount: item.question_keys?.length ?? null,
           };

@@ -1,14 +1,15 @@
+import controls from '../../../components/common/LearningControls.module.css';
+import LearningSummary from '../../../components/common/LearningSummary.jsx';
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  Search,
+  Search, BookOpenText, ListPlus, FileText,
   Plus,
   Eye,
   Pencil,
   Trash2,
   BookOpen,
-  CheckCircle2,
 } from "lucide-react";
 import Button from "../../../components/common/Button";
 import Modal from "../../../components/common/Modal";
@@ -354,6 +355,42 @@ export default function TopicsPage({ review = false }) {
           {tr("reviewTitle")}
         </Link>
       </nav>
+      <section className={styles.statistics} aria-label={tr("coverageTitle")}>
+        <div className={styles.sectionHeading}>
+          <h2>{tr("coverageTitle")}</h2>
+          <span className={styles.muted}>{tr("coverageScope")}</span>
+        </div>
+        <div className={styles.coverage}>
+          {skills.map((skill) => {
+            const c = coverage.find((row) => row.component === skill) || {
+              approved: 0,
+              total: 0,
+            };
+            const percent = c.total
+              ? Math.round((c.approved / c.total) * 100)
+              : 0;
+            const ready = c.total > 0 && c.approved / c.total >= 0.8;
+            return (
+              <div className={styles.statCard} key={skill}>
+                <div className={styles.statLabel}>
+                  <span>{t(`personalization.skills.${skill}`)}</span>
+                </div>
+                <strong className={styles.statValue}>
+                  {percent}
+                  <small>%</small>
+                </strong>
+                <span className={styles.muted}>
+                  {t("topics.coverageCount", c)}
+                </span>
+                <progress className={controls.meter} aria-hidden="true" value={percent} max={100} />
+                <span className={ready ? styles.ready : styles.muted}>
+                  {tr(ready ? "enabled" : "belowThreshold")}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
       <div className={styles.filters}>
         <label className={styles.search}>
           {tr("search")}
@@ -408,45 +445,7 @@ export default function TopicsPage({ review = false }) {
           </label>
         )}
       </div>
-      <section className={styles.statistics} aria-label={tr("coverageTitle")}>
-        <div className={styles.sectionHeading}>
-          <h2>{tr("coverageTitle")}</h2>
-          <span className={styles.muted}>{tr("coverageScope")}</span>
-        </div>
-        <div className={styles.coverage}>
-          {skills.map((skill) => {
-            const c = coverage.find((row) => row.component === skill) || {
-              approved: 0,
-              total: 0,
-            };
-            const percent = c.total
-              ? Math.round((c.approved / c.total) * 100)
-              : 0;
-            const ready = c.total > 0 && c.approved / c.total >= 0.8;
-            return (
-              <div className={styles.statCard} key={skill}>
-                <div className={styles.statLabel}>
-                  <span>{t(`personalization.skills.${skill}`)}</span>
-                  <CheckCircle2 size={18} aria-hidden="true" />
-                </div>
-                <strong className={styles.statValue}>
-                  {percent}
-                  <small>%</small>
-                </strong>
-                <span className={styles.muted}>
-                  {t("topics.coverageCount", c)}
-                </span>
-                <div className={styles.statTrack} aria-hidden="true">
-                  <span style={{ width: percent + "%" }} />
-                </div>
-                <span className={ready ? styles.ready : styles.muted}>
-                  {tr(ready ? "enabled" : "belowThreshold")}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+
       {review && !testId && (
         <section
           className={`${styles.card} ${styles.batch}`}
@@ -454,7 +453,7 @@ export default function TopicsPage({ review = false }) {
         >
           <h2>{tr("batchTitle")}</h2>
           <details>
-            <summary>{tr("guide")}</summary>
+            <LearningSummary icon={BookOpenText}>{tr("guide")}</LearningSummary>
             <p>{tr("batchHelp")}</p>
             <p>{tr("help")}</p>
           </details>
@@ -494,7 +493,7 @@ export default function TopicsPage({ review = false }) {
                 aria-label={tr("batchTitle")}
                 value={progress.labeled}
                 max={Math.max(1, progress.questions)}
-                style={{ width: "100%" }}
+                className={controls.meter}
               />
               <p>
                 {t("topics.jobProgress", {
@@ -861,7 +860,7 @@ export default function TopicsPage({ review = false }) {
                       {readable(label.content)}
                     </pre>
                     <details>
-                      <summary>{tr("context")}</summary>
+                      <LearningSummary icon={FileText}>{tr("context")}</LearningSummary>
                       <pre className={styles.question}>
                         {readable(questionContext(label))}
                       </pre>
@@ -875,7 +874,7 @@ export default function TopicsPage({ review = false }) {
                       {label.topic_name} · {label.source} · {tr(label.status)} ·{" "}
                       {tr("confidence")}:{" "}
                       {label.confidence == null
-                        ? "—"
+                        ? t("dashboard.noData")
                         : `${Math.round(Number(label.confidence) * 100)}%`}
                     </p>
                     {label.question_hash !== label.current_hash ? (
@@ -946,7 +945,7 @@ export default function TopicsPage({ review = false }) {
               ))}
               {pagination(labelPage, totalLabels, "labelPage")}
               <details className={styles.manual}>
-                <summary>{tr("manual")}</summary>
+                <LearningSummary icon={ListPlus}>{tr("manual")}</LearningSummary>
                 <form
                   className={styles.card}
                   onSubmit={(e) => {
@@ -975,7 +974,7 @@ export default function TopicsPage({ review = false }) {
                         setManual({ ...manual, questionId: e.target.value })
                       }
                     >
-                      <option value="">—</option>
+                      <option value="">{tr("selectQuestion")}</option>
                       {questions.map((q) => (
                         <option key={q.id} value={q.id}>
                           {q.question_key} · {questionText(q).slice(0, 100)}
@@ -992,7 +991,7 @@ export default function TopicsPage({ review = false }) {
                         {tr("answer")}: {readable(answerText(selectedQuestion))}
                       </p>
                       <details>
-                        <summary>{tr("context")}</summary>
+                        <LearningSummary icon={FileText}>{tr("context")}</LearningSummary>
                         <pre className={styles.question}>
                           {readable(questionContext(selectedQuestion))}
                         </pre>
@@ -1009,7 +1008,7 @@ export default function TopicsPage({ review = false }) {
                         setManual({ ...manual, topicId: e.target.value })
                       }
                     >
-                      <option value="">—</option>
+                      <option value="">{tr("selectTopic")}</option>
                       {activeTopics.map((topic) => (
                         <option key={topic.id} value={topic.id}>
                           {topic.name}

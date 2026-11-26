@@ -1,7 +1,9 @@
+/* goddesign | extension of existing system */
 .page {
+  --action-ink: color-mix(in srgb,var(--brand) 75%,var(--text-primary));
   padding: 24px;
   min-width: 0;
-  color: #252525;
+  color: var(--text-primary);
 }
 .tabs,
 .filters {
@@ -17,10 +19,10 @@
 .page select,
 .page input {
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   border-radius: 8px;
   max-width: 100%;
-  background: white;
+  background: var(--bg-surface);
 }
 .cards {
   display: grid;
@@ -29,17 +31,17 @@
   margin: 20px 0;
 }
 .card {
-  border: 1px solid #ead5d9;
-  border-top: 3px solid #bd1f36;
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-top: 3px solid var(--brand);
+  border-radius: 6px;
   padding: 16px;
-  background: white;
+  background: var(--bg-surface);
   min-width: 0;
   overflow-wrap: anywhere;
 }
 .card strong {
   font-size: 24px;
-  color: #bd1f36;
+  color: var(--brand);
 }
 .card h3 {
   margin-top: 0;
@@ -49,7 +51,7 @@
   gap: 14px;
 }
 .page a {
-  color: #a9152d;
+  color: var(--action-ink);
 }
 .page ul {
   padding-left: 20px;
@@ -81,17 +83,17 @@
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  background: white;
+  background: var(--bg-surface);
 }
 .table th,
 .table td {
   text-align: left;
   padding: 12px;
-  border-bottom: 1px solid #ead5d9;
+  border-bottom: 1px solid var(--border);
   overflow-wrap: anywhere;
 }
 .table th {
-  background: #fff1f3;
+  background: var(--brand-active-bg);
 }
 .table th:last-child {
   width: 32%;
@@ -108,8 +110,8 @@
     display: none;
   }
   .table tr {
-    border: 1px solid #ead5d9;
-    border-top: 3px solid #bd1f36;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--brand);
     border-radius: 8px;
     margin-bottom: 12px;
   }
@@ -135,3 +137,36 @@
     grid-template-columns: 1fr;
   }
 }
+.header {display:flex;justify-content:space-between;align-items:center;gap:12px}
+.header h1 {margin:0;font-size:clamp(24px,3vw,36px);line-height:1.2;letter-spacing:-.035em}
+.page {max-width:1280px;margin:auto;padding:clamp(12px,2vw,28px)}
+.tabs {border-bottom:1px solid var(--border);gap:4px;margin-bottom:24px}
+.tabs button {color:var(--text-secondary);background:transparent;border:0;border-bottom:3px solid transparent;border-radius:6px;box-shadow:none}
+.tabs button[aria-pressed=true] {color:var(--action-ink);border-color:var(--brand);background:var(--brand-subtle)}
+.tabs button:hover {background:var(--bg-hover);color:var(--action-ink)}
+.cards {grid-template-columns:repeat(auto-fit,minmax(min(100%,155px),1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.card {border:0;border-radius:6px;padding:18px}
+.card strong {display:block;font-size:clamp(22px,2.4vw,32px);color:var(--text-primary);font-variant-numeric:tabular-nums}
+.card h3 {font-size:1rem;margin:0 0 8px}
+.card progress {display:block;width:100%;height:6px;margin-top:12px;accent-color:var(--brand)}
+.card p {margin:6px 0 0;color:var(--text-muted)}
+.missing {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:24px;padding-block:8px}
+.missing section {border-top:1px solid var(--border)}
+.missing section h3 {font-size:1.06rem}
+.filters {align-items:end;background:var(--bg-surface);padding:16px;border-block:1px solid var(--border)}
+.filters label {flex:1}
+.page :is(select,input) {color:var(--text-primary)}
+.page :focus-visible {outline:2px solid var(--brand-border-focus);outline-offset:3px}
+.page [role=alert] {color:var(--action-ink)}
+@media(max-width:600px){.header{align-items:flex-start}.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.tabs button{min-height:44px}.card{padding:12px}}
+.header > button,.page > :global(.button--primary) {
+  background:var(--brand);color:white;border:0;border-radius:6px;box-shadow:none;
+}
+.header > button:hover:enabled,.page > :global(.button--primary):hover:enabled {background:var(--brand-hover)}
+.page button:disabled {opacity:.55;cursor:not-allowed}
+.page {background:var(--bg-surface);width:100%}
+.card progress {appearance:none;border:0;background:var(--brand-active-bg)}
+.card progress::-webkit-progress-bar {background:var(--brand-active-bg)}
+.card progress::-webkit-progress-value {background:var(--brand)}
+.card progress::-moz-progress-bar {background:var(--brand)}
+@media(max-width:600px){.cards>.card:last-child:nth-child(odd){grid-column:1/-1}.tabs button{padding:8px;line-height:1.4}}
