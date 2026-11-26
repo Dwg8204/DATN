@@ -2271,6 +2271,8 @@
     "confirmTest": "Đề “{{title}}”: duyệt {{labels}} nhãn chờ của {{questions}} câu trên toàn bộ đề, không phụ thuộc trang hoặc bộ lọc. Bỏ qua {{skipped}} nhãn lỗi thời hoặc thuộc chủ đề bị ẩn. Các nhãn đã duyệt/từ chối giữ nguyên. Bạn xác nhận duyệt các nhãn này?",
     "approvedTest": "Đã duyệt {{reviewed}} nhãn của {{questions}} câu trong đề; bỏ qua {{skipped}} nhãn không hợp lệ.",
     "saveChangesFirst": "Bạn đang đổi chủ đề của một số nhãn. Hãy duyệt các thay đổi đó hoặc chọn lại chủ đề cũ trước khi duyệt toàn bộ đề.",
+    "selectQuestion": "Chọn câu hỏi",
+    "selectTopic": "Chọn chủ đề",
     "managementTitle": "Quản lý chủ đề",
     "managementHelp": "Quản lý danh mục và duyệt nhãn câu hỏi phục vụ cá nhân hóa học tập.",
     "search": "Tìm kiếm",

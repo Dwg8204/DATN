@@ -117,8 +117,8 @@ export default function RagPage() {
   if (!status && !error) return <PageLoader />;
   return (
     <section className={styles.page}>
-      <h2>{tr("title")}</h2>
-      <Button onClick={() => setRefresh((r) => r + 1)}>{tr("reload")}</Button>
+      <header className={styles.header}><h1>{tr("title")}</h1>
+      <Button onClick={() => setRefresh((r) => r + 1)}>{tr("reload")}</Button></header>
       <div className={styles.tabs}>
         {["coverage", "gaps", "actions"].map((key) => (
           <Button
@@ -142,13 +142,14 @@ export default function RagPage() {
                 <strong>
                   {row.embedded}/{row.total}
                 </strong>
+                {row.percent != null && <progress aria-label={t("personalization.ability.skills." + row.component)} value={row.percent} max={100} />}
                 <p>
                   {row.percent == null ? tr("noQuestions") : row.percent + "%"}
                 </p>
               </section>
             ))}
           </div>
-          <h3>{tr("missingTopics")}</h3>
+          <div className={styles.missing}><section><h3>{tr("missingTopics")}</h3>
           <ul>
             {(status.missingTopics ?? []).map((row) => (
               <li key={row.code}>
@@ -157,7 +158,7 @@ export default function RagPage() {
             ))}
           </ul>
           {!status.missingTopics?.length && <p>{tr("none")}</p>}
-          <h3>{tr("missingCriteria")}</h3>
+          </section><section><h3>{tr("missingCriteria")}</h3>
           <ul>
             {(status.missingCriteria ?? []).map((row) => (
               <li key={row.component + row.criterion}>
@@ -166,7 +167,7 @@ export default function RagPage() {
               </li>
             ))}
           </ul>
-          {!status.missingCriteria?.length && <p>{tr("none")}</p>}
+          {!status.missingCriteria?.length && <p>{tr("none")}</p>}</section></div>
         </>
       )}
       {tab === "gaps" && (
@@ -238,14 +239,14 @@ export default function RagPage() {
                           ·{" "}
                           {row.part_number
                             ? tr("part", { n: row.part_number })
-                            : "—"}{" "}
+                            : t("dashboard.noData")}{" "}
                           · {row.topic ?? tr("unknownTopic")}
                         </td>
                         <td data-label={tr("events")}>{row.occurrences}</td>
                         <td data-label={tr("learners")}>{row.learners}</td>
                         <td data-label={tr("similarity")}>
                           {row.average_similarity == null
-                            ? "—"
+                            ? t("dashboard.noData")
                             : Number(row.average_similarity).toFixed(3)}
                         </td>
                         <td data-label={tr("samples")}>

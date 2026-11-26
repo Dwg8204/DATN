@@ -108,6 +108,16 @@ select {
   font: inherit;
 }
 
+html[data-theme] select:not([aria-invalid="true"]) {
+  border-color: var(--border);
+}
+
+html[data-theme] select:not([aria-invalid="true"]):focus {
+  border-color: var(--text-muted);
+  outline: 2px solid var(--text-muted);
+  outline-offset: 2px;
+  box-shadow: none;
+}
 img {
   max-width: 100%;
   display: block;

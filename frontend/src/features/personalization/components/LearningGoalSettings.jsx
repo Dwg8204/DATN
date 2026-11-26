@@ -5,6 +5,7 @@ import ConfirmModal from '../../../components/common/ConfirmModal';
 import { personalizationApi as api } from '../services/personalizationApi';
 import { LEGACY_GOAL_KEY, readLegacyGoal } from '../services/legacyGoal';
 import styles from './Personalization.module.css';
+import ui from './LearningSurfaces.module.css';
 import { useToast } from '../../../context/ToastContext';
 
 export default function LearningGoalSettings() {
@@ -68,14 +69,14 @@ export default function LearningGoalSettings() {
     setLegacy(null);
   } });
 
-  return <section className={styles.card} aria-busy={busy}>
+  return <section className={`${styles.card} ${ui.settings}`} aria-busy={busy}>
     <h2>{t('personalization.title')}</h2>
     {error && <p role="alert" className={styles.error}>{error}</p>}
     {!state ? <button onClick={() => run(load)} disabled={busy}>{t('personalization.reload')}</button> : <>
       {goal && <p>{t('personalization.goalSummary', { ...goal })} <span className={styles.muted}>({goal.timezone})</span></p>}
       {!goal && legacy && <div><p>{t('personalization.legacy')}</p><button onClick={importGoal} disabled={busy}>{t('personalization.import')}</button></div>}
       {ability && <><p>{t('personalization.bandEstimate')}: {ability.overall.band ?? t('personalization.insufficient')}</p>{!ability.placement.complete && <p role="status">{t('personalization.placement.goalWarning')}</p>}</>}
-      <form onSubmit={saveGoal}>
+      <div className={ui.settingsColumns}><form onSubmit={saveGoal}>
         <div className={styles.fields}>
           <label className={styles.field}>{t('goal.targetBand')}<select value={form.targetCefr} onChange={e => { targetEdited.current=true; setForm({ ...form, targetCefr: e.target.value }); }}>{['A1', 'A2', 'B1', 'B2', 'C'].map(band => <option key={band}>{band}</option>)}</select></label>
           <label className={styles.field}>{t('goal.totalTests')}<input type="number" required min="1" max="500" value={form.targetTests} onChange={e => setForm({ ...form, targetTests: Number(e.target.value) })} /></label>
@@ -100,9 +101,10 @@ export default function LearningGoalSettings() {
         <label className={styles.field}>{t('personalization.reminderTime')}<input type="time" required value={preferences.reminderTime} onChange={e => setPreferences({ ...preferences, reminderTime: e.target.value })} /></label>
         <div className={styles.actions}><button disabled={busy}>{t('personalization.savePreferences')}</button></div>
       </form>}
+      </div>
       <h3>{t('personalization.history')}</h3>
       {!history.items.length && <p>{t('personalization.noHistory')}</p>}
-      <ul className={styles.history}>{history.items.map(item => <li key={item.id}>{t('personalization.goalSummary', item)} — {t(`personalization.lifecycle.${item.status}`)}</li>)}</ul>
+      <ul className={styles.history}>{history.items.map(item => <li key={item.id}>{t('personalization.goalSummary', item)} · {t(`personalization.lifecycle.${item.status}`)}</li>)}</ul>
       {history.hasMore && <button disabled={busy} onClick={async () => { setBusy(true); try { const next = await api.history(history.page + 1); setHistory({ ...next, items: [...history.items, ...next.items] }); } catch { setError(t('personalization.loadFailed')); } finally { setBusy(false); } }}>{t('personalization.more')}</button>}
     </>}
     {confirmation && <ConfirmModal title={t(`personalization.${confirmation.kind}`)} message={t(`personalization.confirm.${confirmation.kind}`)} busy={busy} confirmText={t('personalization.confirmAction')} cancelText={t('personalization.back')} onConfirm={() => run(confirmation.action)} onCancel={() => setConfirmation(null)} />}

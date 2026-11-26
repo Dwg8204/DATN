@@ -1,0 +1,61 @@
+/* goddesign | extension of existing system */
+@value card, muted, reportMetrics, task, fields, field, check, actions, history, error from "./Personalization.module.css";
+/* Scoped learning surfaces; colors follow AptiMate's active theme. */
+.card:is(.goalProgress,.comment,.schedule,.settings) {
+  background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px;
+  padding: clamp(16px,3vw,32px); color: var(--text-primary); min-width: 0;
+  --action-ink: color-mix(in srgb,var(--brand) 75%,var(--text-primary));
+}
+:is(.goalProgress,.comment,.schedule,.settings) h2 {
+  margin: 0 0 16px; font-size: clamp(20px,2vw,28px); line-height: 1.2; letter-spacing: -.025em;
+}
+:is(.goalProgress,.comment,.schedule,.settings) :is(p,li) {line-height:1.6;overflow-wrap:anywhere}
+:is(.goalProgress,.comment,.schedule,.settings) .muted {color:var(--text-muted)}
+:is(.goalProgress,.schedule,.settings) :is(a,button,summary) {color:var(--action-ink)}
+:is(.schedule,.settings) button {border-color:var(--brand-border);border-radius:6px;font-weight:600}
+:is(.schedule,.settings) button:hover:enabled {background:var(--brand-active-bg)}
+:is(.goalProgress,.schedule,.settings) :focus-visible {outline:2px solid var(--brand-border-focus);outline-offset:3px}
+.goalReadout {display:flex;gap:16px;flex-wrap:wrap;align-items:baseline}
+.goalReadout strong {font-size:clamp(32px,4vw,48px);line-height:1.1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.goalReadout small {font-size:.5em;color:var(--text-muted)}
+.goalReadout p {margin:0;color:var(--text-secondary)}
+.goalProgress > progress {margin:16px 0}
+.goalProgress .reportMetrics {padding:16px 0;border-block:1px solid var(--border);gap:12px}
+.goalProgress .reportMetrics dt {color:var(--text-muted)}
+.goalProgress .reportMetrics dd {font-size:1rem;line-height:1.5}
+.goalProgress a {text-decoration:underline;text-underline-offset:3px}
+.card.comment {background:var(--brand-subtle);border-color:var(--brand-border)}
+.comment p,.comment ul {max-width:75ch}
+.comment h3 {font-size:1rem;margin:16px 0 4px}
+.comment ul {padding-inline-start:20px;margin-block:4px}
+
+.todayLine {display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;color:var(--text-secondary);font-size:.94rem;margin-bottom:8px}
+.todayLine time,.taskCount {font-variant-numeric:tabular-nums}
+.schedule ul {padding:0;list-style:none}
+.schedule .task {display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:16px;border:1px solid var(--border);border-radius:8px;background:var(--bg-surface);margin-block:8px}
+.schedule .task[data-complete=true] {background:var(--brand-subtle);border-color:var(--brand-border)}
+.taskMark {grid-column:1;grid-row:1;color:var(--text-muted)}
+.task[data-complete=true] .taskMark,.taskCount strong {color:var(--action-ink)}
+.schedule .task > span {grid-column:2}
+.schedule .task > span:first-of-type {font-weight:650;grid-row:1}
+.taskCount {font-size:.85rem;color:var(--text-muted)}
+.schedule .task > button {grid-column:3;grid-row:1 / span 2;justify-self:end}
+.schedule details {margin-top:20px}
+.schedule details > section {padding-block:8px}
+.schedule details h3 {font-size:1rem;margin:12px 0 4px}
+.settingsColumns {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,265px),1fr));gap:24px;border-block:1px solid var(--border);padding-block:20px;margin-block:20px}
+.settingsColumns form {min-width:0}
+.settingsColumns h3 {margin:0}
+.settings .fields {display:grid;gap:12px;margin-top:0}
+.settings .field {color:var(--text-secondary);font-weight:600}
+.settings .field :is(select,input) {background:var(--bg-surface);color:var(--text-primary);border-color:var(--border);min-height:44px}
+.settings .check {accent-color:var(--brand)}
+.settings .actions button:first-child {background:var(--brand);border-color:var(--brand);color:white}
+.settings .history {padding:0;list-style:none}
+.settings .history li {border-bottom:1px solid var(--border);padding:8px 0}
+.settings .error,.schedule .error {color:var(--action-ink)}
+@media(max-width:600px){
+ .schedule .task {grid-template-columns:20px minmax(0,1fr)}
+ .schedule .task>button {grid-column:2;grid-row:auto;justify-self:start}
+ :is(.settings,.schedule) button {min-height:44px}
+}

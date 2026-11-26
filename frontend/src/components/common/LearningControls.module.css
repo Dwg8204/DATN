@@ -1,0 +1,22 @@
+/* goddesign | extension of existing system */
+summary.disclosure {
+  display:flex; align-items:center; gap:12px; padding:10px 14px; min-height:44px;
+  color:var(--text-secondary); background:var(--bg-hover); border-radius:6px;
+  cursor:pointer; list-style:none; font-weight:600;
+}
+.disclosure::-webkit-details-marker {display:none}
+.disclosure > span {flex:1}
+.disclosure svg {flex:none}
+.disclosure:hover,.disclosure:focus-visible {color:var(--text-primary);background:var(--border)}
+details[open] > .disclosure > svg:last-child {transform:rotate(180deg)}
+details[open] > .disclosure > svg:first-child {color:var(--brand-hover)}
+progress.meter {
+  appearance:none; display:block; width:100%; height:8px; border:0;
+  border-radius:8px; overflow:hidden; accent-color:var(--brand);
+  --track:color-mix(in srgb,var(--text-muted) 24%,var(--bg-surface));
+  --fill:var(--brand);background:var(--track);
+}
+:global([data-theme="dark"]) .meter {--fill:color-mix(in srgb,var(--brand-hover) 80%,var(--text-primary));--track:var(--border)}
+.meter::-webkit-progress-bar {background:var(--track)}
+.meter::-webkit-progress-value {background:var(--fill)}
+.meter::-moz-progress-bar {background:var(--fill)}
