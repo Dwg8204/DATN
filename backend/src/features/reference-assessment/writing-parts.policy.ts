@@ -1,3 +1,4 @@
+import { withoutPartCefr, restorePartCefr, PART_OUTPUT_INSTRUCTION } from '../writing-assessment/contracts/writing-part-output';
 import { AiProvider } from '../../common/ai/ai-provider.interface';
 import { AiError } from '../../common/ai/ai-error';
 import { WritingInput } from '../writing-assessment/contracts/writing-assessment-input';
@@ -10,7 +11,7 @@ import { compactWritingInput, compactWritingSchema, expandCompactWriting, GROQ_C
 import { restoreBlankWriting } from './writing-reference.policy';
 import { groqEvidenceSchema, groqEvidenceCatalog, GROQ_EVIDENCE_INSTRUCTION, resolveGroqEvidence } from './writing-evidence.policy';
 
-export const GROQ_PARTS_WRITING_VERSION = 'groq-writing-parts-v4';
+export const GROQ_PARTS_WRITING_VERSION = 'groq-writing-parts-v5';
 export type WritingPartsCache = { version: 1; inputHash: string; parts: Record<string, WritingAssessment>; final?: WritingAssessment; synthesisMode?: 'compact' };
 
 export const GROQ_WRITING_SUMMARY_PROMPT = `Summarise English Writing practice assessments, not official certification.
@@ -42,10 +43,10 @@ export async function assessWritingByParts(provider: AiProvider, input: WritingI
       await onStage(`part_${part.partNumber}`, 'started');
       const catalog = groqEvidenceCatalog(partInput);
       const raw = await provider.generateStructured({ model, systemInstruction: GROQ_COMPACT_WRITING_PROMPT +
-        '\nThis request assesses ONE PART ONLY. Always use cefr.status="NOT_APPLICABLE", reason="PART_SCOPE", level=null, rationale=null, evidence=[], limitations=[]. Never use ESTIMATED or INSUFFICIENT_EVIDENCE for this request.' + GROQ_EVIDENCE_INSTRUCTION,
-        input: { ...compactWritingInput(partInput), evidenceCatalog: catalog }, outputSchema: groqEvidenceSchema(compactWritingSchema('PART'), catalog),
+        PART_OUTPUT_INSTRUCTION + GROQ_EVIDENCE_INSTRUCTION,
+        input: { ...compactWritingInput(partInput), evidenceCatalog: catalog }, outputSchema: withoutPartCefr(groqEvidenceSchema(compactWritingSchema('PART'), catalog)),
         maxOutputTokens: part.partNumber === 4 ? 4500 : 3000, signal: AbortSignal.timeout(90000) });
-      assessed = validator.validate(restoreBlankWriting(expandCompactWriting(resolveGroqEvidence(raw, compactWritingSchema('PART'), catalog), partInput), partInput, service.blank(partInput)), partInput);
+      assessed = validator.validate(restoreBlankWriting(expandCompactWriting(resolveGroqEvidence(restorePartCefr(raw), compactWritingSchema('PART'), catalog), partInput), partInput, service.blank(partInput)), partInput);
       cache.parts[String(part.partNumber)] = assessed;
       await save(structuredClone(cache));
       await onStage(`part_${part.partNumber}`, 'completed');

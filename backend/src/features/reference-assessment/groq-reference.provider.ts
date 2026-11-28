@@ -1,3 +1,4 @@
+import { estimateGroqTokens, groqWait, quotaHeaders, retryDelay } from './groq-token-quota';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DataSource } from 'typeorm';
@@ -70,27 +71,28 @@ export class GroqReferenceProvider implements AiProvider {
   constructor(private readonly config: ConfigService, private readonly db: DataSource) {}
   async generateStructured(request: Parameters<AiProvider['generateStructured']>[0]): Promise<unknown> {
     if (String(this.config.get('GROQ_FREE_TIER_CONFIRMED')) !== 'true') throw new AiError('GROQ_FREE_NOT_CONFIRMED');
-    // Shared across instances. Upstream token limits may still require a longer wait.
     const intervalMs = 30000;
-    const id = await this.db.transaction(async manager => {
-      await manager.query('SELECT pg_advisory_xact_lock(1760000019)');
-      const [count] = await manager.query(`SELECT count(*) FILTER(WHERE created_at>now()-interval '30 seconds') AS minute,
-        count(*) AS day,
-        max((usage->'diagnostic'->>'retryAt')::timestamptz) AS cooldown_until,
-        GREATEST(0,30000-EXTRACT(EPOCH FROM (now()-max(created_at)))*1000) AS wait_ms
-        FROM reference_ai_calls WHERE created_at>now()-interval '24 hours'`);
-      const cooldown = count.cooldown_until ? new Date(count.cooldown_until).getTime() - Date.now() : 0;
-      if (cooldown > 0) throw new AiError('GROQ_RATE_WAIT', true, Math.ceil(cooldown));
-      if (Number(count.minute)) throw new AiError('GROQ_RATE_WAIT',true,Math.max(1000,Math.ceil(Number(count.wait_ms) || intervalMs)));
-      // Application cap, not a billing tier or a guarantee of available provider tokens.
-      const configuredCap = Number(this.config.get('GROQ_REFERENCE_DAILY_CALL_CAP', 100));
-      const dailyCap = Number.isInteger(configuredCap) && configuredCap >= 1 && configuredCap <= 100 ? configuredCap : 100;
-      if (Number(count.day)>=dailyCap) throw new AiError('GROQ_DAILY_WAIT',true,3600000);
-      const [row] = await manager.query('INSERT INTO reference_ai_calls(model) VALUES($1) RETURNING id',[request.model]);
-      return row.id;
-    });
     const serializedSchema = groundedGroqSchema(request.outputSchema, request.input);
     const inputText = JSON.stringify(request.input);
+    const reservationTokens = estimateGroqTokens(request.systemInstruction, inputText, serializedSchema, request.maxOutputTokens);
+    const configuredTpm = Number(this.config.get('GROQ_REFERENCE_TPM', 8000));
+    const capacity = Number.isInteger(configuredTpm) && configuredTpm > 0 ? configuredTpm : 8000;
+    const id = await this.db.transaction(async manager => {
+      await manager.query('SELECT pg_advisory_xact_lock(1760000019)');
+      const rows = await manager.query("SELECT model,created_at,usage FROM reference_ai_calls WHERE created_at>now()-interval '24 hours' ORDER BY created_at DESC");
+      const configuredCap = Number(this.config.get('GROQ_REFERENCE_DAILY_CALL_CAP', 100));
+      const dailyCap = Number.isInteger(configuredCap) && configuredCap >= 1 && configuredCap <= 100 ? configuredCap : 100;
+      if (rows.length >= dailyCap) throw new AiError('GROQ_DAILY_WAIT', true,
+        Math.max(1000, new Date(rows[rows.length-1].created_at).getTime()+86400000-Date.now()));
+      const wait = groqWait(rows, request.model, reservationTokens, Date.now(), capacity);
+      if (wait > 0) {
+        this.logger.log(`Groq token queue: model=${request.model} estimatedTokens=${reservationTokens} tpm=${capacity} waitMs=${wait}`);
+        throw new AiError('GROQ_RATE_WAIT', true, wait, 'TOKEN_BUDGET_WAIT');
+      }
+      const [row] = await manager.query('INSERT INTO reference_ai_calls(model,usage) VALUES($1,$2::jsonb) RETURNING id',
+        [request.model, JSON.stringify({reservationTokens})]);
+      return row.id;
+    });
     const data = request.input as any;
     const size = (value: unknown) => JSON.stringify(value ?? null).length;
     // Character/byte counts are diagnostics, not the provider's tokenizer or quota.
@@ -111,17 +113,14 @@ export class GroqReferenceProvider implements AiProvider {
       const body=await response.json().catch(()=>({})) as {error?:{code?:unknown;type?:unknown;message?:unknown;failed_generation?:unknown}};
       const safe=(value:unknown)=>typeof value==='string'?value.replace(/[^a-zA-Z0-9_.-]/g,'').slice(0,100):'unknown';
       const upstreamCode=safe(body.error?.code);
-      const retryHeader = response.headers.get('retry-after');
-      const seconds = Number(retryHeader);
-      const headerDelay = retryHeader && !Number.isFinite(seconds) ? Date.parse(retryHeader) - Date.now() : seconds * 1000;
-      const waitMs = Math.min(86400000, Math.max(65000, Number.isFinite(headerDelay) ? headerDelay : 0));
+      const waitMs = retryDelay(response.headers, typeof body.error?.message === 'string' ? body.error.message : '');
       const diagnostic={...(response.status === 429 ? { retryAt: new Date(Date.now() + waitMs).toISOString() } : {}),httpStatus:response.status,upstreamCode,upstreamType:safe(body.error?.type),
         tokenCounts:typeof body.error?.message==='string'?body.error.message.match(/(?:limit|requested|used)\s*[:=]?\s*\d+/gi)?.join(' ') ?? null:null,
         generatedCharacters:typeof body.error?.failed_generation==='string'?body.error.failed_generation.length:0,
         maxOutputTokens: request.maxOutputTokens,
         json: diagnoseGroqJson(body.error?.failed_generation, request.outputSchema),
         elapsedMs:Date.now()-started};
-      await this.db.query('UPDATE reference_ai_calls SET usage=$2::jsonb WHERE id=$1',[id,JSON.stringify({diagnostic})]);
+      await this.db.query('UPDATE reference_ai_calls SET usage=$2::jsonb WHERE id=$1',[id,JSON.stringify({reservationTokens,quota:quotaHeaders(response.headers),diagnostic})]);
       if (response.status === 429) {
         this.logger.warn(`Groq quota wait: model=${request.model} http=429 tokens=${diagnostic.tokenCounts ?? 'unknown'} retryMs=${waitMs}`);
         throw new AiError('GROQ_RATE_WAIT', true, waitMs, 'UPSTREAM_RATE_LIMIT');
@@ -146,7 +145,7 @@ export class GroqReferenceProvider implements AiProvider {
         tokenLimit ? 'TOKEN_LIMIT_EXCEEDED' : invalidJson ? diagnostic.json.kind : undefined);
     }
     const body = await response.json() as {choices?:Array<{finish_reason:string;message:{content:string}}>;usage?:object};
-    await this.db.query('UPDATE reference_ai_calls SET usage=$2::jsonb WHERE id=$1',[id,JSON.stringify(body.usage ?? {})]);
+    await this.db.query('UPDATE reference_ai_calls SET usage=$2::jsonb WHERE id=$1',[id,JSON.stringify({...body.usage,reservationTokens,quota:quotaHeaders(response.headers)})]);
     this.logger.log(`Groq response: model=${request.model} finish=${body.choices?.[0]?.finish_reason ?? 'none'} elapsedMs=${Date.now()-started}`);
     if (body.choices?.[0]?.finish_reason!=='stop') throw new AiError('GROQ_RESPONSE_INCOMPLETE',true);
     try { return JSON.parse(body.choices[0].message.content); } catch { throw new AiError('GROQ_INVALID_JSON'); }

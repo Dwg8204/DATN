@@ -1,3 +1,4 @@
+import { PART_OUTPUT_INSTRUCTION } from '../contracts/writing-part-output';
 import { AiError } from '../../../common/ai/ai-error';
 import { WritingAiConfig } from '../writing-ai-config.service';
 import { ConfigService } from '@nestjs/config';
@@ -28,7 +29,8 @@ describe('Production Gemini per-Part assessment', () => {
     expect((await h.run()).cefr.level).toBe('B1');
     expect(h.provider.generateStructured).toHaveBeenCalledTimes(5);
     for (const [request] of h.provider.generateStructured.mock.calls.slice(0, 4)) {
-      expect(request.systemInstruction).toBe(WRITING_SYSTEM_PROMPT_V3);
+      expect(request.systemInstruction).toBe(WRITING_SYSTEM_PROMPT_V3 + PART_OUTPUT_INSTRUCTION);
+      expect(request.outputSchema.properties.cefr).toBeUndefined();
       expect(request.input.scope).toBe('PART');
       expect(request.model).toBe('gemini-3.5-flash-lite');
     }

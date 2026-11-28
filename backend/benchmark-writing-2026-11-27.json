@@ -1,0 +1,498 @@
+{
+  "startedAt": "2026-11-27T02:54:17.577Z",
+  "cases": [
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_2",
+      "status": "FAILED",
+      "code": "AI_TIMEOUT",
+      "rule": null,
+      "elapsedMs": 86249
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 6387
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_400",
+      "rule": null,
+      "elapsedMs": 64758
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 17031
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_400",
+      "rule": null,
+      "elapsedMs": 63933
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 1005
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 21511
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_400",
+      "rule": null,
+      "elapsedMs": 59534
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 66660
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 47202
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 46389
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_400",
+      "rule": null,
+      "elapsedMs": 50670
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_3",
+      "status": "FAILED",
+      "code": "AI_TIMEOUT",
+      "rule": null,
+      "elapsedMs": 125195
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 5904
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_400",
+      "rule": null,
+      "elapsedMs": 65040
+    }
+  ],
+  "calls": [
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T02:54:22.239Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 6565,
+        "candidatesTokenCount": 4047,
+        "totalTokenCount": 11993,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 6565
+          }
+        ],
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4047
+          }
+        ],
+        "thoughtsTokenCount": 1381,
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 26185
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_2",
+      "startedAt": "2026-11-27T02:54:48.441Z",
+      "status": "TimeoutError",
+      "elapsedMs": 60012
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T02:55:53.454Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 1420
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T02:56:58.463Z",
+      "http": 400,
+      "status": "INVALID_ARGUMENT",
+      "quota": [],
+      "elapsedMs": 1185
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T02:57:14.474Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 2227
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T02:58:19.481Z",
+      "http": 400,
+      "status": "INVALID_ARGUMENT",
+      "quota": [],
+      "elapsedMs": 1173
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T02:59:46.203Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 709
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T03:00:02.206Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 6228
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T03:01:07.206Z",
+      "http": 400,
+      "status": "INVALID_ARGUMENT",
+      "quota": [],
+      "elapsedMs": 782
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T03:02:12.216Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 2432
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T03:02:28.216Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 33661
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T03:03:33.216Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 15059
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T03:04:38.221Z",
+      "http": 400,
+      "status": "INVALID_ARGUMENT",
+      "quota": [],
+      "elapsedMs": 743
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T03:04:54.225Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 6565,
+        "candidatesTokenCount": 4628,
+        "totalTokenCount": 13436,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 6565
+          }
+        ],
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 4628
+          }
+        ],
+        "thoughtsTokenCount": 2243,
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 29302
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_2",
+      "startedAt": "2026-11-27T03:05:23.552Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 7373,
+        "candidatesTokenCount": 1297,
+        "totalTokenCount": 10249,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 7373
+          }
+        ],
+        "candidatesTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1297
+          }
+        ],
+        "thoughtsTokenCount": 1579,
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 20590
+    },
+    {
+      "model": "gemini-4-hydrogen",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_3",
+      "startedAt": "2026-11-27T03:05:44.154Z",
+      "status": "TimeoutError",
+      "elapsedMs": 60005
+    },
+    {
+      "model": "gemma-4-31b-it",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T03:06:49.159Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 910
+    },
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T03:07:54.165Z",
+      "http": 400,
+      "status": "INVALID_ARGUMENT",
+      "quota": [],
+      "elapsedMs": 960
+    }
+  ],
+  "notes": [
+    "One attempt per case; no automatic retries of HTTP/content failures. Existing production prompts and validators. Scores never persisted. Groq call quota ledger retained."
+  ],
+  "baselineHashes": [
+    {
+      "id": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "hash": "a725bfb8c75863817e405c245feafeb1"
+    },
+    {
+      "id": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "hash": "5fefaf038372c07164ed77f59b6e0c25"
+    },
+    {
+      "id": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "hash": "5c584a80efc09813ff072c3c70840143"
+    },
+    {
+      "id": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "hash": "de0547fd3f4cbab9a1599953f7b698bd"
+    },
+    {
+      "id": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "hash": "ee5a653a987122fc8bbdac807cbce1bd"
+    }
+  ],
+  "freeTierVerification": {
+    "tier": "FREE",
+    "projectConfirmed": true,
+    "sources": [
+      "https://aistudio.google.com/docs/models/gemini-4-hydrogen#pricing",
+      "https://aistudio.google.com/docs/pricing#gemma-4"
+    ],
+    "checkedAt": "2026-11-27",
+    "tools": false
+  },
+  "samples": [
+    {
+      "id": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-24T12:16:57.211Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-18T16:18:18.627Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-17T03:07:26.081Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-17T02:54:07.670Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-17T02:25:30.795Z",
+      "scope": "FULL_SKILL"
+    }
+  ],
+  "interruptedCases": [
+    {
+      "model": "gemma-4-26b-a4b-it",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "prepare",
+      "status": "RUNNING"
+    }
+  ],
+  "resumedAt": "2026-11-27T08:07:26.850Z",
+  "resultHashesUnchanged": true,
+  "finishedAt": "2026-11-27T08:07:26.854Z",
+  "methodologyNotes": [
+    "5 latest submitted Writing attempts, 3 models, per-part then synthesis. No automatic retry after HTTP/content failure.",
+    "Production schema PART omission and deterministic CEFR metadata enabled. Production model and scores not changed.",
+    "18 generation requests in this report; 2 additional synthetic Gemma compatibility probes both returned 503. countTokens preflight calls are separate.",
+    "Gemma requests paced at 65 seconds and preflight checked against conservative 15000 input token budget. No input was truncated.",
+    "Final database verification retried without generation after ECONNREFUSED. Hashes compared to initial baseline.",
+    "HTTP 400 INVALID_ARGUMENT cause not established; not a scoring quality measurement."
+  ]
+}

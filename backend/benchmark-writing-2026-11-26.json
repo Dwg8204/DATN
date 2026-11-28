@@ -1,0 +1,1941 @@
+{
+  "startedAt": "2026-11-26T11:54:28.068Z",
+  "cases": [
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_3",
+      "status": "FAILED",
+      "code": "AI_INVALID_RESPONSE",
+      "rule": "ENUM:root.cefr.level",
+      "elapsedMs": 38359
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "summary",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 75992
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 17027
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 18860
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_2",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 30272
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_4",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 155389
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_3",
+      "status": "FAILED",
+      "code": "AI_INVALID_RESPONSE",
+      "rule": "ENUM:root.cefr.level",
+      "elapsedMs": 59107
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "summary",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 72353
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 47498
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 29258
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_3",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 60375
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_2",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 95514
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_4",
+      "status": "FAILED",
+      "code": "AI_INVALID_RESPONSE",
+      "rule": "ENUM:root.cefr.level",
+      "elapsedMs": 69769
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "summary",
+      "status": "VALID",
+      "elapsedMs": 81215
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_2",
+      "status": "FAILED",
+      "code": "AI_TIMEOUT",
+      "rule": null,
+      "elapsedMs": 104523
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "AI_TIMEOUT",
+      "rule": null,
+      "elapsedMs": 60007
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_2",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 30315
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_4",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 155419
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_4",
+      "status": "FAILED",
+      "code": "AI_INVALID_RESPONSE",
+      "rule": "ENUM:root.cefr.level",
+      "elapsedMs": 69833
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "summary",
+      "status": "VALID",
+      "elapsedMs": 80893
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 14753
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 12723
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_2",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 30267
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_2",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 95257
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 16777
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 16863
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_2",
+      "status": "FAILED",
+      "code": "AI_TIMEOUT",
+      "rule": null,
+      "elapsedMs": 122371
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 2240
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_3",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 60298
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_3",
+      "status": "FAILED",
+      "code": "GROQ_RATE_WAIT",
+      "rule": "UPSTREAM_RATE_LIMIT",
+      "elapsedMs": 125622
+    }
+  ],
+  "calls": [
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T11:54:30.920Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 2704,
+        "totalTokenCount": 5404,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 9205
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T11:54:46.923Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2987,
+        "candidatesTokenCount": 1372,
+        "totalTokenCount": 4359,
+        "cachedContentTokenCount": 1678,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2987
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1678
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 4432
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T11:55:02.931Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 8819,
+        "candidatesTokenCount": 2084,
+        "totalTokenCount": 10903,
+        "cachedContentTokenCount": 2753,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8819
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2753
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 6337
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T11:55:18.941Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 3453,
+        "totalTokenCount": 6153,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 8935
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T11:55:34.946Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2987,
+        "candidatesTokenCount": 1332,
+        "totalTokenCount": 4319,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2987
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 5844
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T11:55:50.955Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 8819,
+        "candidatesTokenCount": 2524,
+        "totalTokenCount": 11343,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8819
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 8505
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_4",
+      "startedAt": "2026-11-26T11:56:06.960Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 15266,
+        "candidatesTokenCount": 2366,
+        "totalTokenCount": 17632,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 15266
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 8167
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "summary",
+      "startedAt": "2026-11-26T11:56:22.966Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 2303
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T11:56:38.969Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 3343
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T11:56:54.980Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 6204
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T11:57:10.987Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.011511614,
+        "prompt_tokens": 5145,
+        "prompt_time": 0.240068498,
+        "completion_tokens": 2100,
+        "completion_time": 4.413262728,
+        "total_tokens": 7245,
+        "total_time": 4.653331226,
+        "completion_tokens_details": {
+          "reasoning_tokens": 260
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 4977
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T11:57:31.256Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 203
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T11:58:36.515Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.071766047,
+        "prompt_tokens": 2211,
+        "prompt_time": 0.247768992,
+        "completion_tokens": 2778,
+        "completion_time": 9.867071882,
+        "total_tokens": 4989,
+        "total_time": 10.114840874,
+        "completion_tokens_details": {
+          "reasoning_tokens": 1024
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 10387
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T11:59:06.529Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.060803297,
+        "prompt_tokens": 1515,
+        "prompt_time": 0.111301263,
+        "completion_tokens": 1555,
+        "completion_time": 3.209942046,
+        "total_tokens": 3070,
+        "total_time": 3.3212433089999998,
+        "completion_tokens_details": {
+          "reasoning_tokens": 944
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 3593
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T11:59:36.566Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.087480315,
+        "prompt_tokens": 2571,
+        "prompt_time": 0.19766272,
+        "completion_tokens": 2339,
+        "completion_time": 5.032585689,
+        "total_tokens": 4910,
+        "total_time": 5.230248409,
+        "completion_tokens_details": {
+          "reasoning_tokens": 887
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 5590
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_4",
+      "startedAt": "2026-11-26T12:00:06.605Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 236
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:00:22.606Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 2767,
+        "totalTokenCount": 5467,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 8744
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:00:38.612Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 3119,
+        "candidatesTokenCount": 1279,
+        "totalTokenCount": 4398,
+        "cachedContentTokenCount": 1721,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 3119
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1721
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 5189
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:00:54.619Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 8365,
+        "candidatesTokenCount": 3161,
+        "totalTokenCount": 11526,
+        "cachedContentTokenCount": 2704,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8365
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2704
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 11348
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:01:10.622Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 3395,
+        "totalTokenCount": 6095,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 8809
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:01:26.622Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 3119,
+        "candidatesTokenCount": 1353,
+        "totalTokenCount": 4472,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 3119
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 4866
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:01:42.631Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 8365,
+        "candidatesTokenCount": 3476,
+        "totalTokenCount": 11841,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8365
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 11663
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_4",
+      "startedAt": "2026-11-26T12:01:58.632Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 13362,
+        "candidatesTokenCount": 3038,
+        "totalTokenCount": 16400,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 13362
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 12017
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "summary",
+      "startedAt": "2026-11-26T12:02:14.639Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 3684
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:02:30.650Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 35186
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:03:05.853Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 29241
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:03:35.139Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.162077801,
+        "prompt_tokens": 5145,
+        "prompt_time": 0.259039735,
+        "completion_tokens": 2012,
+        "completion_time": 4.246142539,
+        "total_tokens": 7157,
+        "total_time": 4.505182274,
+        "completion_tokens_details": {
+          "reasoning_tokens": 108
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 4867
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:04:05.174Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.162116236,
+        "prompt_tokens": 3417,
+        "prompt_time": 0.166592043,
+        "completion_tokens": 765,
+        "completion_time": 1.606044554,
+        "total_tokens": 4182,
+        "total_time": 1.772636597,
+        "completion_tokens_details": {
+          "reasoning_tokens": 107
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 2407
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:04:35.224Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 253
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:05:40.523Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.122150924,
+        "prompt_tokens": 2211,
+        "prompt_time": 0.156567775,
+        "completion_tokens": 2724,
+        "completion_time": 5.534107445,
+        "total_tokens": 4935,
+        "total_time": 5.69067522,
+        "completion_tokens_details": {
+          "reasoning_tokens": 1024
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 6070
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:06:10.540Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 455
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:06:26.552Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 2704,
+        "totalTokenCount": 5404,
+        "cachedContentTokenCount": 1579,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1579
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 6668
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:06:42.553Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 3503,
+        "candidatesTokenCount": 1281,
+        "totalTokenCount": 4784,
+        "cachedContentTokenCount": 1838,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 3503
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1838
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 4577
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:06:58.569Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 8939,
+        "candidatesTokenCount": 2374,
+        "totalTokenCount": 11313,
+        "cachedContentTokenCount": 2765,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8939
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2765
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 6431
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_4",
+      "startedAt": "2026-11-26T12:07:14.583Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 15167,
+        "candidatesTokenCount": 2059,
+        "totalTokenCount": 17226,
+        "cachedContentTokenCount": 3190,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 15167
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 3190
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 6189
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:07:30.590Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 3480,
+        "totalTokenCount": 6180,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 8880
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:07:46.593Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 3503,
+        "candidatesTokenCount": 1259,
+        "totalTokenCount": 4762,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 3503
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 4979
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:08:02.608Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 8939,
+        "candidatesTokenCount": 2897,
+        "totalTokenCount": 11836,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8939
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 9295
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_4",
+      "startedAt": "2026-11-26T12:08:18.624Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 15167,
+        "candidatesTokenCount": 2130,
+        "totalTokenCount": 17297,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 15167
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 9358
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "summary",
+      "startedAt": "2026-11-26T12:08:34.632Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 29302,
+        "candidatesTokenCount": 866,
+        "totalTokenCount": 30168,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 29302
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 7364
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:08:50.632Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 1889,
+        "totalTokenCount": 8874,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "thoughtsTokenCount": 4285,
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 35873
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:09:26.524Z",
+      "status": "TimeoutError",
+      "elapsedMs": 60012
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:10:26.548Z",
+      "status": "TimeoutError",
+      "elapsedMs": 60002
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:11:26.580Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.264879906,
+        "prompt_tokens": 5145,
+        "prompt_time": 0.254081996,
+        "completion_tokens": 1846,
+        "completion_time": 3.887552464,
+        "total_tokens": 6991,
+        "total_time": 4.14163446,
+        "completion_tokens_details": {
+          "reasoning_tokens": 124
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 4645
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:11:56.638Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 225
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:13:01.909Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.062347879,
+        "prompt_tokens": 2211,
+        "prompt_time": 0.230327662,
+        "completion_tokens": 2612,
+        "completion_time": 11.320064615,
+        "total_tokens": 4823,
+        "total_time": 11.550392277,
+        "completion_tokens_details": {
+          "reasoning_tokens": 1024
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 12173
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:13:31.936Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.062282857,
+        "prompt_tokens": 1528,
+        "prompt_time": 0.108546922,
+        "completion_tokens": 1201,
+        "completion_time": 2.506819602,
+        "total_tokens": 2729,
+        "total_time": 2.615366524,
+        "completion_tokens_details": {
+          "reasoning_tokens": 573
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 2911
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:14:01.981Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.063261759,
+        "prompt_tokens": 2571,
+        "prompt_time": 0.182559547,
+        "completion_tokens": 2138,
+        "completion_time": 4.305404379,
+        "total_tokens": 4709,
+        "total_time": 4.487963926,
+        "completion_tokens_details": {
+          "reasoning_tokens": 716
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 4817
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_4",
+      "startedAt": "2026-11-26T12:14:32.016Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 275
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:14:48.025Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 2704,
+        "totalTokenCount": 5404,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 7971
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:15:04.040Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 3503,
+        "candidatesTokenCount": 1281,
+        "totalTokenCount": 4784,
+        "cachedContentTokenCount": 1838,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 3503
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 1838
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 6059
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:15:20.043Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 8939,
+        "candidatesTokenCount": 2374,
+        "totalTokenCount": 11313,
+        "cachedContentTokenCount": 2765,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8939
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2765
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 8313
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_4",
+      "startedAt": "2026-11-26T12:15:36.047Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 15167,
+        "candidatesTokenCount": 2059,
+        "totalTokenCount": 17226,
+        "cachedContentTokenCount": 3190,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 15167
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 3190
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 6096
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:15:52.049Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 3260,
+        "totalTokenCount": 5960,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 8516
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:16:08.062Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 3503,
+        "candidatesTokenCount": 1268,
+        "totalTokenCount": 4771,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 3503
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 6083
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:16:24.077Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 8939,
+        "candidatesTokenCount": 2757,
+        "totalTokenCount": 11696,
+        "cachedContentTokenCount": 6911,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 8939
+          }
+        ],
+        "cacheTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 6911
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 5865
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_4",
+      "startedAt": "2026-11-26T12:16:40.084Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 15167,
+        "candidatesTokenCount": 2264,
+        "totalTokenCount": 17431,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 15167
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 9911
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "summary",
+      "startedAt": "2026-11-26T12:16:56.100Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 29629,
+        "candidatesTokenCount": 862,
+        "totalTokenCount": 30491,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 29629
+          }
+        ],
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 6951
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:17:12.104Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 5710
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:17:28.110Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 2429
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:17:44.116Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.281740898,
+        "prompt_tokens": 5145,
+        "prompt_time": 0.4180398,
+        "completion_tokens": 2030,
+        "completion_time": 4.365913992,
+        "total_tokens": 7175,
+        "total_time": 4.783953792,
+        "completion_tokens_details": {
+          "reasoning_tokens": 90
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 5319
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:18:00.597Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 207
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:19:05.843Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.180192184,
+        "prompt_tokens": 2211,
+        "prompt_time": 0.162560425,
+        "completion_tokens": 2619,
+        "completion_time": 5.227168375,
+        "total_tokens": 4830,
+        "total_time": 5.3897288,
+        "completion_tokens_details": {
+          "reasoning_tokens": 1024
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 5782
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:19:35.857Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 216
+    },
+    {
+      "model": "gemini-3.1-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:19:51.861Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 1007
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:20:07.866Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 1873
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:20:23.867Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "promptTokenCount": 2700,
+        "candidatesTokenCount": 2120,
+        "totalTokenCount": 9366,
+        "promptTokensDetails": [
+          {
+            "modality": "TEXT",
+            "tokenCount": 2700
+          }
+        ],
+        "thoughtsTokenCount": 4546,
+        "serviceTier": "standard"
+      },
+      "finish": "STOP",
+      "elapsedMs": 48247
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:21:12.118Z",
+      "status": "TimeoutError",
+      "elapsedMs": 60006
+    },
+    {
+      "model": "gemini-3.8-flash",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:22:12.129Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "quota": [],
+      "elapsedMs": 2236
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:22:28.137Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.167225802,
+        "prompt_tokens": 6169,
+        "prompt_time": 0.006853555,
+        "completion_tokens": 2085,
+        "completion_time": 8.841368079,
+        "total_tokens": 8254,
+        "total_time": 8.848221634,
+        "prompt_tokens_details": {
+          "cached_tokens": 5120
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 113
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 9509
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:22:44.431Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.37748138,
+        "prompt_tokens": 3426,
+        "prompt_time": 0.156019203,
+        "completion_tokens": 761,
+        "completion_time": 1.596997147,
+        "total_tokens": 4187,
+        "total_time": 1.75301635,
+        "completion_tokens_details": {
+          "reasoning_tokens": 124
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 2400
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:23:14.449Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 210
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_1",
+      "startedAt": "2026-11-26T12:24:19.719Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.061165621,
+        "prompt_tokens": 2211,
+        "prompt_time": 0.152500836,
+        "completion_tokens": 2619,
+        "completion_time": 5.358492026,
+        "total_tokens": 4830,
+        "total_time": 5.510992862,
+        "completion_tokens_details": {
+          "reasoning_tokens": 1024
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 5796
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_2",
+      "startedAt": "2026-11-26T12:24:49.759Z",
+      "http": 200,
+      "status": "OK",
+      "quota": [],
+      "usage": {
+        "queue_time": 0.056013193,
+        "prompt_tokens": 1528,
+        "prompt_time": 0.105244502,
+        "completion_tokens": 1201,
+        "completion_time": 2.492008206,
+        "total_tokens": 2729,
+        "total_time": 2.597252708,
+        "completion_tokens_details": {
+          "reasoning_tokens": 573
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 2978
+    },
+    {
+      "model": "qwen/qwen3.8-27b",
+      "skill": "WRITING",
+      "attemptId": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "stage": "part_3",
+      "startedAt": "2026-11-26T12:25:19.791Z",
+      "http": 429,
+      "status": "rate_limit_exceeded",
+      "quota": [],
+      "elapsedMs": 507
+    }
+  ],
+  "notes": [
+    "One attempt per case; no automatic retries of HTTP/content failures. Existing production prompts and validators. Scores never persisted. Groq call quota ledger retained."
+  ],
+  "baselineHashes": [
+    {
+      "id": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "hash": "a725bfb8c75863817e405c245feafeb1"
+    },
+    {
+      "id": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "hash": "5fefaf038372c07164ed77f59b6e0c25"
+    },
+    {
+      "id": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "hash": "5c584a80efc09813ff072c3c70840143"
+    },
+    {
+      "id": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "hash": "de0547fd3f4cbab9a1599953f7b698bd"
+    },
+    {
+      "id": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "hash": "ee5a653a987122fc8bbdac807cbce1bd"
+    }
+  ],
+  "unavailableModels": [
+    {
+      "model": "google/gemma-4-31b-it:free",
+      "provider": "OpenRouter",
+      "reason": "OPENROUTER_API_KEY_MISSING",
+      "requests": 0
+    }
+  ],
+  "samples": [
+    {
+      "id": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-24T12:16:57.211Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-18T16:18:18.627Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-17T03:07:26.081Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-17T02:54:07.670Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-17T02:25:30.795Z",
+      "scope": "FULL_SKILL"
+    }
+  ],
+  "resultHashesUnchanged": true,
+  "finishedAt": "2026-11-26T12:25:20.311Z"
+}

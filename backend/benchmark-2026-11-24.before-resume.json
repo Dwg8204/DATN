@@ -1,0 +1,338 @@
+{
+  "startedAt": "2026-11-24T12:31:36.653Z",
+  "cases": [
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 4958
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "AI_TIMEOUT",
+      "rule": null,
+      "elapsedMs": 60006
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_3",
+      "status": "FAILED",
+      "code": "GROQ_HTTP_413",
+      "rule": "TOKEN_LIMIT_EXCEEDED",
+      "elapsedMs": 60312
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "SPEAKING",
+      "attemptId": "7f732935-6bba-4fc9-9284-9f639deaad01",
+      "stage": "full",
+      "status": "VALID",
+      "elapsedMs": 36602
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "SPEAKING",
+      "attemptId": "7f732935-6bba-4fc9-9284-9f639deaad01",
+      "stage": "full",
+      "status": "FAILED",
+      "code": 23,
+      "rule": null,
+      "elapsedMs": 91333
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "SPEAKING",
+      "attemptId": "7f732935-6bba-4fc9-9284-9f639deaad01",
+      "stage": "full",
+      "status": "VALID",
+      "elapsedMs": 3762
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 37308
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "AI_TIMEOUT",
+      "rule": null,
+      "elapsedMs": 60010
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_3",
+      "status": "FAILED",
+      "code": "ECONNREFUSED",
+      "rule": null,
+      "elapsedMs": 60087
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "SPEAKING",
+      "attemptId": "a41e18ac-ea50-416d-819f-1a4a2cf85bbd",
+      "stage": "prepare",
+      "status": "FAILED",
+      "code": "ECONNREFUSED",
+      "rule": null,
+      "elapsedMs": 5
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "SPEAKING",
+      "attemptId": "a41e18ac-ea50-416d-819f-1a4a2cf85bbd",
+      "stage": "prepare",
+      "status": "FAILED",
+      "code": "ECONNREFUSED",
+      "rule": null,
+      "elapsedMs": 7
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "SPEAKING",
+      "attemptId": "a41e18ac-ea50-416d-819f-1a4a2cf85bbd",
+      "stage": "prepare",
+      "status": "FAILED",
+      "code": "ECONNREFUSED",
+      "rule": null,
+      "elapsedMs": 3
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "status": "FAILED",
+      "code": "GEMINI_HTTP_503",
+      "rule": null,
+      "elapsedMs": 10692
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "prepare",
+      "status": "RUNNING"
+    }
+  ],
+  "calls": [
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-24T12:31:39.410Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "elapsedMs": 4940
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-24T12:31:55.415Z",
+      "status": "TimeoutError",
+      "elapsedMs": 48949
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-24T12:32:44.415Z",
+      "http": 200,
+      "status": "OK",
+      "finish": "stop",
+      "elapsedMs": 5541
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_2",
+      "startedAt": "2026-11-24T12:33:14.442Z",
+      "http": 200,
+      "status": "OK",
+      "finish": "stop",
+      "elapsedMs": 2627
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_3",
+      "startedAt": "2026-11-24T12:33:44.462Z",
+      "http": 413,
+      "status": "rate_limit_exceeded",
+      "elapsedMs": 213
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "SPEAKING",
+      "attemptId": "7f732935-6bba-4fc9-9284-9f639deaad01",
+      "stage": "full",
+      "startedAt": "2026-11-24T12:34:00.478Z",
+      "http": 200,
+      "status": "OK",
+      "finish": "STOP",
+      "elapsedMs": 20809
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "SPEAKING",
+      "attemptId": "7f732935-6bba-4fc9-9284-9f639deaad01",
+      "stage": "full",
+      "startedAt": "2026-11-24T12:34:22.663Z",
+      "status": "TimeoutError",
+      "elapsedMs": 89991
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "SPEAKING",
+      "attemptId": "7f732935-6bba-4fc9-9284-9f639deaad01",
+      "stage": "full",
+      "startedAt": "2026-11-24T12:35:52.686Z",
+      "http": 200,
+      "status": "OK",
+      "finish": "stop",
+      "elapsedMs": 3726
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-24T12:36:08.693Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "elapsedMs": 25040
+    },
+    {
+      "model": "gemini-3.6-flash",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-24T12:36:33.747Z",
+      "status": "TimeoutError",
+      "elapsedMs": 59998
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-24T12:37:33.780Z",
+      "http": 200,
+      "status": "OK",
+      "finish": "stop",
+      "elapsedMs": 6272
+    },
+    {
+      "model": "openai/gpt-oss-120b",
+      "skill": "WRITING",
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_2",
+      "startedAt": "2026-11-24T12:38:03.825Z",
+      "http": 200,
+      "status": "OK",
+      "finish": "stop",
+      "elapsedMs": 2569
+    },
+    {
+      "model": "gemini-3.5-flash-lite",
+      "skill": "WRITING",
+      "attemptId": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "stage": "part_1",
+      "startedAt": "2026-11-24T12:38:33.933Z",
+      "http": 503,
+      "status": "UNAVAILABLE",
+      "elapsedMs": 10689
+    }
+  ],
+  "notes": [
+    "One attempt per case; no automatic retries of HTTP/content failures. Existing production prompts and validators. Scores never persisted. Groq call quota ledger retained."
+  ],
+  "samples": [
+    {
+      "id": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-24T12:16:57.211Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "7f732935-6bba-4fc9-9284-9f639deaad01",
+      "skill": "SPEAKING",
+      "submittedAt": "2026-11-17T03:59:54.420Z",
+      "scope": "PART"
+    },
+    {
+      "id": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-18T16:18:18.627Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "a41e18ac-ea50-416d-819f-1a4a2cf85bbd",
+      "skill": "SPEAKING",
+      "submittedAt": "2026-11-04T16:48:15.216Z",
+      "scope": "PART"
+    },
+    {
+      "id": "545e875c-e9a2-46b0-8d21-2e8f6ff84aef",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-17T03:07:26.081Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "f937ecab-5eea-4e57-bd79-b27cae155847",
+      "skill": "SPEAKING",
+      "submittedAt": "2026-10-31T15:00:27.128Z",
+      "scope": "PART"
+    },
+    {
+      "id": "acd51b30-065e-4dad-b366-74b2f4c8747f",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-17T02:54:07.670Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "965d7bf7-87e1-4344-8bfa-f6862eb796ea",
+      "skill": "SPEAKING",
+      "submittedAt": "2026-10-29T13:48:11.104Z",
+      "scope": "PART"
+    },
+    {
+      "id": "9b8e0db8-ff74-462d-865f-a6c078174036",
+      "skill": "WRITING",
+      "submittedAt": "2026-11-17T02:25:30.795Z",
+      "scope": "FULL_SKILL"
+    },
+    {
+      "id": "6ac22037-957c-4d28-8960-7dd79628e009",
+      "skill": "SPEAKING",
+      "submittedAt": "2026-10-28T14:44:50.820Z",
+      "scope": "PART"
+    }
+  ]
+}
