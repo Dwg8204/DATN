@@ -1,0 +1,173 @@
+{
+  "model": "google/gemma-4-31b-it:free",
+  "startedAt": "2026-11-27T09:17:13.731Z",
+  "method": "PARTS_V1, production prompt/validator; no retries; no assessment writes",
+  "calls": [
+    {
+      "attemptId": "e0554e27-5d02-4499-b5ee-2bee85e304dc",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:17:14.642Z",
+      "http": 429,
+      "errorCode": 429,
+      "errorMessage": "Provider returned error",
+      "limitSource": "upstream_provider_shared_pool",
+      "providerErrorCode": "429",
+      "failure": "OPENROUTER_HTTP_429",
+      "elapsedMs": 181
+    },
+    {
+      "attemptId": "2146fe11-48a9-4cbd-9ab3-c7e4e7ec1ad6",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:17:30.651Z",
+      "http": 429,
+      "errorCode": 429,
+      "errorMessage": "Provider returned error",
+      "limitSource": "upstream_provider_shared_pool",
+      "providerErrorCode": "429",
+      "failure": "OPENROUTER_HTTP_429",
+      "elapsedMs": 315
+    },
+    {
+      "attemptId": "0006a582-a54e-44e9-b793-bc8e7595fcc5",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:17:46.656Z",
+      "http": 429,
+      "errorCode": 429,
+      "errorMessage": "Provider returned error",
+      "limitSource": "upstream_provider_shared_pool",
+      "providerErrorCode": "429",
+      "failure": "OPENROUTER_HTTP_429",
+      "elapsedMs": 235
+    },
+    {
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:18:02.666Z",
+      "http": 429,
+      "errorCode": 429,
+      "errorMessage": "Provider returned error",
+      "limitSource": "upstream_provider_shared_pool",
+      "providerErrorCode": "429",
+      "failure": "OPENROUTER_HTTP_429",
+      "elapsedMs": 302
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:18:18.680Z",
+      "http": 429,
+      "errorCode": 429,
+      "errorMessage": "Provider returned error",
+      "limitSource": "upstream_provider_shared_pool",
+      "providerErrorCode": "429",
+      "failure": "OPENROUTER_HTTP_429",
+      "elapsedMs": 426
+    }
+  ],
+  "cases": [
+    {
+      "attemptId": "e0554e27-5d02-4499-b5ee-2bee85e304dc",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "OPENROUTER_HTTP_429",
+      "elapsedMs": 191
+    },
+    {
+      "attemptId": "2146fe11-48a9-4cbd-9ab3-c7e4e7ec1ad6",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "OPENROUTER_HTTP_429",
+      "elapsedMs": 16143
+    },
+    {
+      "attemptId": "0006a582-a54e-44e9-b793-bc8e7595fcc5",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "OPENROUTER_HTTP_429",
+      "elapsedMs": 15923
+    },
+    {
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "OPENROUTER_HTTP_429",
+      "elapsedMs": 16076
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "OPENROUTER_HTTP_429",
+      "elapsedMs": 16137
+    }
+  ],
+  "pricing": {
+    "prompt": "0",
+    "completion": "0"
+  },
+  "keyBefore": {
+    "isFreeTier": true,
+    "usage": 0
+  },
+  "samples": [
+    {
+      "id": "e0554e27-5d02-4499-b5ee-2bee85e304dc",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-27T08:37:29.090Z",
+      "hash": "6040006cb439469f875700b02a59781d"
+    },
+    {
+      "id": "2146fe11-48a9-4cbd-9ab3-c7e4e7ec1ad6",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-27T08:30:44.923Z",
+      "hash": "08290695771d21e54420f083e3947e8d"
+    },
+    {
+      "id": "0006a582-a54e-44e9-b793-bc8e7595fcc5",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-27T08:15:28.539Z",
+      "hash": "cbbad8a6313ff3c874c561f125e48ee5"
+    },
+    {
+      "id": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-24T12:16:57.211Z",
+      "hash": "a725bfb8c75863817e405c245feafeb1"
+    },
+    {
+      "id": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-18T16:18:18.627Z",
+      "hash": "5fefaf038372c07164ed77f59b6e0c25"
+    }
+  ],
+  "config": {
+    "promptVersion": "writing-prompt-v4-evidence-ids",
+    "maxOutputTokens": 8192,
+    "timeoutMs": 60000
+  },
+  "resultHashesUnchanged": true,
+  "keyAfter": {
+    "isFreeTier": true,
+    "usage": 0
+  },
+  "finishedAt": "2026-11-27T09:18:19.165Z",
+  "adapterNote": "JSON schema transport unsupported (404 Filter by Parameters); JSON object transport supplies equivalent schema appended to system instruction. Original rubric/validator unchanged.",
+  "additionalProbes": [
+    {
+      "kind": "synthetic strict schema",
+      "http": 404,
+      "reason": "Filter by Parameters"
+    },
+    {
+      "kind": "synthetic JSON object",
+      "http": 429,
+      "reason": "upstream_provider_shared_pool"
+    }
+  ]
+}

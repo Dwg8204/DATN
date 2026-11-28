@@ -1,3 +1,4 @@
+import { withoutPartCefr, restorePartCefr, PART_OUTPUT_INSTRUCTION } from '../contracts/writing-part-output';
 import { Inject, Injectable } from '@nestjs/common';
 import { AI_PROVIDER, AiProvider } from '../../../common/ai/ai-provider.interface';
 import { WritingInput } from '../contracts/writing-assessment-input';
@@ -40,13 +41,14 @@ export class WritingAssessmentService {
     const schema = writingOutputSchema(input.scope, true);
     const value = await this.provider.generateStructured({
       model: config.model,
-      systemInstruction,
+      systemInstruction: systemInstruction + (input.scope === 'PART' ? PART_OUTPUT_INSTRUCTION : ''),
       input: useIds ? { ...input, evidenceCatalog: catalog, repairInstruction: writingRepairInstruction(feedback) } : input,
-      outputSchema: useIds ? evidenceIdSchema(schema) : schema,
+      outputSchema: input.scope === 'PART' ? withoutPartCefr(useIds ? evidenceIdSchema(schema) : schema) : (useIds ? evidenceIdSchema(schema) : schema),
       maxOutputTokens: config.maxOutputTokens,
       signal: AbortSignal.timeout(config.timeoutMs),
     });
-    return this.validator.validate(useIds ? resolveWritingEvidence(value, schema, catalog) : value, input);
+    const restored = input.scope === 'PART' ? restorePartCefr(value) : value;
+    return this.validator.validate(useIds ? resolveWritingEvidence(restored, schema, catalog) : restored, input);
   }
   async assessByParts(
     input: WritingInput,

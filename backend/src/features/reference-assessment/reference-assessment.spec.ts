@@ -118,20 +118,20 @@ describe('Groq reference isolation and evidence boundaries',()=>{
 describe('Groq HTTP contract (mock only)',()=>{
   const original=global.fetch;
   afterEach(()=>{global.fetch=original;});
-  it('waits only for the remaining shared 30-second slot without calling Groq',async()=>{
-    const manager={query:jest.fn(async(sql:string)=>sql.startsWith('SELECT count')?[{minute:1,day:2,wait_ms:22000}]:[])};
+  it('waits for a reserved token window without calling Groq',async()=>{
+    const manager={query:jest.fn(async(sql:string)=>sql.startsWith('SELECT model')?[{model:'model',created_at:new Date(),usage:{reservationTokens:8000}}]:[])};
     const db={transaction:async(fn:any)=>fn(manager)};
     global.fetch=jest.fn() as any;
     const provider=new GroqReferenceProvider(new ConfigService({GROQ_FREE_TIER_CONFIRMED:'true'}),db as any);
     await expect(provider.generateStructured({model:'model',systemInstruction:'test',input:{},outputSchema:{type:'object',properties:{},required:[]},maxOutputTokens:100,signal:AbortSignal.timeout(1000)}))
-      .rejects.toMatchObject({code:'GROQ_RATE_WAIT',retryAfterMs:22000});
+      .rejects.toMatchObject({code:'GROQ_RATE_WAIT',validationRule:'TOKEN_BUDGET_WAIT'});
     expect(global.fetch).not.toHaveBeenCalled();
-    expect(manager.query.mock.calls.some(([sql])=>sql.includes("interval '30 seconds'"))).toBe(true);
+    expect(manager.query.mock.calls.some(([sql])=>sql.startsWith('SELECT model'))).toBe(true);
   });
   it('shares upstream cooldown across jobs and honors Retry-After without sending again', async () => {
     let cooldown: string | undefined;
-    const manager = { query: jest.fn(async (sql: string) => sql.startsWith('SELECT count')
-      ? [{ minute: 0, day: 0, cooldown_until: cooldown }] : sql.startsWith('INSERT') ? [{ id: 'call' }] : []) };
+    const manager = { query: jest.fn(async (sql: string) => sql.startsWith('SELECT model')
+      ? (cooldown ? [{model:'model',created_at:new Date(),usage:{diagnostic:{retryAt:cooldown}}}] : []) : sql.startsWith('INSERT') ? [{ id: 'call' }] : []) };
     const db = { transaction: async (fn: any) => fn(manager), query: jest.fn(async (_sql: string, args: any[]) => {
       cooldown = JSON.parse(args[1]).diagnostic.retryAt;
     }) };
@@ -145,7 +145,7 @@ describe('Groq HTTP contract (mock only)',()=>{
   });
   it('defaults to 100 daily calls, honors lower caps and blocks invalid overrides at the default cap',async()=>{
     let day=99;
-    const manager={query:jest.fn(async(sql:string)=>sql.startsWith('SELECT count')?[{minute:0,day}]:sql.startsWith('INSERT')?[{id:'call'}]:[])};
+    const manager={query:jest.fn(async(sql:string)=>sql.startsWith('SELECT model')?Array.from({length:day},()=>({model:'old',created_at:new Date(Date.now()-3600000),usage:{}})):sql.startsWith('INSERT')?[{id:'call'}]:[])};
     const db={transaction:async(fn:any)=>fn(manager),query:jest.fn()};
     const request={model:'openai/gpt-oss-120b',systemInstruction:'test',input:{},outputSchema:{type:'object' as const,properties:{},required:[]},maxOutputTokens:100,signal:AbortSignal.timeout(1000)};
     global.fetch=jest.fn(async()=>new Response(JSON.stringify({choices:[{finish_reason:'stop',message:{content:'{}'}}]}))) as any;

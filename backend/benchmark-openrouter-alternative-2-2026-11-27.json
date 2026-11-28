@@ -1,0 +1,201 @@
+{
+  "model": "nvidia/nemotron-3.5-super-vl:free",
+  "startedAt": "2026-11-27T09:28:07.586Z",
+  "method": "PARTS_V1, production prompt/validator; no retries; no assessment writes",
+  "calls": [
+    {
+      "attemptId": "e0554e27-5d02-4499-b5ee-2bee85e304dc",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T13:49:22.162Z",
+      "http": 200,
+      "failure": "TIMEOUT",
+      "elapsedMs": 60003
+    },
+    {
+      "attemptId": "2146fe11-48a9-4cbd-9ab3-c7e4e7ec1ad6",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T13:50:22.197Z",
+      "http": 200,
+      "failure": "TIMEOUT",
+      "elapsedMs": 60020
+    },
+    {
+      "attemptId": "0006a582-a54e-44e9-b793-bc8e7595fcc5",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T13:51:22.251Z",
+      "http": 200,
+      "id": "gen-1795787506-pf6K0FEGMfOrdkinCSZ6",
+      "provider": "Nvidia",
+      "usage": {
+        "prompt_tokens": 5040,
+        "completion_tokens": 8192,
+        "total_tokens": 13232,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 4336,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 8192,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "length",
+      "failure": "INCOMPLETE_OUTPUT",
+      "elapsedMs": 59843
+    },
+    {
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T13:52:22.134Z",
+      "http": 200,
+      "failure": "TIMEOUT",
+      "elapsedMs": 60005
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T13:53:22.171Z",
+      "http": 200,
+      "id": "gen-1795787626-xZF7uoSqIawHonnCw8be",
+      "provider": "Nvidia",
+      "usage": {
+        "prompt_tokens": 5040,
+        "completion_tokens": 8192,
+        "total_tokens": 13232,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 8192,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "length",
+      "failure": "INCOMPLETE_OUTPUT",
+      "elapsedMs": 56364
+    }
+  ],
+  "cases": [
+    {
+      "attemptId": "e0554e27-5d02-4499-b5ee-2bee85e304dc",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "TIMEOUT",
+      "elapsedMs": 60025
+    },
+    {
+      "attemptId": "2146fe11-48a9-4cbd-9ab3-c7e4e7ec1ad6",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "TIMEOUT",
+      "elapsedMs": 60051
+    },
+    {
+      "attemptId": "0006a582-a54e-44e9-b793-bc8e7595fcc5",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "INCOMPLETE_OUTPUT",
+      "elapsedMs": 59876
+    },
+    {
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "TIMEOUT",
+      "elapsedMs": 60045
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "INCOMPLETE_OUTPUT",
+      "elapsedMs": 56393
+    }
+  ],
+  "pricing": {
+    "prompt": "0",
+    "completion": "0"
+  },
+  "keyBefore": {
+    "isFreeTier": true,
+    "usage": 0
+  },
+  "interruptedCases": [],
+  "samples": [
+    {
+      "id": "e0554e27-5d02-4499-b5ee-2bee85e304dc",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-27T08:37:29.090Z",
+      "hash": "6040006cb439469f875700b02a59781d"
+    },
+    {
+      "id": "2146fe11-48a9-4cbd-9ab3-c7e4e7ec1ad6",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-27T08:30:44.923Z",
+      "hash": "08290695771d21e54420f083e3947e8d"
+    },
+    {
+      "id": "0006a582-a54e-44e9-b793-bc8e7595fcc5",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-27T08:15:28.539Z",
+      "hash": "cbbad8a6313ff3c874c561f125e48ee5"
+    },
+    {
+      "id": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-24T12:16:57.211Z",
+      "hash": "a725bfb8c75863817e405c245feafeb1"
+    },
+    {
+      "id": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-18T16:18:18.627Z",
+      "hash": "5fefaf038372c07164ed77f59b6e0c25"
+    }
+  ],
+  "config": {
+    "promptVersion": "writing-prompt-v4-evidence-ids",
+    "maxOutputTokens": 8192,
+    "timeoutMs": 60000
+  },
+  "resultHashesUnchanged": true,
+  "keyAfter": {
+    "isFreeTier": true,
+    "usage": 0
+  },
+  "finishedAt": "2026-11-27T13:54:18.681Z",
+  "methodologyNotes": [
+    "Same five submitted Writing attempts; parts then summary; no assessment writes.",
+    "Original rubric/evidence validator unchanged. JSON schema appended to system prompt as transport adaptation.",
+    "Ultra uses prompt-only JSON; ERNIE and Super VL use JSON object mode.",
+    "Measured completed cases use a 60-second response deadline and max 8192 output tokens including reasoning; no retries of completed failures.",
+    "Ultra includes one earlier interrupted HTTP200 request taking 112669ms; excluded from five completed case outcomes.",
+    "Runs span two time windows due to database unavailability, not a simultaneous controlled load test."
+  ]
+}

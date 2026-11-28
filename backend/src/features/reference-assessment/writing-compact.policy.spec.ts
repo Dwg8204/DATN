@@ -93,7 +93,7 @@ describe('Groq per-Part production flow and compact contract', () => {
     const h = workerFixture();
     await h.service.runOnce();
     expect(h.provider.generateStructured).toHaveBeenCalledTimes(1);
-    expect((h.provider.generateStructured.mock.calls[0] as any)[0].systemInstruction).toContain('This request assesses ONE PART ONLY');
+    expect((h.provider.generateStructured.mock.calls[0] as any)[0].systemInstruction).toContain('omit the root cefr field entirely');
     expect(h.saved.writing.metadata.promptVersion).toBe(GROQ_PARTS_WRITING_VERSION);
     expect(h.job.config.groqWritingPrompt).toBeUndefined();
   });

@@ -1,0 +1,454 @@
+{
+  "model": "baidu/ernie-5.5-flash-preview:free",
+  "startedAt": "2026-11-27T09:23:32.643Z",
+  "method": "PARTS_V1, production prompt/validator; no retries; no assessment writes",
+  "calls": [
+    {
+      "attemptId": "e0554e27-5d02-4499-b5ee-2bee85e304dc",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:23:33.547Z",
+      "http": 429,
+      "errorCode": 429,
+      "errorMessage": "Provider returned error",
+      "limitSource": "upstream_provider_shared_pool",
+      "providerErrorCode": "tpm_rate_limit_exceeded",
+      "failure": "OPENROUTER_HTTP_429",
+      "elapsedMs": 477
+    },
+    {
+      "attemptId": "2146fe11-48a9-4cbd-9ab3-c7e4e7ec1ad6",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:23:49.554Z",
+      "http": 200,
+      "id": "gen-1795771453-6YKIsffMJtWa8EhT5zLT",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 4500,
+        "completion_tokens": 8192,
+        "total_tokens": 12692,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 7672,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "length",
+      "failure": "INCOMPLETE_OUTPUT",
+      "elapsedMs": 39665
+    },
+    {
+      "attemptId": "0006a582-a54e-44e9-b793-bc8e7595fcc5",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:24:29.233Z",
+      "http": 200,
+      "id": "gen-1795771493-UFvEU2IAvik5b3PkxoHS",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 4500,
+        "completion_tokens": 8192,
+        "total_tokens": 12692,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 4352,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 5425,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "length",
+      "failure": "INCOMPLETE_OUTPUT",
+      "elapsedMs": 33988
+    },
+    {
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:25:03.252Z",
+      "http": 200,
+      "id": "gen-1795771528-nrOXtsthS8BkqRHYP1Tu",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 4500,
+        "completion_tokens": 8169,
+        "total_tokens": 12669,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 5175,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 34452
+    },
+    {
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_2",
+      "startedAt": "2026-11-27T09:25:37.732Z",
+      "http": 200,
+      "id": "gen-1795771562-pMGgHeQYStfaUvaCreWa",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 4692,
+        "completion_tokens": 3326,
+        "total_tokens": 8018,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 1828,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 14753
+    },
+    {
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "stage": "part_3",
+      "startedAt": "2026-11-27T09:25:53.738Z",
+      "http": 200,
+      "id": "gen-1795771578-Iu9h67GHEj4gy8X2YcJY",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 9717,
+        "completion_tokens": 6069,
+        "total_tokens": 15786,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 3158,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 24678
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_1",
+      "startedAt": "2026-11-27T09:26:18.451Z",
+      "http": 200,
+      "id": "gen-1795771602-JNcK83WFoSOvMBNyILzl",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 4500,
+        "completion_tokens": 6129,
+        "total_tokens": 10629,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 2827,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 23864
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_2",
+      "startedAt": "2026-11-27T09:26:42.335Z",
+      "http": 200,
+      "id": "gen-1795771626-F0aPonAgFqte1UAe6BSu",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 4804,
+        "completion_tokens": 2190,
+        "total_tokens": 6994,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 927,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 10870
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_3",
+      "startedAt": "2026-11-27T09:26:58.335Z",
+      "http": 200,
+      "id": "gen-1795771642-rNSXKU9dUB6rFnHUn3Ol",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 9321,
+        "completion_tokens": 7488,
+        "total_tokens": 16809,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 4400,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 29701
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "part_4",
+      "startedAt": "2026-11-27T09:27:28.061Z",
+      "http": 200,
+      "id": "gen-1795771672-FbEpYzlEnwcVG6UzSXhd",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 13378,
+        "completion_tokens": 6230,
+        "total_tokens": 19608,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 3328,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 3054,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 25242
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "stage": "summary",
+      "startedAt": "2026-11-27T09:27:53.320Z",
+      "http": 200,
+      "id": "gen-1795771697-q0Y1q1kLyvJ4DSZzf3fx",
+      "provider": "Baidu",
+      "usage": {
+        "prompt_tokens": 24369,
+        "completion_tokens": 2493,
+        "total_tokens": 26862,
+        "cost": 0,
+        "is_byok": false,
+        "prompt_tokens_details": {
+          "cached_tokens": 0,
+          "cache_write_tokens": 0,
+          "audio_tokens": 0,
+          "video_tokens": 0
+        },
+        "cost_details": {
+          "upstream_inference_cost": 0,
+          "upstream_inference_prompt_cost": 0,
+          "upstream_inference_completions_cost": 0
+        },
+        "completion_tokens_details": {
+          "reasoning_tokens": 719,
+          "image_tokens": 0,
+          "audio_tokens": 0
+        }
+      },
+      "finish": "stop",
+      "elapsedMs": 12941
+    }
+  ],
+  "cases": [
+    {
+      "attemptId": "e0554e27-5d02-4499-b5ee-2bee85e304dc",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "OPENROUTER_HTTP_429",
+      "elapsedMs": 484
+    },
+    {
+      "attemptId": "2146fe11-48a9-4cbd-9ab3-c7e4e7ec1ad6",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "INCOMPLETE_OUTPUT",
+      "elapsedMs": 55195
+    },
+    {
+      "attemptId": "0006a582-a54e-44e9-b793-bc8e7595fcc5",
+      "status": "FAILED",
+      "stage": "part_1",
+      "completedParts": 0,
+      "code": "INCOMPLETE_OUTPUT",
+      "elapsedMs": 34000
+    },
+    {
+      "attemptId": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "status": "FAILED",
+      "stage": "part_3",
+      "completedParts": 2,
+      "code": "AI_INVALID_RESPONSE",
+      "rule": "MISSING_evidence:root.details.parts[0].questions[1].strengths[1]",
+      "elapsedMs": 75193
+    },
+    {
+      "attemptId": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "status": "VALID",
+      "stage": "summary",
+      "completedParts": 4,
+      "cefrLevel": "B1",
+      "elapsedMs": 107849
+    }
+  ],
+  "pricing": {
+    "prompt": "0",
+    "completion": "0"
+  },
+  "keyBefore": {
+    "isFreeTier": true,
+    "usage": 0
+  },
+  "samples": [
+    {
+      "id": "e0554e27-5d02-4499-b5ee-2bee85e304dc",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-27T08:37:29.090Z",
+      "hash": "6040006cb439469f875700b02a59781d"
+    },
+    {
+      "id": "2146fe11-48a9-4cbd-9ab3-c7e4e7ec1ad6",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-27T08:30:44.923Z",
+      "hash": "08290695771d21e54420f083e3947e8d"
+    },
+    {
+      "id": "0006a582-a54e-44e9-b793-bc8e7595fcc5",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-27T08:15:28.539Z",
+      "hash": "cbbad8a6313ff3c874c561f125e48ee5"
+    },
+    {
+      "id": "8615db79-1e68-4fc4-8025-ac776cc5b244",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-24T12:16:57.211Z",
+      "hash": "a725bfb8c75863817e405c245feafeb1"
+    },
+    {
+      "id": "552ad9c8-a17f-4473-a301-b5c33f8725ec",
+      "scope": "FULL_SKILL",
+      "submittedAt": "2026-11-18T16:18:18.627Z",
+      "hash": "5fefaf038372c07164ed77f59b6e0c25"
+    }
+  ],
+  "config": {
+    "promptVersion": "writing-prompt-v4-evidence-ids",
+    "maxOutputTokens": 8192,
+    "timeoutMs": 60000
+  },
+  "interruptedCases": [],
+  "resultHashesUnchanged": true,
+  "keyAfter": {
+    "isFreeTier": true,
+    "usage": 0
+  },
+  "finishedAt": "2026-11-27T13:49:20.486Z",
+  "methodologyNotes": [
+    "Same five submitted Writing attempts; parts then summary; no assessment writes.",
+    "Original rubric/evidence validator unchanged. JSON schema appended to system prompt as transport adaptation.",
+    "Ultra uses prompt-only JSON; ERNIE and Super VL use JSON object mode.",
+    "Measured completed cases use a 60-second response deadline and max 8192 output tokens including reasoning; no retries of completed failures.",
+    "Ultra includes one earlier interrupted HTTP200 request taking 112669ms; excluded from five completed case outcomes.",
+    "Runs span two time windows due to database unavailability, not a simultaneous controlled load test."
+  ]
+}
