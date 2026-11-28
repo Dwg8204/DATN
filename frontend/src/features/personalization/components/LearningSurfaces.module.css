@@ -1,7 +1,7 @@
 /* goddesign | extension of existing system */
-@value card, muted, reportMetrics, task, fields, field, check, actions, history, error from "./Personalization.module.css";
+@value muted, reportMetrics, task, fields, field, check, actions, history, error from "./Personalization.module.css";
 /* Scoped learning surfaces; colors follow AptiMate's active theme. */
-.card:is(.goalProgress,.comment,.schedule,.settings) {
+section:is(.goalProgress,.comment,.schedule,.settings) {
   background: var(--bg-surface); border: 1px solid var(--border); border-radius: 8px;
   padding: clamp(16px,3vw,32px); color: var(--text-primary); min-width: 0;
   --action-ink: color-mix(in srgb,var(--brand) 75%,var(--text-primary));
@@ -24,7 +24,7 @@
 .goalProgress .reportMetrics dt {color:var(--text-muted)}
 .goalProgress .reportMetrics dd {font-size:1rem;line-height:1.5}
 .goalProgress a {text-decoration:underline;text-underline-offset:3px}
-.card.comment {background:var(--brand-subtle);border-color:var(--brand-border)}
+section.comment {background:var(--brand-subtle);border-color:var(--brand-border)}
 .comment p,.comment ul {max-width:75ch}
 .comment h3 {font-size:1rem;margin:16px 0 4px}
 .comment ul {padding-inline-start:20px;margin-block:4px}
@@ -59,3 +59,15 @@
  .schedule .task>button {grid-column:2;grid-row:auto;justify-self:start}
  :is(.settings,.schedule) button {min-height:44px}
 }
+
+:global([data-theme="dark"]) .dashboardCard {
+  background: var(--bg-surface);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+:global([data-theme="dark"]) .dashboardCard small,
+:global([data-theme="dark"]) .dashboardCard span { color: var(--text-muted); }
+:global([data-theme="dark"]) .dashboardCard :is(button, a) {
+  color: color-mix(in srgb, var(--brand) 75%, var(--text-primary));
+}
+:global([data-theme="dark"]) .dashboardCard button { border-color: var(--brand-border-focus); }

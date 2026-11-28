@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { practiceAttemptsApi } from '../../test-attempts/services/practiceAttemptsApi';
 import styles from './Personalization.module.css';
+import ui from './LearningSurfaces.module.css';
 const routes = {
   GRAMMAR_VOCAB: 'grammar-vocab',
   READING: 'reading',
@@ -51,7 +52,7 @@ export default function AbilityAssessmentCard({ profile, loadError = false }) {
   if (profile?.placement.complete) return null;
   if (!profile && !error && !loadError) return null;
   return (
-    <section className={styles.card}>
+    <section className={`${styles.card} ${ui.dashboardCard}`}>
       <h2>{t('personalization.placement.title')}</h2>
       <p>{t('personalization.placementReplan.help')}</p>
       {(error || loadError) && (
